@@ -1,6 +1,8 @@
 Convert Markdown to HTML.
 ===
 
+[![CI](https://github.com/jaywcjlove/markdown-to-html/actions/workflows/ci.yml/badge.svg)](https://github.com/jaywcjlove/markdown-to-html/actions/workflows/ci.yml)
+
 Converts markdown text to HTML.
 
 ## Install
@@ -38,6 +40,16 @@ export interface Options {
 }
 export default function markdown(markdownStr?: string, options?: Options): string | import("hast").Root;
 ```
+
+## Contributors
+
+As always, thanks to our amazing contributors!
+
+<a href="https://github.com/jaywcjlove/markdown-to-html/graphs/contributors">
+  <img src="https://jaywcjlove.github.io/markdown-to-html/CONTRIBUTORS.svg" />
+</a>
+
+Made with [github-action-contributors](https://github.com/jaywcjlove/github-action-contributors).
 
 ## License
 
