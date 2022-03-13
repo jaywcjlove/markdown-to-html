@@ -1,6 +1,8 @@
 import { PluggableList } from 'unified';
+import { ElementContent } from 'hast';
 import { Options as RemarkRehypeOptions } from 'remark-rehype';
 import { RehypeRewriteOptions } from 'rehype-rewrite';
+export declare const getCodeString: (data?: ElementContent[], code?: string) => string;
 export interface Options {
     /** [remark-rehype](https://github.com/remarkjs/remark-rehype) options */
     remarkRehypeOptions?: RemarkRehypeOptions;
