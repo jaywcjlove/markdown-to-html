@@ -1,6 +1,6 @@
 {
   "name": "@wcj/markdown-to-html",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Converts markdown text to HTML.",
   "license": "MIT",
   "author": "kenny wang <wowohoo@qq.com> (https://github.com/jaywcjlove)",
