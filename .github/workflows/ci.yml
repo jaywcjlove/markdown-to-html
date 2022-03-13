@@ -60,9 +60,10 @@ jobs:
           name: ${{ steps.create_tag.outputs.version }}
           tag: ${{ steps.create_tag.outputs.version }}
           body: |
-            [![](https://img.shields.io/badge/Open%20in-unpkg-blue)](https://uiwjs.github.io/npm-unpkg/#/pkg/validator.tool@${{steps.create_tag.outputs.versionNumber}}/file/README.md)
+            [![](https://img.shields.io/badge/Open%20in-unpkg-blue)](https://uiwjs.github.io/npm-unpkg/#/pkg/@wcj/markdown-to-html@${{steps.create_tag.outputs.versionNumber}}/file/README.md)
 
-            ${{ steps.changelog.outputs.compareurl }}
+            Documentation ${{ steps.changelog.outputs.tag }}: https://raw.githack.com/jaywcjlove/markdown-to-html/${{ steps.changelog.outputs.gh-pages-short-hash }}/index.html  
+            Comparing Changes: ${{ steps.changelog.outputs.compareurl }} 
 
             ${{ steps.changelog.outputs.changelog }}
 
