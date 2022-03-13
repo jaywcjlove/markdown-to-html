@@ -64,6 +64,26 @@ export interface Options {
 export default function markdown(markdownStr?: string, options?: Options): string | import("hast").Root;
 ```
 
+## Markdown Features
+
+### Supports for CSS Style
+
+Use HTML comments [`<!--rehype:xxx-->`](https://github.com/jaywcjlove/rehype-attr)<!--rehype:style=color: red;--> to let Markdown support style customization.
+
+```markdown
+## Title
+<!--rehype:style=display: flex; height: 230px; align-items: center; justify-content: center; font-size: 38px;-->
+
+Markdown Supports **Style**<!--rehype:style=color: red;-->
+```
+
+### Support for [GFM footnotes](https://github.blog/changelog/2021-09-30-footnotes-now-supported-in-markdown-fields/)
+
+```markdown
+Here is a simple footnote[^1]. With some additional text after it.
+
+[^1]: My reference.
+
 ## Contributors
 
 As always, thanks to our amazing contributors!
