@@ -20888,7 +20888,7 @@
     defineSymbol(math, main, bin, "\u2217", "\\ast");
     defineSymbol(math, main, bin, "\u2294", "\\sqcup", true);
     defineSymbol(math, main, bin, "\u25ef", "\\bigcirc", true);
-    defineSymbol(math, main, bin, "\u2219", "\\bullet");
+    defineSymbol(math, main, bin, "\u2219", "\\bullet", true);
     defineSymbol(math, main, bin, "\u2021", "\\ddagger");
     defineSymbol(math, main, bin, "\u2240", "\\wr", true);
     defineSymbol(math, main, bin, "\u2a3f", "\\amalg");
@@ -21247,13 +21247,13 @@
     defineSymbol(math, main, bin, "+", "+");
     defineSymbol(math, main, bin, "\u2212", "-", true);
     defineSymbol(math, main, bin, "\u22c5", "\\cdot", true);
-    defineSymbol(math, main, bin, "\u2218", "\\circ");
+    defineSymbol(math, main, bin, "\u2218", "\\circ", true);
     defineSymbol(math, main, bin, "\u00f7", "\\div", true);
     defineSymbol(math, main, bin, "\u00b1", "\\pm", true);
     defineSymbol(math, main, bin, "\u00d7", "\\times", true);
     defineSymbol(math, main, bin, "\u2229", "\\cap", true);
     defineSymbol(math, main, bin, "\u222a", "\\cup", true);
-    defineSymbol(math, main, bin, "\u2216", "\\setminus");
+    defineSymbol(math, main, bin, "\u2216", "\\setminus", true);
     defineSymbol(math, main, bin, "\u2227", "\\land");
     defineSymbol(math, main, bin, "\u2228", "\\lor");
     defineSymbol(math, main, bin, "\u2227", "\\wedge", true);
@@ -34382,7 +34382,7 @@
       /**
        * Current KaTeX version
        */
-      version: "0.15.2",
+      version: "0.15.3",
 
       /**
        * Renders the given LaTeX into an HTML+MathML combination, and adds
@@ -76163,6 +76163,10 @@
                     var code = getCodeString(node.children);
                     if (found && node.properties) {
                         if (Array.isArray(node.properties.className)) {
+                            console.log(parent);
+                            if (parent && parent.type === 'element' && parent.properties) {
+                                parent.properties.className = ['language-katex'];
+                            }
                             node.properties.className.push('math');
                             node.properties.className.push('math-display');
                             node.children = [
