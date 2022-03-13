@@ -12,12 +12,12 @@ import rehypeRewrite, { RehypeRewriteOptions } from 'rehype-rewrite';
 import stringify from 'rehype-stringify';
 import rehypePrism from 'rehype-prism-plus';
 
-const getCodeStr = (data: ElementContent[] = [], code: string = '') => {
+export const getCodeString = (data: ElementContent[] = [], code: string = '') => {
   data.forEach((node) => {
     if (node.type === 'text') {
       code += node.value;
     } else if (node.type === 'element' && node.children && Array.isArray(node.children)) {
-      code += getCodeStr(node.children);
+      code += getCodeString(node.children);
     }
   });
   return code;
@@ -56,7 +56,7 @@ export default function markdown(markdownStr: string = '', options: Options = {}
           const found = (Array.isArray(className) ? className : [className]).find(
             (str) => String(str).toLocaleLowerCase().indexOf('language-katex') > -1,
           );
-          const code = getCodeStr(node.children);
+          const code = getCodeString(node.children);
           if (found && node.properties) {
             if (Array.isArray(node.properties.className)) {
               node.properties.className.push('math');
