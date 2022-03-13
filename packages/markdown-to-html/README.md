@@ -17,7 +17,7 @@ $ npm i @wcj/markdown-to-html
 ## Usage
 
 ```js
-import markdown from '@wcj/markdown-to-html';
+import markdown, { getCodeString } from '@wcj/markdown-to-html';
 
 markdown('# Markdown String')
 // => <h1>Markdown String</h1>
@@ -37,7 +37,7 @@ CDN: [UNPKG](https://unpkg.com/@wcj/markdown-to-html/dist/) | [jsDelivr](https:/
     const str = '# Markdown to HTML\n\nConverts markdown text to HTML.\n\n';
     const div = document.createElement('div');
     div.className = 'markdown-body';
-    div.innerHTML = markdown(str)
+    div.innerHTML = markdown.default(str)
     document.body.appendChild(div)
   })()
 </script>
