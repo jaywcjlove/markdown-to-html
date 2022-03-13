@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Convert HTML to Markdown</title>
+  <link rel="stylesheet" href="marked.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.0/dist/katex.min.css">
+  <script type="text/javascript" src="./markdown.js"></script>
+  <style>
+    body {
+      padding: 25px;
+    }
+    @media (prefers-color-scheme: dark) {
+      html {
+        color-scheme: dark;
+        --color-canvas-default: #0d1117;
+      }
+    }
+    @media (prefers-color-scheme: light) {
+      html {
+        color-scheme: light;
+        --color-canvas-default: #ffffff;
+      }
+    }
+    @media (prefers-color-scheme: dark) {
+      .body {
+        color-scheme: dark;
+        background-color: var(--color-canvas-default);
+      }
+    }
+    .math.math-inline {
+      background-color: transparent;
+    }
+  </style>
+</head>
+<body>
+  <script>
+    ;(() => {
+      const str = '# Markdown to HTML\n\nConverts markdown text to HTML.\n\n';
+      const div = document.createElement('div');
+      div.className = 'markdown-body';
+      div.innerHTML = markdown(str)
+      document.body.appendChild(div)
+    })()
+  </script>
+  <br />
+  <script>
+    const str = `## Code Block
+
+\`\`\`css
+body {
+  color: red;
+}
+\`\`\`
+
+\`\`\`swift
+import SwiftUI
+import Markdown
+
+struct ContentView: View {
+  @State private var mdStr: String = \"\"\"
+    ## Hello World
+    
+    Render Markdown text in SwiftUI.
+    \"\"\"
+  var body: some View {
+    VStack {
+      Markdown(content: $mdStr)
+      TextEditor(text: $mdStr)
+    }
+  }
+}
+\`\`\`
+
+
+\`KaTeX:c = \\pm\\sqrt{a^2 + b^2}\`
+
+\`\`\`KaTeX
+c = \\pm\\sqrt{a^2 + b^2}
+
+L = \\frac{1}{2} \\rho v^2 S C_L
+\`\`\`
+
+
+\`\`\`diff
+@@ -4,6 +4,5 @@
+-    let foo = bar.baz([1, 2, 3]);
+-    foo = foo + 1;
++    const foo = bar.baz([1, 2, 3]) + 1;
+      console.log(\`foo: \${foo}\`);
+\`\`\`
+    `;
+    const div = document.createElement('div');
+    div.className = 'markdown-body';
+    div.innerHTML = markdown(str)
+    document.body.appendChild(div)
+  </script>
+  <br />
+</body>
+</html>
