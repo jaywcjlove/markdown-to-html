@@ -85,6 +85,22 @@ Here is a simple footnote[^1]. With some additional text after it.
 [^1]: My reference.
 ```
 
+### Support for [KaTeX](https://github.com/Khan/KaTeX)
+
+Support markdown syntax to render math. You can combine it with [KaTeX](https://github.com/Khan/KaTeX) in markdown, add <kbd>\`KaTeX:string\`</kbd> and <kbd>\`\`\`markdown</kbd> classes in markdown.
+
+```markdown
+\`KaTeX:c = \\pm\\sqrt{a^2 + b^2}\`
+```
+
+```markdown
+\`\`\`KaTeX
+c = \\pm\\sqrt{a^2 + b^2}
+
+L = \\frac{1}{2} \\rho v^2 S C_L
+\`\`\`
+```
+
 ## Contributors
 
 As always, thanks to our amazing contributors!
