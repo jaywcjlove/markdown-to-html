@@ -1,0 +1,43 @@
+{
+  "private": true,
+  "scripts": {
+    "prepare": "husky install",
+    "build": "lerna exec \"npm run build\" --scope @wcj/*",
+    "watch": "lerna exec \"npm run start\" --scope @wcj/markdown-to-html",
+    "version": "lerna version --exact --force-publish --no-push --no-git-tag-version",
+    "remove": "lerna exec \"rm -rf node_modules build package-lock.json\"",
+    "clean": "lerna clean --yes && npm run remove",
+    "prettier": "prettier --write \"**/*.{js,jsx,tsx,ts,less,md,json}\"",
+    "bootstrap": "lerna bootstrap",
+    "hoist": "lerna bootstrap --hoist"
+  },
+  "keywords": [
+    "validator",
+    "validator.tool",
+    "validator.js",
+    "validation",
+    "validate",
+    "sanitization",
+    "sanitize",
+    "sanitisation",
+    "sanitise",
+    "assert"
+  ],
+  "engines": {
+    "node": ">=12.0.0"
+  },
+  "lint-staged": {
+    "*.{js,jsx,css,md,json}": [
+      "prettier --write"
+    ],
+    "*.ts?(x)": [
+      "prettier --parser=typescript --write"
+    ]
+  },
+  "devDependencies": {
+    "husky": "~7.0.4",
+    "lerna": "~4.0.0",
+    "lint-staged": "~12.3.5",
+    "prettier": "~2.5.1"
+  }
+}

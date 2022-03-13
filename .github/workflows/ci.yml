@@ -1,0 +1,27 @@
+name: CI
+on:
+  push:
+    branches:
+      - main
+
+
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 14
+
+      - run: npm install
+      - run: npm run hoist
+
+      - run: npm run build
+
+      - name: Generate Contributors Images
+        uses: jaywcjlove/github-action-contributors@main
+        with:
+          filter-author: (renovate\[bot\]|renovate-bot|dependabot\[bot\])
+          output: packages/markdown-to-html/dist/CONTRIBUTORS.svg
+          avatarSize: 42
