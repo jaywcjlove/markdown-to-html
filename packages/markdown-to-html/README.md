@@ -20,6 +20,25 @@ markdown('# Markdown String')
 // => <h1>Markdown String</h1>
 ```
 
+Or manually download and link `markdown-to-html` in your HTML, It can also be downloaded via [UNPKG](https://unpkg.com/browse/@wcj/markdown-to-html/):
+
+CDN: [UNPKG](https://unpkg.com/@wcj/markdown-to-html/dist/) | [jsDelivr](https://cdn.jsdelivr.net/npm/@wcj/markdown-to-html/) | [Githack](https://raw.githack.com/jaywcjlove/markdown-to-html/gh-pages/markdown.min.js) | [Statically](https://cdn.statically.io/gh/jaywcjlove/markdown-to-html/gh-pages/markdown.min.js)
+
+```html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.0/dist/katex.min.css">
+
+<script src="https://unpkg.com/@wcj/markdown-to-html/dist/markdown.min.js"></script>
+<script type="text/javascript">
+  ;(() => {
+    const str = '# Markdown to HTML\n\nConverts markdown text to HTML.\n\n';
+    const div = document.createElement('div');
+    div.className = 'markdown-body';
+    div.innerHTML = markdown(str)
+    document.body.appendChild(div)
+  })()
+</script>
+```
+
 ## API
 
 ```ts
