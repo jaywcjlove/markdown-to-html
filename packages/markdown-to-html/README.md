@@ -2,6 +2,7 @@ Convert Markdown to HTML.
 ===
 
 [![CI](https://github.com/jaywcjlove/markdown-to-html/actions/workflows/ci.yml/badge.svg)](https://github.com/jaywcjlove/markdown-to-html/actions/workflows/ci.yml)
+[![jsDelivr CDN](https://data.jsdelivr.com/v1/package/npm/@wcj/markdown-to-html/badge?style=rounded)](https://www.jsdelivr.com/package/npm/@wcj/markdown-to-html)
 
 Converts markdown text to HTML.
 
@@ -26,6 +27,7 @@ CDN: [UNPKG](https://unpkg.com/@wcj/markdown-to-html/dist/) | [jsDelivr](https:/
 
 ```html
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.0/dist/katex.min.css">
+<link rel="stylesheet" href="https://unpkg.com/@wcj/markdown-to-html/dist/marked.css">
 
 <script src="https://unpkg.com/@wcj/markdown-to-html/dist/markdown.min.js"></script>
 <script type="text/javascript">

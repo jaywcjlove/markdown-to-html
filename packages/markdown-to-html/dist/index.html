@@ -38,7 +38,12 @@
 <body>
   <script>
     ;(() => {
-      const str = '# Markdown to HTML\n\nConverts markdown text to HTML.\n\n';
+      const str = `# Markdown to HTML
+[![CI](https://github.com/jaywcjlove/markdown-to-html/actions/workflows/ci.yml/badge.svg)](https://github.com/jaywcjlove/markdown-to-html/actions/workflows/ci.yml)
+[![jsDelivr CDN](https://data.jsdelivr.com/v1/package/npm/@wcj/markdown-to-html/badge?style=rounded)](https://www.jsdelivr.com/package/npm/@wcj/markdown-to-html)
+
+Converts markdown text to HTML. [Github Source](https://github.com/jaywcjlove/markdown-to-html)\n\n
+`;
       const div = document.createElement('div');
       div.className = 'markdown-body';
       div.innerHTML = markdown(str)
@@ -47,7 +52,45 @@
   </script>
   <br />
   <script>
-    const str = `## Code Block
+    const str = `## API
+    
+\`\`\`typescript
+import { PluggableList } from 'unified';
+import { Options as RemarkRehypeOptions } from 'remark-rehype';
+import { RehypeRewriteOptions } from 'rehype-rewrite';
+export interface Options {
+  /** [remark-rehype](https://github.com/remarkjs/remark-rehype) options */
+  remarkRehypeOptions?: RemarkRehypeOptions;
+  /** List of [remark plugins](https://github.com/remarkjs/remark/blob/main/doc/plugins.md#list-of-plugins) to use. See the next section for examples on how to pass options */
+  remarkPlugins?: PluggableList;
+  /** List of [rehype plugins](https://github.com/rehypejs/rehype/blob/main/doc/plugins.md#list-of-plugins) to use. See the next section for examples on how to pass options */
+  rehypePlugins?: PluggableList;
+  /** Resulting Node tree. */
+  hastNode?: boolean;
+  /** Rewrite Element. [rehype-rewrite](https://github.com/jaywcjlove/rehype-rewrite#rewritenode-index-parent-void) */
+  rewrite?: RehypeRewriteOptions['rewrite'];
+}
+export default function markdown(markdownStr?: string, options?: Options): string | import("hast").Root;
+\`\`\`
+
+Or manually download and link \`markdown-to-html\` in your HTML, It can also be downloaded via [UNPKG](https://unpkg.com/browse/@wcj/markdown-to-html/):
+
+\`\`\`html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.0/dist/katex.min.css" />
+<link rel="stylesheet" href="https://unpkg.com/@wcj/markdown-to-html/dist/marked.css" />
+<script type="text/javascript" src="https://unpkg.com/@wcj/markdown-to-html/dist/markdown.min.js"><\/script>
+<script type="text/javascript">
+;(() => {
+  const str = '# Markdown to HTML\\n\\nConverts markdown text to HTML.\\n\\n';
+  const div = document.createElement('div');
+  div.className = 'markdown-body';
+  div.innerHTML = markdown(str)
+  document.body.appendChild(div)
+})()
+<\/script>
+\`\`\`
+
+## Code Block
 
 \`\`\`css
 body {
@@ -91,6 +134,21 @@ L = \\frac{1}{2} \\rho v^2 S C_L
 +    const foo = bar.baz([1, 2, 3]) + 1;
       console.log(\`foo: \${foo}\`);
 \`\`\`
+
+## Contributors
+
+As always, thanks to our amazing contributors!
+<script>alert('sss')<\/script>
+<a href="https://github.com/jaywcjlove/markdown-to-html/graphs/contributors">
+  <img src="https://jaywcjlove.github.io/markdown-to-html/CONTRIBUTORS.svg" \/>
+<\/a>
+
+Made with [github-action-contributors](https://github.com/jaywcjlove/github-action-contributors).
+
+## License
+
+Licensed under the [MIT License](https://opensource.org/licenses/MIT).
+
     `;
     const div = document.createElement('div');
     div.className = 'markdown-body';

@@ -7,6 +7,7 @@ import remarkParse from 'remark-parse';
 import remarkRehype, { Options as RemarkRehypeOptions } from 'remark-rehype';
 import rehypeVideo from 'rehype-video';
 import rehypeKatex from 'rehype-katex';
+import rehypeRaw from 'rehype-raw';
 import rehypeRewrite, { RehypeRewriteOptions } from 'rehype-rewrite';
 import stringify from 'rehype-stringify';
 import rehypePrism from 'rehype-prism-plus';
@@ -45,6 +46,7 @@ export default function markdown(markdownStr: string = '', options: Options = {}
       allowDangerousHtml: true,
     })
     .use(rehypeVideo)
+    .use(rehypeRaw)
     .use(rehypePrism, { ignoreMissing: true })
     .use(rehypeAttrs, { properties: 'attr' })
     .use(rehypeRewrite, {
@@ -69,12 +71,12 @@ export default function markdown(markdownStr: string = '', options: Options = {}
           }
           if (/^katex/.test(code.toLocaleLowerCase())) {
             node.properties!.className = ['math', 'math-inline'];
-            node.children = node.children.map((node) => {
-              if (node.type === 'text') {
-                node.value = node.value.replace(/^KaTeX:(\s.)?/i, '');
-              }
-              return node;
-            });
+            node.children = [
+              {
+                type: 'text',
+                value: code.replace(/^KaTeX:(\s.)?/i, ''),
+              },
+            ];
           }
         }
 
