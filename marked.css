@@ -489,9 +489,23 @@ body, html {
 .token.maybe-class-name {
   color: var(--color-prettylights-syntax-variable);
 }
-.token.property-access, .token.operator, .token.boolean, .token.number, .token.selector .token.class, .token.attr-name, .token.string, .token.char, .token.builtin, .token.inserted {
+.token.property-access, .token.operator, .token.boolean, .token.number, .token.selector .token.class, .token.attr-name, .token.string, .token.char, .token.builtin {
   color: var(--color-prettylights-syntax-constant);
 }
+
+.token.deleted {
+  color: var(--color-prettylights-syntax-markup-deleted-text);
+}
+.code-line .token.deleted {
+  background-color: var(--color-prettylights-syntax-markup-deleted-bg);
+}
+.token.inserted {
+  color: var(--color-prettylights-syntax-markup-inserted-text);
+}
+.code-line .token.inserted {
+  background-color: var(--color-prettylights-syntax-markup-inserted-bg);
+}
+
 .token.variable {
   color: var(--color-prettylights-syntax-constant);
 }
