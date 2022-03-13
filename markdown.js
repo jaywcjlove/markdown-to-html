@@ -1490,7 +1490,7 @@
     // Expose a frozen processor.
     const unified = base$1().freeze();
 
-    const own$g = {}.hasOwnProperty;
+    const own$i = {}.hasOwnProperty;
 
     // Function to create the first processor.
     /**
@@ -1563,7 +1563,7 @@
           }
 
           // Get `key`.
-          return (own$g.call(namespace, key) && namespace[key]) || null
+          return (own$i.call(namespace, key) && namespace[key]) || null
         }
 
         // Set space.
@@ -1943,7 +1943,7 @@
       let key;
 
       for (key in value) {
-        if (own$g.call(value, key)) {
+        if (own$i.call(value, key)) {
           return true
         }
       }
@@ -2448,29 +2448,29 @@
     };
     /** @type {ConstructRecord} */
 
-    const text$6 = {};
+    const text$8 = {};
     /** @type {Extension} */
 
     const gfmAutolinkLiteral = {
-      text: text$6
+      text: text$8
     };
     let code$1 = 48; // Add alphanumerics.
 
     while (code$1 < 123) {
-      text$6[code$1] = emailAutolink;
+      text$8[code$1] = emailAutolink;
       code$1++;
       if (code$1 === 58) code$1 = 65;
       else if (code$1 === 91) code$1 = 97;
     }
 
-    text$6[43] = emailAutolink;
-    text$6[45] = emailAutolink;
-    text$6[46] = emailAutolink;
-    text$6[95] = emailAutolink;
-    text$6[72] = [emailAutolink, httpAutolink];
-    text$6[104] = [emailAutolink, httpAutolink];
-    text$6[87] = [emailAutolink, wwwAutolink];
-    text$6[119] = [emailAutolink, wwwAutolink];
+    text$8[43] = emailAutolink;
+    text$8[45] = emailAutolink;
+    text$8[46] = emailAutolink;
+    text$8[95] = emailAutolink;
+    text$8[72] = [emailAutolink, httpAutolink];
+    text$8[104] = [emailAutolink, httpAutolink];
+    text$8[87] = [emailAutolink, wwwAutolink];
+    text$8[119] = [emailAutolink, wwwAutolink];
     /** @type {Tokenizer} */
 
     function tokenizeEmailAutolink(effects, ok, nok) {
@@ -3774,7 +3774,7 @@
 
     /* eslint-env browser */
 
-    const element$4 = document.createElement('i');
+    const element$6 = document.createElement('i');
 
     /**
      * @param {string} value
@@ -3782,8 +3782,8 @@
      */
     function decodeNamedCharacterReference(value) {
       const characterReference = '&' + value + ';';
-      element$4.innerHTML = characterReference;
-      const char = element$4.textContent;
+      element$6.innerHTML = characterReference;
+      const char = element$6.textContent;
 
       // Some named character references do not require the closing semicolon
       // (`&not`, for instance), which leads to situations where parsing the assumed
@@ -9207,7 +9207,7 @@
      * @typedef {Array.<Pair>} Pairs
      */
 
-    const own$f = {}.hasOwnProperty;
+    const own$h = {}.hasOwnProperty;
 
     /**
      * @param tree mdast tree
@@ -9389,7 +9389,7 @@
         let key;
 
         for (key in schema) {
-          if (own$f.call(schema, key)) {
+          if (own$h.call(schema, key)) {
             result.push([toExpression(key), toFunction(schema[key])]);
           }
         }
@@ -11808,7 +11808,7 @@
      */
     function toString$1(node, options) {
       var {includeImageAlt = true} = options || {};
-      return one$3(node, includeImageAlt)
+      return one$4(node, includeImageAlt)
     }
 
     /**
@@ -11816,7 +11816,7 @@
      * @param {boolean} includeImageAlt
      * @returns {string}
      */
-    function one$3(node, includeImageAlt) {
+    function one$4(node, includeImageAlt) {
       return (
         (node &&
           typeof node === 'object' &&
@@ -11825,8 +11825,8 @@
             // @ts-ignore looks like an image.
             (includeImageAlt ? node.alt : '') ||
             // @ts-ignore looks like a parent.
-            ('children' in node && all$3(node.children, includeImageAlt)) ||
-            (Array.isArray(node) && all$3(node, includeImageAlt)))) ||
+            ('children' in node && all$4(node.children, includeImageAlt)) ||
+            (Array.isArray(node) && all$4(node, includeImageAlt)))) ||
         ''
       )
     }
@@ -11836,13 +11836,13 @@
      * @param {boolean} includeImageAlt
      * @returns {string}
      */
-    function all$3(values, includeImageAlt) {
+    function all$4(values, includeImageAlt) {
       /** @type {Array.<string>} */
       var result = [];
       var index = -1;
 
       while (++index < values.length) {
-        result[index] = one$3(values[index], includeImageAlt);
+        result[index] = one$4(values[index], includeImageAlt);
       }
 
       return result.join('')
@@ -12367,7 +12367,7 @@
       resolveAll: createResolver()
     };
     const string$1 = initializeFactory('string');
-    const text$5 = initializeFactory('text');
+    const text$7 = initializeFactory('text');
     /**
      * @param {'string'|'text'} field
      * @returns {InitialConstruct}
@@ -13190,7 +13190,7 @@
     };
     /** @type {Extension['text']} */
 
-    const text$4 = {
+    const text$6 = {
       [-5]: lineEnding,
       [-4]: lineEnding,
       [-3]: lineEnding,
@@ -13227,7 +13227,7 @@
         flowInitial: flowInitial,
         flow: flow$1,
         string: string,
-        text: text$4,
+        text: text$6,
         insideSpan: insideSpan,
         attentionMarkers: attentionMarkers,
         disable: disable
@@ -13245,7 +13245,7 @@
      * @returns {ParseContext}
      */
 
-    function parse$5(options = {}) {
+    function parse$6(options = {}) {
       /** @type {FullNormalizedExtension} */
       // @ts-expect-error `defaultConstructs` is full, so the result will be too.
       const constructs = combineExtensions(
@@ -13262,7 +13262,7 @@
         document: create(document$2),
         flow: create(flow$2),
         string: create(string$1),
-        text: create(text$5)
+        text: create(text$7)
       };
       return parser
       /**
@@ -13460,7 +13460,7 @@
      *
      * @typedef {UnistParent & {type: 'fragment', children: Array<PhrasingContent>}} Fragment
      */
-    const own$e = {}.hasOwnProperty;
+    const own$g = {}.hasOwnProperty;
     /**
      * @param value Markdown to parse (`string` or `Buffer`).
      * @param [encoding] Character encoding to understand `value` as when it’s a `Buffer` (`string`, default: `'utf8'`).
@@ -13489,7 +13489,7 @@
 
         return compiler(options)(
           postprocess(
-            parse$5(options).document().write(preprocess()(value, encoding, true))
+            parse$6(options).document().write(preprocess()(value, encoding, true))
           )
         )
       };
@@ -13668,7 +13668,7 @@
         while (++index < events.length) {
           const handler = config[events[index][0]];
 
-          if (own$e.call(handler, events[index][1].type)) {
+          if (own$g.call(handler, events[index][1].type)) {
             handler[events[index][1].type].call(
               Object.assign(
                 {
@@ -14554,9 +14554,9 @@
       let key;
 
       for (key in extension) {
-        if (own$e.call(extension, key)) {
+        if (own$g.call(extension, key)) {
           const list = key === 'canContainEols' || key === 'transforms';
-          const maybe = own$e.call(combined, key) ? combined[key] : undefined;
+          const maybe = own$g.call(combined, key) ? combined[key] : undefined;
           /* c8 ignore next */
 
           const left = maybe || (combined[key] = list ? [] : {});
@@ -14689,35 +14689,35 @@
      * @typedef {import('./index.js').Content} Content
      */
 
-    const own$d = {}.hasOwnProperty;
+    const own$f = {}.hasOwnProperty;
 
     /**
      * Transform an unknown node.
      * @type {Handler}
      * @param {MdastNode} node
      */
-    function unknown(h, node) {
+    function unknown$1(h, node) {
       const data = node.data || {};
 
       if (
         'value' in node &&
         !(
-          own$d.call(data, 'hName') ||
-          own$d.call(data, 'hProperties') ||
-          own$d.call(data, 'hChildren')
+          own$f.call(data, 'hName') ||
+          own$f.call(data, 'hProperties') ||
+          own$f.call(data, 'hChildren')
         )
       ) {
         return h.augment(node, u$1('text', node.value))
       }
 
-      return h(node, 'div', all$2(h, node))
+      return h(node, 'div', all$3(h, node))
     }
 
     /**
      * @type {Handler}
      * @param {MdastNode} node
      */
-    function one$2(h, node, parent) {
+    function one$3(h, node, parent) {
       const type = node && node.type;
       /** @type {Handler} */
       let fn;
@@ -14727,7 +14727,7 @@
         throw new Error('Expected node, got `' + node + '`')
       }
 
-      if (own$d.call(h.handlers, type)) {
+      if (own$f.call(h.handlers, type)) {
         fn = h.handlers[type];
       } else if (h.passThrough && h.passThrough.includes(type)) {
         fn = returnNode;
@@ -14735,7 +14735,7 @@
         fn = h.unknownHandler;
       }
 
-      return (typeof fn === 'function' ? fn : unknown)(h, node, parent)
+      return (typeof fn === 'function' ? fn : unknown$1)(h, node, parent)
     }
 
     /**
@@ -14744,14 +14744,14 @@
      */
     function returnNode(h, node) {
       // @ts-expect-error: Pass through custom node.
-      return 'children' in node ? {...node, children: all$2(h, node)} : node
+      return 'children' in node ? {...node, children: all$3(h, node)} : node
     }
 
     /**
      * @param {H} h
      * @param {MdastNode} parent
      */
-    function all$2(h, parent) {
+    function all$3(h, parent) {
       /** @type {Array<Content>} */
       const values = [];
 
@@ -14760,7 +14760,7 @@
         let index = -1;
 
         while (++index < nodes.length) {
-          const result = one$2(h, nodes[index], parent);
+          const result = one$3(h, nodes[index], parent);
 
           if (result) {
             if (index && nodes[index - 1].type === 'break') {
@@ -15065,7 +15065,7 @@
      * @typedef {import('unist-util-visit').Visitor<Definition>} DefinitionVisitor
      */
 
-    const own$c = {}.hasOwnProperty;
+    const own$e = {}.hasOwnProperty;
 
     /**
      *
@@ -15086,7 +15086,7 @@
       /** @type {DefinitionVisitor} */
       function ondefinition(definition) {
         const id = clean(definition.identifier);
-        if (id && !own$c.call(cache, id)) {
+        if (id && !own$e.call(cache, id)) {
           cache[id] = definition;
         }
       }
@@ -15099,7 +15099,7 @@
        */
       function getDefinition(identifier) {
         const id = clean(identifier);
-        return id && own$c.call(cache, id) ? cache[id] : null
+        return id && own$e.call(cache, id) ? cache[id] : null
       }
     }
 
@@ -15167,7 +15167,7 @@
           continue
         }
 
-        const content = all$2(h, def);
+        const content = all$3(h, def);
         const id = String(def.identifier);
         const safeId = sanitizeUri(id.toLowerCase());
         let referenceIndex = 0;
@@ -15275,7 +15275,7 @@
      * @param {Blockquote} node
      */
     function blockquote(h, node) {
-      return h(node, 'blockquote', wrap(all$2(h, node), true))
+      return h(node, 'blockquote', wrap(all$3(h, node), true))
     }
 
     /**
@@ -15336,7 +15336,7 @@
      * @param {Delete} node
      */
     function strikethrough(h, node) {
-      return h(node, 'del', all$2(h, node))
+      return h(node, 'del', all$3(h, node))
     }
 
     /**
@@ -15349,7 +15349,7 @@
      * @param {Emphasis} node
      */
     function emphasis(h, node) {
-      return h(node, 'em', all$2(h, node))
+      return h(node, 'em', all$3(h, node))
     }
 
     /**
@@ -15446,7 +15446,7 @@
      * @param {Heading} node
      */
     function heading(h, node) {
-      return h(node, 'h' + node.depth, all$2(h, node))
+      return h(node, 'h' + node.depth, all$3(h, node))
     }
 
     /**
@@ -15587,7 +15587,7 @@
         return u$1('text', '![' + node.alt + suffix)
       }
 
-      const contents = all$2(h, node);
+      const contents = all$3(h, node);
       const head = contents[0];
 
       if (head && head.type === 'text') {
@@ -15692,7 +15692,7 @@
         props.title = def.title;
       }
 
-      return h(node, 'a', props, all$2(h, node))
+      return h(node, 'a', props, all$3(h, node))
     }
 
     /**
@@ -15713,7 +15713,7 @@
         props.title = node.title;
       }
 
-      return h(node, 'a', props, all$2(h, node))
+      return h(node, 'a', props, all$3(h, node))
     }
 
     /**
@@ -15731,7 +15731,7 @@
      * @param {List} parent
      */
     function listItem(h, node, parent) {
-      const result = all$2(h, node);
+      const result = all$3(h, node);
       const loose = parent ? listLoose(parent) : listItemLoose(node);
       /** @type {Properties} */
       const props = {};
@@ -15846,7 +15846,7 @@
       /** @type {Properties} */
       const props = {};
       const name = node.ordered ? 'ol' : 'ul';
-      const items = all$2(h, node);
+      const items = all$3(h, node);
       let index = -1;
 
       if (typeof node.start === 'number' && node.start !== 1) {
@@ -15882,7 +15882,7 @@
      * @param {Paragraph} node
      */
     function paragraph(h, node) {
-      return h(node, 'p', all$2(h, node))
+      return h(node, 'p', all$3(h, node))
     }
 
     /**
@@ -15894,9 +15894,9 @@
      * @type {Handler}
      * @param {Root} node
      */
-    function root$2(h, node) {
+    function root$4(h, node) {
       // @ts-expect-error `root`s are also fine.
-      return h.augment(node, u$1('root', wrap(all$2(h, node))))
+      return h.augment(node, u$1('root', wrap(all$3(h, node))))
     }
 
     /**
@@ -15909,7 +15909,7 @@
      * @param {Strong} node
      */
     function strong(h, node) {
-      return h(node, 'strong', all$2(h, node))
+      return h(node, 'strong', all$3(h, node))
     }
 
     /**
@@ -15942,7 +15942,7 @@
         while (++cellIndex < length) {
           const cell = row[cellIndex];
           out.push(
-            h(cell, name, {align: align[cellIndex]}, cell ? all$2(h, cell) : [])
+            h(cell, name, {align: align[cellIndex]}, cell ? all$3(h, cell) : [])
           );
         }
 
@@ -15979,7 +15979,7 @@
      * @type {Handler}
      * @param {Text} node
      */
-    function text$3(h, node) {
+    function text$5(h, node) {
       return h.augment(
         node,
         u$1('text', String(node.value).replace(/[ \t]*(\r?\n|\r)[ \t]*/g, '$1'))
@@ -16019,10 +16019,10 @@
       listItem,
       list,
       paragraph,
-      root: root$2,
+      root: root$4,
       strong,
       table,
-      text: text$3,
+      text: text$5,
       thematicBreak,
       toml: ignore$1,
       yaml: ignore$1,
@@ -16127,7 +16127,7 @@
      *   Handle context
      */
 
-    const own$b = {}.hasOwnProperty;
+    const own$d = {}.hasOwnProperty;
 
     /**
      * Factory to transform.
@@ -16164,7 +16164,7 @@
 
         // Mimick CM behavior of link definitions.
         // See: <https://github.com/syntax-tree/mdast-util-definitions/blob/8290999/index.js#L26>.
-        if (!own$b.call(footnoteById, id)) {
+        if (!own$d.call(footnoteById, id)) {
           footnoteById[id] = definition;
         }
       });
@@ -16247,7 +16247,7 @@
      */
     function toHast(tree, options) {
       const h = factory$1(tree, options);
-      const node = one$2(h, tree, null);
+      const node = one$3(h, tree, null);
       const foot = footer(h);
 
       if (foot) {
@@ -20798,7 +20798,7 @@
     // modes:
 
     var math = "math";
-    var text$2 = "text"; // fonts:
+    var text$4 = "text"; // fonts:
 
     var main = "main";
     var ams = "ams"; // groups:
@@ -20845,9 +20845,9 @@
     defineSymbol(math, main, punct, "\u22c5", "\\cdotp"); // Misc Symbols
 
     defineSymbol(math, main, textord, "\u0023", "\\#");
-    defineSymbol(text$2, main, textord, "\u0023", "\\#");
+    defineSymbol(text$4, main, textord, "\u0023", "\\#");
     defineSymbol(math, main, textord, "\u0026", "\\&");
-    defineSymbol(text$2, main, textord, "\u0026", "\\&");
+    defineSymbol(text$4, main, textord, "\u0026", "\\&");
     defineSymbol(math, main, textord, "\u2135", "\\aleph", true);
     defineSymbol(math, main, textord, "\u2200", "\\forall", true);
     defineSymbol(math, main, textord, "\u210f", "\\hbar", true);
@@ -20865,16 +20865,16 @@
     defineSymbol(math, main, textord, "\u2111", "\\Im", true);
     defineSymbol(math, main, textord, "\u2660", "\\spadesuit", true);
     defineSymbol(math, main, textord, "\u00a7", "\\S", true);
-    defineSymbol(text$2, main, textord, "\u00a7", "\\S");
+    defineSymbol(text$4, main, textord, "\u00a7", "\\S");
     defineSymbol(math, main, textord, "\u00b6", "\\P", true);
-    defineSymbol(text$2, main, textord, "\u00b6", "\\P"); // Math and Text
+    defineSymbol(text$4, main, textord, "\u00b6", "\\P"); // Math and Text
 
     defineSymbol(math, main, textord, "\u2020", "\\dag");
-    defineSymbol(text$2, main, textord, "\u2020", "\\dag");
-    defineSymbol(text$2, main, textord, "\u2020", "\\textdagger");
+    defineSymbol(text$4, main, textord, "\u2020", "\\dag");
+    defineSymbol(text$4, main, textord, "\u2020", "\\textdagger");
     defineSymbol(math, main, textord, "\u2021", "\\ddag");
-    defineSymbol(text$2, main, textord, "\u2021", "\\ddag");
-    defineSymbol(text$2, main, textord, "\u2021", "\\textdaggerdbl"); // Large Delimiters
+    defineSymbol(text$4, main, textord, "\u2021", "\\ddag");
+    defineSymbol(text$4, main, textord, "\u2021", "\\textdaggerdbl"); // Large Delimiters
 
     defineSymbol(math, main, close, "\u23b1", "\\rmoustache", true);
     defineSymbol(math, main, open, "\u23b0", "\\lmoustache", true);
@@ -20989,7 +20989,7 @@
     defineSymbol(math, ams, textord, "\u25ca", "\\lozenge");
     defineSymbol(math, ams, textord, "\u24c8", "\\circledS");
     defineSymbol(math, ams, textord, "\u00ae", "\\circledR");
-    defineSymbol(text$2, ams, textord, "\u00ae", "\\circledR");
+    defineSymbol(text$4, ams, textord, "\u00ae", "\\circledR");
     defineSymbol(math, ams, textord, "\u2221", "\\measuredangle", true);
     defineSymbol(math, ams, textord, "\u2204", "\\nexists");
     defineSymbol(math, ams, textord, "\u2127", "\\mho");
@@ -21005,7 +21005,7 @@
     defineSymbol(math, ams, textord, "\u2201", "\\complement", true); // unicode-math maps U+F0 to \matheth. We map to AMS function \eth
 
     defineSymbol(math, ams, textord, "\u00f0", "\\eth", true);
-    defineSymbol(text$2, main, textord, "\u00f0", "\u00f0");
+    defineSymbol(text$4, main, textord, "\u00f0", "\u00f0");
     defineSymbol(math, ams, textord, "\u2571", "\\diagup");
     defineSymbol(math, ams, textord, "\u2572", "\\diagdown");
     defineSymbol(math, ams, textord, "\u25a1", "\\square");
@@ -21013,9 +21013,9 @@
     defineSymbol(math, ams, textord, "\u25ca", "\\Diamond"); // unicode-math maps U+A5 to \mathyen. We map to AMS function \yen
 
     defineSymbol(math, ams, textord, "\u00a5", "\\yen", true);
-    defineSymbol(text$2, ams, textord, "\u00a5", "\\yen", true);
+    defineSymbol(text$4, ams, textord, "\u00a5", "\\yen", true);
     defineSymbol(math, ams, textord, "\u2713", "\\checkmark", true);
-    defineSymbol(text$2, ams, textord, "\u2713", "\\checkmark"); // AMS Hebrew
+    defineSymbol(text$4, ams, textord, "\u2713", "\\checkmark"); // AMS Hebrew
 
     defineSymbol(math, ams, textord, "\u2136", "\\beth", true);
     defineSymbol(math, ams, textord, "\u2138", "\\daleth", true);
@@ -21172,13 +21172,13 @@
     defineSymbol(math, ams, rel, "\u21be", "\\restriction");
     defineSymbol(math, main, textord, "\u2018", "`");
     defineSymbol(math, main, textord, "$", "\\$");
-    defineSymbol(text$2, main, textord, "$", "\\$");
-    defineSymbol(text$2, main, textord, "$", "\\textdollar");
+    defineSymbol(text$4, main, textord, "$", "\\$");
+    defineSymbol(text$4, main, textord, "$", "\\textdollar");
     defineSymbol(math, main, textord, "%", "\\%");
-    defineSymbol(text$2, main, textord, "%", "\\%");
+    defineSymbol(text$4, main, textord, "%", "\\%");
     defineSymbol(math, main, textord, "_", "\\_");
-    defineSymbol(text$2, main, textord, "_", "\\_");
-    defineSymbol(text$2, main, textord, "_", "\\textunderscore");
+    defineSymbol(text$4, main, textord, "_", "\\_");
+    defineSymbol(text$4, main, textord, "_", "\\textunderscore");
     defineSymbol(math, main, textord, "\u2220", "\\angle", true);
     defineSymbol(math, main, textord, "\u221e", "\\infty", true);
     defineSymbol(math, main, textord, "\u2032", "\\prime");
@@ -21296,10 +21296,10 @@
     defineSymbol(math, main, spacing, "\u00a0", "\\space"); // Ref: LaTeX Source 2e: \DeclareRobustCommand{\nobreakspace}{%
 
     defineSymbol(math, main, spacing, "\u00a0", "\\nobreakspace");
-    defineSymbol(text$2, main, spacing, "\u00a0", "\\ ");
-    defineSymbol(text$2, main, spacing, "\u00a0", " ");
-    defineSymbol(text$2, main, spacing, "\u00a0", "\\space");
-    defineSymbol(text$2, main, spacing, "\u00a0", "\\nobreakspace");
+    defineSymbol(text$4, main, spacing, "\u00a0", "\\ ");
+    defineSymbol(text$4, main, spacing, "\u00a0", " ");
+    defineSymbol(text$4, main, spacing, "\u00a0", "\\space");
+    defineSymbol(text$4, main, spacing, "\u00a0", "\\nobreakspace");
     defineSymbol(math, main, spacing, null, "\\nobreak");
     defineSymbol(math, main, spacing, null, "\\allowbreak");
     defineSymbol(math, main, punct, ",", ",");
@@ -21321,22 +21321,22 @@
     defineSymbol(math, main, bin, "\u25c3", "\\triangleleft");
     defineSymbol(math, main, bin, "\u25b9", "\\triangleright");
     defineSymbol(math, main, open, "{", "\\{");
-    defineSymbol(text$2, main, textord, "{", "\\{");
-    defineSymbol(text$2, main, textord, "{", "\\textbraceleft");
+    defineSymbol(text$4, main, textord, "{", "\\{");
+    defineSymbol(text$4, main, textord, "{", "\\textbraceleft");
     defineSymbol(math, main, close, "}", "\\}");
-    defineSymbol(text$2, main, textord, "}", "\\}");
-    defineSymbol(text$2, main, textord, "}", "\\textbraceright");
+    defineSymbol(text$4, main, textord, "}", "\\}");
+    defineSymbol(text$4, main, textord, "}", "\\textbraceright");
     defineSymbol(math, main, open, "{", "\\lbrace");
     defineSymbol(math, main, close, "}", "\\rbrace");
     defineSymbol(math, main, open, "[", "\\lbrack", true);
-    defineSymbol(text$2, main, textord, "[", "\\lbrack", true);
+    defineSymbol(text$4, main, textord, "[", "\\lbrack", true);
     defineSymbol(math, main, close, "]", "\\rbrack", true);
-    defineSymbol(text$2, main, textord, "]", "\\rbrack", true);
+    defineSymbol(text$4, main, textord, "]", "\\rbrack", true);
     defineSymbol(math, main, open, "(", "\\lparen", true);
     defineSymbol(math, main, close, ")", "\\rparen", true);
-    defineSymbol(text$2, main, textord, "<", "\\textless", true); // in T1 fontenc
+    defineSymbol(text$4, main, textord, "<", "\\textless", true); // in T1 fontenc
 
-    defineSymbol(text$2, main, textord, ">", "\\textgreater", true); // in T1 fontenc
+    defineSymbol(text$4, main, textord, ">", "\\textgreater", true); // in T1 fontenc
 
     defineSymbol(math, main, open, "\u230a", "\\lfloor", true);
     defineSymbol(math, main, close, "\u230b", "\\rfloor", true);
@@ -21345,14 +21345,14 @@
     defineSymbol(math, main, textord, "\\", "\\backslash");
     defineSymbol(math, main, textord, "\u2223", "|");
     defineSymbol(math, main, textord, "\u2223", "\\vert");
-    defineSymbol(text$2, main, textord, "|", "\\textbar", true); // in T1 fontenc
+    defineSymbol(text$4, main, textord, "|", "\\textbar", true); // in T1 fontenc
 
     defineSymbol(math, main, textord, "\u2225", "\\|");
     defineSymbol(math, main, textord, "\u2225", "\\Vert");
-    defineSymbol(text$2, main, textord, "\u2225", "\\textbardbl");
-    defineSymbol(text$2, main, textord, "~", "\\textasciitilde");
-    defineSymbol(text$2, main, textord, "\\", "\\textbackslash");
-    defineSymbol(text$2, main, textord, "^", "\\textasciicircum");
+    defineSymbol(text$4, main, textord, "\u2225", "\\textbardbl");
+    defineSymbol(text$4, main, textord, "~", "\\textasciitilde");
+    defineSymbol(text$4, main, textord, "\\", "\\textbackslash");
+    defineSymbol(text$4, main, textord, "^", "\\textasciicircum");
     defineSymbol(math, main, rel, "\u2191", "\\uparrow", true);
     defineSymbol(math, main, rel, "\u21d1", "\\Uparrow", true);
     defineSymbol(math, main, rel, "\u2193", "\\downarrow", true);
@@ -21379,9 +21379,9 @@
     defineSymbol(math, main, op, "\u2230", "\\oiiint");
     defineSymbol(math, main, op, "\u2a06", "\\bigsqcup");
     defineSymbol(math, main, op, "\u222b", "\\smallint");
-    defineSymbol(text$2, main, inner, "\u2026", "\\textellipsis");
+    defineSymbol(text$4, main, inner, "\u2026", "\\textellipsis");
     defineSymbol(math, main, inner, "\u2026", "\\mathellipsis");
-    defineSymbol(text$2, main, inner, "\u2026", "\\ldots", true);
+    defineSymbol(text$4, main, inner, "\u2026", "\\ldots", true);
     defineSymbol(math, main, inner, "\u2026", "\\ldots", true);
     defineSymbol(math, main, inner, "\u22ef", "\\@cdots", true);
     defineSymbol(math, main, inner, "\u22f1", "\\ddots", true);
@@ -21403,40 +21403,40 @@
     defineSymbol(math, main, mathord, "\ue237", "\\@jmath");
     defineSymbol(math, main, textord, "\u0131", "\u0131");
     defineSymbol(math, main, textord, "\u0237", "\u0237");
-    defineSymbol(text$2, main, textord, "\u0131", "\\i", true);
-    defineSymbol(text$2, main, textord, "\u0237", "\\j", true);
-    defineSymbol(text$2, main, textord, "\u00df", "\\ss", true);
-    defineSymbol(text$2, main, textord, "\u00e6", "\\ae", true);
-    defineSymbol(text$2, main, textord, "\u0153", "\\oe", true);
-    defineSymbol(text$2, main, textord, "\u00f8", "\\o", true);
-    defineSymbol(text$2, main, textord, "\u00c6", "\\AE", true);
-    defineSymbol(text$2, main, textord, "\u0152", "\\OE", true);
-    defineSymbol(text$2, main, textord, "\u00d8", "\\O", true);
-    defineSymbol(text$2, main, accent, "\u02ca", "\\'"); // acute
+    defineSymbol(text$4, main, textord, "\u0131", "\\i", true);
+    defineSymbol(text$4, main, textord, "\u0237", "\\j", true);
+    defineSymbol(text$4, main, textord, "\u00df", "\\ss", true);
+    defineSymbol(text$4, main, textord, "\u00e6", "\\ae", true);
+    defineSymbol(text$4, main, textord, "\u0153", "\\oe", true);
+    defineSymbol(text$4, main, textord, "\u00f8", "\\o", true);
+    defineSymbol(text$4, main, textord, "\u00c6", "\\AE", true);
+    defineSymbol(text$4, main, textord, "\u0152", "\\OE", true);
+    defineSymbol(text$4, main, textord, "\u00d8", "\\O", true);
+    defineSymbol(text$4, main, accent, "\u02ca", "\\'"); // acute
 
-    defineSymbol(text$2, main, accent, "\u02cb", "\\`"); // grave
+    defineSymbol(text$4, main, accent, "\u02cb", "\\`"); // grave
 
-    defineSymbol(text$2, main, accent, "\u02c6", "\\^"); // circumflex
+    defineSymbol(text$4, main, accent, "\u02c6", "\\^"); // circumflex
 
-    defineSymbol(text$2, main, accent, "\u02dc", "\\~"); // tilde
+    defineSymbol(text$4, main, accent, "\u02dc", "\\~"); // tilde
 
-    defineSymbol(text$2, main, accent, "\u02c9", "\\="); // macron
+    defineSymbol(text$4, main, accent, "\u02c9", "\\="); // macron
 
-    defineSymbol(text$2, main, accent, "\u02d8", "\\u"); // breve
+    defineSymbol(text$4, main, accent, "\u02d8", "\\u"); // breve
 
-    defineSymbol(text$2, main, accent, "\u02d9", "\\."); // dot above
+    defineSymbol(text$4, main, accent, "\u02d9", "\\."); // dot above
 
-    defineSymbol(text$2, main, accent, "\u00b8", "\\c"); // cedilla
+    defineSymbol(text$4, main, accent, "\u00b8", "\\c"); // cedilla
 
-    defineSymbol(text$2, main, accent, "\u02da", "\\r"); // ring above
+    defineSymbol(text$4, main, accent, "\u02da", "\\r"); // ring above
 
-    defineSymbol(text$2, main, accent, "\u02c7", "\\v"); // caron
+    defineSymbol(text$4, main, accent, "\u02c7", "\\v"); // caron
 
-    defineSymbol(text$2, main, accent, "\u00a8", '\\"'); // diaresis
+    defineSymbol(text$4, main, accent, "\u00a8", '\\"'); // diaresis
 
-    defineSymbol(text$2, main, accent, "\u02dd", "\\H"); // double acute
+    defineSymbol(text$4, main, accent, "\u02dd", "\\H"); // double acute
 
-    defineSymbol(text$2, main, accent, "\u25ef", "\\textcircled"); // \bigcirc glyph
+    defineSymbol(text$4, main, accent, "\u25ef", "\\textcircled"); // \bigcirc glyph
     // These ligatures are detected and created in Parser.js's `formLigatures`.
 
     var ligatures = {
@@ -21445,31 +21445,31 @@
       "``": true,
       "''": true
     };
-    defineSymbol(text$2, main, textord, "\u2013", "--", true);
-    defineSymbol(text$2, main, textord, "\u2013", "\\textendash");
-    defineSymbol(text$2, main, textord, "\u2014", "---", true);
-    defineSymbol(text$2, main, textord, "\u2014", "\\textemdash");
-    defineSymbol(text$2, main, textord, "\u2018", "`", true);
-    defineSymbol(text$2, main, textord, "\u2018", "\\textquoteleft");
-    defineSymbol(text$2, main, textord, "\u2019", "'", true);
-    defineSymbol(text$2, main, textord, "\u2019", "\\textquoteright");
-    defineSymbol(text$2, main, textord, "\u201c", "``", true);
-    defineSymbol(text$2, main, textord, "\u201c", "\\textquotedblleft");
-    defineSymbol(text$2, main, textord, "\u201d", "''", true);
-    defineSymbol(text$2, main, textord, "\u201d", "\\textquotedblright"); //  \degree from gensymb package
+    defineSymbol(text$4, main, textord, "\u2013", "--", true);
+    defineSymbol(text$4, main, textord, "\u2013", "\\textendash");
+    defineSymbol(text$4, main, textord, "\u2014", "---", true);
+    defineSymbol(text$4, main, textord, "\u2014", "\\textemdash");
+    defineSymbol(text$4, main, textord, "\u2018", "`", true);
+    defineSymbol(text$4, main, textord, "\u2018", "\\textquoteleft");
+    defineSymbol(text$4, main, textord, "\u2019", "'", true);
+    defineSymbol(text$4, main, textord, "\u2019", "\\textquoteright");
+    defineSymbol(text$4, main, textord, "\u201c", "``", true);
+    defineSymbol(text$4, main, textord, "\u201c", "\\textquotedblleft");
+    defineSymbol(text$4, main, textord, "\u201d", "''", true);
+    defineSymbol(text$4, main, textord, "\u201d", "\\textquotedblright"); //  \degree from gensymb package
 
     defineSymbol(math, main, textord, "\u00b0", "\\degree", true);
-    defineSymbol(text$2, main, textord, "\u00b0", "\\degree"); // \textdegree from inputenc package
+    defineSymbol(text$4, main, textord, "\u00b0", "\\degree"); // \textdegree from inputenc package
 
-    defineSymbol(text$2, main, textord, "\u00b0", "\\textdegree", true); // TODO: In LaTeX, \pounds can generate a different character in text and math
+    defineSymbol(text$4, main, textord, "\u00b0", "\\textdegree", true); // TODO: In LaTeX, \pounds can generate a different character in text and math
     // mode, but among our fonts, only Main-Regular defines this character "163".
 
     defineSymbol(math, main, textord, "\u00a3", "\\pounds");
     defineSymbol(math, main, textord, "\u00a3", "\\mathsterling", true);
-    defineSymbol(text$2, main, textord, "\u00a3", "\\pounds");
-    defineSymbol(text$2, main, textord, "\u00a3", "\\textsterling", true);
+    defineSymbol(text$4, main, textord, "\u00a3", "\\pounds");
+    defineSymbol(text$4, main, textord, "\u00a3", "\\textsterling", true);
     defineSymbol(math, ams, textord, "\u2720", "\\maltese");
-    defineSymbol(text$2, ams, textord, "\u2720", "\\maltese"); // There are lots of symbols which are the same, so we add them in afterwards.
+    defineSymbol(text$4, ams, textord, "\u2720", "\\maltese"); // There are lots of symbols which are the same, so we add them in afterwards.
     // All of these are textords in math mode
 
     var mathTextSymbols = "0123456789/@.\"";
@@ -21485,7 +21485,7 @@
     for (var _i = 0; _i < textSymbols.length; _i++) {
       var _ch = textSymbols.charAt(_i);
 
-      defineSymbol(text$2, main, textord, _ch, _ch);
+      defineSymbol(text$4, main, textord, _ch, _ch);
     } // All of these are textords in text mode, and mathords in math mode
 
 
@@ -21495,28 +21495,28 @@
       var _ch2 = letters.charAt(_i2);
 
       defineSymbol(math, main, mathord, _ch2, _ch2);
-      defineSymbol(text$2, main, textord, _ch2, _ch2);
+      defineSymbol(text$4, main, textord, _ch2, _ch2);
     } // Blackboard bold and script letters in Unicode range
 
 
     defineSymbol(math, ams, textord, "C", "\u2102"); // blackboard bold
 
-    defineSymbol(text$2, ams, textord, "C", "\u2102");
+    defineSymbol(text$4, ams, textord, "C", "\u2102");
     defineSymbol(math, ams, textord, "H", "\u210D");
-    defineSymbol(text$2, ams, textord, "H", "\u210D");
+    defineSymbol(text$4, ams, textord, "H", "\u210D");
     defineSymbol(math, ams, textord, "N", "\u2115");
-    defineSymbol(text$2, ams, textord, "N", "\u2115");
+    defineSymbol(text$4, ams, textord, "N", "\u2115");
     defineSymbol(math, ams, textord, "P", "\u2119");
-    defineSymbol(text$2, ams, textord, "P", "\u2119");
+    defineSymbol(text$4, ams, textord, "P", "\u2119");
     defineSymbol(math, ams, textord, "Q", "\u211A");
-    defineSymbol(text$2, ams, textord, "Q", "\u211A");
+    defineSymbol(text$4, ams, textord, "Q", "\u211A");
     defineSymbol(math, ams, textord, "R", "\u211D");
-    defineSymbol(text$2, ams, textord, "R", "\u211D");
+    defineSymbol(text$4, ams, textord, "R", "\u211D");
     defineSymbol(math, ams, textord, "Z", "\u2124");
-    defineSymbol(text$2, ams, textord, "Z", "\u2124");
+    defineSymbol(text$4, ams, textord, "Z", "\u2124");
     defineSymbol(math, main, mathord, "h", "\u210E"); // italic h, Planck constant
 
-    defineSymbol(text$2, main, mathord, "h", "\u210E"); // The next loop loads wide (surrogate pair) characters.
+    defineSymbol(text$4, main, mathord, "h", "\u210E"); // The next loop loads wide (surrogate pair) characters.
     // We support some letters in the Unicode range U+1D400 to U+1D7FF,
     // Mathematical Alphanumeric Symbols.
     // Some editors do not deal well with wide characters. So don't write the
@@ -21533,35 +21533,35 @@
       wideChar = String.fromCharCode(0xD835, 0xDC00 + _i3); // A-Z a-z bold
 
       defineSymbol(math, main, mathord, _ch3, wideChar);
-      defineSymbol(text$2, main, textord, _ch3, wideChar);
+      defineSymbol(text$4, main, textord, _ch3, wideChar);
       wideChar = String.fromCharCode(0xD835, 0xDC34 + _i3); // A-Z a-z italic
 
       defineSymbol(math, main, mathord, _ch3, wideChar);
-      defineSymbol(text$2, main, textord, _ch3, wideChar);
+      defineSymbol(text$4, main, textord, _ch3, wideChar);
       wideChar = String.fromCharCode(0xD835, 0xDC68 + _i3); // A-Z a-z bold italic
 
       defineSymbol(math, main, mathord, _ch3, wideChar);
-      defineSymbol(text$2, main, textord, _ch3, wideChar);
+      defineSymbol(text$4, main, textord, _ch3, wideChar);
       wideChar = String.fromCharCode(0xD835, 0xDD04 + _i3); // A-Z a-z Fractur
 
       defineSymbol(math, main, mathord, _ch3, wideChar);
-      defineSymbol(text$2, main, textord, _ch3, wideChar);
+      defineSymbol(text$4, main, textord, _ch3, wideChar);
       wideChar = String.fromCharCode(0xD835, 0xDDA0 + _i3); // A-Z a-z sans-serif
 
       defineSymbol(math, main, mathord, _ch3, wideChar);
-      defineSymbol(text$2, main, textord, _ch3, wideChar);
+      defineSymbol(text$4, main, textord, _ch3, wideChar);
       wideChar = String.fromCharCode(0xD835, 0xDDD4 + _i3); // A-Z a-z sans bold
 
       defineSymbol(math, main, mathord, _ch3, wideChar);
-      defineSymbol(text$2, main, textord, _ch3, wideChar);
+      defineSymbol(text$4, main, textord, _ch3, wideChar);
       wideChar = String.fromCharCode(0xD835, 0xDE08 + _i3); // A-Z a-z sans italic
 
       defineSymbol(math, main, mathord, _ch3, wideChar);
-      defineSymbol(text$2, main, textord, _ch3, wideChar);
+      defineSymbol(text$4, main, textord, _ch3, wideChar);
       wideChar = String.fromCharCode(0xD835, 0xDE70 + _i3); // A-Z a-z monospace
 
       defineSymbol(math, main, mathord, _ch3, wideChar);
-      defineSymbol(text$2, main, textord, _ch3, wideChar);
+      defineSymbol(text$4, main, textord, _ch3, wideChar);
 
       if (_i3 < 26) {
         // KaTeX fonts have only capital letters for blackboard bold and script.
@@ -21569,11 +21569,11 @@
         wideChar = String.fromCharCode(0xD835, 0xDD38 + _i3); // A-Z double struck
 
         defineSymbol(math, main, mathord, _ch3, wideChar);
-        defineSymbol(text$2, main, textord, _ch3, wideChar);
+        defineSymbol(text$4, main, textord, _ch3, wideChar);
         wideChar = String.fromCharCode(0xD835, 0xDC9C + _i3); // A-Z script
 
         defineSymbol(math, main, mathord, _ch3, wideChar);
-        defineSymbol(text$2, main, textord, _ch3, wideChar);
+        defineSymbol(text$4, main, textord, _ch3, wideChar);
       } // TODO: Add bold script when it is supported by a KaTeX font.
 
     } // "k" is the only double struck lower case letter in the KaTeX fonts.
@@ -21582,7 +21582,7 @@
     wideChar = String.fromCharCode(0xD835, 0xDD5C); // k double struck
 
     defineSymbol(math, main, mathord, "k", wideChar);
-    defineSymbol(text$2, main, textord, "k", wideChar); // Next, some wide character numerals
+    defineSymbol(text$4, main, textord, "k", wideChar); // Next, some wide character numerals
 
     for (var _i4 = 0; _i4 < 10; _i4++) {
       var _ch4 = _i4.toString();
@@ -21590,19 +21590,19 @@
       wideChar = String.fromCharCode(0xD835, 0xDFCE + _i4); // 0-9 bold
 
       defineSymbol(math, main, mathord, _ch4, wideChar);
-      defineSymbol(text$2, main, textord, _ch4, wideChar);
+      defineSymbol(text$4, main, textord, _ch4, wideChar);
       wideChar = String.fromCharCode(0xD835, 0xDFE2 + _i4); // 0-9 sans serif
 
       defineSymbol(math, main, mathord, _ch4, wideChar);
-      defineSymbol(text$2, main, textord, _ch4, wideChar);
+      defineSymbol(text$4, main, textord, _ch4, wideChar);
       wideChar = String.fromCharCode(0xD835, 0xDFEC + _i4); // 0-9 bold sans
 
       defineSymbol(math, main, mathord, _ch4, wideChar);
-      defineSymbol(text$2, main, textord, _ch4, wideChar);
+      defineSymbol(text$4, main, textord, _ch4, wideChar);
       wideChar = String.fromCharCode(0xD835, 0xDFF6 + _i4); // 0-9 monospace
 
       defineSymbol(math, main, mathord, _ch4, wideChar);
-      defineSymbol(text$2, main, textord, _ch4, wideChar);
+      defineSymbol(text$4, main, textord, _ch4, wideChar);
     } // We add these Latin-1 letters as symbols for backwards-compatibility,
     // but they are not actually in the font, nor are they supported by the
     // Unicode accent mechanism, so they fall back to Times font and look ugly.
@@ -21615,7 +21615,7 @@
       var _ch5 = extraLatin.charAt(_i5);
 
       defineSymbol(math, main, mathord, _ch5, _ch5);
-      defineSymbol(text$2, main, textord, _ch5, _ch5);
+      defineSymbol(text$4, main, textord, _ch5, _ch5);
     }
 
     /**
@@ -34654,7 +34654,7 @@
          */
         function (test) {
           if (test === undefined || test === null) {
-            return element$3
+            return element$5
           }
 
           if (typeof test === 'string') {
@@ -34721,7 +34721,7 @@
        * @returns {boolean}
        */
       function tagName(node) {
-        return element$3(node) && node.tagName === check
+        return element$5(node) && node.tagName === check
       }
     }
 
@@ -34740,7 +34740,7 @@
        */
       function assertion(node, ...parameters) {
         // @ts-expect-error: fine.
-        return element$3(node) && Boolean(check.call(this, node, ...parameters))
+        return element$5(node) && Boolean(check.call(this, node, ...parameters))
       }
     }
 
@@ -34749,7 +34749,7 @@
      * @param {unknown} node
      * @returns {node is Element}
      */
-    function element$3(node) {
+    function element$5(node) {
       return Boolean(
         node &&
           typeof node === 'object' &&
@@ -39677,7 +39677,7 @@
         }, Object.create(null));
     };
 
-    var doctype$3 = {};
+    var doctype$4 = {};
 
     const { DOCUMENT_MODE } = html$4;
 
@@ -39775,7 +39775,7 @@
     }
 
     //API
-    doctype$3.isConforming = function(token) {
+    doctype$4.isConforming = function(token) {
         return (
             token.name === VALID_DOCTYPE_NAME &&
             token.publicId === null &&
@@ -39783,7 +39783,7 @@
         );
     };
 
-    doctype$3.getDocumentMode = function(token) {
+    doctype$4.getDocumentMode = function(token) {
         if (token.name !== VALID_DOCTYPE_NAME) {
             return DOCUMENT_MODE.QUIRKS;
         }
@@ -39820,7 +39820,7 @@
         return DOCUMENT_MODE.NO_QUIRKS;
     };
 
-    doctype$3.serializeContent = function(name, publicId, systemId) {
+    doctype$4.serializeContent = function(name, publicId, systemId) {
         let str = '!DOCTYPE ';
 
         if (name) {
@@ -40114,7 +40114,7 @@
     const Mixin = mixin;
     const defaultTreeAdapter = _default;
     const mergeOptions = mergeOptions$1;
-    const doctype$2 = doctype$3;
+    const doctype$3 = doctype$4;
     const foreignContent = foreignContent$1;
     const ERR = errorCodes;
     const unicode = unicode$3;
@@ -41177,9 +41177,9 @@
     function doctypeInInitialMode(p, token) {
         p._setDocumentType(token);
 
-        const mode = token.forceQuirks ? HTML.DOCUMENT_MODE.QUIRKS : doctype$2.getDocumentMode(token);
+        const mode = token.forceQuirks ? HTML.DOCUMENT_MODE.QUIRKS : doctype$3.getDocumentMode(token);
 
-        if (!doctype$2.isConforming(token)) {
+        if (!doctype$3.isConforming(token)) {
             p._err(ERR.nonConformingDoctype);
         }
 
@@ -43061,8 +43061,6 @@
         }
     }
 
-    var Parser5 = parser$2;
-
     /**
      * @typedef {import('./info.js').Info} Info
      * @typedef {Record<string, Info>} Properties
@@ -43232,7 +43230,7 @@
      * @property {Array<string>} [mustUseProperty]
      */
 
-    const own$a = {}.hasOwnProperty;
+    const own$c = {}.hasOwnProperty;
 
     /**
      * @param {Definition} definition
@@ -43247,7 +43245,7 @@
       let prop;
 
       for (prop in definition.properties) {
-        if (own$a.call(definition.properties, prop)) {
+        if (own$c.call(definition.properties, prop)) {
           const value = definition.properties[prop];
           const info = new DefinedInfo(
             prop,
@@ -44299,6 +44297,26 @@
       return $0.charAt(1).toUpperCase()
     }
 
+    const hastToReact = {
+      classId: 'classID',
+      dataType: 'datatype',
+      itemId: 'itemID',
+      strokeDashArray: 'strokeDasharray',
+      strokeDashOffset: 'strokeDashoffset',
+      strokeLineCap: 'strokeLinecap',
+      strokeLineJoin: 'strokeLinejoin',
+      strokeMiterLimit: 'strokeMiterlimit',
+      typeOf: 'typeof',
+      xLinkActuate: 'xlinkActuate',
+      xLinkArcRole: 'xlinkArcrole',
+      xLinkHref: 'xlinkHref',
+      xLinkRole: 'xlinkRole',
+      xLinkShow: 'xlinkShow',
+      xLinkTitle: 'xlinkTitle',
+      xLinkType: 'xlinkType',
+      xmlnsXLink: 'xmlnsXlink'
+    };
+
     /**
      * @typedef {import('./lib/util/info.js').Info} Info
      * @typedef {import('./lib/util/schema.js').Schema} Schema
@@ -44386,7 +44404,7 @@
      * @param {string} value Space separated tokens
      * @returns {Array.<string>} Tokens
      */
-    function parse$4(value) {
+    function parse$5(value) {
       const input = String(value || '').trim();
       return input ? input.split(/[ \t\n\r\f]+/g) : []
     }
@@ -44413,7 +44431,7 @@
      * @param {string} value
      * @returns {Array.<string>}
      */
-    function parse$3(value) {
+    function parse$4(value) {
       /** @type {Array.<string>} */
       var tokens = [];
       var input = String(value || '');
@@ -44491,7 +44509,7 @@
 
     const buttonTypes = new Set(['menu', 'submit', 'reset', 'button']);
 
-    const own$9 = {}.hasOwnProperty;
+    const own$b = {}.hasOwnProperty;
 
     /**
      * @param {Schema} schema
@@ -44532,7 +44550,7 @@
               node = parseSelector(selector, defaultTagName);
               // Normalize the name.
               node.tagName = node.tagName.toLowerCase();
-              if (adjust && own$9.call(adjust, node.tagName)) {
+              if (adjust && own$b.call(adjust, node.tagName)) {
                 node.tagName = adjust[node.tagName];
               }
 
@@ -44542,7 +44560,7 @@
                 let key;
 
                 for (key in properties) {
-                  if (own$9.call(properties, key)) {
+                  if (own$b.call(properties, key)) {
                     // @ts-expect-error `node.properties` is set.
                     addProperty(schema, node.properties, key, properties[key]);
                   }
@@ -44628,11 +44646,11 @@
       // Handle list values.
       else if (typeof value === 'string') {
         if (info.spaceSeparated) {
-          result = parse$4(value);
+          result = parse$5(value);
         } else if (info.commaSeparated) {
-          result = parse$3(value);
+          result = parse$4(value);
         } else if (info.commaOrSpaceSeparated) {
-          result = parse$4(parse$3(value).join(' '));
+          result = parse$5(parse$4(value).join(' '));
         } else {
           result = parsePrimitive(info, info.property, value);
         }
@@ -44724,7 +44742,7 @@
       let key;
 
       for (key in value) {
-        if (own$9.call(value, key)) {
+        if (own$b.call(value, key)) {
           result.push([key, value[key]].join(': '));
         }
       }
@@ -44953,15 +44971,15 @@
      * @property {boolean} location
      */
 
-    const own$8 = {}.hasOwnProperty;
+    const own$a = {}.hasOwnProperty;
 
     // Handlers.
     const map = {
-      '#document': root$1,
-      '#document-fragment': root$1,
-      '#text': text$1,
-      '#comment': comment$2,
-      '#documentType': doctype$1
+      '#document': root$3,
+      '#document-fragment': root$3,
+      '#text': text$3,
+      '#comment': comment$3,
+      '#documentType': doctype$2
     };
 
     /**
@@ -44984,7 +45002,7 @@
         settings = options;
       }
 
-      return transform(
+      return transform$1(
         {
           schema: settings.space === 'svg' ? svg : html$2,
           file,
@@ -45002,11 +45020,11 @@
      * @param {P5Node} ast
      * @returns {Node}
      */
-    function transform(ctx, ast) {
+    function transform$1(ctx, ast) {
       const schema = ctx.schema;
       /** @type {Handler} */
       // @ts-expect-error: index is fine.
-      const fn = own$8.call(map, ast.nodeName) ? map[ast.nodeName] : element$2;
+      const fn = own$a.call(map, ast.nodeName) ? map[ast.nodeName] : element$4;
       /** @type {Array.<Child>|undefined} */
       let children;
 
@@ -45050,7 +45068,7 @@
 
       while (++index < children.length) {
         // @ts-expect-error Assume no roots in children.
-        result[index] = transform(ctx, children[index]);
+        result[index] = transform$1(ctx, children[index]);
       }
 
       return result
@@ -45065,7 +45083,7 @@
      * @param {Array.<Child>} children
      * @returns {Root}
      */
-    function root$1(ctx, ast, children) {
+    function root$3(ctx, ast, children) {
       /** @type {Root} */
       const result = {
         type: 'root',
@@ -45091,7 +45109,7 @@
      * @type {Handler}
      * @returns {Doctype}
      */
-    function doctype$1() {
+    function doctype$2() {
       // @ts-expect-error Types are out of date.
       return {type: 'doctype'}
     }
@@ -45103,7 +45121,7 @@
      * @param {P5Text} ast
      * @returns {Text}
      */
-    function text$1(_, ast) {
+    function text$3(_, ast) {
       return {type: 'text', value: ast.value}
     }
 
@@ -45114,7 +45132,7 @@
      * @param {P5Comment} ast
      * @returns {Comment}
      */
-    function comment$2(_, ast) {
+    function comment$3(_, ast) {
       return {type: 'comment', value: ast.data}
     }
 
@@ -45126,7 +45144,7 @@
      * @param {Array.<ElementChild>} children
      * @returns {Element}
      */
-    function element$2(ctx, ast, children) {
+    function element$4(ctx, ast, children) {
       const fn = ctx.schema.space === 'svg' ? s$1 : h;
       let index = -1;
       /** @type {Object.<string, string>} */
@@ -45147,7 +45165,7 @@
 
         /** @type {Root} */
         // @ts-expect-error Types are wrong.
-        const content = transform(ctx, ast.content);
+        const content = transform$1(ctx, ast.content);
 
         if (startTag && endTag && ctx.file) {
           content.position = {start: startTag.end, end: endTag.start};
@@ -45192,7 +45210,7 @@
           let key;
 
           for (key in location.attrs) {
-            if (own$8.call(location.attrs, key)) {
+            if (own$a.call(location.attrs, key)) {
               props[find(ctx.schema, key).property] = position(location.attrs[key]);
             }
           }
@@ -45568,7 +45586,7 @@
       function parser(doc, file) {
         const fn = settings.fragment ? 'parseFragment' : 'parse';
         const onParseError = settings.emitParseErrors ? onerror : null;
-        const parse5 = new Parser5({
+        const parse5 = new parser$2({
           sourceCodeLocationInfo: true,
           onParseError,
           scriptingEnabled: false
@@ -45710,7 +45728,639 @@
       }
     }
 
-    var own$7 = {}.hasOwnProperty;
+    // http://www.w3.org/TR/CSS21/grammar.html
+    // https://github.com/visionmedia/css-parse/pull/49#issuecomment-30088027
+    var COMMENT_REGEX = /\/\*[^*]*\*+([^/*][^*]*\*+)*\//g;
+
+    var NEWLINE_REGEX = /\n/g;
+    var WHITESPACE_REGEX = /^\s*/;
+
+    // declaration
+    var PROPERTY_REGEX = /^(\*?[-#/*\\\w]+(\[[0-9a-z_-]+\])?)\s*/;
+    var COLON_REGEX = /^:\s*/;
+    var VALUE_REGEX = /^((?:'(?:\\'|.)*?'|"(?:\\"|.)*?"|\([^)]*?\)|[^};])+)/;
+    var SEMICOLON_REGEX = /^[;\s]*/;
+
+    // https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String/Trim#Polyfill
+    var TRIM_REGEX = /^\s+|\s+$/g;
+
+    // strings
+    var NEWLINE = '\n';
+    var FORWARD_SLASH = '/';
+    var ASTERISK = '*';
+    var EMPTY_STRING = '';
+
+    // types
+    var TYPE_COMMENT = 'comment';
+    var TYPE_DECLARATION = 'declaration';
+
+    /**
+     * @param {String} style
+     * @param {Object} [options]
+     * @return {Object[]}
+     * @throws {TypeError}
+     * @throws {Error}
+     */
+    var inlineStyleParser = function(style, options) {
+      if (typeof style !== 'string') {
+        throw new TypeError('First argument must be a string');
+      }
+
+      if (!style) return [];
+
+      options = options || {};
+
+      /**
+       * Positional.
+       */
+      var lineno = 1;
+      var column = 1;
+
+      /**
+       * Update lineno and column based on `str`.
+       *
+       * @param {String} str
+       */
+      function updatePosition(str) {
+        var lines = str.match(NEWLINE_REGEX);
+        if (lines) lineno += lines.length;
+        var i = str.lastIndexOf(NEWLINE);
+        column = ~i ? str.length - i : column + str.length;
+      }
+
+      /**
+       * Mark position and patch `node.position`.
+       *
+       * @return {Function}
+       */
+      function position() {
+        var start = { line: lineno, column: column };
+        return function(node) {
+          node.position = new Position(start);
+          whitespace();
+          return node;
+        };
+      }
+
+      /**
+       * Store position information for a node.
+       *
+       * @constructor
+       * @property {Object} start
+       * @property {Object} end
+       * @property {undefined|String} source
+       */
+      function Position(start) {
+        this.start = start;
+        this.end = { line: lineno, column: column };
+        this.source = options.source;
+      }
+
+      /**
+       * Non-enumerable source string.
+       */
+      Position.prototype.content = style;
+
+      /**
+       * Error `msg`.
+       *
+       * @param {String} msg
+       * @throws {Error}
+       */
+      function error(msg) {
+        var err = new Error(
+          options.source + ':' + lineno + ':' + column + ': ' + msg
+        );
+        err.reason = msg;
+        err.filename = options.source;
+        err.line = lineno;
+        err.column = column;
+        err.source = style;
+
+        if (options.silent) ; else {
+          throw err;
+        }
+      }
+
+      /**
+       * Match `re` and return captures.
+       *
+       * @param {RegExp} re
+       * @return {undefined|Array}
+       */
+      function match(re) {
+        var m = re.exec(style);
+        if (!m) return;
+        var str = m[0];
+        updatePosition(str);
+        style = style.slice(str.length);
+        return m;
+      }
+
+      /**
+       * Parse whitespace.
+       */
+      function whitespace() {
+        match(WHITESPACE_REGEX);
+      }
+
+      /**
+       * Parse comments.
+       *
+       * @param {Object[]} [rules]
+       * @return {Object[]}
+       */
+      function comments(rules) {
+        var c;
+        rules = rules || [];
+        while ((c = comment())) {
+          if (c !== false) {
+            rules.push(c);
+          }
+        }
+        return rules;
+      }
+
+      /**
+       * Parse comment.
+       *
+       * @return {Object}
+       * @throws {Error}
+       */
+      function comment() {
+        var pos = position();
+        if (FORWARD_SLASH != style.charAt(0) || ASTERISK != style.charAt(1)) return;
+
+        var i = 2;
+        while (
+          EMPTY_STRING != style.charAt(i) &&
+          (ASTERISK != style.charAt(i) || FORWARD_SLASH != style.charAt(i + 1))
+        ) {
+          ++i;
+        }
+        i += 2;
+
+        if (EMPTY_STRING === style.charAt(i - 1)) {
+          return error('End of comment missing');
+        }
+
+        var str = style.slice(2, i - 2);
+        column += 2;
+        updatePosition(str);
+        style = style.slice(i);
+        column += 2;
+
+        return pos({
+          type: TYPE_COMMENT,
+          comment: str
+        });
+      }
+
+      /**
+       * Parse declaration.
+       *
+       * @return {Object}
+       * @throws {Error}
+       */
+      function declaration() {
+        var pos = position();
+
+        // prop
+        var prop = match(PROPERTY_REGEX);
+        if (!prop) return;
+        comment();
+
+        // :
+        if (!match(COLON_REGEX)) return error("property missing ':'");
+
+        // val
+        var val = match(VALUE_REGEX);
+
+        var ret = pos({
+          type: TYPE_DECLARATION,
+          property: trim(prop[0].replace(COMMENT_REGEX, EMPTY_STRING)),
+          value: val
+            ? trim(val[0].replace(COMMENT_REGEX, EMPTY_STRING))
+            : EMPTY_STRING
+        });
+
+        // ;
+        match(SEMICOLON_REGEX);
+
+        return ret;
+      }
+
+      /**
+       * Parse declarations.
+       *
+       * @return {Object[]}
+       */
+      function declarations() {
+        var decls = [];
+
+        comments(decls);
+
+        // declarations
+        var decl;
+        while ((decl = declaration())) {
+          if (decl !== false) {
+            decls.push(decl);
+            comments(decls);
+          }
+        }
+
+        return decls;
+      }
+
+      whitespace();
+      return declarations();
+    };
+
+    /**
+     * Trim `str`.
+     *
+     * @param {String} str
+     * @return {String}
+     */
+    function trim(str) {
+      return str ? str.replace(TRIM_REGEX, EMPTY_STRING) : EMPTY_STRING;
+    }
+
+    var parse$3 = inlineStyleParser;
+
+    /**
+     * Parses inline style to object.
+     *
+     * @example
+     * // returns { 'line-height': '42' }
+     * StyleToObject('line-height: 42;');
+     *
+     * @param  {String}      style      - The inline style.
+     * @param  {Function}    [iterator] - The iterator function.
+     * @return {null|Object}
+     */
+    function StyleToObject(style, iterator) {
+      var output = null;
+      if (!style || typeof style !== 'string') {
+        return output;
+      }
+
+      var declaration;
+      var declarations = parse$3(style);
+      var hasIterator = typeof iterator === 'function';
+      var property;
+      var value;
+
+      for (var i = 0, len = declarations.length; i < len; i++) {
+        declaration = declarations[i];
+        property = declaration.property;
+        value = declaration.value;
+
+        if (hasIterator) {
+          iterator(property, value, declaration);
+        } else if (value) {
+          output || (output = {});
+          output[property] = value;
+        }
+      }
+
+      return output;
+    }
+
+    var styleToObject = StyleToObject;
+
+    /**
+     * @typedef {import('hast').Element} Element
+     * @typedef {import('hast').Root} Root
+     * @typedef {import('hast').Text} Text
+     *
+     * @typedef {import('unist-util-is').AssertPredicate<Element>} AssertElement
+     * @typedef {import('unist-util-is').AssertPredicate<Text>} AssertText
+     * @typedef {import('unist-util-is').AssertPredicate<Root>} AssertRoot
+     *
+     * @callback CreateElementLike
+     * @param {string} name
+     * @param {any} attributes
+     * @param {Array.<string|any>} [children]
+     * @returns {any}
+     *
+     * @typedef Context
+     * @property {html|svg} schema
+     * @property {string|null} prefix
+     * @property {number} key
+     * @property {boolean} react
+     * @property {boolean} vue
+     * @property {boolean} vdom
+     * @property {boolean} hyperscript
+     *
+     * @typedef Options
+     * @property {string|null} [prefix]
+     * @property {'html'|'svg'} [space]
+     */
+
+    const ns = /** @type {Record<string, string>} */ (webNamespaces);
+    const toReact = /** @type {Record<string, string>} */ (hastToReact);
+
+    const own$9 = {}.hasOwnProperty;
+
+    /** @type {AssertRoot} */
+    // @ts-expect-error it’s correct.
+    const root$2 = convert('root');
+    /** @type {AssertElement} */
+    // @ts-expect-error it’s correct.
+    const element$3 = convert('element');
+    /** @type {AssertText} */
+    // @ts-expect-error it’s correct.
+    const text$2 = convert('text');
+
+    /**
+     * @template {CreateElementLike} H
+     * @param {H} h
+     * @param {Element|Root} tree
+     * @param {string|boolean|Options} [options]
+     * @returns {ReturnType<H>}
+     */
+    function toH(h, tree, options) {
+      if (typeof h !== 'function') {
+        throw new TypeError('h is not a function')
+      }
+
+      const r = react(h);
+      const v = vue(h);
+      const vd = vdom(h);
+      /** @type {string|boolean|null|undefined} */
+      let prefix;
+      /** @type {Element} */
+      let node;
+
+      if (typeof options === 'string' || typeof options === 'boolean') {
+        prefix = options;
+        options = {};
+      } else {
+        if (!options) options = {};
+        prefix = options.prefix;
+      }
+
+      if (root$2(tree)) {
+        // @ts-expect-error Allow `doctypes` in there, we’ll filter them out later.
+        node =
+          tree.children.length === 1 && element$3(tree.children[0])
+            ? tree.children[0]
+            : {
+                type: 'element',
+                tagName: 'div',
+                properties: {},
+                children: tree.children
+              };
+      } else if (element$3(tree)) {
+        node = tree;
+      } else {
+        throw new Error(
+          // @ts-expect-error runtime.
+          'Expected root or element, not `' + ((tree && tree.type) || tree) + '`'
+        )
+      }
+
+      return transform(h, node, {
+        schema: options.space === 'svg' ? svg : html$2,
+        prefix:
+          prefix === undefined || prefix === null
+            ? r || v || vd
+              ? 'h-'
+              : null
+            : typeof prefix === 'string'
+            ? prefix
+            : prefix
+            ? 'h-'
+            : null,
+        key: 0,
+        react: r,
+        vue: v,
+        vdom: vd,
+        hyperscript: hyperscript(h)
+      })
+    }
+
+    /**
+     * Transform a hast node through a hyperscript interface to *anything*!
+     *
+     * @template {CreateElementLike} H
+     * @param {H} h
+     * @param {Element} node
+     * @param {Context} ctx
+     */
+    function transform(h, node, ctx) {
+      const parentSchema = ctx.schema;
+      let schema = parentSchema;
+      let name = node.tagName;
+      /** @type {Record<string, unknown>} */
+      const attributes = {};
+      /** @type {Array.<ReturnType<H>|string>} */
+      const nodes = [];
+      let index = -1;
+      /** @type {string} */
+      let key;
+
+      if (parentSchema.space === 'html' && name.toLowerCase() === 'svg') {
+        schema = svg;
+        ctx.schema = schema;
+      }
+
+      for (key in node.properties) {
+        if (node.properties && own$9.call(node.properties, key)) {
+          addAttribute(attributes, key, node.properties[key], ctx, name);
+        }
+      }
+
+      if (ctx.vdom) {
+        if (schema.space === 'html') {
+          name = name.toUpperCase();
+        } else if (schema.space) {
+          attributes.namespace = ns[schema.space];
+        }
+      }
+
+      if (ctx.prefix) {
+        ctx.key++;
+        attributes.key = ctx.prefix + ctx.key;
+      }
+
+      if (node.children) {
+        while (++index < node.children.length) {
+          const value = node.children[index];
+
+          if (element$3(value)) {
+            nodes.push(transform(h, value, ctx));
+          } else if (text$2(value)) {
+            nodes.push(value.value);
+          }
+        }
+      }
+
+      // Restore parent schema.
+      ctx.schema = parentSchema;
+
+      // Ensure no React warnings are triggered for void elements having children
+      // passed in.
+      return nodes.length > 0
+        ? h.call(node, name, attributes, nodes)
+        : h.call(node, name, attributes)
+    }
+
+    /**
+     * @param {Record<string, unknown>} props
+     * @param {string} prop
+     * @param {unknown} value
+     * @param {Context} ctx
+     * @param {string} name
+     */
+    // eslint-disable-next-line complexity, max-params
+    function addAttribute(props, prop, value, ctx, name) {
+      const info = find(ctx.schema, prop);
+      /** @type {string|undefined} */
+      let subprop;
+
+      // Ignore nullish and `NaN` values.
+      // Ignore `false` and falsey known booleans for hyperlike DSLs.
+      if (
+        value === undefined ||
+        value === null ||
+        (typeof value === 'number' && Number.isNaN(value)) ||
+        (value === false && (ctx.vue || ctx.vdom || ctx.hyperscript)) ||
+        (!value && info.boolean && (ctx.vue || ctx.vdom || ctx.hyperscript))
+      ) {
+        return
+      }
+
+      if (Array.isArray(value)) {
+        // Accept `array`.
+        // Most props are space-separated.
+        value = info.commaSeparated ? stringify$1(value) : stringify$2(value);
+      }
+
+      // Treat `true` and truthy known booleans.
+      if (info.boolean && ctx.hyperscript) {
+        value = '';
+      }
+
+      // VDOM, Vue, and React accept `style` as object.
+      if (
+        info.property === 'style' &&
+        typeof value === 'string' &&
+        (ctx.react || ctx.vue || ctx.vdom)
+      ) {
+        value = parseStyle(value, name);
+      }
+
+      if (ctx.vue) {
+        if (info.property !== 'style') subprop = 'attrs';
+      } else if (!info.mustUseProperty) {
+        if (ctx.vdom) {
+          if (info.property !== 'style') subprop = 'attributes';
+        } else if (ctx.hyperscript) {
+          subprop = 'attrs';
+        }
+      }
+
+      if (subprop) {
+        props[subprop] = Object.assign(props[subprop] || {}, {
+          [info.attribute]: value
+        });
+      } else if (info.space && ctx.react) {
+        props[toReact[info.property] || info.property] = value;
+      } else {
+        props[info.attribute] = value;
+      }
+    }
+
+    /**
+     * Check if `h` is `react.createElement`.
+     *
+     * @param {CreateElementLike} h
+     * @returns {boolean}
+     */
+    function react(h) {
+      /** @type {unknown} */
+      const node = h('div', {});
+      return Boolean(
+        node &&
+          // @ts-expect-error Looks like a React node.
+          ('_owner' in node || '_store' in node) &&
+          // @ts-expect-error Looks like a React node.
+          (node.key === undefined || node.key === null)
+      )
+    }
+
+    /**
+     * Check if `h` is `hyperscript`.
+     *
+     * @param {CreateElementLike} h
+     * @returns {boolean}
+     */
+    function hyperscript(h) {
+      return 'context' in h && 'cleanup' in h
+    }
+
+    /**
+     * Check if `h` is `virtual-dom/h`.
+     *
+     * @param {CreateElementLike} h
+     * @returns {boolean}
+     */
+    function vdom(h) {
+      /** @type {unknown} */
+      const node = h('div', {});
+      // @ts-expect-error Looks like a vnode.
+      return node.type === 'VirtualNode'
+    }
+
+    /**
+     * Check if `h` is Vue.
+     *
+     * @param {CreateElementLike} h
+     * @returns {boolean}
+     */
+    function vue(h) {
+      /** @type {unknown} */
+      const node = h('div', {});
+      // @ts-expect-error Looks like a Vue node.
+      return Boolean(node && node.context && node.context._isVue)
+    }
+
+    /**
+     * @param {string} value
+     * @param {string} tagName
+     * @returns {Record<string, string>}
+     */
+    function parseStyle(value, tagName) {
+      /** @type {Record<string, string>} */
+      const result = {};
+
+      try {
+        styleToObject(value, (name, value) => {
+          if (name.slice(0, 4) === '-ms-') name = 'ms-' + name.slice(4);
+
+          result[
+            name.replace(
+              /-([a-z])/g,
+              /**
+               * @param {string} _
+               * @param {string} $1
+               * @returns {string}
+               */ (_, $1) => $1.toUpperCase()
+            )
+          ] = value;
+        });
+      } catch (error) {
+        error.message =
+          tagName + '[style]' + error.message.slice('undefined'.length);
+        throw error
+      }
+
+      return result
+    }
+
+    var own$8 = {}.hasOwnProperty;
 
     /**
      * @callback Handler
@@ -45756,8 +46406,8 @@
         var fn = one.invalid;
         var handlers = one.handlers;
 
-        if (value && own$7.call(value, key)) {
-          fn = own$7.call(handlers, value[key]) ? handlers[value[key]] : one.unknown;
+        if (value && own$8.call(value, key)) {
+          fn = own$8.call(handlers, value[key]) ? handlers[value[key]] : one.unknown;
         }
 
         if (fn) {
@@ -45770,6 +46420,844 @@
       one.unknown = settings.unknown;
 
       return one
+    }
+
+    /**
+     * @typedef {import('parse5').Node} P5Node
+     * @typedef {import('parse5').Document} P5Document
+     * @typedef {import('parse5').DocumentFragment} P5Fragment
+     * @typedef {import('parse5').DocumentType} P5Doctype
+     * @typedef {import('parse5').CommentNode} P5Comment
+     * @typedef {import('parse5').TextNode} P5Text
+     * @typedef {import('parse5').Element} P5Element
+     * @typedef {import('parse5').Attribute} P5Attribute
+     * @typedef {import('parse5').ParentNode} P5Parent
+     * @typedef {Exclude<P5Node, P5Document|P5Fragment>} P5Child
+     * @typedef {import('property-information').Schema} Schema
+     * @typedef {import('property-information').Info} Info
+     * @typedef {'html'|'svg'} Space
+     * @typedef {import('hast').Parent} Parent
+     * @typedef {import('hast').Root} Root
+     * @typedef {import('hast').DocType} Doctype
+     * @typedef {import('hast').Element} Element
+     * @typedef {import('hast').Text} Text
+     * @typedef {import('hast').Comment} Comment
+     * @typedef {Parent['children'][number]} Child
+     * @typedef {Child|Root} Node
+     *
+     * @callback Handle
+     * @param {Node} node
+     * @param {Schema} schema
+     * @returns {P5Node}
+     */
+
+    var own$7 = {}.hasOwnProperty;
+
+    var one$2 = zwitch('type', {handlers: {root: root$1, element: element$2, text: text$1, comment: comment$2, doctype: doctype$1}});
+
+    /**
+     * Transform a tree from hast to Parse5’s AST.
+     *
+     * @param {Node} tree
+     * @param {Space} [space='html']
+     * @returns {P5Node}
+     */
+    function toParse5(tree, space) {
+      // @ts-ignore Types are wrong.
+      return one$2(tree, space === 'svg' ? svg : html$2)
+    }
+
+    /**
+     * @type {Handle}
+     * @param {Root} node
+     * @returns {P5Document}
+     */
+    function root$1(node, schema) {
+      /** @type {P5Document} */
+      var p5 = {
+        nodeName: '#document',
+        mode: (node.data || {}).quirksMode ? 'quirks' : 'no-quirks',
+        childNodes: []
+      };
+      // @ts-ignore Assume correct children.
+      p5.childNodes = all$2(node.children, p5, schema);
+      return patch(node, p5)
+    }
+
+    /**
+     * @type {Handle}
+     * @param {Root} node
+     * @returns {P5Fragment}
+     */
+    function fragment(node, schema) {
+      /** @type {P5Fragment} */
+      var p5 = {nodeName: '#document-fragment', childNodes: []};
+      // @ts-ignore Assume correct children.
+      p5.childNodes = all$2(node.children, p5, schema);
+      return patch(node, p5)
+    }
+
+    /**
+     * @type {Handle}
+     * @param {Doctype} node
+     * @returns {P5Doctype}
+     */
+    function doctype$1(node) {
+      return patch(node, {
+        nodeName: '#documentType',
+        name: 'html',
+        publicId: '',
+        systemId: '',
+        parentNode: undefined
+      })
+    }
+
+    /**
+     * @type {Handle}
+     * @param {Text} node
+     * @returns {P5Text}
+     */
+    function text$1(node) {
+      return patch(node, {
+        nodeName: '#text',
+        value: node.value,
+        parentNode: undefined
+      })
+    }
+
+    /**
+     * @type {Handle}
+     * @param {Comment} node
+     * @returns {P5Comment}
+     */
+    function comment$2(node) {
+      return patch(node, {
+        nodeName: '#comment',
+        data: node.value,
+        parentNode: undefined
+      })
+    }
+
+    /**
+     * @type {Handle}
+     * @param {Element} node
+     * @returns {P5Element}
+     */
+    function element$2(node, schema) {
+      /** @type {Space} */
+      // @ts-ignore Assume space.
+      var space = schema.space;
+      return toH(h, Object.assign({}, node, {children: []}), {space})
+
+      /**
+       * @param {string} name
+       * @param {Object.<string, string|boolean|number>} attrs
+       */
+      function h(name, attrs) {
+        /** @type {Array.<P5Attribute>} */
+        var values = [];
+        /** @type {Info} */
+        var info;
+        /** @type {P5Attribute} */
+        var value;
+        /** @type {string} */
+        var key;
+        /** @type {number} */
+        var index;
+        /** @type {P5Element} */
+        var p5;
+
+        for (key in attrs) {
+          if (!own$7.call(attrs, key) || attrs[key] === false) {
+            continue
+          }
+
+          info = find(schema, key);
+
+          if (info.boolean && !attrs[key]) {
+            continue
+          }
+
+          value = {name: key, value: attrs[key] === true ? '' : String(attrs[key])};
+
+          if (info.space && info.space !== 'html' && info.space !== 'svg') {
+            index = key.indexOf(':');
+
+            if (index < 0) {
+              value.prefix = '';
+            } else {
+              value.name = key.slice(index + 1);
+              value.prefix = key.slice(0, index);
+            }
+
+            value.namespace = webNamespaces[info.space];
+          }
+
+          values.push(value);
+        }
+
+        if (schema.space === 'html' && node.tagName === 'svg') schema = svg;
+
+        p5 = patch(node, {
+          nodeName: name,
+          tagName: name,
+          attrs: values,
+          namespaceURI: webNamespaces[schema.space],
+          childNodes: [],
+          parentNode: undefined
+        });
+
+        // @ts-ignore Assume correct children.
+        p5.childNodes = all$2(node.children, p5, schema);
+
+        // @ts-ignore Types are wrong.
+        if (name === 'template') p5.content = fragment(node.content, schema);
+
+        return p5
+      }
+    }
+
+    /**
+     * @param {Array.<Child>} children
+     * @param {P5Parent} p5
+     * @param {Schema} schema
+     * @returns {Array.<P5Child>}
+     */
+    function all$2(children, p5, schema) {
+      var index = -1;
+      /** @type {Array.<P5Child>} */
+      var result = [];
+      /** @type {P5Child} */
+      var child;
+
+      if (children) {
+        while (++index < children.length) {
+          // @ts-ignore Assume child.
+          child = one$2(children[index], schema);
+
+          // @ts-ignore types are wrong.
+          child.parentNode = p5;
+
+          result.push(child);
+        }
+      }
+
+      return result
+    }
+
+    /**
+     * Patch specific properties.
+     *
+     * @template {P5Node} T
+     * @param {Node} node
+     * @param {T} p5
+     * @returns {T}
+     */
+    function patch(node, p5) {
+      var position = node.position;
+
+      if (position && position.start && position.end) {
+        // @ts-ignore Types are wrong.
+        p5.sourceCodeLocation = {
+          startLine: position.start.line,
+          startCol: position.start.column,
+          startOffset: position.start.offset,
+          endLine: position.end.line,
+          endCol: position.end.column,
+          endOffset: position.end.offset
+        };
+      }
+
+      return p5
+    }
+
+    /**
+     * List of HTML void tag names.
+     *
+     * @type {Array<string>}
+     */
+    const htmlVoidElements = [
+      'area',
+      'base',
+      'basefont',
+      'bgsound',
+      'br',
+      'col',
+      'command',
+      'embed',
+      'frame',
+      'hr',
+      'image',
+      'img',
+      'input',
+      'isindex',
+      'keygen',
+      'link',
+      'menuitem',
+      'meta',
+      'nextid',
+      'param',
+      'source',
+      'track',
+      'wbr'
+    ];
+
+    /**
+     * @typedef {import('vfile').VFile} VFile
+     * @typedef {import('parse5').Document} P5Document
+     * @typedef {import('parse5').DocumentFragment} P5Fragment
+     * @typedef {Omit<import('parse5').Element, 'parentNode'>} P5Element
+     * @typedef {import('parse5').Attribute} P5Attribute
+     * @typedef {Omit<import('parse5').Location, 'startOffset' | 'endOffset'> & {startOffset: number|undefined, endOffset: number|undefined}} P5Location
+     * @typedef {import('parse5').ParserOptions} P5ParserOptions
+     * @typedef {import('hast').Root} Root
+     * @typedef {import('hast').DocType} Doctype
+     * @typedef {import('hast').Element} Element
+     * @typedef {import('hast').Text} Text
+     * @typedef {import('hast').Comment} Comment
+     * @typedef {import('hast').Content} Content
+     * @typedef {Root|Content} Node
+     * @typedef {import('../complex-types').Raw} Raw
+     *
+     * @typedef {Omit<Comment, 'value'> & {value: {stitch: Node}}} Stitch
+     *
+     * @typedef Options
+     * @property {Array.<string>} [passThrough]
+     *   List of custom hast node types to pass through (keep) in hast.
+     *   If the passed through nodes have children, those children are expected to
+     *   be hast and will be handled.
+     *
+     * @typedef HiddenTokenizer
+     * @property {Array.<HiddenLocationTracker>} __mixins
+     *   Way too simple, but works for us.
+     * @property {HiddenPreprocessor} preprocessor
+     * @property {(value: string) => void} write
+     * @property {() => number} _consume
+     * @property {Array.<HiddenToken>} tokenQueue
+     * @property {string} state
+     * @property {string} returnState
+     * @property {number} charRefCode
+     * @property {Array.<number>} tempBuff
+     * @property {Function} _flushCodePointsConsumedAsCharacterReference
+     * @property {string} lastStartTagName
+     * @property {number} consumedAfterSnapshot
+     * @property {boolean} active
+     * @property {HiddenToken|undefined} currentCharacterToken
+     * @property {HiddenToken|undefined} currentToken
+     * @property {unknown} currentAttr
+     * @property {Function} NAMED_CHARACTER_REFERENCE_STATE
+     * @property {Function} NUMERIC_CHARACTER_REFERENCE_END_STATE
+     *
+     * @typedef {Object.<string, unknown> & {location: P5Location}} HiddenToken
+     *
+     * @typedef HiddenPreprocessor
+     * @property {string|undefined} html
+     * @property {number} pos
+     * @property {number} lastGapPos
+     * @property {number} lastCharPos
+     * @property {Array.<number>} gapStack
+     * @property {boolean} skipNextNewLine
+     * @property {boolean} lastChunkWritten
+     * @property {boolean} endOfChunkHit
+     *
+     * @typedef HiddenLocationTracker
+     * @property {P5Location|undefined} currentAttrLocation
+     * @property {P5Location} ctLoc
+     * @property {HiddenPosTracker} posTracker
+     *
+     * @typedef HiddenPosTracker
+     * @property {boolean} isEol
+     * @property {number} lineStartPos
+     * @property {number} droppedBufferSize
+     * @property {number} offset
+     * @property {number} col
+     * @property {number} line
+     */
+
+    const inTemplateMode = 'IN_TEMPLATE_MODE';
+    const dataState = 'DATA_STATE';
+    const characterToken = 'CHARACTER_TOKEN';
+    const startTagToken = 'START_TAG_TOKEN';
+    const endTagToken = 'END_TAG_TOKEN';
+    const commentToken = 'COMMENT_TOKEN';
+    const doctypeToken = 'DOCTYPE_TOKEN';
+
+    /** @type {P5ParserOptions} */
+    const parseOptions = {sourceCodeLocationInfo: true, scriptingEnabled: false};
+
+    /**
+     * Given a hast tree and an optional vfile (for positional info), return a new
+     * parsed-again hast tree.
+     *
+     * @param tree
+     *   Original hast tree.
+     * @param file
+     *   Virtual file for positional info, optional.
+     * @param options
+     *   Configuration.
+     */
+    const raw$1 =
+      /**
+       * @type {(
+       *   ((tree: Node, file: VFile|undefined, options?: Options) => Node) &
+       *   ((tree: Node, options?: Options) => Node)
+       * )}
+       */
+      (
+        /**
+         * @param {Node} tree
+         * @param {VFile} [file]
+         * @param {Options} [options]
+         */
+        function (tree, file, options) {
+          let index = -1;
+          const parser = new parser$2(parseOptions);
+          const one = zwitch('type', {
+            // @ts-expect-error: hush.
+            handlers: {root, element, text, comment, doctype, raw: handleRaw},
+            // @ts-expect-error: hush.
+            unknown
+          });
+          /** @type {boolean|undefined} */
+          let stitches;
+          /** @type {HiddenTokenizer|undefined} */
+          let tokenizer;
+          /** @type {HiddenPreprocessor|undefined} */
+          let preprocessor;
+          /** @type {HiddenPosTracker|undefined} */
+          let posTracker;
+          /** @type {HiddenLocationTracker|undefined} */
+          let locationTracker;
+
+          if (isOptions(file)) {
+            options = file;
+            file = undefined;
+          }
+
+          if (options && options.passThrough) {
+            while (++index < options.passThrough.length) {
+              // @ts-expect-error: hush.
+              one.handlers[options.passThrough[index]] = stitch;
+            }
+          }
+
+          const result = fromParse5(
+            documentMode(tree) ? document() : fragment(),
+            file
+          );
+
+          if (stitches) {
+            visit$1(result, 'comment', (node, index, parent) => {
+              const stitch = /** @type {Stitch} */ (/** @type {unknown} */ (node));
+              if (stitch.value.stitch && parent !== null && index !== null) {
+                // @ts-expect-error: assume the stitch is allowed.
+                parent.children[index] = stitch.value.stitch;
+                return index
+              }
+            });
+          }
+
+          // Unpack if possible and when not given a `root`.
+          if (
+            tree.type !== 'root' &&
+            result.type === 'root' &&
+            result.children.length === 1
+          ) {
+            return result.children[0]
+          }
+
+          return result
+
+          /**
+           * @returns {P5Fragment}
+           */
+          function fragment() {
+            /** @type {P5Element} */
+            const context = {
+              nodeName: 'template',
+              tagName: 'template',
+              attrs: [],
+              namespaceURI: webNamespaces.html,
+              childNodes: []
+            };
+            /** @type {P5Element} */
+            const mock = {
+              nodeName: 'documentmock',
+              tagName: 'documentmock',
+              attrs: [],
+              namespaceURI: webNamespaces.html,
+              childNodes: []
+            };
+            /** @type {P5Fragment} */
+            const doc = {nodeName: '#document-fragment', childNodes: []};
+
+            parser._bootstrap(mock, context);
+            parser._pushTmplInsertionMode(inTemplateMode);
+            parser._initTokenizerForFragmentParsing();
+            parser._insertFakeRootElement();
+            parser._resetInsertionMode();
+            parser._findFormInFragmentContext();
+
+            tokenizer = parser.tokenizer;
+            /* c8 ignore next */
+            if (!tokenizer) throw new Error('Expected `tokenizer`')
+            preprocessor = tokenizer.preprocessor;
+            locationTracker = tokenizer.__mixins[0];
+            posTracker = locationTracker.posTracker;
+
+            one(tree);
+
+            parser._adoptNodes(mock.childNodes[0], doc);
+
+            return doc
+          }
+
+          /**
+           * @returns {P5Document}
+           */
+          function document() {
+            /** @type {P5Document} */
+            const doc = parser.treeAdapter.createDocument();
+
+            parser._bootstrap(doc, undefined);
+            tokenizer = parser.tokenizer;
+            /* c8 ignore next */
+            if (!tokenizer) throw new Error('Expected `tokenizer`')
+            preprocessor = tokenizer.preprocessor;
+            locationTracker = tokenizer.__mixins[0];
+            posTracker = locationTracker.posTracker;
+
+            one(tree);
+
+            return doc
+          }
+
+          /**
+           * @param {Content[]} nodes
+           * @returns {void}
+           */
+          function all(nodes) {
+            let index = -1;
+
+            /* istanbul ignore else - invalid nodes, see rehypejs/rehype-raw#7. */
+            if (nodes) {
+              while (++index < nodes.length) {
+                one(nodes[index]);
+              }
+            }
+          }
+
+          /**
+           * @param {Root} node
+           * @returns {void}
+           */
+          function root(node) {
+            all(node.children);
+          }
+
+          /**
+           * @param {Element} node
+           * @returns {void}
+           */
+          function element(node) {
+            resetTokenizer();
+            parser._processToken(startTag(node), webNamespaces.html);
+
+            all(node.children);
+
+            if (!htmlVoidElements.includes(node.tagName)) {
+              resetTokenizer();
+              parser._processToken(endTag(node));
+            }
+          }
+
+          /**
+           * @param {Text} node
+           * @returns {void}
+           */
+          function text(node) {
+            resetTokenizer();
+            parser._processToken({
+              type: characterToken,
+              chars: node.value,
+              location: createParse5Location(node)
+            });
+          }
+
+          /**
+           * @param {Doctype} node
+           * @returns {void}
+           */
+          function doctype(node) {
+            resetTokenizer();
+            parser._processToken({
+              type: doctypeToken,
+              name: 'html',
+              forceQuirks: false,
+              publicId: '',
+              systemId: '',
+              location: createParse5Location(node)
+            });
+          }
+
+          /**
+           * @param {Comment|Stitch} node
+           * @returns {void}
+           */
+          function comment(node) {
+            resetTokenizer();
+            parser._processToken({
+              type: commentToken,
+              data: node.value,
+              location: createParse5Location(node)
+            });
+          }
+
+          /**
+           * @param {Raw} node
+           * @returns {void}
+           */
+          function handleRaw(node) {
+            const start = pointStart(node);
+            const line = start.line || 1;
+            const column = start.column || 1;
+            const offset = start.offset || 0;
+
+            /* c8 ignore next 4 */
+            if (!preprocessor) throw new Error('Expected `preprocessor`')
+            if (!tokenizer) throw new Error('Expected `tokenizer`')
+            if (!posTracker) throw new Error('Expected `posTracker`')
+            if (!locationTracker) throw new Error('Expected `locationTracker`')
+
+            // Reset preprocessor:
+            // See: <https://github.com/inikulin/parse5/blob/9c683e1/packages/parse5/lib/tokenizer/preprocessor.js>.
+            preprocessor.html = undefined;
+            preprocessor.pos = -1;
+            preprocessor.lastGapPos = -1;
+            preprocessor.lastCharPos = -1;
+            preprocessor.gapStack = [];
+            preprocessor.skipNextNewLine = false;
+            preprocessor.lastChunkWritten = false;
+            preprocessor.endOfChunkHit = false;
+
+            // Reset preprocessor mixin:
+            // See: <https://github.com/inikulin/parse5/blob/9c683e1/packages/parse5/lib/extensions/position-tracking/preprocessor-mixin.js>.
+            posTracker.isEol = false;
+            posTracker.lineStartPos = -column + 1; // Looks weird, but ensures we get correct positional info.
+            posTracker.droppedBufferSize = offset;
+            posTracker.offset = 0;
+            posTracker.col = 1;
+            posTracker.line = line;
+
+            // Reset location tracker:
+            // See: <https://github.com/inikulin/parse5/blob/9c683e1/packages/parse5/lib/extensions/location-info/tokenizer-mixin.js>.
+            locationTracker.currentAttrLocation = undefined;
+            locationTracker.ctLoc = createParse5Location(node);
+
+            // See the code for `parse` and `parseFragment`:
+            // See: <https://github.com/inikulin/parse5/blob/9c683e1/packages/parse5/lib/parser/index.js#L371>.
+            tokenizer.write(node.value);
+            parser._runParsingLoop(null);
+
+            // Character references hang, so if we ended there, we need to flush
+            // those too.
+            // We reset the preprocessor as if the document ends here.
+            // Then one single call to the relevant state does the trick, parse5
+            // consumes the whole token.
+            if (
+              tokenizer.state === 'NAMED_CHARACTER_REFERENCE_STATE' ||
+              tokenizer.state === 'NUMERIC_CHARACTER_REFERENCE_END_STATE'
+            ) {
+              preprocessor.lastChunkWritten = true;
+              tokenizer[tokenizer.state](tokenizer._consume());
+            }
+
+            // Process final characters if they’re still there after hibernating.
+            // Similar to:
+            // See: <https://github.com/inikulin/parse5/blob/9c683e1/packages/parse5/lib/extensions/location-info/tokenizer-mixin.js#L95>.
+            const token = tokenizer.currentCharacterToken;
+
+            if (token) {
+              token.location.endLine = posTracker.line;
+              token.location.endCol = posTracker.col + 1;
+              token.location.endOffset = posTracker.offset + 1;
+              parser._processToken(token);
+            }
+          }
+
+          /**
+           * @param {Node} node
+           */
+          function stitch(node) {
+            stitches = true;
+
+            /** @type {Node} */
+            let clone;
+
+            // Recurse, because to somewhat handle `[<x>]</x>` (where `[]` denotes the
+            // passed through node).
+            if ('children' in node) {
+              clone = {
+                ...node,
+                children: raw$1(
+                  {type: 'root', children: node.children},
+                  file,
+                  options
+                  // @ts-expect-error Assume a given parent yields a parent.
+                ).children
+              };
+            } else {
+              clone = {...node};
+            }
+
+            // Hack: `value` is supposed to be a string, but as none of the tools
+            // (`parse5` or `hast-util-from-parse5`) looks at it, we can pass nodes
+            // through.
+            comment({type: 'comment', value: {stitch: clone}});
+          }
+
+          function resetTokenizer() {
+            /* c8 ignore next */
+            if (!tokenizer) throw new Error('Expected `tokenizer`')
+
+            // Reset tokenizer:
+            // See: <https://github.com/inikulin/parse5/blob/9c683e1/packages/parse5/lib/tokenizer/index.js#L218-L234>.
+            // Especially putting it back in the `data` state is useful: some elements,
+            // like textareas and iframes, change the state.
+            // See GH-7.
+            // But also if broken HTML is in `raw`, and then a correct element is given.
+            // See GH-11.
+            tokenizer.tokenQueue = [];
+            tokenizer.state = dataState;
+            tokenizer.returnState = '';
+            tokenizer.charRefCode = -1;
+            tokenizer.tempBuff = [];
+            tokenizer.lastStartTagName = '';
+            tokenizer.consumedAfterSnapshot = -1;
+            tokenizer.active = false;
+            tokenizer.currentCharacterToken = undefined;
+            tokenizer.currentToken = undefined;
+            tokenizer.currentAttr = undefined;
+          }
+        }
+      );
+    /**
+     * @param {Element} node
+     * @returns {HiddenToken}
+     */
+    function startTag(node) {
+      /** @type {P5Location} */
+      const location = Object.assign(createParse5Location(node));
+      // @ts-expect-error extra positional info.
+      location.startTag = Object.assign({}, location);
+
+      // Untyped token.
+      return {
+        type: startTagToken,
+        tagName: node.tagName,
+        selfClosing: false,
+        attrs: attributes$1(node),
+        location
+      }
+    }
+
+    /**
+     * @param {Element} node
+     * @returns {Array.<P5Attribute>}
+     */
+    function attributes$1(node) {
+      return toParse5({
+        tagName: node.tagName,
+        type: 'element',
+        properties: node.properties,
+        children: []
+        // @ts-expect-error Assume element.
+      }).attrs
+    }
+
+    /**
+     * @param {Element} node
+     * @returns {HiddenToken}
+     */
+    function endTag(node) {
+      /** @type {P5Location} */
+      const location = Object.assign(createParse5Location(node));
+      // @ts-expect-error extra positional info.
+      location.startTag = Object.assign({}, location);
+
+      // Untyped token.
+      return {
+        type: endTagToken,
+        tagName: node.tagName,
+        attrs: [],
+        location
+      }
+    }
+
+    /**
+     * @param {Node} node
+     */
+    function unknown(node) {
+      throw new Error('Cannot compile `' + node.type + '` node')
+    }
+
+    /**
+     * @param {Node} node
+     * @returns {boolean}
+     */
+    function documentMode(node) {
+      const head = node.type === 'root' ? node.children[0] : node;
+      return Boolean(
+        head &&
+          (head.type === 'doctype' ||
+            (head.type === 'element' && head.tagName === 'html'))
+      )
+    }
+
+    /**
+     * @param {Node|Stitch} node
+     * @returns {P5Location}
+     */
+    function createParse5Location(node) {
+      const start = pointStart(node);
+      const end = pointEnd(node);
+
+      return {
+        startLine: start.line,
+        startCol: start.column,
+        startOffset: start.offset,
+        endLine: end.line,
+        endCol: end.column,
+        endOffset: end.offset
+      }
+    }
+
+    /**
+     * @param {VFile|Options|undefined} value
+     * @return {value is Options}
+     */
+    function isOptions(value) {
+      return Boolean(value && !('message' in value && 'messages' in value))
+    }
+
+    /**
+     * @typedef {import('hast').Root} Root
+     * @typedef {import('hast-util-raw').Options} Options
+     * @typedef {import('hast-util-raw')} DoNotTouchAsThisImportIncludesRawInTree
+     */
+
+    /**
+     * Plugin to parse the tree again (and raw nodes).
+     * Keeping positional info OK.  🙌
+     *
+     * @type {import('unified').Plugin<[Options?] | Array<void>, Root>}
+     */
+    function rehypeRaw(options = {}) {
+      return (tree, file) => {
+        // Assume that when a root was given, it’s also returned.
+        const result = /** @type {Root} */ (raw$1(tree, file, options));
+        return result
+      }
     }
 
     const rtlRange = '\u0591-\u07FF\uFB1D-\uFDFD\uFE70-\uFEFC';
@@ -46836,7 +48324,7 @@
         state.language !== undefined &&
         state.language !== null &&
         // @ts-expect-error never `selectors`.
-        extendedFilter(state.language, parse$3(query.value)).length > 0
+        extendedFilter(state.language, parse$4(query.value)).length > 0
       )
     }
 
@@ -48521,37 +50009,6 @@
         };
     };
     var rehypeRewrite = remarkRewrite;
-
-    /**
-     * List of HTML void tag names.
-     *
-     * @type {Array<string>}
-     */
-    const htmlVoidElements = [
-      'area',
-      'base',
-      'basefont',
-      'bgsound',
-      'br',
-      'col',
-      'command',
-      'embed',
-      'frame',
-      'hr',
-      'image',
-      'img',
-      'input',
-      'isindex',
-      'keygen',
-      'link',
-      'menuitem',
-      'meta',
-      'nextid',
-      'param',
-      'source',
-      'track',
-      'wbr'
-    ];
 
     /**
      * @typedef {import('../../types.js').Comment} Comment
@@ -74695,6 +76152,7 @@
             .use(options.remarkPlugins || [])
             .use(remarkRehype$1, __assign(__assign({}, options.remarkRehypeOptions), { allowDangerousHtml: true }))
             .use(rehypeVideo)
+            .use(rehypeRaw)
             .use(m, { ignoreMissing: true })
             .use(rehypeAttrs$1, { properties: 'attr' })
             .use(rehypeRewrite, {
@@ -74717,12 +76175,12 @@
                     }
                     if (/^katex/.test(code.toLocaleLowerCase())) {
                         node.properties.className = ['math', 'math-inline'];
-                        node.children = node.children.map(function (node) {
-                            if (node.type === 'text') {
-                                node.value = node.value.replace(/^KaTeX:(\s.)?/i, '');
-                            }
-                            return node;
-                        });
+                        node.children = [
+                            {
+                                type: 'text',
+                                value: code.replace(/^KaTeX:(\s.)?/i, ''),
+                            },
+                        ];
                     }
                 }
                 if (options.rewrite && typeof options.rewrite === 'function') {
