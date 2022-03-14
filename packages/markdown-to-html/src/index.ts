@@ -11,6 +11,8 @@ import rehypeRewrite, { RehypeRewriteOptions, getCodeString } from 'rehype-rewri
 import stringify from 'rehype-stringify';
 import rehypePrism from 'rehype-prism-plus';
 
+export { getCodeString };
+
 export interface Options {
   /** [remark-rehype](https://github.com/remarkjs/remark-rehype) options */
   remarkRehypeOptions?: RemarkRehypeOptions;

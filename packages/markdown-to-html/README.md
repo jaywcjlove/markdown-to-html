@@ -47,10 +47,9 @@ CDN: [UNPKG](https://unpkg.com/@wcj/markdown-to-html/dist/) | [jsDelivr](https:/
 
 ```ts
 import { PluggableList } from 'unified';
-import { ElementContent } from 'hast';
 import { Options as RemarkRehypeOptions } from 'remark-rehype';
-import { RehypeRewriteOptions } from 'rehype-rewrite';
-export declare const getCodeString: (data?: ElementContent[], code?: string) => string;
+import { RehypeRewriteOptions, getCodeString } from 'rehype-rewrite';
+export { getCodeString };
 export interface Options {
   /** [remark-rehype](https://github.com/remarkjs/remark-rehype) options */
   remarkRehypeOptions?: RemarkRehypeOptions;
