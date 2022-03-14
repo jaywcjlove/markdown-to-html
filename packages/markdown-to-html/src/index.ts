@@ -1,6 +1,5 @@
 import { VFile } from 'vfile';
 import { unified, PluggableList } from 'unified';
-import { ElementContent } from 'hast';
 import remarkGfm from 'remark-gfm';
 import rehypeAttrs from 'rehype-attr';
 import remarkParse from 'remark-parse';
@@ -8,20 +7,9 @@ import remarkRehype, { Options as RemarkRehypeOptions } from 'remark-rehype';
 import rehypeVideo from 'rehype-video';
 import rehypeKatex from 'rehype-katex';
 import rehypeRaw from 'rehype-raw';
-import rehypeRewrite, { RehypeRewriteOptions } from 'rehype-rewrite';
+import rehypeRewrite, { RehypeRewriteOptions, getCodeString } from 'rehype-rewrite';
 import stringify from 'rehype-stringify';
 import rehypePrism from 'rehype-prism-plus';
-
-export const getCodeString = (data: ElementContent[] = [], code: string = '') => {
-  data.forEach((node) => {
-    if (node.type === 'text') {
-      code += node.value;
-    } else if (node.type === 'element' && node.children && Array.isArray(node.children)) {
-      code += getCodeString(node.children);
-    }
-  });
-  return code;
-};
 
 export interface Options {
   /** [remark-rehype](https://github.com/remarkjs/remark-rehype) options */
