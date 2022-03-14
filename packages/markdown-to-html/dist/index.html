@@ -19,30 +19,69 @@
     body {
       padding: 25px;
     }
-    @media (prefers-color-scheme: dark) {
-      html {
-        color-scheme: dark;
-        --color-canvas-default: #0d1117;
-      }
-    }
-    @media (prefers-color-scheme: light) {
-      html {
-        color-scheme: light;
-        --color-canvas-default: #ffffff;
-      }
-    }
-    @media (prefers-color-scheme: dark) {
-      .body {
-        color-scheme: dark;
-        background-color: var(--color-canvas-default);
-      }
-    }
     .math.math-inline {
       background-color: transparent;
     }
+
+    @media (prefers-color-scheme: dark) {
+      body {
+        color-scheme: dark;
+        --color-thme-bg: #0d1117;
+        --color-thme-text: #fff;
+        background-color: var(--color-thme-bg);
+        color: var(--color-thme-text);
+      }
+    }
+
+    @media (prefers-color-scheme: light) {
+      body {
+        color-scheme: light;
+        --color-thme-bg: #fff;
+        --color-thme-text: #0d1117;
+        background-color: var(--color-thme-bg);
+        color: var(--color-thme-text);
+      }
+    }
+
+    [data-color-mode*='dark'],
+    body[data-color-mode*='dark'] {
+      color-scheme: dark;
+      --color-thme-bg: #0d1117;
+      --color-thme-text: #fff;
+      background-color: var(--color-thme-bg);
+      color: var(--color-thme-text);
+    }
+
+    [data-color-mode*='light'],
+    body[data-color-mode*='light'] {
+      color-scheme: light;
+      --color-thme-bg: #fff;
+      --color-thme-text: #282c34;
+      background-color: var(--color-thme-bg);
+      color: var(--color-thme-text);
+    }
+
+    .theme {
+      user-select: none;
+      -webkit-user-select: none;
+    }
   </style>
 </head>
-<body>
+<body data-color-mode="dart">
+  <label class="theme">
+    <input type="checkbox" checked onchange="changeTheme(this)" />
+    <span>🌒 Dart</span>
+  </label>
+  <script>
+    function changeTheme(evn) {
+      if (evn.checked) {
+        document.body.setAttribute('data-color-mode', 'dart')
+      } else {
+        document.body.setAttribute('data-color-mode', 'light')
+      }
+      evn.nextElementSibling.innerHTML = evn.checked ? '🌒 Dart' : '🌞 Light'
+    }
+  </script>
   <script>
     ;(() => {
       const str = `# Markdown to HTML
@@ -66,7 +105,8 @@ Converts markdown text to HTML. [Github Source](https://github.com/jaywcjlove/ma
 \`\`\`typescript
 import { PluggableList } from 'unified';
 import { Options as RemarkRehypeOptions } from 'remark-rehype';
-import { RehypeRewriteOptions } from 'rehype-rewrite';
+import { RehypeRewriteOptions, getCodeString } from 'rehype-rewrite';
+export { getCodeString };
 export interface Options {
   /** [remark-rehype](https://github.com/remarkjs/remark-rehype) options */
   remarkRehypeOptions?: RemarkRehypeOptions;
