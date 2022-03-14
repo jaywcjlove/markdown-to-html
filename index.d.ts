@@ -1,6 +1,7 @@
 import { PluggableList } from 'unified';
 import { Options as RemarkRehypeOptions } from 'remark-rehype';
-import { RehypeRewriteOptions } from 'rehype-rewrite';
+import { RehypeRewriteOptions, getCodeString } from 'rehype-rewrite';
+export { getCodeString };
 export interface Options {
     /** [remark-rehype](https://github.com/remarkjs/remark-rehype) options */
     remarkRehypeOptions?: RemarkRehypeOptions;
