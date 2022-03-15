@@ -7,6 +7,7 @@
   <title>Convert HTML to Markdown</title>
   <link rel="stylesheet" href="marked.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.0/dist/katex.min.css">
+  <script src="https://unpkg.com/@wcj/dark-mode" defer></script>
   <script type="text/javascript" src="./markdown.js"></script>
   <style>
     body, html {
@@ -15,73 +16,16 @@
       min-height: 100%;
       cursor: default;
     }
-
     body {
       padding: 25px;
     }
     .math.math-inline {
       background-color: transparent;
     }
-
-    @media (prefers-color-scheme: dark) {
-      body {
-        color-scheme: dark;
-        --color-thme-bg: #0d1117;
-        --color-thme-text: #fff;
-        background-color: var(--color-thme-bg);
-        color: var(--color-thme-text);
-      }
-    }
-
-    @media (prefers-color-scheme: light) {
-      body {
-        color-scheme: light;
-        --color-thme-bg: #fff;
-        --color-thme-text: #0d1117;
-        background-color: var(--color-thme-bg);
-        color: var(--color-thme-text);
-      }
-    }
-
-    [data-color-mode*='dark'],
-    body[data-color-mode*='dark'] {
-      color-scheme: dark;
-      --color-thme-bg: #0d1117;
-      --color-thme-text: #fff;
-      background-color: var(--color-thme-bg);
-      color: var(--color-thme-text);
-    }
-
-    [data-color-mode*='light'],
-    body[data-color-mode*='light'] {
-      color-scheme: light;
-      --color-thme-bg: #fff;
-      --color-thme-text: #282c34;
-      background-color: var(--color-thme-bg);
-      color: var(--color-thme-text);
-    }
-
-    .theme {
-      user-select: none;
-      -webkit-user-select: none;
-    }
   </style>
 </head>
 <body data-color-mode="dart">
-  <label class="theme">
-    <input type="checkbox" checked onchange="changeTheme(this)" />
-    <span>🌒 Dart</span>
-  </label>
-  <script>
-    function changeTheme(evn) {
-      if (evn.checked) {
-        document.body.setAttribute('data-color-mode', 'dart')
-      } else {
-        document.body.setAttribute('data-color-mode', 'light')
-      }
-      evn.nextElementSibling.innerHTML = evn.checked ? '🌒 Dart' : '🌞 Light'
-    }
-  </script>
+  <dark-mode></dark-mode>
   <script>
     ;(() => {
       const str = `# Markdown to HTML
