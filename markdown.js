@@ -76162,7 +76162,6 @@
                     var code = getCodeString(node.children);
                     if (found && node.properties) {
                         if (Array.isArray(node.properties.className)) {
-                            console.log(parent);
                             if (parent && parent.type === 'element' && parent.properties) {
                                 parent.properties.className = ['language-katex'];
                             }
