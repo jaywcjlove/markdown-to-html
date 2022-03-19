@@ -38,7 +38,7 @@
     "rehype-raw": "~6.1.1",
     "rehype-rewrite": "~3.0.6",
     "rehype-stringify": "~9.0.3",
-    "rehype-video": "~1.1.2",
+    "rehype-video": "~1.2.0",
     "remark-gfm": "~3.0.1",
     "remark-parse": "^10.0.0",
     "remark-rehype": "^10.0.0",
