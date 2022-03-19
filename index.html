@@ -177,7 +177,7 @@ $ npm i @wcj/markdown-to-html
 import markdown, { getCodeString } from '@wcj/markdown-to-html';
 
 markdown('# Markdown String')
-// => <h1>Markdown String<\/h1>
+// => <h1>Markdown String</h1>
 \`\`\`
 
 Or manually download and link \`markdown-to-html\` in your HTML, It can also be downloaded via [UNPKG](https://unpkg.com/browse/@wcj/markdown-to-html/):
@@ -188,7 +188,7 @@ CDN: [UNPKG](https://unpkg.com/@wcj/markdown-to-html/dist/) | [jsDelivr](https:/
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.0/dist/katex.min.css">
 <link rel="stylesheet" href="https://unpkg.com/@wcj/markdown-to-html/dist/marked.css">
 
-<script src="https://unpkg.com/@wcj/markdown-to-html/dist/markdown.min.js"><\/script>
+<script src="https://unpkg.com/@wcj/markdown-to-html/dist/markdown.min.js"></script>
 <script type="text/javascript">
   ;(() => {
     const str = '# Markdown to HTML\n\nConverts markdown text to HTML.\n\n';
@@ -197,7 +197,7 @@ CDN: [UNPKG](https://unpkg.com/@wcj/markdown-to-html/dist/) | [jsDelivr](https:/
     div.innerHTML = markdown.default(str)
     document.body.appendChild(div)
   })()
-<\/script>
+</script>
 \`\`\`
 
 ## API
@@ -245,7 +245,7 @@ Here is a simple footnote[^1]. With some additional text after it.
 
 ### Support for [KaTeX](https://github.com/Khan/KaTeX)
 
-Support markdown syntax to render math. You can combine it with [KaTeX](https://github.com/Khan/KaTeX) in markdown, add <kbd>\\`KaTeX:string\\`<\/kbd> and <kbd>\\`\\`\\`markdown<\/kbd> classes in markdown.
+Support markdown syntax to render math. You can combine it with [KaTeX](https://github.com/Khan/KaTeX) in markdown, add <kbd>\\`KaTeX:string\\`</kbd> and <kbd>\\`\\`\\`markdown</kbd> classes in markdown.
 
 \`\`\`markdown
 \\`KaTeX:c = \\pm\\sqrt{a^2 + b^2}\\`
@@ -265,7 +265,7 @@ As always, thanks to our amazing contributors!
 
 <a href="https://github.com/jaywcjlove/markdown-to-html/graphs/contributors">
   <img src="https://jaywcjlove.github.io/markdown-to-html/CONTRIBUTORS.svg" />
-<\/a>
+</a>
 
 Made with [github-action-contributors](https://github.com/jaywcjlove/github-action-contributors).
 
