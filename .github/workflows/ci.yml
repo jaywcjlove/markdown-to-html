@@ -35,6 +35,19 @@ jobs:
         id: tag_version
         uses: jaywcjlove/changelog-generator@v1.5.0
 
+
+      - run: mkdir -p website
+      - run: cp -rp packages/markdown-to-html/dist/*.js website
+      - run: cp -rp packages/markdown-to-html/dist/*.css website
+
+      - name: 🌐 Generate Documentation Website
+        uses: jaywcjlove/action-ejs@main
+        with:
+          template-file: packages/markdown-to-html/dist/index.html
+          output: website/index.html
+          vars-file: |
+            { "markdownString": "./README.md" }
+
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
