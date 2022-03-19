@@ -11414,7 +11414,7 @@
      */
 
     /**
-     * @returns {Array.<FromMarkdownExtension>}
+     * @returns {Array<FromMarkdownExtension>}
      */
     function gfmFromMarkdown() {
       return [
@@ -14791,20 +14791,19 @@
 
     /**
      * @typedef {import('unist').Position} Position
+     * @typedef {import('unist').Node} Node
+     * @typedef {Record<string, unknown> & {type: string, position?: PositionLike|undefined}} NodeLike
      * @typedef {import('unist').Point} Point
      *
      * @typedef {Partial<Point>} PointLike
      *
-     * @typedef {Object} PositionLike
+     * @typedef PositionLike
      * @property {PointLike} [start]
      * @property {PointLike} [end]
-     *
-     * @typedef {Object} NodeLike
-     * @property {PositionLike} [position]
      */
 
-    var pointStart = point$1('start');
-    var pointEnd = point$1('end');
+    const pointStart = point$1('start');
+    const pointEnd = point$1('end');
 
     /**
      * Get the positional info of `node`.
@@ -14822,8 +14821,8 @@
        */
       function point(node) {
         /** @type {Point} */
-        // @ts-ignore looks like a point
-        var point = (node && node.position && node.position[type]) || {};
+        // @ts-expect-error looks like a point
+        const point = (node && node.position && node.position[type]) || {};
 
         return {
           line: point.line || null,

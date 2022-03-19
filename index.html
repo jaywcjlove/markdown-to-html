@@ -140,22 +140,27 @@ L = \\frac{1}{2} \\rho v^2 S C_L
 ## Contributors
 
 As always, thanks to our amazing contributors!
+
 <script>alert('sss')<\/script>
 <a href="https://github.com/jaywcjlove/markdown-to-html/graphs/contributors">
   <img src="https://jaywcjlove.github.io/markdown-to-html/CONTRIBUTORS.svg" \/>
 <\/a>
-
-Made with [github-action-contributors](https://github.com/jaywcjlove/github-action-contributors).
-
-## License
-
-Licensed under the [MIT License](https://opensource.org/licenses/MIT).
-
     `;
     const div = document.createElement('div');
     div.className = 'markdown-body';
     div.innerHTML = markdown.default(str)
     document.body.appendChild(div)
+  </script>
+  <br />
+  <br />
+  <script>
+    ;(() => {
+      const readmestr = `<%- markdownString.replace(/\`/g, '\\\`').replace(/<\//g, '<\\/').replace(/\$\{/g, '$\\{') %>`;
+      const div = document.createElement('div');
+      div.className = 'markdown-body';
+      div.innerHTML = markdown.default(readmestr)
+      document.body.appendChild(div)
+    })();
   </script>
   <br />
 </body>
