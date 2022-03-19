@@ -46,7 +46,7 @@ jobs:
           template-file: packages/markdown-to-html/dist/index.html
           output: website/index.html
           vars-file: |
-            { "markdownString": "./README.md" }
+            { "markdownString": "./packages/markdown-to-html/README.md" }
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
