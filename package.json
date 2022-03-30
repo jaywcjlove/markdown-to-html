@@ -3,6 +3,7 @@
   "scripts": {
     "prepare": "husky install",
     "build": "lerna exec \"npm run build\" --scope @wcj/*",
+    "build:lib": "lerna exec --scope @wcj/* -- tsbb build",
     "watch": "lerna exec \"npm run start\" --scope @wcj/markdown-to-html",
     "version": "lerna version --exact --force-publish --no-push --no-git-tag-version",
     "remove": "lerna exec \"rm -rf node_modules build package-lock.json\"",
@@ -38,6 +39,7 @@
     "husky": "~7.0.4",
     "lerna": "~4.0.0",
     "lint-staged": "~12.3.5",
-    "prettier": "~2.5.1"
+    "prettier": "~2.5.1",
+    "tsbb": "~3.7.2"
   }
 }

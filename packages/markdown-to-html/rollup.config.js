@@ -11,39 +11,9 @@ export default [
     input: 'src/index.ts',
     output: [
       {
-        file: pkg.main,
-        format: 'cjs',
-        name: 'markdown',
-        exports: 'auto',
-        banner: banner.multibanner(),
-        sourcemap: true,
-      },
-      {
-        file: pkg.module,
-        format: 'es',
-        name: 'markdown',
-        banner: banner.multibanner(),
-        sourcemap: true,
-      },
-    ],
-    plugins: [
-      json(),
-      nodeResolve({
-        browser: true,
-      }),
-      typescript({
-        tsconfig: './tsconfig.json',
-      }),
-      commonjs(),
-    ],
-  },
-  {
-    input: 'src/index.ts',
-    output: [
-      {
         file: pkg.unpkg,
         format: 'umd',
-        // format: 'iife',
+        exports: 'named',
         name: 'markdown',
         banner: banner.multibanner(),
         sourcemap: true,
@@ -56,6 +26,10 @@ export default [
       }),
       typescript({
         tsconfig: './tsconfig.json',
+        compilerOptions: {
+          outDir: 'dist',
+          declarationDir: '.',
+        },
       }),
       commonjs(),
     ],
@@ -66,7 +40,7 @@ export default [
       {
         file: pkg.unpkg.replace(/.js$/, '.min.js'),
         format: 'umd',
-        // format: 'iife',
+        exports: 'named',
         name: 'markdown',
         banner: banner.onebanner(),
         sourcemap: true,
@@ -79,6 +53,10 @@ export default [
       }),
       typescript({
         tsconfig: './tsconfig.json',
+        compilerOptions: {
+          outDir: 'dist',
+          declarationDir: '.',
+        },
       }),
       terser({}),
       commonjs(),

@@ -8,6 +8,7 @@
   "module": "esm/index.js",
   "typings": "esm/index.d.ts",
   "unpkg": "dist/markdown.js",
+  "jsdelivr": "dist/vue.js",
   "scripts": {
     "build": "rollup -c rollup.config.js",
     "start": "rollup -c rollup.config.js -w"

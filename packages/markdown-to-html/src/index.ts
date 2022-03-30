@@ -26,7 +26,7 @@ export interface Options {
   rewrite?: RehypeRewriteOptions['rewrite'];
 }
 
-export default function markdown(markdownStr: string = '', options: Options = {}) {
+function markdown(markdownStr: string = '', options: Options = {}) {
   const processor = unified()
     .use(remarkParse)
     .use(remarkGfm)
@@ -90,3 +90,5 @@ export default function markdown(markdownStr: string = '', options: Options = {}
   }
   return processor.stringify(hastNode, file);
 }
+
+export default markdown;
