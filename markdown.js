@@ -50002,7 +50002,6 @@
             });
         };
     };
-    var rehypeRewrite = remarkRewrite;
 
     /**
      * @typedef {import('../../types.js').Comment} Comment
@@ -76136,7 +76135,7 @@
             .use(rehypeRaw)
             .use(m, { ignoreMissing: true })
             .use(rehypeAttrs$1, { properties: 'attr' })
-            .use(rehypeRewrite, {
+            .use(remarkRewrite, {
             rewrite: function (node, index, parent) {
                 if (node.type == 'element' && node.tagName === 'code') {
                     var _a = (node.properties || {}).className, className = _a === void 0 ? [] : _a;
