@@ -47753,27 +47753,22 @@
      * @typedef {Array<Tag>} Tags
      * @typedef {string} Range
      * @typedef {Array<Range>} Ranges
-     */
-
-    /**
+     *
      * @callback Check
      * @param {Tag} tag
      * @param {Range} range
      * @returns {boolean}
+     *
+     * @typedef {FilterOrLookup<true>} Filter
+     * @typedef {FilterOrLookup<false>} Lookup
      */
 
     /**
-     * @callback Filter
-     * @param {Tag|Tags} tag
-     * @param {Range|Ranges} [ranges]
-     * @returns {Tag}
-     */
-
-    /**
-     * @callback Lookup
-     * @param {Tag|Tags} tag
-     * @param {Range|Ranges} [ranges]
-     * @returns {Tag}
+     * @template {boolean} IsFilter
+     * @callback FilterOrLookup
+     * @param {Tag|Tags} tags
+     * @param {Range|Ranges} [ranges='*']
+     * @returns {IsFilter extends true ? Tags : Tag|undefined}
      */
 
     /**
@@ -47785,120 +47780,106 @@
      * iterates over tags.  That way, earlier ranges matching any tag have
      * precedence over later ranges.
      *
-     * @type {{
-     *   (check: Check, filter: true): Filter
-     *   (check: Check, filter?: false): Lookup
-     * }}
+     * @template {boolean} IsFilter
+     * @param {Check} check
+     * @param {IsFilter} filter
+     * @returns {FilterOrLookup<IsFilter>}
      */
-    // prettier-ignore
-    const factory = (
-      /**
-       * @param {Check} check
-       * @param {boolean} [filter=false]
-       */
-      function (check, filter) {
-        return match
+    function factory(check, filter) {
+      return function (tags, ranges) {
+        let left = cast(tags, 'tag');
+        const right = cast(
+          ranges === null || ranges === undefined ? '*' : ranges,
+          'range'
+        );
+        /** @type {Tags} */
+        const matches = [];
+        let rightIndex = -1;
 
-        /**
-         * @param {Tag|Tags} tags
-         * @param {Range|Ranges} [ranges='*']
-         * @returns {Tag|Tags|undefined}
-         */
-        function match(tags, ranges) {
-          let left = cast(tags, 'tag');
-          const right = cast(
-            ranges === null || ranges === undefined ? '*' : ranges,
-            'range'
-          );
+        while (++rightIndex < right.length) {
+          const range = right[rightIndex].toLowerCase();
+
+          // Ignore wildcards in lookup mode.
+          if (!filter && range === '*') continue
+
+          let leftIndex = -1;
           /** @type {Tags} */
-          const matches = [];
-          let rightIndex = -1;
+          const next = [];
 
-          while (++rightIndex < right.length) {
-            const range = right[rightIndex].toLowerCase();
-
-            // Ignore wildcards in lookup mode.
-            if (!filter && range === '*') continue
-
-            let leftIndex = -1;
-            /** @type {Tags} */
-            const next = [];
-
-            while (++leftIndex < left.length) {
-              if (check(left[leftIndex].toLowerCase(), range)) {
-                // Exit if this is a lookup and we have a match.
-                if (!filter) return left[leftIndex]
-                matches.push(left[leftIndex]);
-              } else {
-                next.push(left[leftIndex]);
+          while (++leftIndex < left.length) {
+            if (check(left[leftIndex].toLowerCase(), range)) {
+              // Exit if this is a lookup and we have a match.
+              if (!filter) {
+                return /** @type {IsFilter extends true ? Tags : Tag|undefined} */ (
+                  left[leftIndex]
+                )
               }
-            }
 
-            left = next;
+              matches.push(left[leftIndex]);
+            } else {
+              next.push(left[leftIndex]);
+            }
           }
 
-          // If this is a filter, return the list.  If it’s a lookup, we didn’t find
-          // a match, so return `undefined`.
-          return filter ? matches : undefined
+          left = next;
         }
+
+        // If this is a filter, return the list.  If it’s a lookup, we didn’t find
+        // a match, so return `undefined`.
+        return /** @type {IsFilter extends true ? Tags : Tag|undefined} */ (
+          filter ? matches : undefined
+        )
       }
-    );
+    }
 
     /**
      * Extended Filtering (Section 3.3.2) matches a language priority list
      * consisting of extended language ranges (Section 2.2) to sets of language
      * tags.
-     * @param {Tag|Tags} tags
-     * @param {Range|Ranges} [ranges]
-     * @returns {Tags}
      */
-    const extendedFilter = factory(
-      /** @type {Check} */
-      function (tag, range) {
-        // 3.3.2.1
-        const left = tag.split('-');
-        const right = range.split('-');
-        let leftIndex = 0;
-        let rightIndex = 0;
+    const extendedFilter = factory(function (tag, range) {
+      // 3.3.2.1
+      const left = tag.split('-');
+      const right = range.split('-');
+      let leftIndex = 0;
+      let rightIndex = 0;
 
-        // 3.3.2.2
-        if (right[rightIndex] !== '*' && left[leftIndex] !== right[rightIndex]) {
-          return false
+      // 3.3.2.2
+      if (right[rightIndex] !== '*' && left[leftIndex] !== right[rightIndex]) {
+        return false
+      }
+
+      leftIndex++;
+      rightIndex++;
+
+      // 3.3.2.3
+      while (rightIndex < right.length) {
+        // 3.3.2.3.A
+        if (right[rightIndex] === '*') {
+          rightIndex++;
+          continue
         }
 
-        leftIndex++;
-        rightIndex++;
+        // 3.3.2.3.B
+        if (!left[leftIndex]) return false
 
-        // 3.3.2.3
-        while (rightIndex < right.length) {
-          // 3.3.2.3.A
-          if (right[rightIndex] === '*') {
-            rightIndex++;
-            continue
-          }
-
-          // 3.3.2.3.B
-          if (!left[leftIndex]) return false
-
-          // 3.3.2.3.C
-          if (left[leftIndex] === right[rightIndex]) {
-            leftIndex++;
-            rightIndex++;
-            continue
-          }
-
-          // 3.3.2.3.D
-          if (left[leftIndex].length === 1) return false
-
-          // 3.3.2.3.E
+        // 3.3.2.3.C
+        if (left[leftIndex] === right[rightIndex]) {
           leftIndex++;
+          rightIndex++;
+          continue
         }
 
-        // 3.3.2.4
-        return true
-      },
-      true
-    );
+        // 3.3.2.3.D
+        if (left[leftIndex].length === 1) return false
+
+        // 3.3.2.3.E
+        leftIndex++;
+      }
+
+      // 3.3.2.4
+      return true
+    }, true);
 
     /**
      * Validate tags or ranges, and cast them to arrays.
