@@ -26,7 +26,16 @@ jobs:
       - run: mkdir -p website/lib
 
       - run: cp -rp packages/markdown-style/lib/*.js website/lib
-      - run: mv packages/markdown-style/demo.html website/style.html
+      
+      - name: action-ejs
+        uses: jaywcjlove/action-ejs@main
+        with:
+          template-file: packages/markdown-style/demo.html
+          output: website/style.html
+          vars-file: |
+            {
+              "markdownString": "./packages/markdown-style/README.md"
+            }
 
       - name: Generate Contributors Images
         uses: jaywcjlove/github-action-contributors@main

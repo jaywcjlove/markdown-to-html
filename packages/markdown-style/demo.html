@@ -12,7 +12,7 @@
 </head>
 <body>
   <dark-mode light="Light" dark="Dark"></dark-mode>
-  <github-corners href="https://github.com/jaywcjlove/markdown-to-html"></github-corners>
+  <github-corners target="__blank" href="https://github.com/jaywcjlove/markdown-to-html"></github-corners>
   <h1>Markdown Style Example</h1>
   <markdown-style>
 ```jsx
@@ -32,5 +32,6 @@ function Demo() {
     const mdstr = document.querySelector('markdown-style');
     mdstr.innerHTML = markdown.default(mdstr.textContent);
   </script>
+  <markdown-style><%= markdownString %></markdown-style>
 </body>
 </html>
