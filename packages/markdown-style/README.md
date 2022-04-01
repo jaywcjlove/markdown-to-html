@@ -2,16 +2,16 @@ Markdown Style
 ===
 
 [![CI](https://github.com/jaywcjlove/markdown-to-html/actions/workflows/ci.yml/badge.svg)](https://github.com/jaywcjlove/markdown-to-html/actions/workflows/ci.yml)
-[![jsDelivr CDN](https://data.jsdelivr.com/v1/package/npm/markdown-style/badge?style=rounded)](https://www.jsdelivr.com/package/npm/markdown-style)
-[![npm version](https://img.shields.io/npm/v/markdown-style.svg)](https://www.npmjs.com/package/markdown-style)
-[![Open in unpkg](https://img.shields.io/badge/Open%20in-unpkg-blue)](https://uiwjs.github.io/npm-unpkg/#/pkg/markdown-style/file/README.md)
+[![jsDelivr CDN](https://data.jsdelivr.com/v1/package/npm/@wcj/markdown-style/badge?style=rounded)](https://www.jsdelivr.com/package/npm/@wcj/markdown-style)
+[![npm version](https://img.shields.io/npm/v/@wcj/markdown-style.svg)](https://www.npmjs.com/package/@wcj/markdown-style)
+[![Open in unpkg](https://img.shields.io/badge/Open%20in-unpkg-blue)](https://uiwjs.github.io/npm-unpkg/#/pkg/@wcj/markdown-style/file/README.md)
 
 Integrate markdown styles into web components, Markdown CSS styles will not be conflicted. The minimal amount of CSS to replicate the GitHub Markdown style. Support dark-mode/night mode.
 
 ## Installation
 
 ```bash
-npm install --save markdown-style
+npm install --save @wcj/markdown-style
 ```
 
 Or load the ES module directly through unpkg
@@ -19,13 +19,13 @@ Or load the ES module directly through unpkg
 unpkg.com CDN:
 
 ```html
-<script type="module" src="https://unpkg.com/markdown-style?module"></script>
+<script type="module" src="https://unpkg.com/@wcj/markdown-style?module"></script>
 ```
 
 Skypack CDN:
 
 ```html
-<script type="module" src="https://cdn.skypack.dev/markdown-style"></script>
+<script type="module" src="https://cdn.skypack.dev/@wcj/markdown-style"></script>
 ```
 
 ## Usage
@@ -45,7 +45,7 @@ Using it in your React:
 
 ```jsx
 import React from 'react';
-import 'markdown-style';
+import '@wcj/markdown-style';
 
 function Demo() {
   return (
@@ -60,7 +60,7 @@ Convert markdown to html and add markdown style to it:
 
 ```html
 <script src="https://unpkg.com/@wcj/markdown-to-html/dist/markdown.min.js"></script>
-<script type="module" src="https://unpkg.com/markdown-style?module"></script>
+<script type="module" src="https://unpkg.com/@wcj/markdown-style?module"></script>
 <markdown-style>
 &#x60;&#x60;&#x60;jsx
 import React from 'react';
