@@ -9,9 +9,16 @@
   <script src="https://unpkg.com/@wcj/markdown-to-html/dist/markdown.min.js"></script>
   <script type="module" src="https://unpkg.com/@uiw/github-corners?module"></script>
   <script type="module" src="./lib/index.js?module"></script>
+  <style>
+    body {
+      max-width: 890px;
+      margin: 0 auto;
+      padding: 0 15px;
+    }
+  </style>
 </head>
 <body>
-  <dark-mode light="Light" dark="Dark"></dark-mode>
+  <dark-mode light="Light" dark="Dark" style="position: fixed; left: 10px; right: 8px;"></dark-mode>
   <github-corners target="__blank" href="https://github.com/jaywcjlove/markdown-to-html"></github-corners>
   <h1>Markdown Style Example</h1>
   <markdown-style>
@@ -34,7 +41,7 @@ function Demo() {
       mdstr.innerHTML = markdown.default(mdstr.textContent);
     })();
   </script>
-  <markdown-style name="document">markdown-style
+  <markdown-style name="document">Markdown Style
 ===
 
 [![CI](https://github.com/jaywcjlove/markdown-to-html/actions/workflows/ci.yml/badge.svg)](https://github.com/jaywcjlove/markdown-to-html/actions/workflows/ci.yml)
@@ -77,7 +84,7 @@ Use it in your HTML:
 
 Learn about web components [here](https://developer.mozilla.org/en-US/docs/Web/Web_Components).
 
-Using web components in React:
+Using it in your React:
 
 ```jsx
 import React from &#39;react&#39;;
@@ -91,6 +98,8 @@ function Demo() {
   );
 }
 ```
+
+Convert markdown to html and add markdown style to it:
 
 ```html
 &lt;script src=&#34;https://unpkg.com/@wcj/markdown-to-html/dist/markdown.min.js&#34;&gt;&lt;/script&gt;
@@ -126,6 +135,14 @@ By default, the [dark-mode](https://github.com/jaywcjlove/dark-mode/) is automat
 ```js
 document.documentElement.setAttribute(&#39;data-color-mode&#39;, &#39;dark&#39;)
 document.documentElement.setAttribute(&#39;data-color-mode&#39;, &#39;light&#39;)
+```
+
+Set the theme, do not automatically switch with the system:
+
+```html
+&lt;markdown-style theme=&#34;dark&#34;&gt;
+  &lt;h1&gt;Markdown Style&lt;/h1&gt;
+&lt;/markdown-style&gt;
 ```
 
 ## Contributors
