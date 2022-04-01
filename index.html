@@ -202,6 +202,25 @@ CDN: [UNPKG](https://unpkg.com/@wcj/markdown-to-html/dist/) | [jsDelivr](https:/
 <\/script>
 \`\`\`
 
+## Add Markdown Style
+
+① Import the css file.
+
+\`\`\`html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.0/dist/katex.min.css">
+<link rel="stylesheet" href="https://unpkg.com/@wcj/markdown-to-html/dist/marked.css">
+\`\`\`
+
+② Or use [\`<markdown-style>\`](https://jaywcjlove.github.io/markdown-to-html/style.html) components.
+
+\`\`\`html
+<script type="module" src="https://unpkg.com/@wcj/markdown-style?module"><\/script>
+<markdown-style>
+  <!-- markdown html is here -->
+  <h1>Markdown HTML<\/h1>
+<\/markdown-style>
+\`\`\`
+
 ## API
 
 \`\`\`ts
