@@ -1,4 +1,4 @@
-markdown-style
+Markdown Style
 ===
 
 [![CI](https://github.com/jaywcjlove/markdown-to-html/actions/workflows/ci.yml/badge.svg)](https://github.com/jaywcjlove/markdown-to-html/actions/workflows/ci.yml)
@@ -41,7 +41,7 @@ Use it in your HTML:
 
 Learn about web components [here](https://developer.mozilla.org/en-US/docs/Web/Web_Components).
 
-Using web components in React:
+Using it in your React:
 
 ```jsx
 import React from 'react';
@@ -55,6 +55,8 @@ function Demo() {
   );
 }
 ```
+
+Convert markdown to html and add markdown style to it:
 
 ```html
 <script src="https://unpkg.com/@wcj/markdown-to-html/dist/markdown.min.js"></script>
@@ -90,6 +92,14 @@ By default, the [dark-mode](https://github.com/jaywcjlove/dark-mode/) is automat
 ```js
 document.documentElement.setAttribute('data-color-mode', 'dark')
 document.documentElement.setAttribute('data-color-mode', 'light')
+```
+
+Set the theme, do not automatically switch with the system:
+
+```html
+<markdown-style theme="dark">
+  <h1>Markdown Style</h1>
+</markdown-style>
 ```
 
 ## Contributors

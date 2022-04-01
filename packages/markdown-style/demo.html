@@ -9,9 +9,16 @@
   <script src="https://unpkg.com/@wcj/markdown-to-html/dist/markdown.min.js"></script>
   <script type="module" src="https://unpkg.com/@uiw/github-corners?module"></script>
   <script type="module" src="./lib/index.js?module"></script>
+  <style>
+    body {
+      max-width: 890px;
+      margin: 0 auto;
+      padding: 0 15px;
+    }
+  </style>
 </head>
 <body>
-  <dark-mode light="Light" dark="Dark"></dark-mode>
+  <dark-mode light="Light" dark="Dark" style="position: fixed; left: 10px; right: 8px;"></dark-mode>
   <github-corners target="__blank" href="https://github.com/jaywcjlove/markdown-to-html"></github-corners>
   <h1>Markdown Style Example</h1>
   <markdown-style>
