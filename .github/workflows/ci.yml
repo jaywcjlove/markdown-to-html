@@ -94,8 +94,22 @@ jobs:
 
             ${{ steps.changelog.outputs.changelog }}
 
+            ```bash
+            npm i @wcj/markdown-to-html
+            ```
+
+            ```bash
+            npm i @wcj/markdown-style
+            ```
+
       - name: 📦 @wcj/markdown-to-html publish to NPM
         uses: JS-DevTools/npm-publish@v1
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: packages/markdown-to-html/package.json
+
+      - name: 📦 @wcj/markdown-style publish to NPM
+        uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: packages/markdown-style/package.json
