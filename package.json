@@ -2,8 +2,8 @@
   "private": true,
   "scripts": {
     "prepare": "husky install",
-    "build": "lerna exec \"npm run build\" --scope @wcj/*",
-    "build:lib": "lerna exec --scope @wcj/* -- tsbb build",
+    "build": "lerna exec \"npm run build\" --scope @wcj/markdown-to-html",
+    "build:lib": "lerna exec --scope @wcj/markdown-to-html -- tsbb build",
     "watch": "lerna exec \"npm run start\" --scope @wcj/markdown-to-html",
     "web:demo": "lerna exec --scope @wcj/markdown-style -- npx sgo --fallback demo.html",
     "build:wc": "lerna exec --scope @wcj/markdown-style -- tsbb build --disable-babel",
