@@ -39,6 +39,7 @@ function markdown(markdownStr: string = '', options: Options = {}) {
     .use(rehypeRaw)
     .use(rehypePrism, { ignoreMissing: true })
     .use(rehypeAttrs, { properties: 'attr' })
+    .use(options.rehypePlugins || [])
     .use(rehypeRewrite, {
       rewrite: (node, index, parent) => {
         if (node.type == 'element' && node.tagName === 'code') {
@@ -79,7 +80,6 @@ function markdown(markdownStr: string = '', options: Options = {}) {
       },
     })
     .use(rehypeKatex)
-    .use(options.rehypePlugins || [])
     .use(stringify);
 
   const file = new VFile();
