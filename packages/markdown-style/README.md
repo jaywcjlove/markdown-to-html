@@ -1,6 +1,11 @@
 markdown-style
 ===
 
+[![CI](https://github.com/jaywcjlove/markdown-to-html/actions/workflows/ci.yml/badge.svg)](https://github.com/jaywcjlove/markdown-to-html/actions/workflows/ci.yml)
+[![jsDelivr CDN](https://data.jsdelivr.com/v1/package/npm/markdown-style/badge?style=rounded)](https://www.jsdelivr.com/package/npm/markdown-style)
+[![npm version](https://img.shields.io/npm/v/markdown-style.svg)](https://www.npmjs.com/package/markdown-style)
+[![Open in unpkg](https://img.shields.io/badge/Open%20in-unpkg-blue)](https://uiwjs.github.io/npm-unpkg/#/pkg/markdown-style/file/README.md)
+
 Integrate markdown styles into web components, Markdown CSS styles will not be conflicted. The minimal amount of CSS to replicate the GitHub Markdown style. Support dark-mode/night mode.
 
 ## Installation
@@ -14,13 +19,13 @@ Or load the ES module directly through unpkg
 unpkg.com CDN:
 
 ```html
-<script type="module" src="https://unpkg.com/@uiw/github-corners?module"></script>
+<script type="module" src="https://unpkg.com/markdown-style?module"></script>
 ```
 
 Skypack CDN:
 
 ```html
-<script type="module" src="https://cdn.skypack.dev/@uiw/github-corners"></script>
+<script type="module" src="https://cdn.skypack.dev/markdown-style"></script>
 ```
 
 ## Usage
@@ -57,7 +62,7 @@ function Demo() {
 <markdown-style>
 &#x60;&#x60;&#x60;jsx
 import React from 'react';
-import '@uiw/github-corners';
+import 'markdown-style';
 
 function Demo() {
 return (
