@@ -14816,12 +14816,10 @@
       /**
        * Get the positional info of `node`.
        *
-       * @param {NodeLike} [node]
+       * @param {NodeLike|Node} [node]
        * @returns {Point}
        */
       function point(node) {
-        /** @type {Point} */
-        // @ts-expect-error looks like a point
         const point = (node && node.position && node.position[type]) || {};
 
         return {
