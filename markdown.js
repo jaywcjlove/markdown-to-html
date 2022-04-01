@@ -1,5 +1,5 @@
 /**! 
- * @wcj/markdown-to-html v1.0.11 
+ * @wcj/markdown-to-html v1.0.12 
  * Converts markdown text to HTML. 
  * 
  * Copyright (c) 2022 kenny wang <wowohoo@qq.com> (https://github.com/jaywcjlove) 
@@ -76133,6 +76133,7 @@
             .use(rehypeRaw)
             .use(m, { ignoreMissing: true })
             .use(rehypeAttrs$1, { properties: 'attr' })
+            .use(options.rehypePlugins || [])
             .use(remarkRewrite, {
             rewrite: function (node, index, parent) {
                 if (node.type == 'element' && node.tagName === 'code') {
@@ -76170,7 +76171,6 @@
             },
         })
             .use(rehypeKatex)
-            .use(options.rehypePlugins || [])
             .use(rehypeStringify);
         var file = new VFile();
         file.value = markdownStr;
