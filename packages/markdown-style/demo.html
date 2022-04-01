@@ -29,9 +29,17 @@ function Demo() {
 ```
   </markdown-style>
   <script>
-    const mdstr = document.querySelector('markdown-style');
-    mdstr.innerHTML = markdown.default(mdstr.textContent);
+    ;(() => {
+      const mdstr = document.querySelector('markdown-style');
+      mdstr.innerHTML = markdown.default(mdstr.textContent);
+    })();
   </script>
-  <markdown-style><%= markdownString %></markdown-style>
+  <markdown-style name="document"><%= markdownString %></markdown-style>
+  <script>
+    ;(() => {
+      const mdstr = document.querySelector("[name='document']");
+      mdstr.innerHTML = markdown.default(mdstr.textContent);
+    })();
+  </script>
 </body>
 </html>
