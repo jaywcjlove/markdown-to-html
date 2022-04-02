@@ -973,7 +973,7 @@ type Theme = 'light' | 'dark';
 export class MarkdownStyle extends HTMLElement {
   private shadow: ShadowRoot;
   private warpper: HTMLDivElement;
-  private theme: Theme;
+  private theme?: Theme;
   private initTheme: Theme;
   constructor() {
     super();
@@ -985,9 +985,13 @@ export class MarkdownStyle extends HTMLElement {
     this.warpper.classList.add('markdown-body');
     this.shadow.appendChild(this.warpper);
     Array.prototype.slice.call(this.shadow.host.childNodes).forEach((item: Node) => this.warpper.appendChild(item));
+    this.setTheme();
+  }
+  private setTheme() {
     if (!this.initTheme) {
-      this.theme = document.documentElement.dataset.colorMode as Theme;
-      if (!this.theme) {
+      const { colorMode } = document.documentElement.dataset as Record<string, Theme>;
+      this.theme = colorMode;
+      if ((this.theme as any) === 'undefined') {
         if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
           this.theme = 'dark';
         }
@@ -995,11 +999,7 @@ export class MarkdownStyle extends HTMLElement {
           this.theme = 'light';
         }
       }
-    } else {
-      this.warpper.setAttribute('data-color-mode', this.initTheme);
     }
-  }
-  private setTheme() {
     this.warpper.setAttribute('data-color-mode', this.theme);
   }
   connectedCallback() {
