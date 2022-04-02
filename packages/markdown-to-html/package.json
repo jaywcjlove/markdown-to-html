@@ -4,9 +4,10 @@
   "description": "Converts markdown text to HTML.",
   "license": "MIT",
   "author": "kenny wang <wowohoo@qq.com> (https://github.com/jaywcjlove)",
-  "main": "cjs/index.js",
-  "module": "esm/index.js",
-  "typings": "esm/index.d.ts",
+  "type": "module",
+  "main": "./lib/index.js",
+  "exports": "./lib/index.js",
+  "typings": "lib/index.d.ts",
   "unpkg": "dist/markdown.js",
   "jsdelivr": "dist/markdown.js",
   "scripts": {

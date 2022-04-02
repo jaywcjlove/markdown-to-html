@@ -16,7 +16,7 @@ jobs:
       - run: npm install
       - run: npm run hoist
       - run: npm run build
-      - run: npm run build:lib
+      - run: npm run build:dist
       - run: npm run build:wc
 
       - run: mkdir -p website

@@ -8,7 +8,9 @@ Convert Markdown to HTML.
 
 Converts markdown text to HTML.
 
-## Install
+## Installation
+
+This package v2+ is [ESM only](https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c): Node 12+ is needed to use it and it must be import instead of require.
 
 ```bash
 $ npm i @wcj/markdown-to-html

@@ -1,31 +1,19 @@
 {
   "compilerOptions": {
-    "allowJs": false,
-    "allowSyntheticDefaultImports": true,
-    "declaration": true,
-    "outDir": "cjs",
+    "module": "es2015",
+    "target": "es2017",
     "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "isolatedModules": false,
-    "module": "esnext",
-    "moduleResolution": "node",
-    "lib": ["es2015", "es6", "dom.iterable", "dom"],
-    "noUnusedLocals": true,
-    "noEmit": false,
-    "emitDeclarationOnly": true,
+    "declaration": true,
     "noImplicitAny": true,
-    "noImplicitReturns": true,
-    "noImplicitThis": true,
-    "downlevelIteration": true,
-    "noUnusedParameters": false,
     "resolveJsonModule": true,
-    "skipLibCheck": false,
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
     "sourceMap": true,
-    "strict": true,
-    "strictNullChecks": true,
-    "suppressImplicitAnyIndexErrors": true,
-    "target": "es5"
+    "strict": false,
+    "skipLibCheck": true,
+    "outDir": "lib",
+    "baseUrl": "."
   },
-  "include": ["src"],
-  "exclude": ["dist"]
+  "include": ["src/**/*"]
 }
