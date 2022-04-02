@@ -987,6 +987,14 @@ export class MarkdownStyle extends HTMLElement {
     Array.prototype.slice.call(this.shadow.host.childNodes).forEach((item: Node) => this.warpper.appendChild(item));
     if (!this.initTheme) {
       this.theme = document.documentElement.dataset.colorMode as Theme;
+      if (!this.theme) {
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          this.theme = 'dark';
+        }
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+          this.theme = 'light';
+        }
+      }
     } else {
       this.warpper.setAttribute('data-color-mode', this.initTheme);
     }
