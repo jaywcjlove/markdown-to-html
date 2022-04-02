@@ -834,6 +834,7 @@ __TEMPLATE__.innerHTML = `
 
 :host .highlight pre,
 :host pre {
+  position: relative;
   padding: 16px;
   overflow: auto;
   font-size: 85%;
