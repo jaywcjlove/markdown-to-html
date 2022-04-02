@@ -27,8 +27,7 @@
     "html"
   ],
   "files": [
-    "cjs",
-    "esm",
+    "lib",
     "dist"
   ],
   "dependencies": {
