@@ -56,6 +56,8 @@ CDN: [UNPKG](https://unpkg.com/@wcj/markdown-to-html/dist/) | [jsDelivr](https:/
 
 ② Or use [`<markdown-style>`](https://jaywcjlove.github.io/markdown-to-html/style.html) components.
 
+[![npm version](https://img.shields.io/npm/v/@wcj/markdown-style.svg)](https://www.npmjs.com/package/@wcj/markdown-style)
+
 ```html
 <script type="module" src="https://unpkg.com/@wcj/markdown-style?module"></script>
 <markdown-style>
