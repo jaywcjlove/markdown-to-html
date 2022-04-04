@@ -70,13 +70,13 @@ Or load the ES module directly through unpkg
 unpkg.com CDN:
 
 ```html
-&lt;script type=&#34;module&#34; src=&#34;https://unpkg.com/@wcj/markdown-style?module&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;https://unpkg.com/@wcj/markdown-style&#34;&gt;&lt;/script&gt;
 ```
 
 Skypack CDN:
 
 ```html
-&lt;script type=&#34;module&#34; src=&#34;https://cdn.skypack.dev/@wcj/markdown-style&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;https://cdn.skypack.dev/@wcj/markdown-style&#34;&gt;&lt;/script&gt;
 ```
 
 ## Usage
@@ -111,7 +111,7 @@ Convert markdown to html and add markdown style to it:
 
 ```html
 &lt;script src=&#34;https://unpkg.com/@wcj/markdown-to-html/dist/markdown.min.js&#34;&gt;&lt;/script&gt;
-&lt;script type=&#34;module&#34; src=&#34;https://unpkg.com/@wcj/markdown-style?module&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;https://unpkg.com/@wcj/markdown-style&#34;&gt;&lt;/script&gt;
 &lt;markdown-style&gt;
 &amp;#x60;&amp;#x60;&amp;#x60;jsx
 import React from &#39;react&#39;;
@@ -128,7 +128,7 @@ return (
 &lt;/markdown-style&gt;
 &lt;script&gt;
   const mdstr = document.querySelector(&#39;markdown-style&#39;);
-  mdstr.innerHTML = markdown.default(mdstr.textContent);
+  mdstr.warpper.innerHTML = markdown.default(mdstr.warpper.textContent);
 &lt;/script&gt;
 ```
 
