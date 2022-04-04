@@ -956,21 +956,6 @@ __TEMPLATE__.innerHTML = `
 </style>
 `;
 
-// See https://html.spec.whatwg.org/multipage/common-dom-interfaces.html
-// #reflecting-content-attributes-in-idl-attributes.
-const installStringReflection = (obj: any, attrName: string, propName = attrName) => {
-  Object.defineProperty(obj, propName, {
-    enumerable: true,
-    get() {
-      const value = this.getAttribute(attrName);
-      return value === null ? '' : value;
-    },
-    set(v) {
-      this.setAttribute(attrName, v);
-    },
-  });
-};
-
 type Theme = 'light' | 'dark';
 
 class MarkdownStyle extends HTMLElement {
@@ -1010,7 +995,7 @@ class MarkdownStyle extends HTMLElement {
     this.warpper.setAttribute('data-color-mode', this.theme);
   }
   connectedCallback() {
-    installStringReflection(this, 'theme');
+    this.installStringReflection('theme');
     if (!this.initTheme) {
       this.setTheme();
       const observer = new MutationObserver((mutationsList, observer) => {
@@ -1029,6 +1014,22 @@ class MarkdownStyle extends HTMLElement {
         this.setTheme();
       };
     }
+  }
+  /**
+   * See https://html.spec.whatwg.org/multipage/common-dom-interfaces.html
+   * #reflecting-content-attributes-in-idl-attributes.
+   */
+  installStringReflection(attrName: string, propName = attrName) {
+    Object.defineProperty(this, propName, {
+      enumerable: true,
+      get() {
+        const value = this.getAttribute(attrName);
+        return value === null ? '' : value;
+      },
+      set(v) {
+        this.setAttribute(attrName, v);
+      },
+    });
   }
 }
 
