@@ -8,7 +8,7 @@
   <script src="https://unpkg.com/@wcj/dark-mode"></script>
   <script src="https://unpkg.com/@wcj/markdown-to-html/dist/markdown.min.js"></script>
   <script type="module" src="https://unpkg.com/@uiw/github-corners?module"></script>
-  <script type="module" src="./lib/index.js?module"></script>
+  <script src="./lib/index.js?module"></script>
   <style>
     body {
       max-width: 890px;
@@ -46,14 +46,14 @@ a {
   <script>
     ;(() => {
       const mdstr = document.querySelector('markdown-style');
-      mdstr.innerHTML = markdown.default(mdstr.textContent);
+      mdstr.warpper.innerHTML = markdown.default(mdstr.warpper.textContent);
     })();
   </script>
   <markdown-style name="document"><%= markdownString %></markdown-style>
   <script>
     ;(() => {
       const mdstr = document.querySelector("[name='document']");
-      mdstr.innerHTML = markdown.default(mdstr.textContent);
+      mdstr.warpper.innerHTML = markdown.default(mdstr.warpper.textContent);
     })();
   </script>
 </body>

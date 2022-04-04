@@ -1,3 +1,4 @@
+// @ts-ignore
 declare global {
   interface HTMLElementTagNameMap {
     'markdown-style': MarkdownStyle;
@@ -972,7 +973,7 @@ const installStringReflection = (obj: any, attrName: string, propName = attrName
 
 type Theme = 'light' | 'dark';
 
-export class MarkdownStyle extends HTMLElement {
+class MarkdownStyle extends HTMLElement {
   private shadow: ShadowRoot;
   private warpper: HTMLDivElement;
   private theme?: Theme;
@@ -980,14 +981,18 @@ export class MarkdownStyle extends HTMLElement {
   constructor() {
     super();
     this.initTheme = this.getAttribute('theme') as Theme;
-    installStringReflection(this, 'theme');
     this.shadow = this.attachShadow({ mode: 'open' });
     this.shadow.appendChild(__TEMPLATE__.content.cloneNode(true));
     this.warpper = document.createElement('div');
     this.warpper.classList.add('markdown-body');
     this.shadow.appendChild(this.warpper);
-    Array.prototype.slice.call(this.shadow.host.childNodes).forEach((item: Node) => this.warpper.appendChild(item));
     this.setTheme();
+    const observer = new MutationObserver(() => {
+      Array.prototype.slice.call(this.shadow.host.childNodes).forEach((item: Node) => {
+        this.warpper.appendChild(item);
+      });
+    });
+    observer.observe(this.shadow.host, { attributes: true, childList: true });
   }
   private setTheme() {
     if (!this.initTheme) {
@@ -1005,6 +1010,7 @@ export class MarkdownStyle extends HTMLElement {
     this.warpper.setAttribute('data-color-mode', this.theme);
   }
   connectedCallback() {
+    installStringReflection(this, 'theme');
     if (!this.initTheme) {
       this.setTheme();
       const observer = new MutationObserver((mutationsList, observer) => {
