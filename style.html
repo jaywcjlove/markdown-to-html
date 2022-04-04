@@ -28,12 +28,13 @@ import 'markdown-style';
 
 function Demo() {
   return (
-    &lt;markdown-style&gt;
-      &lt;h1&gt;Markdown Style&lt;/h1&gt;
-    &lt;/markdown-style&gt;
+    <markdown-style>
+      <h1>Markdown Style</h1>
+    </markdown-style>
   );
 }
 ```
+
 ```css
 body {
   font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji";
@@ -46,7 +47,7 @@ a {
   <script>
     ;(() => {
       const mdstr = document.querySelector('markdown-style');
-      mdstr.warpper.innerHTML = markdown.default(mdstr.warpper.textContent);
+      mdstr.innerHTML = markdown.default(mdstr.innerHTML);
     })();
   </script>
   <markdown-style name="document">Markdown Style
@@ -113,22 +114,22 @@ Convert markdown to html and add markdown style to it:
 &lt;script src=&#34;https://unpkg.com/@wcj/markdown-to-html/dist/markdown.min.js&#34;&gt;&lt;/script&gt;
 &lt;script src=&#34;https://unpkg.com/@wcj/markdown-style&#34;&gt;&lt;/script&gt;
 &lt;markdown-style&gt;
-&amp;#x60;&amp;#x60;&amp;#x60;jsx
+\```jsx
 import React from &#39;react&#39;;
 import &#39;markdown-style&#39;;
 
 function Demo() {
-return (
-  &amp;lt;markdown-style&amp;gt;
-    &amp;lt;h1&amp;gt;Markdown Style&amp;lt;/h1&amp;gt;
-  &amp;lt;/markdown-style&amp;gt;
-);
+  return (
+    &lt;markdown-style&gt;
+      &lt;h1&gt;Markdown Style&lt;/h1&gt;
+    &lt;/markdown-style&gt;
+  );
 }
-&amp;#x60;&amp;#x60;&amp;#x60;
+\```
 &lt;/markdown-style&gt;
 &lt;script&gt;
   const mdstr = document.querySelector(&#39;markdown-style&#39;);
-  mdstr.warpper.innerHTML = markdown.default(mdstr.warpper.textContent);
+  mdstr.innerHTML = markdown.default(mdstr.textContent);
 &lt;/script&gt;
 ```
 
@@ -170,7 +171,7 @@ Licensed under the [MIT License](https://opensource.org/licenses/MIT).
   <script>
     ;(() => {
       const mdstr = document.querySelector("[name='document']");
-      mdstr.warpper.innerHTML = markdown.default(mdstr.warpper.textContent);
+      mdstr.innerHTML = markdown.default(mdstr.textContent);
     })();
   </script>
 </body>
