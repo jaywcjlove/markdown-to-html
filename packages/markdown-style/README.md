@@ -62,22 +62,22 @@ Convert markdown to html and add markdown style to it:
 <script src="https://unpkg.com/@wcj/markdown-to-html/dist/markdown.min.js"></script>
 <script src="https://unpkg.com/@wcj/markdown-style"></script>
 <markdown-style>
-&#x60;&#x60;&#x60;jsx
+\```jsx
 import React from 'react';
 import 'markdown-style';
 
 function Demo() {
-return (
-  &lt;markdown-style&gt;
-    &lt;h1&gt;Markdown Style&lt;/h1&gt;
-  &lt;/markdown-style&gt;
-);
+  return (
+    <markdown-style>
+      <h1>Markdown Style</h1>
+    </markdown-style>
+  );
 }
-&#x60;&#x60;&#x60;
+\```
 </markdown-style>
 <script>
   const mdstr = document.querySelector('markdown-style');
-  mdstr.warpper.innerHTML = markdown.default(mdstr.warpper.textContent);
+  mdstr.innerHTML = markdown.default(mdstr.textContent);
 </script>
 ```
 

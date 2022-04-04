@@ -28,12 +28,13 @@ import 'markdown-style';
 
 function Demo() {
   return (
-    &lt;markdown-style&gt;
-      &lt;h1&gt;Markdown Style&lt;/h1&gt;
-    &lt;/markdown-style&gt;
+    <markdown-style>
+      <h1>Markdown Style</h1>
+    </markdown-style>
   );
 }
 ```
+
 ```css
 body {
   font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji";
@@ -46,14 +47,14 @@ a {
   <script>
     ;(() => {
       const mdstr = document.querySelector('markdown-style');
-      mdstr.warpper.innerHTML = markdown.default(mdstr.warpper.textContent);
+      mdstr.innerHTML = markdown.default(mdstr.innerHTML);
     })();
   </script>
   <markdown-style name="document"><%= markdownString %></markdown-style>
   <script>
     ;(() => {
       const mdstr = document.querySelector("[name='document']");
-      mdstr.warpper.innerHTML = markdown.default(mdstr.warpper.textContent);
+      mdstr.innerHTML = markdown.default(mdstr.textContent);
     })();
   </script>
 </body>
