@@ -961,15 +961,17 @@ type Theme = 'light' | 'dark';
 
 class MarkdownStyle extends HTMLElement {
   private shadow: ShadowRoot;
-  private warpper: HTMLDivElement;
-  private theme?: Theme;
-  private initTheme: Theme;
+  get theme() {
+    const value = this.getAttribute('theme');
+    return value === null ? '' : value;
+  }
+  set theme(name: string) {
+    this.setAttribute('theme', name);
+  }
   constructor() {
     super();
-    this.initTheme = this.getAttribute('theme') as Theme;
     this.shadow = this.attachShadow({ mode: 'open' });
     this.shadow.appendChild(__TEMPLATE__.content.cloneNode(true));
-    this.setTheme();
     const style = Array.prototype.slice
       .call(this.shadow.children)
       .find((item: HTMLStyleElement) => item.tagName === 'STYLE');
@@ -982,56 +984,21 @@ class MarkdownStyle extends HTMLElement {
       }
     }
   }
-  private setTheme() {
-    if (!this.initTheme) {
+  connectedCallback() {
+    if (!this.theme) {
       const { colorMode } = document.documentElement.dataset as Record<string, Theme>;
       this.theme = colorMode;
-      if ((this.theme as any) === 'undefined') {
-        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-          this.theme = 'dark';
-        }
-        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
-          this.theme = 'light';
-        }
-      }
-    }
-  }
-  connectedCallback() {
-    this.installStringReflection('theme');
-    if (!this.initTheme) {
-      this.setTheme();
       const observer = new MutationObserver((mutationsList, observer) => {
         this.theme = document.documentElement.dataset.colorMode as Theme;
-        this.setTheme();
       });
-      // Start observing the target node with the above configuration
       observer.observe(document.documentElement, { attributes: true });
-
       window.matchMedia('(prefers-color-scheme: light)').onchange = (event) => {
         this.theme = event.matches ? 'light' : 'dark';
-        this.setTheme();
       };
       window.matchMedia('(prefers-color-scheme: dark)').onchange = (event) => {
         this.theme = event.matches ? 'dark' : 'light';
-        this.setTheme();
       };
     }
-  }
-  /**
-   * See https://html.spec.whatwg.org/multipage/common-dom-interfaces.html
-   * #reflecting-content-attributes-in-idl-attributes.
-   */
-  installStringReflection(attrName: string, propName = attrName) {
-    Object.defineProperty(this, propName, {
-      enumerable: true,
-      get() {
-        const value = this.getAttribute(attrName);
-        return value === null ? '' : value;
-      },
-      set(v) {
-        this.setAttribute(attrName, v);
-      },
-    });
   }
 }
 
