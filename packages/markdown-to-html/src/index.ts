@@ -6,6 +6,7 @@ import remarkParse from 'remark-parse';
 import remarkRehype, { Options as RemarkRehypeOptions } from 'remark-rehype';
 import rehypeVideo from 'rehype-video';
 import rehypeKatex from 'rehype-katex';
+import rehypeIgnore from 'rehype-ignore';
 import rehypeRaw from 'rehype-raw';
 import rehypeRewrite, { RehypeRewriteOptions, getCodeString } from 'rehype-rewrite';
 import stringify from 'rehype-stringify';
@@ -39,6 +40,7 @@ function markdown(markdownStr: string = '', options: Options = {}) {
     .use(rehypeRaw)
     .use(rehypePrism, { ignoreMissing: true })
     .use(rehypeAttrs, { properties: 'attr' })
+    .use(rehypeIgnore)
     .use(options.rehypePlugins || [])
     .use(rehypeRewrite, {
       rewrite: (node, index, parent) => {
