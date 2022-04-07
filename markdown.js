@@ -1,5 +1,5 @@
 /**! 
- * @wcj/markdown-to-html v2.0.3 
+ * @wcj/markdown-to-html v2.0.4 
  * Converts markdown text to HTML. 
  * 
  * Copyright (c) 2022 kenny wang <wowohoo@qq.com> (https://github.com/jaywcjlove) 
@@ -45701,6 +45701,22 @@
 	  }
 	}
 
+	const rehypeIgnore = (options = {}) => {
+	    const { openDelimiter = 'rehype:ignore:start', closeDelimiter = 'rehype:ignore:end' } = options;
+	    return (tree) => {
+	        visit$1(tree, (node, index, parent) => {
+	            if (node.type === 'element' || node.type === 'root') {
+	                const start = node.children.findIndex((item) => item.type === 'comment' && item.value === openDelimiter);
+	                const end = node.children.findIndex((item) => item.type === 'comment' && item.value === closeDelimiter);
+	                if (start > -1 && end > -1) {
+	                    node.children = node.children.filter((_, idx) => idx < start || idx > end);
+	                }
+	            }
+	        });
+	    };
+	};
+	var rehypeIgnore$1 = rehypeIgnore;
+
 	// http://www.w3.org/TR/CSS21/grammar.html
 	// https://github.com/visionmedia/css-parse/pull/49#issuecomment-30088027
 	var COMMENT_REGEX = /\/\*[^*]*\*+([^/*][^*]*\*+)*\//g;
@@ -76105,6 +76121,7 @@
 	        .use(rehypeRaw)
 	        .use(m, { ignoreMissing: true })
 	        .use(rehypeAttrs$1, { properties: 'attr' })
+	        .use(rehypeIgnore$1)
 	        .use(options.rehypePlugins || [])
 	        .use(remarkRewrite, {
 	        rewrite: (node, index, parent) => {
