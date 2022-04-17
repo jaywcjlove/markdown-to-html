@@ -901,15 +901,8 @@ body[data-color-mode*='light'] {
   text-decoration: inherit;
 }
 
-.markdown-body pre > code {
-  display: block;
-  font-size: 100%;
-  overflow: auto;
-  padding: 16px;
-}
 
-.markdown-body pre>code {
-  padding: 0;
+.markdown-body pre > code {
   margin: 0;
   word-break: normal;
   white-space: pre;
@@ -946,6 +939,13 @@ body[data-color-mode*='light'] {
   word-wrap: normal;
   background-color: transparent;
   border: 0;
+}
+
+.markdown-body pre > code {
+  display: block;
+  font-size: 100%;
+  overflow: auto;
+  padding: 16px;
 }
 
 .markdown-body .csv-data td,
