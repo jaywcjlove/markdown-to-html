@@ -825,20 +825,8 @@ markdown-style pre>code {
   border: 0;
 }
 
-markdown-style .highlight {
-  margin-bottom: 16px;
-}
-
-markdown-style .highlight pre {
-  margin-bottom: 0;
-  word-break: normal;
-}
-
-markdown-style .highlight pre,
 markdown-style pre {
   position: relative;
-  padding: 16px;
-  overflow: auto;
   font-size: 85%;
   line-height: 1.45;
   background-color: var(--color-canvas-subtle);
@@ -856,6 +844,12 @@ markdown-style pre tt {
   word-wrap: normal;
   background-color: transparent;
   border: 0;
+}
+
+markdown-style pre > code {
+  padding: 16px;
+  overflow: auto;
+  display: block;
 }
 
 markdown-style .csv-data td,
