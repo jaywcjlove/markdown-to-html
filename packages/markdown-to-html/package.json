@@ -28,6 +28,7 @@
   ],
   "files": [
     "lib",
+    "src",
     "dist"
   ],
   "dependencies": {
