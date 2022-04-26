@@ -242,6 +242,8 @@ export interface Options {
   remarkPlugins?: PluggableList;
   /** List of [rehype plugins](https://github.com/rehypejs/rehype/blob/main/doc/plugins.md#list-of-plugins) to use. See the next section for examples on how to pass options */
   rehypePlugins?: PluggableList;
+  /** Used to filter default plugins */
+  filterPlugins?: (type: 'remark' | 'rehype', plugins?: PluggableList) => PluggableList;
   /** Resulting Node tree. */
   hastNode?: boolean;
   /** Rewrite Element. [rehype-rewrite](https://github.com/jaywcjlove/rehype-rewrite#rewritenode-index-parent-void) */

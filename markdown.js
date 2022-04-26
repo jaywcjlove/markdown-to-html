@@ -1,5 +1,5 @@
 /**! 
- * @wcj/markdown-to-html v2.0.8 
+ * @wcj/markdown-to-html v2.0.9 
  * Converts markdown text to HTML. 
  * 
  * Copyright (c) 2022 kenny wang <wowohoo@qq.com> (https://github.com/jaywcjlove) 
@@ -77227,55 +77227,62 @@
 	function a(){a=function(e,t){return new r(e,void 0,t)};var e=RegExp.prototype,t=new WeakMap;function r(e,n,i){var o=new RegExp(e,n);return t.set(o,i||t.get(e)),l(o,r.prototype)}function n(e,r){var n=t.get(r);return Object.keys(n).reduce(function(t,r){return t[r]=e[n[r]],t},Object.create(null))}return s(r,RegExp),r.prototype.exec=function(t){var r=e.exec.call(this,t);return r&&(r.groups=n(r,this)),r},r.prototype[Symbol.replace]=function(r,i){if("string"==typeof i){var o=t.get(this);return e[Symbol.replace].call(this,r,i.replace(/\$<([^>]+)>/g,function(e,t){return "$"+o[t]}))}if("function"==typeof i){var a=this;return e[Symbol.replace].call(this,r,function(){var e=arguments;return "object"!=typeof e[e.length-1]&&(e=[].slice.call(e)).push(n(e,a)),i.apply(this,e)})}return e[Symbol.replace].call(this,r,i)},a.apply(this,arguments)}function s(e,t){if("function"!=typeof t&&null!==t)throw new TypeError("Super expression must either be null or a function");e.prototype=Object.create(t&&t.prototype,{constructor:{value:e,writable:!0,configurable:!0}}),Object.defineProperty(e,"prototype",{writable:!1}),t&&l(e,t);}function l(e,t){return l=Object.setPrototypeOf||function(e,t){return e.__proto__=t,e},l(e,t)}function u(e,t){(null==t||t>e.length)&&(t=e.length);for(var r=0,n=new Array(t);r<t;r++)n[r]=e[r];return n}function c(e,t){var r="undefined"!=typeof Symbol&&e[Symbol.iterator]||e["@@iterator"];if(r)return (r=r.call(e)).next.bind(r);if(Array.isArray(e)||(r=function(e,t){if(e){if("string"==typeof e)return u(e,t);var r=Object.prototype.toString.call(e).slice(8,-1);return "Object"===r&&e.constructor&&(r=e.constructor.name),"Map"===r||"Set"===r?Array.from(e):"Arguments"===r||/^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(r)?u(e,t):void 0}}(e))||t&&e&&"number"==typeof e.length){r&&(e=r);var n=0;return function(){return n>=e.length?{done:!0}:{done:!1,value:e[n++]}}}throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}var p=function e(t){return t.reduce(function(t,r){if("text"===r.type){if(-1===r.value.indexOf("\n"))return t.push(r),t;for(var n,i=r.value.split("\n"),o=c(i.entries());!(n=o()).done;){var a=n.value,s=a[0],l=a[1];t.push({type:"text",value:s===i.length-1?l:l+"\n",position:{start:{line:r.position.start.line+s},end:{line:r.position.start.line+s}}});}return t}return Object.prototype.hasOwnProperty.call(r,"children")?(r.children=e(r.children),t.push(r),t):(t.push(r),t)},[])},f=function(i){return function(o){return void 0===o&&(o={}),function(t){visit$1(t,"element",s);};function s(e,s,l){if(l&&"pre"===l.tagName&&"code"===e.tagName){var u=e.data&&e.data.meta?e.data.meta:"";e.properties.className?"boolean"==typeof e.properties.className?e.properties.className=[]:Array.isArray(e.properties.className)||(e.properties.className=[e.properties.className]):e.properties.className=[],e.properties.className.push("code-highlight");var f,h=function(e){for(var t,r=c(e.properties.className);!(t=r()).done;){var n=t.value;if("language-"===n.slice(0,9))return n.slice(9).toLowerCase()}return null}(e);if(h)try{f=i.highlight(toString(e),h),l.properties.className=(l.properties.className||[]).concat("language-"+h);}catch(t){if(!o.ignoreMissing||!/Unknown language/.test(t.message))throw t;f=e;}else f=e;var m,d=(m=1,function e(t){return t.reduce(function(t,r){if("text"===r.type){var n=(r.value.match(/\n/g)||"").length;return r.position={start:{line:m,column:0},end:{line:m+n,column:0}},m+=n,t.push(r),t}if(Object.prototype.hasOwnProperty.call(r,"children")){var i=m;return r.children=e(r.children),t.push(r),r.position={start:{line:i,column:0},end:{line:m,column:0}},t}return t.push(r),t},[])})(f.children);f.children=p(d),f.children.length>0&&(f.position={start:{line:f.children[0].position.start.line,column:0},end:{line:f.children[f.children.length-1].position.end.line,column:0}});for(var g,y,v=function(e){var t=/{([\d,-]+)}/,r=e.split(",").map(function(e){return e.trim()}).join();if(t.test(r)){var i=t.exec(r)[1],o=n(i);return function(e){return o.includes(e+1)}}return function(){return !1}}(u),b=function(e){var t=/*#__PURE__*/a(/showLineNumbers=([0-9]+)/i,{lines:1});if(t.test(e)){var r=t.exec(e);return Number(r.groups.lines)}return 1}(u),N=(""===(g=toString(e).split(/\n/))[g.length-1].trim()&&g.pop(),g.map(function(e){return {type:"element",tagName:"span",properties:{className:["code-line"]},children:[{type:"text",value:e}]}})),w=function(){var e=y.value,n=e[0],i=e[1];(u.toLowerCase().includes("showLineNumbers".toLowerCase())||o.showLineNumbers)&&(i.properties.line=[(n+b).toString()],i.properties.className.push("line-number")),v(n)&&i.properties.className.push("highlight-line"),"diff"===h&&"-"===toString(i).substring(0,1)?i.properties.className.push("deleted"):"diff"===h&&"+"===toString(i).substring(0,1)&&i.properties.className.push("inserted");var a=filter(f,function(e){return e.position.start.line<=n+1&&e.position.end.line>=n+1});i.children=a.children;},x=c(N.entries());!(y=x()).done;)w();e.children=N;}}}};f(refractor);var m=f(refractor);
 
 	function markdown(markdownStr = '', options = {}) {
+	    const { filterPlugins } = options;
+	    const remarkPlugins = [remarkGfm, ...(options.remarkPlugins || [])];
+	    const rehypePlugins = [
+	        rehypeVideo,
+	        rehypeRaw,
+	        [m, { ignoreMissing: true, showLineNumbers: true }],
+	        [rehypeAttrs$1, { properties: 'attr' }],
+	        rehypeIgnore$1,
+	        ...(options.rehypePlugins || []),
+	        [
+	            remarkRewrite,
+	            {
+	                rewrite: (node, index, parent) => {
+	                    if (node.type == 'element' && node.tagName === 'code') {
+	                        const { className = [] } = node.properties || {};
+	                        const found = (Array.isArray(className) ? className : [className]).find((str) => String(str).toLocaleLowerCase().indexOf('language-katex') > -1);
+	                        const code = getCodeString(node.children);
+	                        if (found && node.properties) {
+	                            if (Array.isArray(node.properties.className)) {
+	                                if (parent && parent.type === 'element' && parent.properties) {
+	                                    parent.properties.className = ['language-katex'];
+	                                }
+	                                node.properties.className.push('math');
+	                                node.properties.className.push('math-display');
+	                                node.children = [
+	                                    {
+	                                        type: 'text',
+	                                        value: code,
+	                                    },
+	                                ];
+	                            }
+	                        }
+	                        if (/^katex/.test(code.toLocaleLowerCase())) {
+	                            node.properties.className = ['math', 'math-inline'];
+	                            node.children = [
+	                                {
+	                                    type: 'text',
+	                                    value: code.replace(/^KaTeX:(\s.)?/i, ''),
+	                                },
+	                            ];
+	                        }
+	                    }
+	                    if (options.rewrite && typeof options.rewrite === 'function') {
+	                        options.rewrite(node, index, parent);
+	                    }
+	                },
+	            },
+	        ],
+	        rehypeKatex,
+	        rehypeStringify,
+	    ];
 	    const processor = unified()
 	        .use(remarkParse)
-	        .use(remarkGfm)
-	        .use(options.remarkPlugins || [])
+	        .use(filterPlugins && typeof filterPlugins === 'function' ? filterPlugins('remark', remarkPlugins) : remarkPlugins)
 	        .use(remarkRehype$1, Object.assign(Object.assign({}, options.remarkRehypeOptions), { allowDangerousHtml: true }))
-	        .use(rehypeVideo)
-	        .use(rehypeRaw)
-	        .use(m, { ignoreMissing: true })
-	        .use(rehypeAttrs$1, { properties: 'attr' })
-	        .use(rehypeIgnore$1)
-	        .use(options.rehypePlugins || [])
-	        .use(remarkRewrite, {
-	        rewrite: (node, index, parent) => {
-	            if (node.type == 'element' && node.tagName === 'code') {
-	                const { className = [] } = node.properties || {};
-	                const found = (Array.isArray(className) ? className : [className]).find((str) => String(str).toLocaleLowerCase().indexOf('language-katex') > -1);
-	                const code = getCodeString(node.children);
-	                if (found && node.properties) {
-	                    if (Array.isArray(node.properties.className)) {
-	                        if (parent && parent.type === 'element' && parent.properties) {
-	                            parent.properties.className = ['language-katex'];
-	                        }
-	                        node.properties.className.push('math');
-	                        node.properties.className.push('math-display');
-	                        node.children = [
-	                            {
-	                                type: 'text',
-	                                value: code,
-	                            },
-	                        ];
-	                    }
-	                }
-	                if (/^katex/.test(code.toLocaleLowerCase())) {
-	                    node.properties.className = ['math', 'math-inline'];
-	                    node.children = [
-	                        {
-	                            type: 'text',
-	                            value: code.replace(/^KaTeX:(\s.)?/i, ''),
-	                        },
-	                    ];
-	                }
-	            }
-	            if (options.rewrite && typeof options.rewrite === 'function') {
-	                options.rewrite(node, index, parent);
-	            }
-	        },
-	    })
-	        .use(rehypeKatex)
-	        .use(rehypeStringify);
+	        .use(filterPlugins && typeof filterPlugins === 'function' ? filterPlugins('rehype', rehypePlugins) : rehypePlugins);
 	    const file = new VFile();
 	    file.value = markdownStr;
 	    const hastNode = processor.runSync(processor.parse(file), file);
