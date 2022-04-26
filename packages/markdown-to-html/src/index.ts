@@ -1,5 +1,6 @@
 import { VFile } from 'vfile';
 import { unified, PluggableList } from 'unified';
+import { Root, Element, RootContent } from 'hast';
 import remarkGfm from 'remark-gfm';
 import rehypeAttrs from 'rehype-attr';
 import remarkParse from 'remark-parse';
@@ -21,6 +22,8 @@ export interface Options {
   remarkPlugins?: PluggableList;
   /** List of [rehype plugins](https://github.com/rehypejs/rehype/blob/main/doc/plugins.md#list-of-plugins) to use. See the next section for examples on how to pass options */
   rehypePlugins?: PluggableList;
+  /** Used to filter default plugins */
+  filterPlugins?: (type: 'remark' | 'rehype', plugins?: PluggableList) => PluggableList;
   /** Resulting Node tree. */
   hastNode?: boolean;
   /** Rewrite Element. [rehype-rewrite](https://github.com/jaywcjlove/rehype-rewrite#rewritenode-index-parent-void) */
@@ -28,61 +31,69 @@ export interface Options {
 }
 
 function markdown(markdownStr: string = '', options: Options = {}) {
-  const processor = unified()
-    .use(remarkParse)
-    .use(remarkGfm)
-    .use(options.remarkPlugins || [])
-    .use(remarkRehype, {
-      ...options.remarkRehypeOptions,
-      allowDangerousHtml: true,
-    })
-    .use(rehypeVideo)
-    .use(rehypeRaw)
-    .use(rehypePrism, { ignoreMissing: true })
-    .use(rehypeAttrs, { properties: 'attr' })
-    .use(rehypeIgnore)
-    .use(options.rehypePlugins || [])
-    .use(rehypeRewrite, {
-      rewrite: (node, index, parent) => {
-        if (node.type == 'element' && node.tagName === 'code') {
-          const { className = [] } = node.properties || {};
-          const found = (Array.isArray(className) ? className : [className]).find(
-            (str) => String(str).toLocaleLowerCase().indexOf('language-katex') > -1,
-          );
-          const code = getCodeString(node.children);
-          if (found && node.properties) {
-            if (Array.isArray(node.properties.className)) {
-              if (parent && parent.type === 'element' && parent.properties) {
-                parent.properties.className = ['language-katex'];
+  const { filterPlugins } = options;
+  const remarkPlugins: PluggableList = [remarkGfm, ...(options.remarkPlugins || [])];
+  const rehypePlugins: PluggableList = [
+    rehypeVideo,
+    rehypeRaw,
+    [rehypePrism, { ignoreMissing: true, showLineNumbers: true }],
+    [rehypeAttrs, { properties: 'attr' }],
+    rehypeIgnore,
+    ...(options.rehypePlugins || []),
+    [
+      rehypeRewrite,
+      {
+        rewrite: (node: Root | RootContent, index: number | null, parent: Root | Element | null) => {
+          if (node.type == 'element' && node.tagName === 'code') {
+            const { className = [] } = node.properties || {};
+            const found = (Array.isArray(className) ? className : [className]).find(
+              (str) => String(str).toLocaleLowerCase().indexOf('language-katex') > -1,
+            );
+            const code = getCodeString(node.children);
+            if (found && node.properties) {
+              if (Array.isArray(node.properties.className)) {
+                if (parent && parent.type === 'element' && parent.properties) {
+                  parent.properties.className = ['language-katex'];
+                }
+                node.properties.className.push('math');
+                node.properties.className.push('math-display');
+                node.children = [
+                  {
+                    type: 'text',
+                    value: code,
+                  },
+                ];
               }
-              node.properties.className.push('math');
-              node.properties.className.push('math-display');
+            }
+            if (/^katex/.test(code.toLocaleLowerCase())) {
+              node.properties!.className = ['math', 'math-inline'];
               node.children = [
                 {
                   type: 'text',
-                  value: code,
+                  value: code.replace(/^KaTeX:(\s.)?/i, ''),
                 },
               ];
             }
           }
-          if (/^katex/.test(code.toLocaleLowerCase())) {
-            node.properties!.className = ['math', 'math-inline'];
-            node.children = [
-              {
-                type: 'text',
-                value: code.replace(/^KaTeX:(\s.)?/i, ''),
-              },
-            ];
-          }
-        }
 
-        if (options.rewrite && typeof options.rewrite === 'function') {
-          options.rewrite(node, index, parent);
-        }
+          if (options.rewrite && typeof options.rewrite === 'function') {
+            options.rewrite(node, index, parent);
+          }
+        },
       },
+    ],
+    rehypeKatex,
+    stringify,
+  ];
+
+  const processor = unified()
+    .use(remarkParse)
+    .use(filterPlugins && typeof filterPlugins === 'function' ? filterPlugins('remark', remarkPlugins) : remarkPlugins)
+    .use(remarkRehype, {
+      ...options.remarkRehypeOptions,
+      allowDangerousHtml: true,
     })
-    .use(rehypeKatex)
-    .use(stringify);
+    .use(filterPlugins && typeof filterPlugins === 'function' ? filterPlugins('rehype', rehypePlugins) : rehypePlugins);
 
   const file = new VFile();
   file.value = markdownStr;
