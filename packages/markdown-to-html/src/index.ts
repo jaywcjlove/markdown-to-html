@@ -101,7 +101,7 @@ function markdown(markdownStr: string = '', options: Options = {}) {
   if (options.hastNode) {
     return hastNode;
   }
-  return processor.stringify(hastNode, file);
+  return String(processor.stringify(hastNode, file));
 }
 
 export default markdown;
