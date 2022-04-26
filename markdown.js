@@ -1,5 +1,5 @@
 /**! 
- * @wcj/markdown-to-html v2.0.9 
+ * @wcj/markdown-to-html v2.0.10 
  * Converts markdown text to HTML. 
  * 
  * Copyright (c) 2022 kenny wang <wowohoo@qq.com> (https://github.com/jaywcjlove) 
@@ -77289,7 +77289,7 @@
 	    if (options.hastNode) {
 	        return hastNode;
 	    }
-	    return processor.stringify(hastNode, file);
+	    return String(processor.stringify(hastNode, file));
 	}
 
 	exports["default"] = markdown;
