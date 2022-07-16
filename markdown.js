@@ -11641,7 +11641,6 @@
           });
       };
   };
-  var rehypeAttrs$1 = rehypeAttrs;
 
   /**
    * @typedef Options
@@ -16025,8 +16024,6 @@
       }
     );
 
-  var remarkRehype$1 = remarkRehype;
-
   /**
    * Bridge-mode.
    * Runs the destination with the new hast tree.
@@ -16143,7 +16140,6 @@
           });
       };
   };
-  var rehypeVideo = RehypeVideo;
 
   /**
    * Lexing or parsing positional information for error reporting.
@@ -45687,7 +45683,6 @@
           });
       };
   };
-  var rehypeIgnore$1 = rehypeIgnore;
 
   // http://www.w3.org/TR/CSS21/grammar.html
   // https://github.com/visionmedia/css-parse/pull/49#issuecomment-30088027
@@ -48990,129 +48985,129 @@
   var utils = {};
 
   (function (exports) {
-  Object.defineProperty(exports, "__esModule", { value: true });
-  function isIdentStart(c) {
-      return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c === '-') || (c === '_');
-  }
-  exports.isIdentStart = isIdentStart;
-  function isIdent(c) {
-      return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c === '-' || c === '_';
-  }
-  exports.isIdent = isIdent;
-  function isHex(c) {
-      return (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F') || (c >= '0' && c <= '9');
-  }
-  exports.isHex = isHex;
-  function escapeIdentifier(s) {
-      var len = s.length;
-      var result = '';
-      var i = 0;
-      while (i < len) {
-          var chr = s.charAt(i);
-          if (exports.identSpecialChars[chr]) {
-              result += '\\' + chr;
-          }
-          else {
-              if (!(chr === '_' || chr === '-' ||
-                  (chr >= 'A' && chr <= 'Z') ||
-                  (chr >= 'a' && chr <= 'z') ||
-                  (i !== 0 && chr >= '0' && chr <= '9'))) {
-                  var charCode = chr.charCodeAt(0);
-                  if ((charCode & 0xF800) === 0xD800) {
-                      var extraCharCode = s.charCodeAt(i++);
-                      if ((charCode & 0xFC00) !== 0xD800 || (extraCharCode & 0xFC00) !== 0xDC00) {
-                          throw Error('UCS-2(decode): illegal sequence');
-                      }
-                      charCode = ((charCode & 0x3FF) << 10) + (extraCharCode & 0x3FF) + 0x10000;
-                  }
-                  result += '\\' + charCode.toString(16) + ' ';
-              }
-              else {
-                  result += chr;
-              }
-          }
-          i++;
-      }
-      return result;
-  }
-  exports.escapeIdentifier = escapeIdentifier;
-  function escapeStr(s) {
-      var len = s.length;
-      var result = '';
-      var i = 0;
-      var replacement;
-      while (i < len) {
-          var chr = s.charAt(i);
-          if (chr === '"') {
-              chr = '\\"';
-          }
-          else if (chr === '\\') {
-              chr = '\\\\';
-          }
-          else if ((replacement = exports.strReplacementsRev[chr]) !== undefined) {
-              chr = replacement;
-          }
-          result += chr;
-          i++;
-      }
-      return "\"" + result + "\"";
-  }
-  exports.escapeStr = escapeStr;
-  exports.identSpecialChars = {
-      '!': true,
-      '"': true,
-      '#': true,
-      '$': true,
-      '%': true,
-      '&': true,
-      '\'': true,
-      '(': true,
-      ')': true,
-      '*': true,
-      '+': true,
-      ',': true,
-      '.': true,
-      '/': true,
-      ';': true,
-      '<': true,
-      '=': true,
-      '>': true,
-      '?': true,
-      '@': true,
-      '[': true,
-      '\\': true,
-      ']': true,
-      '^': true,
-      '`': true,
-      '{': true,
-      '|': true,
-      '}': true,
-      '~': true
-  };
-  exports.strReplacementsRev = {
-      '\n': '\\n',
-      '\r': '\\r',
-      '\t': '\\t',
-      '\f': '\\f',
-      '\v': '\\v'
-  };
-  exports.singleQuoteEscapeChars = {
-      n: '\n',
-      r: '\r',
-      t: '\t',
-      f: '\f',
-      '\\': '\\',
-      '\'': '\''
-  };
-  exports.doubleQuotesEscapeChars = {
-      n: '\n',
-      r: '\r',
-      t: '\t',
-      f: '\f',
-      '\\': '\\',
-      '"': '"'
-  };
-  }(utils));
+  	Object.defineProperty(exports, "__esModule", { value: true });
+  	function isIdentStart(c) {
+  	    return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c === '-') || (c === '_');
+  	}
+  	exports.isIdentStart = isIdentStart;
+  	function isIdent(c) {
+  	    return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c === '-' || c === '_';
+  	}
+  	exports.isIdent = isIdent;
+  	function isHex(c) {
+  	    return (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F') || (c >= '0' && c <= '9');
+  	}
+  	exports.isHex = isHex;
+  	function escapeIdentifier(s) {
+  	    var len = s.length;
+  	    var result = '';
+  	    var i = 0;
+  	    while (i < len) {
+  	        var chr = s.charAt(i);
+  	        if (exports.identSpecialChars[chr]) {
+  	            result += '\\' + chr;
+  	        }
+  	        else {
+  	            if (!(chr === '_' || chr === '-' ||
+  	                (chr >= 'A' && chr <= 'Z') ||
+  	                (chr >= 'a' && chr <= 'z') ||
+  	                (i !== 0 && chr >= '0' && chr <= '9'))) {
+  	                var charCode = chr.charCodeAt(0);
+  	                if ((charCode & 0xF800) === 0xD800) {
+  	                    var extraCharCode = s.charCodeAt(i++);
+  	                    if ((charCode & 0xFC00) !== 0xD800 || (extraCharCode & 0xFC00) !== 0xDC00) {
+  	                        throw Error('UCS-2(decode): illegal sequence');
+  	                    }
+  	                    charCode = ((charCode & 0x3FF) << 10) + (extraCharCode & 0x3FF) + 0x10000;
+  	                }
+  	                result += '\\' + charCode.toString(16) + ' ';
+  	            }
+  	            else {
+  	                result += chr;
+  	            }
+  	        }
+  	        i++;
+  	    }
+  	    return result;
+  	}
+  	exports.escapeIdentifier = escapeIdentifier;
+  	function escapeStr(s) {
+  	    var len = s.length;
+  	    var result = '';
+  	    var i = 0;
+  	    var replacement;
+  	    while (i < len) {
+  	        var chr = s.charAt(i);
+  	        if (chr === '"') {
+  	            chr = '\\"';
+  	        }
+  	        else if (chr === '\\') {
+  	            chr = '\\\\';
+  	        }
+  	        else if ((replacement = exports.strReplacementsRev[chr]) !== undefined) {
+  	            chr = replacement;
+  	        }
+  	        result += chr;
+  	        i++;
+  	    }
+  	    return "\"" + result + "\"";
+  	}
+  	exports.escapeStr = escapeStr;
+  	exports.identSpecialChars = {
+  	    '!': true,
+  	    '"': true,
+  	    '#': true,
+  	    '$': true,
+  	    '%': true,
+  	    '&': true,
+  	    '\'': true,
+  	    '(': true,
+  	    ')': true,
+  	    '*': true,
+  	    '+': true,
+  	    ',': true,
+  	    '.': true,
+  	    '/': true,
+  	    ';': true,
+  	    '<': true,
+  	    '=': true,
+  	    '>': true,
+  	    '?': true,
+  	    '@': true,
+  	    '[': true,
+  	    '\\': true,
+  	    ']': true,
+  	    '^': true,
+  	    '`': true,
+  	    '{': true,
+  	    '|': true,
+  	    '}': true,
+  	    '~': true
+  	};
+  	exports.strReplacementsRev = {
+  	    '\n': '\\n',
+  	    '\r': '\\r',
+  	    '\t': '\\t',
+  	    '\f': '\\f',
+  	    '\v': '\\v'
+  	};
+  	exports.singleQuoteEscapeChars = {
+  	    n: '\n',
+  	    r: '\r',
+  	    t: '\t',
+  	    f: '\f',
+  	    '\\': '\\',
+  	    '\'': '\''
+  	};
+  	exports.doubleQuotesEscapeChars = {
+  	    n: '\n',
+  	    r: '\r',
+  	    t: '\t',
+  	    f: '\f',
+  	    '\\': '\\',
+  	    '"': '"'
+  	};
+  } (utils));
 
   Object.defineProperty(parserContext, "__esModule", { value: true });
   var utils_1$1 = utils;
@@ -51582,39 +51577,39 @@
    */
 
   (function (module, exports) {
-  function parsePart(string) {
-    let res = [];
-    let m;
+  	function parsePart(string) {
+  	  let res = [];
+  	  let m;
 
-    for (let str of string.split(",").map((str) => str.trim())) {
-      // just a number
-      if (/^-?\d+$/.test(str)) {
-        res.push(parseInt(str, 10));
-      } else if (
-        (m = str.match(/^(-?\d+)(-|\.\.\.?|\u2025|\u2026|\u22EF)(-?\d+)$/))
-      ) {
-        // 1-5 or 1..5 (equivalent) or 1...5 (doesn't include 5)
-        let [_, lhs, sep, rhs] = m;
+  	  for (let str of string.split(",").map((str) => str.trim())) {
+  	    // just a number
+  	    if (/^-?\d+$/.test(str)) {
+  	      res.push(parseInt(str, 10));
+  	    } else if (
+  	      (m = str.match(/^(-?\d+)(-|\.\.\.?|\u2025|\u2026|\u22EF)(-?\d+)$/))
+  	    ) {
+  	      // 1-5 or 1..5 (equivalent) or 1...5 (doesn't include 5)
+  	      let [_, lhs, sep, rhs] = m;
 
-        if (lhs && rhs) {
-          lhs = parseInt(lhs);
-          rhs = parseInt(rhs);
-          const incr = lhs < rhs ? 1 : -1;
+  	      if (lhs && rhs) {
+  	        lhs = parseInt(lhs);
+  	        rhs = parseInt(rhs);
+  	        const incr = lhs < rhs ? 1 : -1;
 
-          // Make it inclusive by moving the right 'stop-point' away by one.
-          if (sep === "-" || sep === ".." || sep === "\u2025") rhs += incr;
+  	        // Make it inclusive by moving the right 'stop-point' away by one.
+  	        if (sep === "-" || sep === ".." || sep === "\u2025") rhs += incr;
 
-          for (let i = lhs; i !== rhs; i += incr) res.push(i);
-        }
-      }
-    }
+  	        for (let i = lhs; i !== rhs; i += incr) res.push(i);
+  	      }
+  	    }
+  	  }
 
-    return res;
-  }
+  	  return res;
+  	}
 
-  exports.default = parsePart;
-  module.exports = parsePart;
-  }(parseNumericRange, parseNumericRange.exports));
+  	exports.default = parsePart;
+  	module.exports = parsePart;
+  } (parseNumericRange, parseNumericRange.exports));
 
   var n = parseNumericRange.exports;
 
@@ -76642,17 +76637,17 @@
   refractor.register(yang);
   refractor.register(zig);
 
-  function a(){a=function(e,t){return new r(e,void 0,t)};var e=RegExp.prototype,t=new WeakMap;function r(e,n,i){var o=new RegExp(e,n);return t.set(o,i||t.get(e)),l(o,r.prototype)}function n(e,r){var n=t.get(r);return Object.keys(n).reduce(function(t,r){return t[r]=e[n[r]],t},Object.create(null))}return s(r,RegExp),r.prototype.exec=function(t){var r=e.exec.call(this,t);return r&&(r.groups=n(r,this)),r},r.prototype[Symbol.replace]=function(r,i){if("string"==typeof i){var o=t.get(this);return e[Symbol.replace].call(this,r,i.replace(/\$<([^>]+)>/g,function(e,t){return "$"+o[t]}))}if("function"==typeof i){var a=this;return e[Symbol.replace].call(this,r,function(){var e=arguments;return "object"!=typeof e[e.length-1]&&(e=[].slice.call(e)).push(n(e,a)),i.apply(this,e)})}return e[Symbol.replace].call(this,r,i)},a.apply(this,arguments)}function s(e,t){if("function"!=typeof t&&null!==t)throw new TypeError("Super expression must either be null or a function");e.prototype=Object.create(t&&t.prototype,{constructor:{value:e,writable:!0,configurable:!0}}),Object.defineProperty(e,"prototype",{writable:!1}),t&&l(e,t);}function l(e,t){return l=Object.setPrototypeOf||function(e,t){return e.__proto__=t,e},l(e,t)}function u(e,t){(null==t||t>e.length)&&(t=e.length);for(var r=0,n=new Array(t);r<t;r++)n[r]=e[r];return n}function c(e,t){var r="undefined"!=typeof Symbol&&e[Symbol.iterator]||e["@@iterator"];if(r)return (r=r.call(e)).next.bind(r);if(Array.isArray(e)||(r=function(e,t){if(e){if("string"==typeof e)return u(e,t);var r=Object.prototype.toString.call(e).slice(8,-1);return "Object"===r&&e.constructor&&(r=e.constructor.name),"Map"===r||"Set"===r?Array.from(e):"Arguments"===r||/^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(r)?u(e,t):void 0}}(e))||t&&e&&"number"==typeof e.length){r&&(e=r);var n=0;return function(){return n>=e.length?{done:!0}:{done:!1,value:e[n++]}}}throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}var p=function e(t){return t.reduce(function(t,r){if("text"===r.type){if(-1===r.value.indexOf("\n"))return t.push(r),t;for(var n,i=r.value.split("\n"),o=c(i.entries());!(n=o()).done;){var a=n.value,s=a[0],l=a[1];t.push({type:"text",value:s===i.length-1?l:l+"\n",position:{start:{line:r.position.start.line+s},end:{line:r.position.start.line+s}}});}return t}return Object.prototype.hasOwnProperty.call(r,"children")?(r.children=e(r.children),t.push(r),t):(t.push(r),t)},[])},f=function(i){return function(o){return void 0===o&&(o={}),function(t){visit(t,"element",s);};function s(e,s,l){if(l&&"pre"===l.tagName&&"code"===e.tagName){var u=e.data&&e.data.meta?e.data.meta:"";e.properties.className?"boolean"==typeof e.properties.className?e.properties.className=[]:Array.isArray(e.properties.className)||(e.properties.className=[e.properties.className]):e.properties.className=[],e.properties.className.push("code-highlight");var f,h=function(e){for(var t,r=c(e.properties.className);!(t=r()).done;){var n=t.value;if("language-"===n.slice(0,9))return n.slice(9).toLowerCase()}return null}(e);if(h)try{f=i.highlight(toString(e),h),l.properties.className=(l.properties.className||[]).concat("language-"+h);}catch(t){if(!o.ignoreMissing||!/Unknown language/.test(t.message))throw t;f=e;}else f=e;var m,d=(m=1,function e(t){return t.reduce(function(t,r){if("text"===r.type){var n=(r.value.match(/\n/g)||"").length;return r.position={start:{line:m,column:0},end:{line:m+n,column:0}},m+=n,t.push(r),t}if(Object.prototype.hasOwnProperty.call(r,"children")){var i=m;return r.children=e(r.children),t.push(r),r.position={start:{line:i,column:0},end:{line:m,column:0}},t}return t.push(r),t},[])})(f.children);f.children=p(d),f.children.length>0&&(f.position={start:{line:f.children[0].position.start.line,column:0},end:{line:f.children[f.children.length-1].position.end.line,column:0}});for(var g,y,v=function(e){var t=/{([\d,-]+)}/,r=e.split(",").map(function(e){return e.trim()}).join();if(t.test(r)){var i=t.exec(r)[1],o=n(i);return function(e){return o.includes(e+1)}}return function(){return !1}}(u),b=function(e){var t=/*#__PURE__*/a(/showLineNumbers=([0-9]+)/i,{lines:1});if(t.test(e)){var r=t.exec(e);return Number(r.groups.lines)}return 1}(u),N=(""===(g=toString(e).split(/\n/))[g.length-1].trim()&&g.pop(),g.map(function(e){return {type:"element",tagName:"span",properties:{className:["code-line"]},children:[{type:"text",value:e}]}})),w=function(){var e=y.value,n=e[0],i=e[1];(u.toLowerCase().includes("showLineNumbers".toLowerCase())||o.showLineNumbers)&&(i.properties.line=[(n+b).toString()],i.properties.className.push("line-number")),v(n)&&i.properties.className.push("highlight-line"),"diff"===h&&"-"===toString(i).substring(0,1)?i.properties.className.push("deleted"):"diff"===h&&"+"===toString(i).substring(0,1)&&i.properties.className.push("inserted");var a=filter(f,function(e){return e.position.start.line<=n+1&&e.position.end.line>=n+1});i.children=a.children;},x=c(N.entries());!(y=x()).done;)w();e.children=N;}}}};f(refractor);var m=f(refractor);
+  function a(){a=function(e,r){return new t(e,void 0,r)};var e=RegExp.prototype,r=new WeakMap;function t(e,n,i){var o=new RegExp(e,n);return r.set(o,i||r.get(e)),l(o,t.prototype)}function n(e,t){var n=r.get(t);return Object.keys(n).reduce(function(r,t){return r[t]=e[n[t]],r},Object.create(null))}return s(t,RegExp),t.prototype.exec=function(r){var t=e.exec.call(this,r);return t&&(t.groups=n(t,this)),t},t.prototype[Symbol.replace]=function(t,i){if("string"==typeof i){var o=r.get(this);return e[Symbol.replace].call(this,t,i.replace(/\$<([^>]+)>/g,function(e,r){return "$"+o[r]}))}if("function"==typeof i){var a=this;return e[Symbol.replace].call(this,t,function(){var e=arguments;return "object"!=typeof e[e.length-1]&&(e=[].slice.call(e)).push(n(e,a)),i.apply(this,e)})}return e[Symbol.replace].call(this,t,i)},a.apply(this,arguments)}function s(e,r){if("function"!=typeof r&&null!==r)throw new TypeError("Super expression must either be null or a function");e.prototype=Object.create(r&&r.prototype,{constructor:{value:e,writable:!0,configurable:!0}}),Object.defineProperty(e,"prototype",{writable:!1}),r&&l(e,r);}function l(e,r){return l=Object.setPrototypeOf||function(e,r){return e.__proto__=r,e},l(e,r)}function u(e,r){(null==r||r>e.length)&&(r=e.length);for(var t=0,n=new Array(r);t<r;t++)n[t]=e[t];return n}function c(e,r){var t="undefined"!=typeof Symbol&&e[Symbol.iterator]||e["@@iterator"];if(t)return (t=t.call(e)).next.bind(t);if(Array.isArray(e)||(t=function(e,r){if(e){if("string"==typeof e)return u(e,r);var t=Object.prototype.toString.call(e).slice(8,-1);return "Object"===t&&e.constructor&&(t=e.constructor.name),"Map"===t||"Set"===t?Array.from(e):"Arguments"===t||/^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t)?u(e,r):void 0}}(e))||r&&e&&"number"==typeof e.length){t&&(e=t);var n=0;return function(){return n>=e.length?{done:!0}:{done:!1,value:e[n++]}}}throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}var p=function(i){return function(o){return void 0===o&&(o={}),function(r){visit(r,"element",s);};function s(e,s,l){if(l&&"pre"===l.tagName&&"code"===e.tagName){var u=e.data&&e.data.meta?e.data.meta:"";e.properties.className?"boolean"==typeof e.properties.className?e.properties.className=[]:Array.isArray(e.properties.className)||(e.properties.className=[e.properties.className]):e.properties.className=[],e.properties.className.push("code-highlight");var p,f,m=function(e){for(var r,t=c(e.properties.className);!(r=t()).done;){var n=r.value;if("language-"===n.slice(0,9))return n.slice(9).toLowerCase()}return null}(e);if(m)try{p=i.highlight(toString(e),m),l.properties.className=(l.properties.className||[]).concat("language-"+m);}catch(r){if(!o.ignoreMissing||!/Unknown language/.test(r.message))throw r;p=e;}else p=e;p.children=(f=1,function e(r){return r.reduce(function(r,t){if("text"===t.type){var n=t.value,i=(n.match(/\n/g)||"").length;if(0===i)t.position={start:{line:f,column:0},end:{line:f,column:0}},r.push(t);else for(var o,a=n.split("\n"),s=c(a.entries());!(o=s()).done;){var l=o.value,u=l[0],p=l[1];r.push({type:"text",value:u===a.length-1?p:p+"\n",position:{start:{line:f+u},end:{line:f+u}}});}return f+=i,r}if(Object.prototype.hasOwnProperty.call(t,"children")){var m=f;return t.children=e(t.children),r.push(t),t.position={start:{line:m,column:0},end:{line:f,column:0}},r}return r.push(t),r},[])})(p.children),p.position=p.children.length>0?{start:{line:p.children[0].position.start.line,column:0},end:{line:p.children[p.children.length-1].position.end.line,column:0}}:{start:{line:0,column:0},end:{line:0,column:0}};for(var h,d=function(e){var r=/{([\d,-]+)}/,t=e.split(",").map(function(e){return e.trim()}).join();if(r.test(t)){var i=r.exec(t)[1],o=n(i);return function(e){return o.includes(e+1)}}return function(){return !1}}(u),g=function(e){var r=/*#__PURE__*/a(/showLineNumbers=([0-9]+)/i,{lines:1});if(r.test(e)){var t=r.exec(e);return Number(t.groups.lines)}return 1}(u),y=function(e){for(var r=new Array(e),t=0;t<e;t++)r[t]={type:"element",tagName:"span",properties:{className:[]},children:[]};return r}(p.position.end.line),v=["showlinenumbers=false",'showlinenumbers="false"',"showlinenumbers={false}"],b=function(){var e=h.value,n=e[0],i=e[1];i.properties.className=["code-line"];var a=filter(p,function(e){return e.position.start.line<=n+1&&e.position.end.line>=n+1});i.children=a.children,!u.toLowerCase().includes("showLineNumbers".toLowerCase())&&!o.showLineNumbers||v.some(function(e){return u.toLowerCase().includes(e)})||(i.properties.line=[(n+g).toString()],i.properties.className.push("line-number")),d(n)&&i.properties.className.push("highlight-line"),"diff"===m&&"-"===toString(i).substring(0,1)?i.properties.className.push("deleted"):"diff"===m&&"+"===toString(i).substring(0,1)&&i.properties.className.push("inserted");},w=c(y.entries());!(h=w()).done;)b();y.length>0&&""===toString(y[y.length-1]).trim()&&y.pop(),e.children=y;}}}},m=p(refractor);
 
   function markdown(markdownStr = '', options = {}) {
       const { filterPlugins } = options;
       const remarkPlugins = [remarkGfm, ...(options.remarkPlugins || [])];
       const rehypePlugins = [
-          rehypeVideo,
+          RehypeVideo,
           rehypeRaw,
           [m, { ignoreMissing: true, showLineNumbers: true }],
-          [rehypeAttrs$1, { properties: 'attr' }],
-          rehypeIgnore$1,
+          [rehypeAttrs, { properties: 'attr' }],
+          rehypeIgnore,
           ...(options.rehypePlugins || []),
           [
               remarkRewrite,
@@ -76699,7 +76694,7 @@
       const processor = unified()
           .use(remarkParse)
           .use(filterPlugins && typeof filterPlugins === 'function' ? filterPlugins('remark', remarkPlugins) : remarkPlugins)
-          .use(remarkRehype$1, Object.assign(Object.assign({}, options.remarkRehypeOptions), { allowDangerousHtml: true }))
+          .use(remarkRehype, Object.assign(Object.assign({}, options.remarkRehypeOptions), { allowDangerousHtml: true }))
           .use(filterPlugins && typeof filterPlugins === 'function' ? filterPlugins('rehype', rehypePlugins) : rehypePlugins);
       const file = new VFile();
       file.value = markdownStr;
