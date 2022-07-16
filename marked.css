@@ -559,6 +559,11 @@
   content: "]";
 }
 
+.markdown-body .octicon-video {
+  border: 1px solid #d0d7de !important;
+  border-radius: 6px !important;
+  display: block;
+}
 
 .markdown-body .octicon-video summary {
     border-bottom: 1px solid #d0d7de !important;
