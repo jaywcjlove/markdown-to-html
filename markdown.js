@@ -11617,14 +11617,11 @@
       return { ...defaultAttrs, 'data-config': { ...attrs, rehyp: true } };
   };
 
-  const defaultOptions = {
-      properties: 'data',
-  };
-  const rehypeAttrs = (options) => {
-      const opts = { ...defaultOptions, ...options };
+  const rehypeAttrs = (options = {}) => {
+      const { properties = 'data', codeBlockParames = true } = options;
       return (tree) => {
           visit(tree, 'element', (node, index, parent) => {
-              if (node.tagName === 'pre' && node && Array.isArray(node.children) && parent && Array.isArray(parent.children) && parent.children.length > 1) {
+              if (codeBlockParames && node.tagName === 'pre' && node && Array.isArray(node.children) && parent && Array.isArray(parent.children) && parent.children.length > 1) {
                   const firstChild = node.children[0];
                   if (firstChild && firstChild.tagName === 'code' && typeof index === 'number') {
                       const child = prevChild(parent.children, index);
@@ -11632,7 +11629,7 @@
                           const attr = getCommentObject(child);
                           if (Object.keys(attr).length > 0) {
                               node.properties = { ...node.properties, ...{ 'data-type': 'rehyp' } };
-                              firstChild.properties = propertiesHandle(firstChild.properties, attr, opts.properties);
+                              firstChild.properties = propertiesHandle(firstChild.properties, attr, properties);
                           }
                       }
                   }
@@ -11642,7 +11639,7 @@
                   if (child) {
                       const attr = getCommentObject(child);
                       if (Object.keys(attr).length > 0) {
-                          node.properties = propertiesHandle(node.properties, attr, opts.properties);
+                          node.properties = propertiesHandle(node.properties, attr, properties);
                       }
                   }
               }
