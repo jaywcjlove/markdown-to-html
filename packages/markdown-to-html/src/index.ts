@@ -37,7 +37,7 @@ function markdown(markdownStr: string = '', options: Options = {}) {
     rehypeVideo,
     rehypeRaw,
     [rehypePrism, { ignoreMissing: true, showLineNumbers: true }],
-    [rehypeAttrs, { properties: 'attr' }],
+    [rehypeAttrs, { properties: 'attr', codeBlockParames: false }],
     rehypeIgnore,
     ...(options.rehypePlugins || []),
     [
