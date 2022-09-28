@@ -77419,7 +77419,7 @@
           rehypeVideo,
           rehypeRaw,
           [m, { ignoreMissing: true, showLineNumbers: true }],
-          [rehypeAttrs$1, { properties: 'attr' }],
+          [rehypeAttrs$1, { properties: 'attr', codeBlockParames: false }],
           rehypeIgnore$1,
           ...(options.rehypePlugins || []),
           [
