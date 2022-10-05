@@ -1,6 +1,6 @@
 {
   "name": "@wcj/markdown-style",
-  "version": "1.0.20",
+  "version": "1.0.21",
   "description": "Integrate markdown styles into web components, Markdown CSS styles will not be conflicted.",
   "type": "module",
   "main": "lib/index.js",
