@@ -28,14 +28,16 @@ export interface Options {
   hastNode?: boolean;
   /** Rewrite Element. [rehype-rewrite](https://github.com/jaywcjlove/rehype-rewrite#rewritenode-index-parent-void) */
   rewrite?: RehypeRewriteOptions['rewrite'];
+  /** code blocks show line numbers. @default `true` */
+  showLineNumbers?: boolean;
 }
 
 function markdown(markdownStr: string = '', options: Options = {}) {
-  const { filterPlugins } = options;
+  const { filterPlugins, showLineNumbers = true } = options;
   const remarkPlugins: PluggableList = [remarkGfm, ...(options.remarkPlugins || [])];
   const rehypePlugins: PluggableList = [
     rehypeVideo,
-    [rehypePrism, { ignoreMissing: true, showLineNumbers: true }],
+    [rehypePrism, { ignoreMissing: true, showLineNumbers }],
     rehypeRaw,
     [rehypeAttrs, { properties: 'attr', codeBlockParames: false }],
     rehypeIgnore,
