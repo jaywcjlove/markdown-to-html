@@ -35,8 +35,8 @@ function markdown(markdownStr: string = '', options: Options = {}) {
   const remarkPlugins: PluggableList = [remarkGfm, ...(options.remarkPlugins || [])];
   const rehypePlugins: PluggableList = [
     rehypeVideo,
-    rehypeRaw,
     [rehypePrism, { ignoreMissing: true, showLineNumbers: true }],
+    rehypeRaw,
     [rehypeAttrs, { properties: 'attr', codeBlockParames: false }],
     rehypeIgnore,
     ...(options.rehypePlugins || []),
