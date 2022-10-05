@@ -3024,75 +3024,6 @@
     return result
   }
 
-  const characterReferences = {'"': 'quot', '&': 'amp', '<': 'lt', '>': 'gt'};
-
-  /**
-   * Encode only the dangerous HTML characters.
-   *
-   * This ensures that certain characters which have special meaning in HTML are
-   * dealt with.
-   * Technically, we can skip `>` and `"` in many cases, but CM includes them.
-   *
-   * @param {string} value
-   * @returns {string}
-   */
-  function encode$1(value) {
-    return value.replace(/["&<>]/g, replace)
-
-    /**
-     * @param {string} value
-     * @returns {string}
-     */
-    function replace(value) {
-      // @ts-expect-error Hush, it’s fine.
-      return '&' + characterReferences[value] + ';'
-    }
-  }
-
-  /**
-   * Make a value safe for injection as a URL.
-   *
-   * This encodes unsafe characters with percent-encoding and skips already
-   * encoded sequences (see `normalizeUri` below).
-   * Further unsafe characters are encoded as character references (see
-   * `micromark-util-encode`).
-   *
-   * Then, a regex of allowed protocols can be given, in which case the URL is
-   * sanitized.
-   * For example, `/^(https?|ircs?|mailto|xmpp)$/i` can be used for `a[href]`,
-   * or `/^https?$/i` for `img[src]`.
-   * If the URL includes an unknown protocol (one not matched by `protocol`, such
-   * as a dangerous example, `javascript:`), the value is ignored.
-   *
-   * @param {string|undefined} url
-   * @param {RegExp} [protocol]
-   * @returns {string}
-   */
-  function sanitizeUri(url, protocol) {
-    const value = encode$1(normalizeUri(url || ''));
-
-    if (!protocol) {
-      return value
-    }
-
-    const colon = value.indexOf(':');
-    const questionMark = value.indexOf('?');
-    const numberSign = value.indexOf('#');
-    const slash = value.indexOf('/');
-
-    if (
-      // If there is no protocol, it’s relative.
-      colon < 0 || // If the first colon is after a `?`, `#`, or `/`, it’s not a protocol.
-      (slash > -1 && colon > slash) ||
-      (questionMark > -1 && colon > questionMark) ||
-      (numberSign > -1 && colon > numberSign) || // It is a protocol, it should be allowed.
-      protocol.test(value.slice(0, colon))
-    ) {
-      return value
-    }
-
-    return ''
-  }
   /**
    * Normalize a URL (such as used in definitions).
    *
@@ -3104,7 +3035,7 @@
    */
 
   function normalizeUri(value) {
-    /** @type {string[]} */
+    /** @type {Array<string>} */
     const result = [];
     let index = -1;
     let start = 0;
@@ -11560,7 +11491,7 @@
       }
       return;
   };
-  const nextChild = (data = [], index, tagName) => {
+  const nextChild = (data = [], index, tagName, codeBlockParames) => {
       let i = index;
       while (i < data.length) {
           i++;
@@ -11572,15 +11503,22 @@
           }
           else {
               const element = data[i];
-              if (!element || (element.type !== 'text' && element.type !== 'comment') || (element.type === 'text' && element.value.replace(/(\n|\s)/g, '') !== ''))
+              if (!element || element.type === 'element')
                   return;
-              if (element.type === 'comment') {
+              if (element.type === 'text' && element.value.replace(/(\n|\s)/g, '') !== '')
+                  return;
+              if (element?.type === 'comment') {
                   if (!/^rehype:/.test(element.value))
                       return;
-                  const nextNode = nextChild(data, i, 'pre');
-                  if (nextNode)
-                      return;
-                  return element;
+                  if (codeBlockParames) {
+                      const nextNode = nextChild(data, i, 'pre', codeBlockParames);
+                      if (nextNode)
+                          return;
+                      return element;
+                  }
+                  else {
+                      return element;
+                  }
               }
           }
       }
@@ -11635,7 +11573,7 @@
                   }
               }
               if (/^(em|strong|b|a|i|p|pre|kbd|blockquote|h(1|2|3|4|5|6)|code|table|img|del|ul|ol)$/.test(node.tagName) && parent && Array.isArray(parent.children) && typeof index === 'number') {
-                  const child = nextChild(parent.children, index);
+                  const child = nextChild(parent.children, index, '', codeBlockParames);
                   if (child) {
                       const attr = getCommentObject(child);
                       if (Object.keys(attr).length > 0) {
@@ -14827,7 +14765,7 @@
 
       const content = all$3(h, def);
       const id = String(def.identifier);
-      const safeId = sanitizeUri(id.toLowerCase());
+      const safeId = normalizeUri(id.toLowerCase());
       let referenceIndex = 0;
       /** @type {Array<ElementContent>} */
       const backReferences = [];
@@ -15023,7 +14961,7 @@
    */
   function footnoteReference(h, node) {
     const id = String(node.identifier);
-    const safeId = sanitizeUri(id.toLowerCase());
+    const safeId = normalizeUri(id.toLowerCase());
     const index = h.footnoteOrder.indexOf(id);
     /** @type {number} */
     let counter;
@@ -15190,7 +15128,7 @@
     }
 
     /** @type {Properties} */
-    const props = {src: sanitizeUri(def.url || ''), alt: node.alt};
+    const props = {src: normalizeUri(def.url || ''), alt: node.alt};
 
     if (def.title !== null && def.title !== undefined) {
       props.title = def.title;
@@ -15211,7 +15149,7 @@
    */
   function image(h, node) {
     /** @type {Properties} */
-    const props = {src: sanitizeUri(node.url), alt: node.alt};
+    const props = {src: normalizeUri(node.url), alt: node.alt};
 
     if (node.title !== null && node.title !== undefined) {
       props.title = node.title;
@@ -15251,7 +15189,7 @@
     }
 
     /** @type {Properties} */
-    const props = {href: sanitizeUri(def.url || '')};
+    const props = {href: normalizeUri(def.url || '')};
 
     if (def.title !== null && def.title !== undefined) {
       props.title = def.title;
@@ -15272,7 +15210,7 @@
    */
   function link(h, node) {
     /** @type {Properties} */
-    const props = {href: sanitizeUri(node.url)};
+    const props = {href: normalizeUri(node.url)};
 
     if (node.title !== null && node.title !== undefined) {
       props.title = node.title;
@@ -77417,8 +77355,8 @@
       const remarkPlugins = [remarkGfm, ...(options.remarkPlugins || [])];
       const rehypePlugins = [
           rehypeVideo,
-          rehypeRaw,
           [m, { ignoreMissing: true, showLineNumbers: true }],
+          rehypeRaw,
           [rehypeAttrs$1, { properties: 'attr', codeBlockParames: false }],
           rehypeIgnore$1,
           ...(options.rehypePlugins || []),
