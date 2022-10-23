@@ -38,7 +38,6 @@ function markdown(markdownStr: string = '', options: Options = {}) {
   const rehypePlugins: PluggableList = [
     rehypeVideo,
     [rehypePrism, { ignoreMissing: true, showLineNumbers }],
-    rehypeRaw,
     [rehypeAttrs, { properties: 'attr', codeBlockParames: false }],
     rehypeIgnore,
     ...(options.rehypePlugins || []),
@@ -84,6 +83,7 @@ function markdown(markdownStr: string = '', options: Options = {}) {
         },
       },
     ],
+    rehypeRaw,
     rehypeKatex,
     stringify,
   ];
