@@ -11507,16 +11507,19 @@
                   return;
               if (element.type === 'text' && element.value.replace(/(\n|\s)/g, '') !== '')
                   return;
-              if (element?.type === 'comment') {
-                  if (!/^rehype:/.test(element.value))
+              if (/^(comment|raw)$/ig.test(element?.type)) {
+                  if (!/^rehype:/.test(element.value?.replace(/^(\s+)?<!--(.*?)-->/, '$2') || '')) {
                       return;
+                  }
                   if (codeBlockParames) {
                       const nextNode = nextChild(data, i, 'pre', codeBlockParames);
                       if (nextNode)
                           return;
+                      element.value = element.value?.replace(/^(\n|\s)+/, '');
                       return element;
                   }
                   else {
+                      element.value = element.value?.replace(/^(\n|\s)+/, '');
                       return element;
                   }
               }
@@ -11531,7 +11534,7 @@
    * @returns 返回 当前参数数据 Object，`{}`
    */
   const getCommentObject = ({ value = '' }) => {
-      const param = getURLParameters(value.replace(/^rehype:/, ''));
+      const param = getURLParameters(value.replace(/^<!--(.*?)-->/, '$1').replace(/^rehype:/, ''));
       Object.keys(param).forEach((keyName) => {
           if (param[keyName] === 'true') {
               param[keyName] = true;
@@ -11744,7 +11747,7 @@
 
   function initializeDocument(effects) {
     const self = this;
-    /** @type {StackItem[]} */
+    /** @type {Array<StackItem>} */
 
     const stack = [];
     let continued = 0;
@@ -12412,13 +12415,13 @@
     /** @type {Record<string, number>} */
 
     const columnStart = {};
-    /** @type {Construct[]} */
+    /** @type {Array<Construct>} */
 
     const resolveAllConstructs = [];
-    /** @type {Chunk[]} */
+    /** @type {Array<Chunk>} */
 
     let chunks = [];
-    /** @type {Token[]} */
+    /** @type {Array<Token>} */
 
     let stack = [];
     /**
@@ -12635,14 +12638,14 @@
        * Handle either an object mapping codes to constructs, a list of
        * constructs, or a single construct.
        *
-       * @param {Construct|Construct[]|ConstructRecord} constructs
+       * @param {Construct|Array<Construct>|ConstructRecord} constructs
        * @param {State} returnState
        * @param {State} [bogusState]
        * @returns {State}
        */
 
       function hook(constructs, returnState, bogusState) {
-        /** @type {Construct[]} */
+        /** @type {Array<Construct>} */
         let listOfConstructs;
         /** @type {number} */
 
@@ -12686,7 +12689,7 @@
         /**
          * Handle a list of construct.
          *
-         * @param {Construct[]} list
+         * @param {Array<Construct>} list
          * @returns {State}
          */
 
@@ -12832,9 +12835,9 @@
   /**
    * Get the chunks from a slice of chunks in the range of a token.
    *
-   * @param {Chunk[]} chunks
+   * @param {Array<Chunk>} chunks
    * @param {Pick<Token, 'start'|'end'>} token
-   * @returns {Chunk[]}
+   * @returns {Array<Chunk>}
    */
 
   function sliceChunks(chunks, token) {
@@ -12842,7 +12845,7 @@
     const startBufferIndex = token.start._bufferIndex;
     const endIndex = token.end._index;
     const endBufferIndex = token.end._bufferIndex;
-    /** @type {Chunk[]} */
+    /** @type {Array<Chunk>} */
 
     let view;
 
@@ -12868,14 +12871,14 @@
   /**
    * Get the string value of a slice of chunks.
    *
-   * @param {Chunk[]} chunks
+   * @param {Array<Chunk>} chunks
    * @param {boolean} [expandTabs=false]
    * @returns {string}
    */
 
   function serializeChunks(chunks, expandTabs) {
     let index = -1;
-    /** @type {string[]} */
+    /** @type {Array<string>} */
 
     const result = [];
     /** @type {boolean|undefined} */
@@ -13085,7 +13088,7 @@
    * @param {Value} value
    * @param {Encoding} [encoding]
    * @param {boolean} [end=false]
-   * @returns {Chunk[]}
+   * @returns {Array<Chunk>}
    */
   const search$1 = /[\0\t\n\r]/g;
   /**
@@ -13105,7 +13108,7 @@
     /** @type {Preprocessor} */
 
     function preprocessor(value, encoding, end) {
-      /** @type {Chunk[]} */
+      /** @type {Array<Chunk>} */
       const chunks = [];
       /** @type {RegExpMatchArray|null} */
 
@@ -13207,8 +13210,8 @@
    * @typedef {import('micromark-util-types').Event} Event
    */
   /**
-   * @param {Event[]} events
-   * @returns {Event[]}
+   * @param {Array<Event>} events
+   * @returns {Array<Event>}
    */
 
   function postprocess(events) {
@@ -44326,15 +44329,17 @@
    *
    * @typedef {Root|Element} HResult
    * @typedef {string|number} HStyleValue
-   * @typedef {Object.<string, HStyleValue>} HStyle
+   * @typedef {Record<string, HStyleValue>} HStyle
    * @typedef {string|number|boolean|null|undefined} HPrimitiveValue
-   * @typedef {Array.<string|number>} HArrayValue
+   * @typedef {Array<string|number>} HArrayValue
    * @typedef {HPrimitiveValue|HArrayValue} HPropertyValue
    * @typedef {{[property: string]: HPropertyValue|HStyle}} HProperties
+   *   Acceptable properties value.
    *
    * @typedef {string|number|null|undefined} HPrimitiveChild
-   * @typedef {Array.<Node|HPrimitiveChild>} HArrayChild
+   * @typedef {Array<Node|HPrimitiveChild>} HArrayChild
    * @typedef {Node|HPrimitiveChild|HArrayChild} HChild
+   *   Acceptable child value
    */
 
   const buttonTypes = new Set(['menu', 'submit', 'reset', 'button']);
@@ -44344,7 +44349,7 @@
   /**
    * @param {Schema} schema
    * @param {string} defaultTagName
-   * @param {Array.<string>} [caseSensitive]
+   * @param {Array<string>} [caseSensitive]
    */
   function core$1(schema, defaultTagName, caseSensitive) {
     const adjust = caseSensitive && createAdjustMap(caseSensitive);
@@ -44353,9 +44358,9 @@
       /**
        * @type {{
        *   (): Root
-       *   (selector: null|undefined, ...children: HChild[]): Root
-       *   (selector: string, properties?: HProperties, ...children: HChild[]): Element
-       *   (selector: string, ...children: HChild[]): Element
+       *   (selector: null|undefined, ...children: Array<HChild>): Root
+       *   (selector: string, properties?: HProperties, ...children: Array<HChild>): Element
+       *   (selector: string, ...children: Array<HChild>): Element
        * }}
        */
       (
@@ -44364,7 +44369,7 @@
          *
          * @param {string|null} [selector]
          * @param {HProperties|HChild} [properties]
-         * @param {HChild[]} children
+         * @param {Array<HChild>} children
          * @returns {HResult}
          */
         function (selector, properties, ...children) {
@@ -44491,7 +44496,7 @@
     }
 
     if (Array.isArray(result)) {
-      /** @type {Array.<string|number>} */
+      /** @type {Array<string|number>} */
       const finalResult = [];
 
       while (++index < result.length) {
@@ -44512,7 +44517,7 @@
   }
 
   /**
-   * @param {Array.<Child>} nodes
+   * @param {Array<Child>} nodes
    * @param {HChild} value
    * @returns {void}
    */
@@ -44566,7 +44571,7 @@
    * @returns {string}
    */
   function style(value) {
-    /** @type {Array.<string>} */
+    /** @type {Array<string>} */
     const result = [];
     /** @type {string} */
     let key;
@@ -44581,11 +44586,11 @@
   }
 
   /**
-   * @param {Array.<string>} values
-   * @returns {Object.<string, string>}
+   * @param {Array<string>} values
+   * @returns {Record<string, string>}
    */
   function createAdjustMap(values) {
-    /** @type {Object.<string, string>} */
+    /** @type {Record<string, string>} */
     const result = {};
     let index = -1;
 
@@ -44651,8 +44656,8 @@
   ];
 
   /**
-   * @typedef {import('./core.js').HChild} Child Acceptable child value
-   * @typedef {import('./core.js').HProperties} Properties Acceptable properties value.
+   * @typedef {import('./core.js').HChild} Child
+   * @typedef {import('./core.js').HProperties} Properties
    *
    * @typedef {import('./jsx-classic').Element} s.JSX.Element
    * @typedef {import('./jsx-classic').IntrinsicAttributes} s.JSX.IntrinsicAttributes
@@ -45570,13 +45575,17 @@
                   // }
                   let start = false;
                   node.children = node.children.filter((item) => {
-                      if (item.type === 'comment' && item.value.trim() === openDelimiter) {
-                          start = true;
-                          return false;
-                      }
-                      if (item.type === 'comment' && item.value.trim() === closeDelimiter) {
-                          start = false;
-                          return false;
+                      if (item.type === 'raw' || item.type === 'comment') {
+                          let str = item.value?.trim();
+                          str = str.replace(/^<!--(.*?)-->/, '$1');
+                          if (str === openDelimiter) {
+                              start = true;
+                              return false;
+                          }
+                          if (str === closeDelimiter) {
+                              start = false;
+                              return false;
+                          }
                       }
                       return !start;
                   });
@@ -77356,7 +77365,6 @@
       const rehypePlugins = [
           rehypeVideo,
           [m, { ignoreMissing: true, showLineNumbers }],
-          rehypeRaw,
           [rehypeAttrs$1, { properties: 'attr', codeBlockParames: false }],
           rehypeIgnore$1,
           ...(options.rehypePlugins || []),
@@ -77399,6 +77407,7 @@
                   },
               },
           ],
+          rehypeRaw,
           rehypeKatex,
           rehypeStringify,
       ];
