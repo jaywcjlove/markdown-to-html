@@ -15,6 +15,11 @@ import rehypePrism from 'rehype-prism-plus';
 
 export { getCodeString };
 
+Object.defineProperty(rehypePrism, 'name', {
+  value: 'rehypePrism',
+  configurable: true,
+});
+
 export interface Options {
   /** [remark-rehype](https://github.com/remarkjs/remark-rehype) options */
   remarkRehypeOptions?: RemarkRehypeOptions;
