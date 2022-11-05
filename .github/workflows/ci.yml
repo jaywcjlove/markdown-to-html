@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
@@ -17,25 +17,12 @@ jobs:
       - run: npm run hoist
       - run: npm run build
       - run: npm run build:dist
-      - run: npm run build:wc
 
       - run: mkdir -p website
       - run: cp -rp packages/markdown-to-html/dist/*.js website
       - run: cp -rp packages/markdown-to-html/dist/*.css website
 
       - run: mkdir -p website/lib
-
-      - run: cp -rp packages/markdown-style/lib/*.js website/lib
-      
-      - name: action-ejs
-        uses: jaywcjlove/action-ejs@main
-        with:
-          template-file: packages/markdown-style/demo.html
-          output: website/style.html
-          vars-file: |
-            {
-              "markdownString": "./packages/markdown-style/README.md"
-            }
 
       - name: Generate Contributors Images
         uses: jaywcjlove/github-action-contributors@main
@@ -46,13 +33,13 @@ jobs:
 
       - name: Create Tag
         id: create_tag
-        uses: jaywcjlove/create-tag-action@v1.3.6
+        uses: jaywcjlove/create-tag-action@main
         with:
           package-path: packages/markdown-to-html/package.json
 
       - name: get tag version
         id: tag_version
-        uses: jaywcjlove/changelog-generator@v1.5.0
+        uses: jaywcjlove/changelog-generator@main
 
       - name: 🌐 Generate Documentation Website
         uses: jaywcjlove/action-ejs@main
@@ -73,7 +60,7 @@ jobs:
             
       - name: Generate Changelog
         id: changelog
-        uses: jaywcjlove/changelog-generator@v1.5.0
+        uses: jaywcjlove/changelog-generator@main
         with:
           head-ref: ${{steps.create_tag.outputs.version}}
           filter-author: (renovate-bot|Renovate Bot)
@@ -107,9 +94,3 @@ jobs:
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: packages/markdown-to-html/package.json
-
-      - name: 📦 @wcj/markdown-style publish to NPM
-        uses: JS-DevTools/npm-publish@v1
-        with:
-          token: ${{ secrets.NPM_TOKEN }}
-          package: packages/markdown-style/package.json
