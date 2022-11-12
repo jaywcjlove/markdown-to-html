@@ -54,10 +54,10 @@ CDN: [UNPKG](https://unpkg.com/@wcj/markdown-to-html/dist/) | [jsDelivr](https:/
 <link rel="stylesheet" href="https://unpkg.com/@wcj/markdown-to-html/dist/marked.css">
 ```
 
-② Or use [`<markdown-style>`](https://jaywcjlove.github.io/markdown-to-html/style.html) components.
+② Or use [`<markdown-style>`](https://jaywcjlove.github.io/markdown-style) components.
 
 [![npm version](https://img.shields.io/npm/v/@wcj/markdown-style.svg)](https://www.npmjs.com/package/@wcj/markdown-style)
-[![Github Source Code](https://shields.io/badge/style-%3Cmarkdown--style%3E-green?logo=github&label=github)](https://github.com/jaywcjlove/markdown-to-html/tree/main/packages/markdown-style)
+[![Github Source Code](https://shields.io/badge/style-%3Cmarkdown--style%3E-green?logo=github&label=github)](https://github.com/jaywcjlove/markdown-style)
 
 ```html
 <script src="https://unpkg.com/@wcj/markdown-style"></script>
