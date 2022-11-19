@@ -1,5 +1,5 @@
 /**! 
- * @wcj/markdown-to-html v2.1.2 
+ * @wcj/markdown-to-html v2.2.0 
  * Converts markdown text to HTML. 
  * 
  * Copyright (c) 2022 kenny wang <wowohoo@qq.com> (https://github.com/jaywcjlove) 
@@ -97,12 +97,17 @@
 
   class VFileMessage extends Error {
     /**
-     * Constructor of a message for `reason` at `place` from `origin`.
-     * When an error is passed in as `reason`, copies the `stack`.
+     * Create a message for `reason` at `place` from `origin`.
      *
-     * @param {string|Error} reason Reason for message (`string` or `Error`). Uses the stack and message of the error if given.
-     * @param {Node|NodeLike|Position|Point} [place] Place at which the message occurred in a file (`Node`, `Position`, or `Point`, optional).
-     * @param {string} [origin] Place in code the message originates from (`string`, optional).
+     * When an error is passed in as `reason`, the `stack` is copied.
+     *
+     * @param {string|Error|VFileMessage} reason
+     *   Reason for message.
+     *   Uses the stack and message of the error if given.
+     * @param {Node|NodeLike|Position|Point} [place]
+     *   Place at which the message occurred in a file.
+     * @param {string} [origin]
+     *   Place in code the message originates from (example `'my-package:my-rule-name'`)
      */
     constructor(reason, place, origin) {
       /** @type {[string|null, string|null]} */
@@ -137,11 +142,13 @@
         // Node.
         if ('type' in place || 'position' in place) {
           if (place.position) {
+            // @ts-expect-error: looks like a position.
             position = place.position;
           }
         }
         // Position.
         else if ('start' in place || 'end' in place) {
+          // @ts-expect-error: looks like a position.
           position = place;
         }
         // Point.
@@ -152,76 +159,109 @@
 
       // Fields from `Error`
       this.name = stringifyPosition(place) || '1:1';
+      /** @type {string} */
       this.message = typeof reason === 'object' ? reason.message : reason;
-      this.stack = typeof reason === 'object' ? reason.stack : '';
+      /** @type {string} */
+      this.stack = '';
+
+      if (typeof reason === 'object' && reason.stack) {
+        this.stack = reason.stack;
+      }
 
       /**
        * Reason for message.
+       *
        * @type {string}
        */
       this.reason = this.message;
+
+      /* eslint-disable no-unused-expressions */
       /**
-       * If true, marks associated file as no longer processable.
+       * Whether this is a fatal problem that marks an associated file as no
+       * longer processable.
+       * If `true`, marks associated file as no longer processable.
+       * If `false`, necessitates a (potential) change.
+       * The value can also be `null` or `undefined`, for things that might not
+       * need changing.
+       *
        * @type {boolean?}
        */
-      // eslint-disable-next-line no-unused-expressions
       this.fatal;
+
       /**
        * Starting line of error.
+       *
        * @type {number?}
        */
       this.line = position.start.line;
+
       /**
        * Starting column of error.
+       *
        * @type {number?}
        */
       this.column = position.start.column;
-      /**
-       * Namespace of warning.
-       * @type {string?}
-       */
-      this.source = parts[0];
-      /**
-       * Category of message.
-       * @type {string?}
-       */
-      this.ruleId = parts[1];
+
       /**
        * Full range information, when available.
-       * Has start and end properties, both set to an object with line and column, set to number?.
+       * Has `start` and `end` fields, both set to an object with `line` and
+       * `column`, set to `number?`.
+       *
        * @type {Position?}
        */
       this.position = position;
+
+      /**
+       * Namespace of warning (example: `'my-package'`).
+       *
+       * @type {string?}
+       */
+      this.source = parts[0];
+
+      /**
+       * Category of message (example: `'my-rule-name'`).
+       *
+       * @type {string?}
+       */
+      this.ruleId = parts[1];
+
+      /**
+       * Path of a file (used throughout the VFile ecosystem).
+       *
+       * @type {string?}
+       */
+      this.file;
 
       // The following fields are “well known”.
       // Not standard.
       // Feel free to add other non-standard fields to your messages.
 
-      /* eslint-disable no-unused-expressions */
       /**
-       * You can use this to specify the source value that’s being reported, which
-       * is deemed incorrect.
+       * Specify the source value that’s being reported, which is deemed
+       * incorrect.
+       *
        * @type {string?}
        */
       this.actual;
+
       /**
-       * You can use this to suggest values that should be used instead of
-       * `actual`, one or more values that are deemed as acceptable.
+       * Suggest values that should be used instead of `actual`, one or more
+       * values that are deemed as acceptable.
+       *
        * @type {Array<string>?}
        */
       this.expected;
+
       /**
-       * You may add a file property with a path of a file (used throughout the VFile ecosystem).
-       * @type {string?}
-       */
-      this.file;
-      /**
-       * You may add a url property with a link to documentation for the message.
+       * Link to documentation for the message.
+       *
        * @type {string?}
        */
       this.url;
+
       /**
-       * You may add a note property with a long form description of the message (supported by vfile-reporter).
+       * Long form description of the message (supported by `vfile-reporter`).
+       *
        * @type {string?}
        */
       this.note;
@@ -1049,7 +1089,7 @@
      * associates it with the file by adding it to `vfile.messages` and setting
      * `message.file` to the current filepath.
      *
-     * @param {string|Error} reason
+     * @param {string|Error|VFileMessage} reason
      *   Human readable reason for the message, uses the stack and message of the error if given.
      * @param {Node|NodeLike|Position|Point} [place]
      *   Place where the message occurred in the file.
@@ -1077,7 +1117,7 @@
      * Like `VFile#message()`, but associates an informational message where
      * `fatal` is set to `null`.
      *
-     * @param {string|Error} reason
+     * @param {string|Error|VFileMessage} reason
      *   Human readable reason for the message, uses the stack and message of the error if given.
      * @param {Node|NodeLike|Position|Point} [place]
      *   Place where the message occurred in the file.
@@ -1100,7 +1140,7 @@
      *
      * > 👉 **Note**: a fatal error means that a file is no longer processable.
      *
-     * @param {string|Error} reason
+     * @param {string|Error|VFileMessage} reason
      *   Human readable reason for the message, uses the stack and message of the error if given.
      * @param {Node|NodeLike|Position|Point} [place]
      *   Place where the message occurred in the file.
@@ -44253,10 +44293,12 @@
     );
 
   /**
-   * Parse space separated tokens to an array of strings.
+   * Parse space-separated tokens to an array of strings.
    *
-   * @param {string} value Space separated tokens
-   * @returns {Array.<string>} Tokens
+   * @param {string} value
+   *   Space-separated tokens.
+   * @returns {Array<string>}
+   *   List of tokens.
    */
   function parse$4(value) {
     const input = String(value || '').trim();
@@ -44264,37 +44306,47 @@
   }
 
   /**
-   * Serialize an array of strings as space separated tokens.
+   * Serialize an array of strings as space separated-tokens.
    *
-   * @param {Array.<string|number>} values Tokens
-   * @returns {string} Space separated tokens
+   * @param {Array<string|number>} values
+   *   List of tokens.
+   * @returns {string}
+   *   Space-separated tokens.
    */
   function stringify$2(values) {
     return values.join(' ').trim()
   }
 
   /**
-   * @typedef {Object} StringifyOptions
-   * @property {boolean} [padLeft=true] Whether to pad a space before a token (`boolean`, default: `true`).
-   * @property {boolean} [padRight=false] Whether to pad a space after a token (`boolean`, default: `false`).
+   * @typedef Options
+   *   Configuration for `stringify`.
+   * @property {boolean} [padLeft=true]
+   *   Whether to pad a space before a token.
+   * @property {boolean} [padRight=false]
+   *   Whether to pad a space after a token.
    */
 
   /**
-   * Parse comma separated tokens to an array.
+   * @typedef {Options} StringifyOptions
+   *   Please use `StringifyOptions` instead.
+   */
+
+  /**
+   * Parse comma-separated tokens to an array.
    *
    * @param {string} value
-   * @returns {Array.<string>}
+   *   Comma-separated tokens.
+   * @returns {Array<string>}
+   *   List of tokens.
    */
   function parse$3(value) {
-    /** @type {Array.<string>} */
-    var tokens = [];
-    var input = String(value || '');
-    var index = input.indexOf(',');
-    var start = 0;
+    /** @type {Array<string>} */
+    const tokens = [];
+    const input = String(value || '');
+    let index = input.indexOf(',');
+    let start = 0;
     /** @type {boolean} */
-    var end;
-    /** @type {string} */
-    var token;
+    let end = false;
 
     while (!end) {
       if (index === -1) {
@@ -44302,7 +44354,7 @@
         end = true;
       }
 
-      token = input.slice(start, index).trim();
+      const token = input.slice(start, index).trim();
 
       if (token || !end) {
         tokens.push(token);
@@ -44316,21 +44368,22 @@
   }
 
   /**
-   * Serialize an array of strings to comma separated tokens.
+   * Serialize an array of strings or numbers to comma-separated tokens.
    *
-   * @param {Array.<string|number>} values
-   * @param {StringifyOptions} [options]
+   * @param {Array<string|number>} values
+   *   List of tokens.
+   * @param {Options} [options]
+   *   Configuration for `stringify` (optional).
    * @returns {string}
+   *   Comma-separated tokens.
    */
   function stringify$1(values, options) {
-    var settings = options || {};
+    const settings = options || {};
 
     // Ensure the last empty entry is seen.
-    if (values[values.length - 1] === '') {
-      values = values.concat('');
-    }
+    const input = values[values.length - 1] === '' ? [...values, ''] : values;
 
-    return values
+    return input
       .join(
         (settings.padRight ? ' ' : '') +
           ',' +
@@ -46248,32 +46301,75 @@
     return result
   }
 
-  var own$8 = {}.hasOwnProperty;
-
   /**
    * @callback Handler
-   * @param {...unknown} value
-   * @return {unknown}
-   *
-   * @typedef {Record<string, Handler>} Handlers
-   *
-   * @typedef {Object} Options
-   * @property {Handler} [unknown]
-   * @property {Handler} [invalid]
-   * @property {Handlers} [handlers]
+   *   Handle a value, with a certain ID field set to a certain value.
+   *   The ID field is passed to `zwitch`, and it’s value is this function’s
+   *   place on the `handlers` record.
+   * @param {...any} parameters
+   *   Arbitrary parameters passed to the zwitch.
+   *   The first will be an object with a certain ID field set to a certain value.
+   * @returns {any}
+   *   Anything!
    */
 
   /**
-   * Handle values based on a property.
+   * @callback UnknownHandler
+   *   Handle values that do have a certain ID field, but it’s set to a value
+   *   that is not listed in the `handlers` record.
+   * @param {unknown} value
+   *   An object with a certain ID field set to an unknown value.
+   * @param {...any} rest
+   *   Arbitrary parameters passed to the zwitch.
+   * @returns {any}
+   *   Anything!
+   */
+
+  /**
+   * @callback InvalidHandler
+   *   Handle values that do not have a certain ID field.
+   * @param {unknown} value
+   *   Any unknown value.
+   * @param {...any} rest
+   *   Arbitrary parameters passed to the zwitch.
+   * @returns {void|null|undefined|never}
+   *   This should crash or return nothing.
+   */
+
+  /**
+   * @template {InvalidHandler} [Invalid=InvalidHandler]
+   * @template {UnknownHandler} [Unknown=UnknownHandler]
+   * @template {Record<string, Handler>} [Handlers=Record<string, Handler>]
+   * @typedef Options
+   *   Configuration (required).
+   * @property {Invalid} [invalid]
+   *   Handler to use for invalid values.
+   * @property {Unknown} [unknown]
+   *   Handler to use for unknown values.
+   * @property {Handlers} [handlers]
+   *   Handlers to use.
+   */
+
+  const own$8 = {}.hasOwnProperty;
+
+  /**
+   * Handle values based on a field.
    *
+   * @template {InvalidHandler} [Invalid=InvalidHandler]
+   * @template {UnknownHandler} [Unknown=UnknownHandler]
+   * @template {Record<string, Handler>} [Handlers=Record<string, Handler>]
    * @param {string} key
-   * @param {Options} [options]
+   *   Field to switch on.
+   * @param {Options<Invalid, Unknown, Handlers>} [options]
+   *   Configuration (required).
+   * @returns {{unknown: Unknown, invalid: Invalid, handlers: Handlers, (...parameters: Parameters<Handlers[keyof Handlers]>): ReturnType<Handlers[keyof Handlers]>, (...parameters: Parameters<Unknown>): ReturnType<Unknown>}}
    */
   function zwitch(key, options) {
-    var settings = options || {};
+    const settings = options || {};
 
     /**
      * Handle one value.
+     *
      * Based on the bound `key`, a respective handler will be called.
      * If `value` is not an object, or doesn’t have a `key` property, the special
      * “invalid” handler will be called.
@@ -46283,23 +46379,36 @@
      * All arguments, and the context object, are passed through to the handler,
      * and it’s result is returned.
      *
-     * @param {...unknown} [value]
      * @this {unknown}
-     * @returns {unknown}
+     *   Any context object.
+     * @param {unknown} [value]
+     *   Any value.
+     * @param {...unknown} parameters
+     *   Arbitrary parameters passed to the zwitch.
      * @property {Handler} invalid
+     *   Handle for values that do not have a certain ID field.
      * @property {Handler} unknown
+     *   Handle values that do have a certain ID field, but it’s set to a value
+     *   that is not listed in the `handlers` record.
      * @property {Handlers} handlers
+     *   Record of handlers.
+     * @returns {unknown}
+     *   Anything.
      */
-    function one(value) {
-      var fn = one.invalid;
-      var handlers = one.handlers;
+    function one(value, ...parameters) {
+      /** @type {Handler|undefined} */
+      let fn = one.invalid;
+      const handlers = one.handlers;
 
       if (value && own$8.call(value, key)) {
-        fn = own$8.call(handlers, value[key]) ? handlers[value[key]] : one.unknown;
+        // @ts-expect-error Indexable.
+        const id = String(value[key]);
+        // @ts-expect-error Indexable.
+        fn = own$8.call(handlers, id) ? handlers[id] : one.unknown;
       }
 
       if (fn) {
-        return fn.apply(this, arguments)
+        return fn.call(this, value, ...parameters)
       }
     }
 
@@ -46307,6 +46416,7 @@
     one.invalid = settings.invalid;
     one.unknown = settings.unknown;
 
+    // @ts-expect-error: matches!
     return one
   }
 
@@ -47637,47 +47747,74 @@
 
   /**
    * See <https://tools.ietf.org/html/rfc4647#section-3.1>
-   * for more information on the algorithms.
+   * for more info on the algorithms.
    */
 
   /**
    * @typedef {string} Tag
+   *   BCP-47 tag.
    * @typedef {Array<Tag>} Tags
+   *   List of BCP-47 tags.
    * @typedef {string} Range
+   *   RFC 4647 range.
    * @typedef {Array<Range>} Ranges
+   *   List of RFC 4647 range.
    *
    * @callback Check
+   *   An internal check.
    * @param {Tag} tag
+   *   BCP-47 tag.
    * @param {Range} range
+   *   RFC 4647 range.
    * @returns {boolean}
+   *   Whether the range matches the tag.
    *
    * @typedef {FilterOrLookup<true>} Filter
+   *   Filter: yields all tags that match a range.
    * @typedef {FilterOrLookup<false>} Lookup
+   *   Lookup: yields the best tag that matches a range.
    */
 
   /**
    * @template {boolean} IsFilter
+   *   Whether to filter or perform a lookup.
    * @callback FilterOrLookup
+   *   A check.
    * @param {Tag|Tags} tags
-   * @param {Range|Ranges} [ranges='*']
+   *   One or more BCP-47 tags.
+   * @param {Range|Ranges|undefined} [ranges='*']
+   *   One or more RFC 4647 ranges.
    * @returns {IsFilter extends true ? Tags : Tag|undefined}
+   *   Result.
    */
 
   /**
    * Factory to perform a filter or a lookup.
+   *
    * This factory creates a function that accepts a list of tags and a list of
    * ranges, and contains logic to exit early for lookups.
    * `check` just has to deal with one tag and one range.
    * This match function iterates over ranges, and for each range,
-   * iterates over tags.  That way, earlier ranges matching any tag have
-   * precedence over later ranges.
+   * iterates over tags.
+   * That way, earlier ranges matching any tag have precedence over later ranges.
    *
    * @template {boolean} IsFilter
    * @param {Check} check
+   *   A check.
    * @param {IsFilter} filter
+   *   Whether to filter or perform a lookup.
    * @returns {FilterOrLookup<IsFilter>}
+   *   Filter or lookup.
    */
   function factory(check, filter) {
+    /**
+     * @param {Tag|Tags} tags
+     *   One or more BCP-47 tags.
+     * @param {Range|Ranges|undefined} [ranges='*']
+     *   One or more RFC 4647 ranges.
+     * @returns {IsFilter extends true ? Tags : Tag|undefined}
+     *   Result.
+     */
     return function (tags, ranges) {
       let left = cast(tags, 'tag');
       const right = cast(
@@ -47728,6 +47865,13 @@
    * Extended Filtering (Section 3.3.2) matches a language priority list
    * consisting of extended language ranges (Section 2.2) to sets of language
    * tags.
+   *
+   * @param {Tag|Tags} tags
+   *   One or more BCP-47 tags.
+   * @param {Range|Ranges|undefined} [ranges='*']
+   *   One or more RFC 4647 ranges.
+   * @returns {Tags}
+   *   List of BCP-47 tags.
    */
   const extendedFilter = factory(function (tag, range) {
     // 3.3.2.1
@@ -77385,7 +77529,7 @@
       configurable: true,
   });
   function markdown(markdownStr = '', options = {}) {
-      const { filterPlugins, showLineNumbers = true } = options;
+      const { filterPlugins, showLineNumbers = true, katexOptions = {} } = options;
       const remarkPlugins = [remarkGfm, ...(options.remarkPlugins || [])];
       const rehypePlugins = [
           rehypeVideo,
@@ -77433,7 +77577,7 @@
               },
           ],
           rehypeRaw,
-          rehypeKatex,
+          [rehypeKatex, katexOptions],
           rehypeStringify,
       ];
       const processor = unified()
