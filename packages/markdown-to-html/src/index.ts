@@ -6,7 +6,7 @@ import rehypeAttrs from 'rehype-attr';
 import remarkParse from 'remark-parse';
 import remarkRehype, { Options as RemarkRehypeOptions } from 'remark-rehype';
 import rehypeVideo from 'rehype-video';
-import rehypeKatex from 'rehype-katex';
+import rehypeKatex, { Options as KatexOptions } from 'rehype-katex';
 import rehypeIgnore from 'rehype-ignore';
 import rehypeRaw from 'rehype-raw';
 import rehypeRewrite, { RehypeRewriteOptions, getCodeString } from 'rehype-rewrite';
@@ -35,10 +35,12 @@ export interface Options {
   rewrite?: RehypeRewriteOptions['rewrite'];
   /** code blocks show line numbers. @default `true` */
   showLineNumbers?: boolean;
+  /** See KaTeX [options](https://katex.org/docs/options.html). */
+  katexOptions?: KatexOptions;
 }
 
 function markdown(markdownStr: string = '', options: Options = {}) {
-  const { filterPlugins, showLineNumbers = true } = options;
+  const { filterPlugins, showLineNumbers = true, katexOptions = {} } = options;
   const remarkPlugins: PluggableList = [remarkGfm, ...(options.remarkPlugins || [])];
   const rehypePlugins: PluggableList = [
     rehypeVideo,
@@ -89,7 +91,7 @@ function markdown(markdownStr: string = '', options: Options = {}) {
       },
     ],
     rehypeRaw,
-    rehypeKatex,
+    [rehypeKatex, katexOptions],
     stringify,
   ];
 
