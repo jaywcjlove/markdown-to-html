@@ -248,6 +248,8 @@ export interface Options {
   hastNode?: boolean;
   /** Rewrite Element. [rehype-rewrite](https://github.com/jaywcjlove/rehype-rewrite#rewritenode-index-parent-void) */
   rewrite?: RehypeRewriteOptions['rewrite'];
+  /** See KaTeX [options](https://katex.org/docs/options.html). */
+  katexOptions?: KatexOptions;
 }
 export default function markdown(markdownStr?: string, options?: Options): string | import("hast").Root;
 \`\`\`
