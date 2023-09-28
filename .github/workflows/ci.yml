@@ -7,11 +7,14 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
 
       - run: npm install
       - run: npm run hoist
@@ -90,7 +93,8 @@ jobs:
             ```
 
       - name: 📦 @wcj/markdown-to-html publish to NPM
-        uses: JS-DevTools/npm-publish@v1
-        with:
-          token: ${{ secrets.NPM_TOKEN }}
-          package: packages/markdown-to-html/package.json
+        run: npm publish --access public --provenance
+        continue-on-error: true
+        working-directory: packages/markdown-to-html
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
