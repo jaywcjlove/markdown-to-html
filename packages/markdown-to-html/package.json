@@ -37,7 +37,7 @@
     "rehype-attr": "~2.1.2",
     "rehype-ignore": "~1.0.3",
     "rehype-katex": "~6.0.2",
-    "rehype-prism-plus": "1.5.0",
+    "rehype-prism-plus": "1.6.3",
     "rehype-raw": "~6.1.1",
     "rehype-rewrite": "~3.0.6",
     "rehype-stringify": "~9.0.3",
