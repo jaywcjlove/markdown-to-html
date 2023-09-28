@@ -1,10 +1,10 @@
 import typescript from '@rollup/plugin-typescript';
 import commonjs from '@rollup/plugin-commonjs';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
-import { terser } from 'rollup-plugin-terser';
+import terser from '@rollup/plugin-terser';
 import json from '@rollup/plugin-json';
-import banner from 'bannerjs';
-import pkg from './package.json';
+import { multibanner, onebanner } from 'bannerjs';
+import pkg from './package.json' assert { type: 'json' };
 
 export default [
   {
@@ -15,7 +15,7 @@ export default [
         format: 'umd',
         exports: 'named',
         name: 'markdown',
-        banner: banner.multibanner(),
+        banner: multibanner(),
         sourcemap: true,
       },
     ],
@@ -42,7 +42,7 @@ export default [
         format: 'umd',
         exports: 'named',
         name: 'markdown',
-        banner: banner.onebanner(),
+        banner: onebanner(),
         sourcemap: true,
       },
     ],
