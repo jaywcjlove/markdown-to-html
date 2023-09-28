@@ -32,7 +32,7 @@
     "dist"
   ],
   "dependencies": {
-    "@types/hast": "^2.0.0",
+    "@types/hast": "^3.0.0",
     "@types/unist": "^3.0.0",
     "rehype-attr": "~3.0.0",
     "rehype-ignore": "~2.0.0",
