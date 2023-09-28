@@ -1,5 +1,5 @@
 /**! 
- * @wcj/markdown-to-html v2.2.1 
+ * @wcj/markdown-to-html v3.0.0 
  * Converts markdown text to HTML. 
  * 
  * Copyright (c) 2023 kenny wang <wowohoo@qq.com> (https://github.com/jaywcjlove) 
