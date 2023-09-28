@@ -34,7 +34,7 @@
   "dependencies": {
     "@types/hast": "^2.0.0",
     "@types/unist": "^2.0.0",
-    "rehype-attr": "~2.1.2",
+    "rehype-attr": "~3.0.0",
     "rehype-ignore": "~2.0.0",
     "rehype-katex": "~6.0.2",
     "rehype-prism-plus": "1.6.3",
