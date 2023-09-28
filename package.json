@@ -10,8 +10,7 @@
     "remove": "lerna exec \"rm -rf node_modules build package-lock.json\"",
     "clean": "lerna clean --yes && npm run remove",
     "prettier": "prettier --write \"**/*.{js,jsx,tsx,ts,less,md,json}\"",
-    "bootstrap": "lerna bootstrap",
-    "hoist": "lerna bootstrap --hoist"
+    "bootstrap": "lerna bootstrap"
   },
   "keywords": [
     "validator",
