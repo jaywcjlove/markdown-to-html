@@ -1,3 +1,4 @@
+import path from 'path';
 import typescript from '@rollup/plugin-typescript';
 import commonjs from '@rollup/plugin-commonjs';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
@@ -6,9 +7,22 @@ import json from '@rollup/plugin-json';
 import { multibanner, onebanner } from 'bannerjs';
 import pkg from './package.json' assert { type: 'json' };
 
+// const onwarn = (warning, rollupWarn) => {
+//   // Silence circular dependency warning for moment package
+//   // if (
+//   //   warning.code === 'CIRCULAR_DEPENDENCY'
+//   //   && !warning.ids.indexOf(path.normalize('node_modules/hast-util-select/lib/'))
+//   // ) {
+//   //   return
+//   // }
+
+//   console.warn(`Circular dependency: ${warning.message}`);
+// }
+
 export default [
   {
     input: 'src/index.ts',
+    // onwarn,
     output: [
       {
         file: pkg.unpkg,
@@ -36,6 +50,7 @@ export default [
   },
   {
     input: 'src/index.ts',
+    // onwarn,
     output: [
       {
         file: pkg.unpkg.replace(/.js$/, '.min.js'),
