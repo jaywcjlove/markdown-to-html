@@ -43,6 +43,7 @@ function markdown(markdownStr: string = '', options: Options = {}) {
   const { filterPlugins, showLineNumbers = true, katexOptions = {} } = options;
   const remarkPlugins: PluggableList = [remarkGfm, ...(options.remarkPlugins || [])];
   const rehypePlugins: PluggableList = [
+    rehypeRaw,
     rehypeVideo,
     [rehypePrism, { ignoreMissing: true, showLineNumbers }],
     [rehypeAttrs, { properties: 'attr', codeBlockParames: false }],
@@ -90,7 +91,6 @@ function markdown(markdownStr: string = '', options: Options = {}) {
         },
       },
     ],
-    rehypeRaw,
     [rehypeKatex, katexOptions],
     stringify,
   ];
