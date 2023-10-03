@@ -30241,6 +30241,10 @@
 
     defineSymbol(math, main, mathord, _ch3, wideChar);
     defineSymbol(text$3, main, textord, _ch3, wideChar);
+    wideChar = String.fromCharCode(0xD835, 0xDD6C + _i3); // A-Z a-z bold Fractur
+
+    defineSymbol(math, main, mathord, _ch3, wideChar);
+    defineSymbol(text$3, main, textord, _ch3, wideChar);
     wideChar = String.fromCharCode(0xD835, 0xDDA0 + _i3); // A-Z a-z sans-serif
 
     defineSymbol(math, main, mathord, _ch3, wideChar);
@@ -30346,8 +30350,9 @@
   ["mathfrak", "textfrak", "Fraktur-Regular"], // a-z Fraktur
   ["mathbb", "textbb", "AMS-Regular"], // A-Z double-struck
   ["mathbb", "textbb", "AMS-Regular"], // k double-struck
-  ["", "", ""], // A-Z bold Fraktur No font metrics
-  ["", "", ""], // a-z bold Fraktur.   No font.
+  // Note that we are using a bold font, but font metrics for regular Fraktur.
+  ["mathboldfrak", "textboldfrak", "Fraktur-Regular"], // A-Z bold Fraktur
+  ["mathboldfrak", "textboldfrak", "Fraktur-Regular"], // a-z bold Fraktur
   ["mathsf", "textsf", "SansSerif-Regular"], // A-Z sans-serif
   ["mathsf", "textsf", "SansSerif-Regular"], // a-z sans-serif
   ["mathboldsf", "textboldsf", "SansSerif-Bold"], // A-Z bold sans-serif
@@ -30523,10 +30528,15 @@
 
     var isFont = mode === "math" || mode === "text" && options.font;
     var fontOrFamily = isFont ? options.font : options.fontFamily;
+    var wideFontName = "";
+    var wideFontClass = "";
 
     if (text.charCodeAt(0) === 0xD835) {
+      [wideFontName, wideFontClass] = wideCharacterFont(text, mode);
+    }
+
+    if (wideFontName.length > 0) {
       // surrogate pairs get special treatment
-      var [wideFontName, wideFontClass] = wideCharacterFont(text, mode);
       return makeSymbol(text, wideFontName, mode, options, classes.concat(wideFontClass));
     } else if (fontOrFamily) {
       var fontName;
@@ -43378,7 +43388,7 @@
     /**
      * Current KaTeX version
      */
-    version: "0.16.8",
+    version: "0.16.9",
 
     /**
      * Renders the given LaTeX into an HTML+MathML combination, and adds
@@ -85682,6 +85692,7 @@
       const { filterPlugins, showLineNumbers = true, katexOptions = {} } = options;
       const remarkPlugins = [remarkGfm, ...(options.remarkPlugins || [])];
       const rehypePlugins = [
+          rehypeRaw,
           rehypeVideo,
           [f, { ignoreMissing: true, showLineNumbers }],
           [rehypeAttrs$1, { properties: 'attr', codeBlockParames: false }],
@@ -85726,7 +85737,6 @@
                   },
               },
           ],
-          rehypeRaw,
           [rehypeKatex, katexOptions],
           rehypeStringify,
       ];
