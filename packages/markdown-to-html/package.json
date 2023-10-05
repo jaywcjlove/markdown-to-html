@@ -55,7 +55,7 @@
     "@rollup/plugin-terser": "^0.4.3",
     "@rollup/plugin-typescript": "^11.0.0",
     "bannerjs": "^3.0.0",
-    "rollup": "^3.0.0",
+    "rollup": "^4.0.0",
     "tslib": "^2.4.0",
     "typescript": "^5.0.0"
   }
