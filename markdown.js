@@ -6607,7 +6607,7 @@
   /**
    * Default (CommonMark) handlers.
    */
-  const handle$2 = {
+  const handle$1 = {
     blockquote: blockquote$1,
     break: hardBreak$1,
     code: code$2,
@@ -6668,7 +6668,7 @@
    * Turn the number (in string form as either hexa- or plain decimal) coming from
    * a numeric character reference into a character.
    *
-   * Sort of like `String.fromCharCode(Number.parseInt(value, base))`, but makes
+   * Sort of like `String.fromCodePoint(Number.parseInt(value, base))`, but makes
    * non-characters and control characters safe.
    *
    * @param {string} value
@@ -6681,24 +6681,20 @@
   function decodeNumericCharacterReference(value, base) {
     const code = Number.parseInt(value, base);
     if (
-      // C0 except for HT, LF, FF, CR, space.
-      code < 9 ||
-      code === 11 ||
-      (code > 13 && code < 32) ||
-      // Control character (DEL) of C0, and C1 controls.
-      (code > 126 && code < 160) ||
-      // Lone high surrogates and low surrogates.
-      (code > 55_295 && code < 57_344) ||
-      // Noncharacters.
-      (code > 64_975 && code < 65_008) /* eslint-disable no-bitwise */ ||
-      (code & 65_535) === 65_535 ||
-      (code & 65_535) === 65_534 /* eslint-enable no-bitwise */ ||
-      // Out of range
-      code > 1_114_111
-    ) {
-      return '\uFFFD'
+    // C0 except for HT, LF, FF, CR, space.
+    code < 9 || code === 11 || code > 13 && code < 32 ||
+    // Control character (DEL) of C0, and C1 controls.
+    code > 126 && code < 160 ||
+    // Lone high surrogates and low surrogates.
+    code > 55_295 && code < 57_344 ||
+    // Noncharacters.
+    code > 64_975 && code < 65_008 || /* eslint-disable no-bitwise */
+    (code & 65_535) === 65_535 || (code & 65_535) === 65_534 || /* eslint-enable no-bitwise */
+    // Out of range
+    code > 1_114_111) {
+      return "\uFFFD";
     }
-    return String.fromCharCode(code)
+    return String.fromCodePoint(code);
   }
 
   const characterEscapeOrReference =
@@ -7016,7 +7012,7 @@
      * @param {InlineCode} node
      */
     function inlineCodeWithTable(node, parent, state) {
-      let value = handle$2.inlineCode(node, parent, state);
+      let value = handle$1.inlineCode(node, parent, state);
 
       if (state.stack.includes('tableCell')) {
         value = value.replace(/\|/g, '\\$&');
@@ -7146,7 +7142,7 @@
       tracker.move(checkbox);
     }
 
-    let value = handle$2.listItem(node, parent, state, {
+    let value = handle$1.listItem(node, parent, state, {
       ...info,
       ...tracker.current()
     });
@@ -22614,6 +22610,7 @@
       onAuxClick: null,
       onBeforeMatch: null,
       onBeforePrint: null,
+      onBeforeToggle: null,
       onBeforeUnload: null,
       onBlur: null,
       onCancel: null,
@@ -22719,6 +22716,8 @@
       scoped: boolean,
       seamless: boolean,
       selected: boolean,
+      shadowRootDelegatesFocus: boolean,
+      shadowRootMode: null,
       shape: null,
       size: number,
       sizes: null,
@@ -53536,14 +53535,14 @@
     }
   }
 
-  const emptyMulticharIndex = {};
-  const emptyRegularIndex = {};
+  var emptyMulticharIndex = {};
+  var emptyRegularIndex = {};
   function extendIndex(item, index) {
-      let currentIndex = index;
-      for (let pos = 0; pos < item.length; pos++) {
-          const isLast = pos === item.length - 1;
-          const char = item.charAt(pos);
-          const charIndex = currentIndex[char] || (currentIndex[char] = { chars: {} });
+      var currentIndex = index;
+      for (var pos = 0; pos < item.length; pos++) {
+          var isLast = pos === item.length - 1;
+          var char = item.charAt(pos);
+          var charIndex = currentIndex[char] || (currentIndex[char] = { chars: {} });
           if (isLast) {
               charIndex.self = item;
           }
@@ -53554,8 +53553,9 @@
       if (items.length === 0) {
           return emptyMulticharIndex;
       }
-      const index = {};
-      for (const item of items) {
+      var index = {};
+      for (var _i = 0, items_1 = items; _i < items_1.length; _i++) {
+          var item = items_1[_i];
           extendIndex(item, index);
       }
       return index;
@@ -53564,29 +53564,32 @@
       if (items.length === 0) {
           return emptyRegularIndex;
       }
-      const result = {};
-      for (const item of items) {
+      var result = {};
+      for (var _i = 0, items_2 = items; _i < items_2.length; _i++) {
+          var item = items_2[_i];
           result[item] = true;
       }
       return result;
   }
 
-  const emptyPseudoClassSignatures = {};
-  const defaultPseudoClassSignature = {
+  var emptyPseudoSignatures = {};
+  var defaultPseudoSignature = {
       type: 'String',
       optional: true
   };
-  function calculatePseudoClassSignature(types) {
-      const result = {
+  function calculatePseudoSignature(types) {
+      var result = {
+          type: 'NoArgument',
           optional: false
       };
       function setResultType(type) {
-          if (result.type && result.type !== type) {
-              throw new Error(`Conflicting pseudo-class argument type: "${result.type}" vs "${type}".`);
+          if (result.type && result.type !== type && result.type !== 'NoArgument') {
+              throw new Error("Conflicting pseudo-class argument type: \"".concat(result.type, "\" vs \"").concat(type, "\"."));
           }
           result.type = type;
       }
-      for (const type of types) {
+      for (var _i = 0, types_1 = types; _i < types_1.length; _i++) {
+          var type = types_1[_i];
           if (type === 'NoArgument') {
               result.optional = true;
           }
@@ -53607,31 +53610,45 @@
       return result;
   }
   function inverseCategories(obj) {
-      const result = {};
-      for (const category of Object.keys(obj)) {
-          const items = obj[category];
+      var result = {};
+      for (var _i = 0, _a = Object.keys(obj); _i < _a.length; _i++) {
+          var category = _a[_i];
+          var items = obj[category];
           if (items) {
-              for (const item of items) {
+              for (var _b = 0, _c = items; _b < _c.length; _b++) {
+                  var item = _c[_b];
                   (result[item] || (result[item] = [])).push(category);
               }
           }
       }
       return result;
   }
-  function calculatePseudoClassSignatures(definitions) {
-      const pseudoClassesToArgumentTypes = inverseCategories(definitions);
-      const result = {};
-      for (const pseudoClass of Object.keys(pseudoClassesToArgumentTypes)) {
-          const argumentTypes = pseudoClassesToArgumentTypes[pseudoClass];
+  function calculatePseudoSignatures(definitions) {
+      var pseudoClassesToArgumentTypes = inverseCategories(definitions);
+      var result = {};
+      for (var _i = 0, _a = Object.keys(pseudoClassesToArgumentTypes); _i < _a.length; _i++) {
+          var pseudoClass = _a[_i];
+          var argumentTypes = pseudoClassesToArgumentTypes[pseudoClass];
           if (argumentTypes) {
-              result[pseudoClass] = calculatePseudoClassSignature(argumentTypes);
+              result[pseudoClass] = calculatePseudoSignature(argumentTypes);
           }
       }
       return result;
   }
 
-  const emptyXmlOptions = {};
-  const defaultXmlOptions = { wildcard: true };
+  var __assign$1 = (undefined && undefined.__assign) || function () {
+      __assign$1 = Object.assign || function(t) {
+          for (var s, i = 1, n = arguments.length; i < n; i++) {
+              s = arguments[i];
+              for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                  t[p] = s[p];
+          }
+          return t;
+      };
+      return __assign$1.apply(this, arguments);
+  };
+  var emptyXmlOptions = {};
+  var defaultXmlOptions = { wildcard: true };
   function getXmlOptions(param) {
       if (param) {
           if (typeof param === 'boolean') {
@@ -53645,133 +53662,108 @@
           return emptyXmlOptions;
       }
   }
-  function extendSyntaxDefinition(base, extension) {
-      const result = { ...base };
-      if ('tag' in extension) {
-          if (extension.tag) {
-              result.tag = { ...getXmlOptions(base.tag) };
-              const extensionOptions = getXmlOptions(extension.tag);
-              if ('wildcard' in extensionOptions) {
-                  result.tag.wildcard = extensionOptions.wildcard;
-              }
+  function withMigration(migration, merge) {
+      return function (base, extension) { return merge(migration(base), migration(extension)); };
+  }
+  function withNoNegative(merge) {
+      return function (base, extension) {
+          var result = merge(base, extension);
+          if (!result) {
+              throw new Error("Syntax definition cannot be null or undefined.");
           }
-          else {
-              result.tag = undefined;
+          return result;
+      };
+  }
+  function withPositive(positive, merge) {
+      return function (base, extension) {
+          if (extension === true) {
+              return positive;
           }
+          return merge(base === true ? positive : base, extension);
+      };
+  }
+  function mergeSection(values) {
+      return function (base, extension) {
+          if (!extension || !base) {
+              return extension;
+          }
+          if (typeof extension !== 'object' || extension === null) {
+              throw new Error("Unexpected syntax definition extension type: ".concat(extension, "."));
+          }
+          var result = __assign$1({}, base);
+          for (var _i = 0, _a = Object.entries(extension); _i < _a.length; _i++) {
+              var _b = _a[_i], key = _b[0], value = _b[1];
+              var mergeSchema = values[key];
+              result[key] = mergeSchema(base[key], value);
+          }
+          return result;
+      };
+  }
+  function replaceValueIfSpecified(base, extension) {
+      if (extension !== undefined) {
+          return extension;
       }
-      if ('ids' in extension) {
-          result.ids = extension.ids;
+      return base;
+  }
+  function concatArray(base, extension) {
+      if (!extension) {
+          return base;
       }
-      if ('classNames' in extension) {
-          result.classNames = extension.classNames;
+      if (!base) {
+          return extension;
       }
-      if ('namespace' in extension) {
-          if (extension.namespace) {
-              result.namespace = { ...getXmlOptions(base.namespace) };
-              const extensionOptions = getXmlOptions(extension.namespace);
-              if ('wildcard' in extensionOptions) {
-                  result.namespace.wildcard = extensionOptions.wildcard;
-              }
-          }
-          else {
-              result.namespace = undefined;
-          }
+      return base.concat(extension);
+  }
+  function mergeDefinitions(base, extension) {
+      if (!extension) {
+          return base;
       }
-      if ('combinators' in extension) {
-          if (extension.combinators) {
-              result.combinators = result.combinators
-                  ? result.combinators.concat(extension.combinators)
-                  : extension.combinators;
-          }
-          else {
-              result.combinators = undefined;
-          }
+      if (!base) {
+          return extension;
       }
-      if ('attributes' in extension) {
-          if (extension.attributes) {
-              result.attributes = { ...base.attributes };
-              if ('unknownCaseSensitivityModifiers' in extension.attributes) {
-                  result.attributes.unknownCaseSensitivityModifiers =
-                      extension.attributes.unknownCaseSensitivityModifiers;
-              }
-              if ('operators' in extension.attributes) {
-                  result.attributes.operators = extension.attributes.operators
-                      ? result.attributes.operators
-                          ? result.attributes.operators.concat(extension.attributes.operators)
-                          : extension.attributes.operators
-                      : undefined;
-              }
-              if ('caseSensitivityModifiers' in extension.attributes) {
-                  result.attributes.caseSensitivityModifiers = extension.attributes.caseSensitivityModifiers
-                      ? result.attributes.caseSensitivityModifiers
-                          ? result.attributes.caseSensitivityModifiers.concat(extension.attributes.caseSensitivityModifiers)
-                          : extension.attributes.caseSensitivityModifiers
-                      : undefined;
-              }
+      var result = __assign$1({}, base);
+      for (var _i = 0, _a = Object.entries(extension); _i < _a.length; _i++) {
+          var _b = _a[_i], key = _b[0], value = _b[1];
+          if (!value) {
+              delete result[key];
+              continue;
           }
-          else {
-              result.attributes = undefined;
+          var baseValue = base[key];
+          if (!baseValue) {
+              result[key] = value;
+              continue;
           }
-      }
-      if ('pseudoElements' in extension) {
-          if (extension.pseudoElements) {
-              result.pseudoElements = { ...base.pseudoElements };
-              if ('unknown' in extension.pseudoElements) {
-                  result.pseudoElements.unknown = extension.pseudoElements.unknown;
-              }
-              if ('notation' in extension.pseudoElements) {
-                  result.pseudoElements.notation = extension.pseudoElements.notation;
-              }
-              if ('definitions' in extension.pseudoElements) {
-                  result.pseudoElements.definitions = extension.pseudoElements.definitions
-                      ? result.pseudoElements.definitions
-                          ? result.pseudoElements.definitions.concat(extension.pseudoElements.definitions)
-                          : extension.pseudoElements.definitions
-                      : undefined;
-              }
-          }
-          else {
-              result.pseudoElements = undefined;
-          }
-      }
-      if ('pseudoClasses' in extension) {
-          if (extension.pseudoClasses) {
-              result.pseudoClasses = { ...base.pseudoClasses };
-              if ('unknown' in extension.pseudoClasses) {
-                  result.pseudoClasses.unknown = extension.pseudoClasses.unknown;
-              }
-              if ('definitions' in extension.pseudoClasses) {
-                  const newDefinitions = extension.pseudoClasses.definitions;
-                  if (newDefinitions) {
-                      result.pseudoClasses.definitions = {
-                          ...result.pseudoClasses.definitions
-                      };
-                      const existingDefinitions = result.pseudoClasses.definitions;
-                      for (const key of Object.keys(newDefinitions)) {
-                          const newDefinitionForNotation = newDefinitions[key];
-                          const existingDefinitionForNotation = existingDefinitions[key];
-                          if (newDefinitionForNotation) {
-                              existingDefinitions[key] = existingDefinitionForNotation
-                                  ? existingDefinitionForNotation.concat(newDefinitionForNotation)
-                                  : newDefinitionForNotation;
-                          }
-                          else {
-                              existingDefinitions[key] = undefined;
-                          }
-                      }
-                  }
-                  else {
-                      result.pseudoClasses.definitions = undefined;
-                  }
-              }
-          }
-          else {
-              result.pseudoClasses = undefined;
-          }
+          result[key] = baseValue.concat(value);
       }
       return result;
   }
-  const css1SyntaxDefinition = {
+  var extendSyntaxDefinition = withNoNegative(mergeSection({
+      baseSyntax: replaceValueIfSpecified,
+      tag: withPositive(defaultXmlOptions, mergeSection({
+          wildcard: replaceValueIfSpecified
+      })),
+      ids: replaceValueIfSpecified,
+      classNames: replaceValueIfSpecified,
+      namespace: withPositive(defaultXmlOptions, mergeSection({
+          wildcard: replaceValueIfSpecified
+      })),
+      combinators: concatArray,
+      attributes: mergeSection({
+          operators: concatArray,
+          caseSensitivityModifiers: concatArray,
+          unknownCaseSensitivityModifiers: replaceValueIfSpecified
+      }),
+      pseudoClasses: mergeSection({
+          unknown: replaceValueIfSpecified,
+          definitions: mergeDefinitions
+      }),
+      pseudoElements: mergeSection({
+          unknown: replaceValueIfSpecified,
+          notation: replaceValueIfSpecified,
+          definitions: withMigration(function (definitions) { return (Array.isArray(definitions) ? { NoArgument: definitions } : definitions); }, mergeDefinitions)
+      })
+  }));
+  var css1SyntaxDefinition = {
       tag: {},
       ids: true,
       classNames: true,
@@ -53788,7 +53780,7 @@
           }
       }
   };
-  const css2SyntaxDefinition = extendSyntaxDefinition(css1SyntaxDefinition, {
+  var css2SyntaxDefinition = extendSyntaxDefinition(css1SyntaxDefinition, {
       tag: { wildcard: true },
       combinators: ['>', '+'],
       attributes: {
@@ -53806,7 +53798,7 @@
           }
       }
   });
-  const selectors3SyntaxDefinition = extendSyntaxDefinition(css2SyntaxDefinition, {
+  var selectors3SyntaxDefinition = extendSyntaxDefinition(css2SyntaxDefinition, {
       namespace: {
           wildcard: true
       },
@@ -53838,7 +53830,7 @@
           }
       }
   });
-  const selectors4SyntaxDefinition = extendSyntaxDefinition(selectors3SyntaxDefinition, {
+  var selectors4SyntaxDefinition = extendSyntaxDefinition(selectors3SyntaxDefinition, {
       combinators: ['||'],
       attributes: {
           caseSensitivityModifiers: ['i', 'I', 's', 'S']
@@ -53875,7 +53867,7 @@
           }
       }
   });
-  const progressiveSyntaxDefinition = extendSyntaxDefinition(selectors4SyntaxDefinition, {
+  var progressiveSyntaxDefinition = extendSyntaxDefinition(selectors4SyntaxDefinition, {
       pseudoElements: {
           unknown: 'accept'
       },
@@ -53886,7 +53878,7 @@
           unknownCaseSensitivityModifiers: 'accept'
       }
   });
-  const cssSyntaxDefinitions = {
+  var cssSyntaxDefinitions = {
       css1: css1SyntaxDefinition,
       css2: css2SyntaxDefinition,
       css3: selectors3SyntaxDefinition,
@@ -53897,7 +53889,7 @@
   };
 
   function isIdentStart(c) {
-      return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c === '-' || c === '_';
+      return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c === '-' || c === '_' || c === '\\';
   }
   function isIdent(c) {
       return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c === '-' || c === '_';
@@ -53905,25 +53897,25 @@
   function isHex(c) {
       return (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F') || (c >= '0' && c <= '9');
   }
-  const stringEscapeChars = {
+  var stringEscapeChars = {
       n: '\n',
       r: '\r',
       t: '\t',
       f: '\f',
       '\\': '\\'
   };
-  const whitespaceChars = {
+  var whitespaceChars = {
       ' ': true,
       '\t': true,
       '\n': true,
       '\r': true,
       '\f': true
   };
-  const quoteChars = {
+  var quoteChars = {
       '"': true,
       "'": true
   };
-  const digitsChars = {
+  var digitsChars = {
       0: true,
       1: true,
       2: true,
@@ -53936,33 +53928,33 @@
       9: true
   };
 
-  const errorPrefix = `css-selector-parser parse error: `;
+  var errorPrefix = "css-selector-parser parse error: ";
   /**
    * Creates a parse function to be used later to parse CSS selectors.
    */
-  function createParser(options = {}) {
-      const { syntax = 'latest', substitutes, strict = true } = options;
-      // noinspection SuspiciousTypeOfGuard
-      let syntaxDefinition = typeof syntax === 'string' ? cssSyntaxDefinitions[syntax] : syntax;
+  function createParser(options) {
+      if (options === void 0) { options = {}; }
+      var _a = options.syntax, syntax = _a === void 0 ? 'latest' : _a, substitutes = options.substitutes, _b = options.strict, strict = _b === void 0 ? true : _b;
+      var syntaxDefinition = typeof syntax === 'object' ? syntax : cssSyntaxDefinitions[syntax];
       if (syntaxDefinition.baseSyntax) {
           syntaxDefinition = extendSyntaxDefinition(cssSyntaxDefinitions[syntaxDefinition.baseSyntax], syntaxDefinition);
       }
-      const [tagNameEnabled, tagNameWildcardEnabled] = syntaxDefinition.tag
+      var _c = syntaxDefinition.tag
           ? [true, Boolean(getXmlOptions(syntaxDefinition.tag).wildcard)]
-          : [false, false];
-      const idEnabled = Boolean(syntaxDefinition.ids);
-      const classNamesEnabled = Boolean(syntaxDefinition.classNames);
-      const namespaceEnabled = Boolean(syntaxDefinition.namespace);
-      const namespaceWildcardEnabled = syntaxDefinition.namespace &&
+          : [false, false], tagNameEnabled = _c[0], tagNameWildcardEnabled = _c[1];
+      var idEnabled = Boolean(syntaxDefinition.ids);
+      var classNamesEnabled = Boolean(syntaxDefinition.classNames);
+      var namespaceEnabled = Boolean(syntaxDefinition.namespace);
+      var namespaceWildcardEnabled = syntaxDefinition.namespace &&
           (syntaxDefinition.namespace === true || syntaxDefinition.namespace.wildcard === true);
       if (namespaceEnabled && !tagNameEnabled) {
-          throw new Error(`${errorPrefix}Namespaces cannot be enabled while tags are disabled.`);
+          throw new Error("".concat(errorPrefix, "Namespaces cannot be enabled while tags are disabled."));
       }
-      const substitutesEnabled = Boolean(substitutes);
-      const combinatorsIndex = syntaxDefinition.combinators
+      var substitutesEnabled = Boolean(substitutes);
+      var combinatorsIndex = syntaxDefinition.combinators
           ? createMulticharIndex(syntaxDefinition.combinators)
           : emptyMulticharIndex;
-      const [attributesEnabled, attributesOperatorsIndex, attributesCaseSensitivityModifiers, attributesAcceptUnknownCaseSensitivityModifiers] = syntaxDefinition.attributes
+      var _d = syntaxDefinition.attributes
           ? [
               true,
               syntaxDefinition.attributes.operators
@@ -53973,18 +53965,18 @@
                   : emptyRegularIndex,
               syntaxDefinition.attributes.unknownCaseSensitivityModifiers === 'accept'
           ]
-          : [false, emptyMulticharIndex, emptyRegularIndex, false];
-      const attributesCaseSensitivityModifiersEnabled = attributesAcceptUnknownCaseSensitivityModifiers || Object.keys(attributesCaseSensitivityModifiers).length > 0;
-      const [pseudoClassesEnabled, paeudoClassesDefinitions, pseudoClassesAcceptUnknown] = syntaxDefinition.pseudoClasses
+          : [false, emptyMulticharIndex, emptyRegularIndex, false], attributesEnabled = _d[0], attributesOperatorsIndex = _d[1], attributesCaseSensitivityModifiers = _d[2], attributesAcceptUnknownCaseSensitivityModifiers = _d[3];
+      var attributesCaseSensitivityModifiersEnabled = attributesAcceptUnknownCaseSensitivityModifiers || Object.keys(attributesCaseSensitivityModifiers).length > 0;
+      var _e = syntaxDefinition.pseudoClasses
           ? [
               true,
               syntaxDefinition.pseudoClasses.definitions
-                  ? calculatePseudoClassSignatures(syntaxDefinition.pseudoClasses.definitions)
-                  : emptyPseudoClassSignatures,
+                  ? calculatePseudoSignatures(syntaxDefinition.pseudoClasses.definitions)
+                  : emptyPseudoSignatures,
               syntaxDefinition.pseudoClasses.unknown === 'accept'
           ]
-          : [false, emptyPseudoClassSignatures, false];
-      const [pseudoElementsEnabled, pseudoElementsSingleColonNotationEnabled, pseudoElementsDoubleColonNotationEnabled, pseudoElementsIndex, pseudoElementsAcceptUnknown] = syntaxDefinition.pseudoElements
+          : [false, emptyPseudoSignatures, false], pseudoClassesEnabled = _e[0], pseudoClassesDefinitions = _e[1], pseudoClassesAcceptUnknown = _e[2];
+      var _f = syntaxDefinition.pseudoElements
           ? [
               true,
               syntaxDefinition.pseudoElements.notation === 'singleColon' ||
@@ -53993,35 +53985,37 @@
                   syntaxDefinition.pseudoElements.notation === 'doubleColon' ||
                   syntaxDefinition.pseudoElements.notation === 'both',
               syntaxDefinition.pseudoElements.definitions
-                  ? createRegularIndex(syntaxDefinition.pseudoElements.definitions)
-                  : emptyRegularIndex,
+                  ? calculatePseudoSignatures(Array.isArray(syntaxDefinition.pseudoElements.definitions)
+                      ? { NoArgument: syntaxDefinition.pseudoElements.definitions }
+                      : syntaxDefinition.pseudoElements.definitions)
+                  : emptyPseudoSignatures,
               syntaxDefinition.pseudoElements.unknown === 'accept'
           ]
-          : [false, false, false, emptyRegularIndex, false];
-      let str = '';
-      let l = str.length;
-      let pos = 0;
-      let chr = '';
-      const is = (comparison) => chr === comparison;
-      const isTagStart = () => is('*') || isIdentStart(chr) || is('\\');
-      const rewind = (newPos) => {
+          : [false, false, false, emptyPseudoSignatures, false], pseudoElementsEnabled = _f[0], pseudoElementsSingleColonNotationEnabled = _f[1], pseudoElementsDoubleColonNotationEnabled = _f[2], pseudoElementsDefinitions = _f[3], pseudoElementsAcceptUnknown = _f[4];
+      var str = '';
+      var l = str.length;
+      var pos = 0;
+      var chr = '';
+      var is = function (comparison) { return chr === comparison; };
+      var isTagStart = function () { return is('*') || isIdentStart(chr); };
+      var rewind = function (newPos) {
           pos = newPos;
           chr = str.charAt(pos);
       };
-      const next = () => {
+      var next = function () {
           pos++;
           chr = str.charAt(pos);
       };
-      const readAndNext = () => {
-          const current = chr;
+      var readAndNext = function () {
+          var current = chr;
           pos++;
           chr = str.charAt(pos);
           return current;
       };
       /** @throws ParserError */
       function fail(errorMessage) {
-          const position = Math.min(l - 1, pos);
-          const error = new Error(`${errorPrefix}${errorMessage} Pos: ${position}.`);
+          var position = Math.min(l - 1, pos);
+          var error = new Error("".concat(errorPrefix).concat(errorMessage, " Pos: ").concat(position, "."));
           error.position = position;
           error.name = 'ParserError';
           throw error;
@@ -54031,18 +54025,18 @@
               return fail(errorMessage);
           }
       }
-      const assertNonEof = () => {
+      var assertNonEof = function () {
           assert(pos < l, 'Unexpected end of input.');
       };
-      const isEof = () => pos >= l;
-      const pass = (character) => {
-          assert(pos < l, `Expected "${character}" but end of input reached.`);
-          assert(chr === character, `Expected "${character}" but "${chr}" found.`);
+      var isEof = function () { return pos >= l; };
+      var pass = function (character) {
+          assert(pos < l, "Expected \"".concat(character, "\" but end of input reached."));
+          assert(chr === character, "Expected \"".concat(character, "\" but \"").concat(chr, "\" found."));
           pos++;
           chr = str.charAt(pos);
       };
       function matchMulticharIndex(index) {
-          const match = matchMulticharIndexPos(index, pos);
+          var match = matchMulticharIndexPos(index, pos);
           if (match) {
               pos += match.length;
               chr = str.charAt(pos);
@@ -54050,10 +54044,10 @@
           }
       }
       function matchMulticharIndexPos(index, subPos) {
-          const char = str.charAt(subPos);
-          const charIndex = index[char];
+          var char = str.charAt(subPos);
+          var charIndex = index[char];
           if (charIndex) {
-              const subMatch = matchMulticharIndexPos(charIndex.chars, subPos + 1);
+              var subMatch = matchMulticharIndexPos(charIndex.chars, subPos + 1);
               if (subMatch) {
                   return subMatch;
               }
@@ -54063,7 +54057,7 @@
           }
       }
       function parseHex() {
-          let hex = readAndNext();
+          var hex = readAndNext();
           while (isHex(chr)) {
               hex += readAndNext();
           }
@@ -54073,7 +54067,7 @@
           return String.fromCharCode(parseInt(hex, 16));
       }
       function parseString(quote) {
-          let result = '';
+          var result = '';
           pass(quote);
           while (pos < l) {
               if (is(quote)) {
@@ -54082,7 +54076,7 @@
               }
               else if (is('\\')) {
                   next();
-                  let esc;
+                  var esc = void 0;
                   if (is(quote)) {
                       result += quote;
                   }
@@ -54105,7 +54099,10 @@
           return result;
       }
       function parseIdentifier() {
-          let result = '';
+          if (!isIdentStart(chr)) {
+              return null;
+          }
+          var result = '';
           while (pos < l) {
               if (isIdent(chr)) {
                   result += readAndNext();
@@ -54127,7 +54124,7 @@
           return result;
       }
       function parsePseudoClassString() {
-          let result = '';
+          var result = '';
           while (pos < l) {
               if (is(')')) {
                   break;
@@ -54156,9 +54153,10 @@
               next();
           }
       }
-      function parseSelector(relative = false) {
+      function parseSelector(relative) {
+          if (relative === void 0) { relative = false; }
           skipWhitespace();
-          const rules = [parseRule(relative)];
+          var rules = [parseRule(relative)];
           while (is(',')) {
               next();
               skipWhitespace();
@@ -54166,19 +54164,21 @@
           }
           return {
               type: 'Selector',
-              rules
+              rules: rules
           };
       }
       function parseAttribute() {
           pass('[');
           skipWhitespace();
-          let attr;
+          var attr;
           if (is('|')) {
               assert(namespaceEnabled, 'Namespaces are not enabled.');
               next();
+              var name_1 = parseIdentifier();
+              assert(name_1, 'Expected attribute name.');
               attr = {
                   type: 'Attribute',
-                  name: parseIdentifier(),
+                  name: name_1,
                   namespace: { type: 'NoNamespace' }
               };
           }
@@ -54187,26 +54187,31 @@
               assert(namespaceWildcardEnabled, 'Wildcard namespace is not enabled.');
               next();
               pass('|');
+              var name_2 = parseIdentifier();
+              assert(name_2, 'Expected attribute name.');
               attr = {
                   type: 'Attribute',
-                  name: parseIdentifier(),
+                  name: name_2,
                   namespace: { type: 'WildcardNamespace' }
               };
           }
           else {
-              const identifier = parseIdentifier();
+              var identifier = parseIdentifier();
+              assert(identifier, 'Expected attribute name.');
               attr = {
                   type: 'Attribute',
                   name: identifier
               };
               if (is('|')) {
-                  const savedPos = pos;
+                  var savedPos = pos;
                   next();
-                  if (isIdentStart(chr) || is('\\')) {
+                  if (isIdentStart(chr)) {
                       assert(namespaceEnabled, 'Namespaces are not enabled.');
+                      var name_3 = parseIdentifier();
+                      assert(name_3, 'Expected attribute name.');
                       attr = {
                           type: 'Attribute',
-                          name: parseIdentifier(),
+                          name: name_3,
                           namespace: { type: 'NamespaceName', name: identifier }
                       };
                   }
@@ -54236,26 +54241,29 @@
               }
               else if (substitutesEnabled && is('$')) {
                   next();
+                  var name_4 = parseIdentifier();
+                  assert(name_4, 'Expected substitute name.');
                   attr.value = {
                       type: 'Substitution',
-                      name: parseIdentifier()
+                      name: name_4
                   };
-                  assert(attr.value.name, 'Expected substitute name.');
               }
               else {
+                  var value = parseIdentifier();
+                  assert(value, 'Expected attribute value.');
                   attr.value = {
                       type: 'String',
-                      value: parseIdentifier()
+                      value: value
                   };
-                  assert(attr.value.value, 'Expected attribute value.');
               }
               skipWhitespace();
               if (isEof() && !strict) {
                   return attr;
               }
               if (!is(']')) {
-                  attr.caseSensitivityModifier = parseIdentifier();
-                  assert(attr.caseSensitivityModifier, 'Expected end of attribute selector.');
+                  var caseSensitivityModifier = parseIdentifier();
+                  assert(caseSensitivityModifier, 'Expected end of attribute selector.');
+                  attr.caseSensitivityModifier = caseSensitivityModifier;
                   assert(attributesCaseSensitivityModifiersEnabled, 'Attribute case sensitivity modifiers are not enabled.');
                   assert(attributesAcceptUnknownCaseSensitivityModifiers ||
                       attributesCaseSensitivityModifiers[attr.caseSensitivityModifier], 'Unknown attribute case sensitivity modifier.');
@@ -54269,17 +54277,17 @@
           return attr;
       }
       function parseNumber() {
-          let result = '';
+          var result = '';
           while (digitsChars[chr]) {
               result += readAndNext();
           }
           assert(result !== '', 'Formula parse error.');
           return parseInt(result);
       }
-      const isNumberStart = () => is('-') || is('+') || digitsChars[chr];
+      var isNumberStart = function () { return is('-') || is('+') || digitsChars[chr]; };
       function parseFormula() {
           if (is('e') || is('o')) {
-              const ident = parseIdentifier();
+              var ident = parseIdentifier();
               if (ident === 'even') {
                   skipWhitespace();
                   return [2, 0];
@@ -54289,8 +54297,8 @@
                   return [2, 1];
               }
           }
-          let firstNumber = null;
-          let firstNumberMultiplier = 1;
+          var firstNumber = null;
+          var firstNumberMultiplier = 1;
           if (is('-')) {
               next();
               firstNumberMultiplier = -1;
@@ -54308,7 +54316,7 @@
               firstNumber = 1;
           }
           firstNumber *= firstNumberMultiplier;
-          let identifier;
+          var identifier;
           if (is('\\')) {
               next();
               if (isHex(chr)) {
@@ -54324,7 +54332,7 @@
           assert(identifier === 'n', 'Formula parse error: expected "n".');
           skipWhitespace();
           if (is('+') || is('-')) {
-              const sign = is('+') ? 1 : -1;
+              var sign = is('+') ? 1 : -1;
               next();
               skipWhitespace();
               return [firstNumber, sign * parseNumber()];
@@ -54333,73 +54341,65 @@
               return [firstNumber, 0];
           }
       }
-      function parsePseudoClass(pseudoName) {
-          const pseudo = {
-              type: 'PseudoClass',
-              name: pseudoName
-          };
-          let pseudoDefinition = paeudoClassesDefinitions[pseudoName];
-          if (!pseudoDefinition && pseudoClassesAcceptUnknown) {
-              pseudoDefinition = defaultPseudoClassSignature;
-          }
-          assert(pseudoDefinition, `Unknown pseudo-class: "${pseudoName}".`);
-          pseudoDefinition = pseudoDefinition;
+      function parsePseudoArgument(pseudoName, type, signature) {
+          var argument;
           if (is('(')) {
               next();
               skipWhitespace();
               if (substitutesEnabled && is('$')) {
                   next();
-                  pseudo.argument = {
+                  var name_5 = parseIdentifier();
+                  assert(name_5, 'Expected substitute name.');
+                  argument = {
                       type: 'Substitution',
-                      name: parseIdentifier()
+                      name: name_5
                   };
-                  assert(pseudo.argument.name, 'Expected substitute name.');
               }
-              else if (pseudoDefinition.type === 'String') {
-                  pseudo.argument = {
+              else if (signature.type === 'String') {
+                  argument = {
                       type: 'String',
                       value: parsePseudoClassString()
                   };
-                  assert(pseudo.argument.value, 'Expected pseudo-class argument value.');
+                  assert(argument.value, "Expected ".concat(type, " argument value."));
               }
-              else if (pseudoDefinition.type === 'Selector') {
-                  pseudo.argument = parseSelector(true);
+              else if (signature.type === 'Selector') {
+                  argument = parseSelector(true);
               }
-              else if (pseudoDefinition.type === 'Formula') {
-                  const [a, b] = parseFormula();
-                  pseudo.argument = {
+              else if (signature.type === 'Formula') {
+                  var _a = parseFormula(), a = _a[0], b = _a[1];
+                  argument = {
                       type: 'Formula',
-                      a,
-                      b
+                      a: a,
+                      b: b
                   };
-                  if (pseudoDefinition.ofSelector) {
+                  if (signature.ofSelector) {
                       skipWhitespace();
                       if (is('o') || is('\\')) {
-                          const ident = parseIdentifier();
+                          var ident = parseIdentifier();
                           assert(ident === 'of', 'Formula of selector parse error.');
                           skipWhitespace();
-                          pseudo.argument = {
+                          argument = {
                               type: 'FormulaOfSelector',
-                              a,
-                              b,
+                              a: a,
+                              b: b,
                               selector: parseRule()
                           };
                       }
                   }
               }
               else {
-                  return fail('Invalid pseudo-class signature.');
+                  return fail("Invalid ".concat(type, " signature."));
               }
               skipWhitespace();
               if (isEof() && !strict) {
-                  return pseudo;
+                  return argument;
               }
               pass(')');
           }
           else {
-              assert(pseudoDefinition.optional, `Argument is required for pseudo-class "${pseudoName}".`);
+              assert(signature.optional, "Argument is required for ".concat(type, " \"").concat(pseudoName, "\"."));
           }
-          return pseudo;
+          return argument;
       }
       function parseTagName() {
           if (is('*')) {
@@ -54407,11 +54407,13 @@
               next();
               return { type: 'WildcardTag' };
           }
-          else if (isIdentStart(chr) || is('\\')) {
+          else if (isIdentStart(chr)) {
               assert(tagNameEnabled, 'Tag names are not enabled.');
+              var name_6 = parseIdentifier();
+              assert(name_6, 'Expected tag name.');
               return {
                   type: 'TagName',
-                  name: parseIdentifier()
+                  name: name_6
               };
           }
           else {
@@ -54420,7 +54422,7 @@
       }
       function parseTagNameWithNamespace() {
           if (is('*')) {
-              const savedPos = pos;
+              var savedPos = pos;
               next();
               if (!is('|')) {
                   rewind(savedPos);
@@ -54433,19 +54435,20 @@
               }
               assert(namespaceEnabled, 'Namespaces are not enabled.');
               assert(namespaceWildcardEnabled, 'Wildcard namespace is not enabled.');
-              const tagName = parseTagName();
+              var tagName = parseTagName();
               tagName.namespace = { type: 'WildcardNamespace' };
               return tagName;
           }
           else if (is('|')) {
               assert(namespaceEnabled, 'Namespaces are not enabled.');
               next();
-              const tagName = parseTagName();
+              var tagName = parseTagName();
               tagName.namespace = { type: 'NoNamespace' };
               return tagName;
           }
-          else if (isIdentStart(chr) || is('\\')) {
-              const identifier = parseIdentifier();
+          else if (isIdentStart(chr)) {
+              var identifier = parseIdentifier();
+              assert(identifier, 'Expected tag name.');
               if (!is('|')) {
                   assert(tagNameEnabled, 'Tag names are not enabled.');
                   return {
@@ -54453,7 +54456,7 @@
                       name: identifier
                   };
               }
-              const savedPos = pos;
+              var savedPos = pos;
               next();
               if (!isTagStart()) {
                   rewind(savedPos);
@@ -54463,7 +54466,7 @@
                   };
               }
               assert(namespaceEnabled, 'Namespaces are not enabled.');
-              const tagName = parseTagName();
+              var tagName = parseTagName();
               tagName.namespace = { type: 'NamespaceName', name: identifier };
               return tagName;
           }
@@ -54471,11 +54474,12 @@
               return fail('Expected tag name.');
           }
       }
-      function parseRule(relative = false) {
-          const rule = {};
-          let isRuleStart = true;
+      function parseRule(relative) {
+          var _a, _b;
+          if (relative === void 0) { relative = false; }
+          var rule = { type: 'Rule', items: [] };
           if (relative) {
-              const combinator = matchMulticharIndex(combinatorsIndex);
+              var combinator = matchMulticharIndex(combinatorsIndex);
               if (combinator) {
                   rule.combinator = combinator;
                   skipWhitespace();
@@ -54483,16 +54487,16 @@
           }
           while (pos < l) {
               if (isTagStart()) {
-                  assert(isRuleStart, 'Unexpected tag/namespace start.');
-                  rule.tag = parseTagNameWithNamespace();
+                  assert(rule.items.length === 0, 'Unexpected tag/namespace start.');
+                  rule.items.push(parseTagNameWithNamespace());
               }
               else if (is('|')) {
-                  const savedPos = pos;
+                  var savedPos = pos;
                   next();
                   if (isTagStart()) {
-                      assert(isRuleStart, 'Unexpected tag/namespace start.');
+                      assert(rule.items.length === 0, 'Unexpected tag/namespace start.');
                       rewind(savedPos);
-                      rule.tag = parseTagNameWithNamespace();
+                      rule.items.push(parseTagNameWithNamespace());
                   }
                   else {
                       rewind(savedPos);
@@ -54502,24 +54506,24 @@
               else if (is('.')) {
                   assert(classNamesEnabled, 'Class names are not enabled.');
                   next();
-                  const className = parseIdentifier();
+                  var className = parseIdentifier();
                   assert(className, 'Expected class name.');
-                  (rule.classNames = rule.classNames || []).push(className);
+                  rule.items.push({ type: 'ClassName', name: className });
               }
               else if (is('#')) {
                   assert(idEnabled, 'IDs are not enabled.');
                   next();
-                  const idName = parseIdentifier();
+                  var idName = parseIdentifier();
                   assert(idName, 'Expected ID name.');
-                  (rule.ids = rule.ids || []).push(idName);
+                  rule.items.push({ type: 'Id', name: idName });
               }
               else if (is('[')) {
                   assert(attributesEnabled, 'Attributes are not enabled.');
-                  (rule.attributes = rule.attributes || []).push(parseAttribute());
+                  rule.items.push(parseAttribute());
               }
               else if (is(':')) {
-                  let isDoubleColon = false;
-                  let isPseudoElement = false;
+                  var isDoubleColon = false;
+                  var isPseudoElement = false;
                   next();
                   if (is(':')) {
                       assert(pseudoElementsEnabled, 'Pseudo elements are not enabled.');
@@ -54527,54 +54531,72 @@
                       isDoubleColon = true;
                       next();
                   }
-                  const pseudoName = parseIdentifier();
+                  var pseudoName = parseIdentifier();
                   assert(isDoubleColon || pseudoName, 'Expected pseudo-class name.');
                   assert(!isDoubleColon || pseudoName, 'Expected pseudo-element name.');
-                  assert(!isDoubleColon || pseudoElementsAcceptUnknown || pseudoElementsIndex[pseudoName], `Unknown pseudo-element "${pseudoName}".`);
+                  assert(pseudoName, 'Expected pseudo-class name.');
+                  assert(!isDoubleColon ||
+                      pseudoElementsAcceptUnknown ||
+                      Object.prototype.hasOwnProperty.call(pseudoElementsDefinitions, pseudoName), "Unknown pseudo-element \"".concat(pseudoName, "\"."));
                   isPseudoElement =
                       pseudoElementsEnabled &&
                           (isDoubleColon ||
                               (!isDoubleColon &&
                                   pseudoElementsSingleColonNotationEnabled &&
-                                  pseudoElementsIndex[pseudoName]));
+                                  Object.prototype.hasOwnProperty.call(pseudoElementsDefinitions, pseudoName)));
                   if (isPseudoElement) {
-                      rule.pseudoElement = pseudoName;
-                      if (!whitespaceChars[chr] && !is(',') && !is(')') && !isEof()) {
-                          return fail('Pseudo-element should be the last component of a CSS selector rule.');
+                      var signature = (_a = pseudoElementsDefinitions[pseudoName]) !== null && _a !== void 0 ? _a : (pseudoElementsAcceptUnknown && defaultPseudoSignature);
+                      var pseudoElement = {
+                          type: 'PseudoElement',
+                          name: pseudoName
+                      };
+                      var argument = parsePseudoArgument(pseudoName, 'pseudo-element', signature);
+                      if (argument) {
+                          assert(argument.type !== 'Formula' && argument.type !== 'FormulaOfSelector', 'Pseudo-elements cannot have formula argument.');
+                          pseudoElement.argument = argument;
                       }
+                      rule.items.push(pseudoElement);
                   }
                   else {
-                      assert(pseudoClassesEnabled, 'Pseudo classes are not enabled.');
-                      (rule.pseudoClasses = rule.pseudoClasses || []).push(parsePseudoClass(pseudoName));
+                      assert(pseudoClassesEnabled, 'Pseudo-classes are not enabled.');
+                      var signature = (_b = pseudoClassesDefinitions[pseudoName]) !== null && _b !== void 0 ? _b : (pseudoClassesAcceptUnknown && defaultPseudoSignature);
+                      assert(signature, "Unknown pseudo-class: \"".concat(pseudoName, "\"."));
+                      var argument = parsePseudoArgument(pseudoName, 'pseudo-class', signature);
+                      var pseudoClass = {
+                          type: 'PseudoClass',
+                          name: pseudoName
+                      };
+                      if (argument) {
+                          pseudoClass.argument = argument;
+                      }
+                      rule.items.push(pseudoClass);
                   }
               }
               else {
                   break;
               }
-              isRuleStart = false;
           }
-          if (isRuleStart) {
+          if (rule.items.length === 0) {
               if (isEof()) {
                   return fail('Expected rule but end of input reached.');
               }
               else {
-                  return fail(`Expected rule but "${chr}" found.`);
+                  return fail("Expected rule but \"".concat(chr, "\" found."));
               }
           }
-          rule.type = 'Rule';
           skipWhitespace();
           if (!isEof() && !is(',') && !is(')')) {
-              const combinator = matchMulticharIndex(combinatorsIndex);
+              var combinator = matchMulticharIndex(combinatorsIndex);
               skipWhitespace();
               rule.nestedRule = parseRule();
               rule.nestedRule.combinator = combinator;
           }
           return rule;
       }
-      return (input) => {
+      return function (input) {
           // noinspection SuspiciousTypeOfGuard
           if (typeof input !== 'string') {
-              throw new Error(`${errorPrefix}Expected string input.`);
+              throw new Error("".concat(errorPrefix, "Expected string input."));
           }
           str = input;
           l = str.length;
@@ -54583,6 +54605,64 @@
           return parseSelector();
       };
   }
+
+  var __assign = (undefined && undefined.__assign) || function () {
+      __assign = Object.assign || function(t) {
+          for (var s, i = 1, n = arguments.length; i < n; i++) {
+              s = arguments[i];
+              for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                  t[p] = s[p];
+          }
+          return t;
+      };
+      return __assign.apply(this, arguments);
+  };
+  function astMethods(type) {
+      return function (generatorName, checkerName) {
+          var _a;
+          return (_a = {},
+              _a[generatorName] = function (props) { return (__assign({ type: type }, props)); },
+              _a[checkerName] = function (entity) {
+                  return typeof entity === 'object' && entity !== null && entity.type === type;
+              },
+              _a);
+      };
+  }
+  /**
+   * AST structure generators and matchers.
+   * For instance, `ast.selector({rules: [...]})` creates AstSelector and `ast.isSelector(...)` checks if
+   * AstSelector was specified.
+   *
+   * @example
+   *
+   * // Represents CSS selector: ns|div#user-34.user.user-active[role="button"]:lang(en)::before > *
+   * const selector = ast.selector({
+   *     rules: [
+   *         ast.rule({
+   *             items: [
+   *                 ast.tagName({name: 'div', namespace: ast.namespaceName({name: 'ns'})}),
+   *                 ast.id({name: 'user-34'}),
+   *                 ast.className({name: 'user'}),
+   *                 ast.className({name: 'user-active'}),
+   *                 ast.attribute({
+   *                     name: 'role',
+   *                     operator: '=',
+   *                     value: ast.string({value: 'button'})
+   *                 }),
+   *                 ast.pseudoClass({
+   *                     name: 'lang',
+   *                     argument: ast.string({value: 'en'})
+   *                 }),
+   *                 ast.pseudoElement({name: 'before'})
+   *             ],
+   *             nestedRule: ast.rule({combinator: '>', items: [ast.wildcardTag()]})
+   *         })
+   *     ]
+   * });
+   * console.log(ast.isSelector(selector)); // prints true
+   * console.log(ast.isRule(selector)); // prints false
+   */
+  __assign(__assign(__assign(__assign(__assign(__assign(__assign(__assign(__assign(__assign(__assign(__assign(__assign(__assign(__assign(__assign({}, astMethods('Selector')('selector', 'isSelector')), astMethods('Rule')('rule', 'isRule')), astMethods('TagName')('tagName', 'isTagName')), astMethods('Id')('id', 'isId')), astMethods('ClassName')('className', 'isClassName')), astMethods('WildcardTag')('wildcardTag', 'isWildcardTag')), astMethods('NamespaceName')('namespaceName', 'isNamespaceName')), astMethods('WildcardNamespace')('wildcardNamespace', 'isWildcardNamespace')), astMethods('NoNamespace')('noNamespace', 'isNoNamespace')), astMethods('Attribute')('attribute', 'isAttribute')), astMethods('PseudoClass')('pseudoClass', 'isPseudoClass')), astMethods('PseudoElement')('pseudoElement', 'isPseudoElement')), astMethods('String')('string', 'isString')), astMethods('Formula')('formula', 'isFormula')), astMethods('FormulaOfSelector')('formulaOfSelector', 'isFormulaOfSelector')), astMethods('Substitution')('substitution', 'isSubstitution'));
 
   /**
    * @typedef {import('css-selector-parser').AstSelector} AstSelector
@@ -54846,7 +54926,6 @@
 
   /**
    * @typedef {import('css-selector-parser').AstAttribute} AstAttribute
-   * @typedef {import('css-selector-parser').AstRule} AstRule
    *
    * @typedef {import('hast').Element} Element
    * @typedef {import('hast').Properties} Properties
@@ -54855,30 +54934,6 @@
    * @typedef {import('property-information').Schema} Schema
    */
 
-
-  /**
-   * @param {AstRule} query
-   *   Query.
-   * @param {Element} element
-   *   Element.
-   * @param {Schema} schema
-   *   Schema of element.
-   * @returns {boolean}
-   *   Whether `element` matches `query`.
-   */
-  function attributes$1(query, element, schema) {
-    let index = -1;
-
-    if (query.attributes) {
-      while (++index < query.attributes.length) {
-        if (!attribute(query.attributes[index], element, schema)) {
-          return false
-        }
-      }
-    }
-
-    return true
-  }
 
   /**
    * @param {AstAttribute} query
@@ -54983,7 +55038,7 @@
   }
 
   /**
-   * @typedef {import('css-selector-parser').AstRule} AstRule
+   * @typedef {import('css-selector-parser').AstClassName} AstClassName
    * @typedef {import('hast').Element} Element
    */
 
@@ -54993,7 +55048,7 @@
   /**
    * Check whether an element has all class names.
    *
-   * @param {AstRule} query
+   * @param {AstClassName} query
    *   AST rule (with `classNames`).
    * @param {Element} element
    *   Element.
@@ -55005,19 +55060,12 @@
     const value = /** @type {Readonly<Array<string>>} */ (
       element.properties.className || emptyClassNames
     );
-    let index = -1;
 
-    if (query.classNames) {
-      while (++index < query.classNames.length) {
-        if (!value.includes(query.classNames[index])) return false
-      }
-    }
-
-    return true
+    return value.includes(query.name)
   }
 
   /**
-   * @typedef {import('css-selector-parser').AstRule} AstRule
+   * @typedef {import('css-selector-parser').AstId} AstId
    *
    * @typedef {import('hast').Element} Element
    */
@@ -55026,7 +55074,7 @@
   /**
    * Check whether an element has an ID.
    *
-   * @param {AstRule} query
+   * @param {AstId} query
    *   AST rule (with `ids`).
    * @param {Element} element
    *   Element.
@@ -55034,12 +55082,11 @@
    *   Whether `element` matches `query`.
    */
   function id(query, element) {
-    const ids = query.ids;
-    return ids.length === 1 && element.properties.id === ids[0]
+    return element.properties.id === query.name
   }
 
   /**
-   * @typedef {import('css-selector-parser').AstRule} AstRule
+   * @typedef {import('css-selector-parser').AstTagName} AstTagName
    *
    * @typedef {import('hast').Element} Element
    */
@@ -55048,7 +55095,7 @@
   /**
    * Check whether an element has a tag name.
    *
-   * @param {AstRule} query
+   * @param {AstTagName} query
    *   AST rule (with `tag`).
    * @param {Element} element
    *   Element.
@@ -55056,8 +55103,7 @@
    *   Whether `element` matches `query`.
    */
   function name(query, element) {
-    ok$3(query.tag);
-    return query.tag.type === 'WildcardTag' || query.tag.name === element.tagName
+    return query.name === element.tagName
   }
 
   /**
@@ -55482,7 +55528,6 @@
   }
 
   /**
-   * @typedef {import('css-selector-parser').AstRule} AstRule
    * @typedef {import('css-selector-parser').AstPseudoClass} AstPseudoClass
    *
    * @typedef {import('hast').Element} Element
@@ -55497,8 +55542,8 @@
   // @ts-expect-error: types are broken.
   const nthCheck = nthCheck$1.default || nthCheck$1;
 
-  /** @type {(rule: AstPseudoClass | AstRule, element: Element, index: number | undefined, parent: Parents | undefined, state: State) => boolean} */
-  const handle$1 = zwitch('name', {
+  /** @type {(rule: AstPseudoClass, element: Element, index: number | undefined, parent: Parents | undefined, state: State) => boolean} */
+  const pseudo = zwitch('name', {
     handlers: {
       'any-link': anyLink,
       blank,
@@ -55531,33 +55576,6 @@
     invalid: invalidPseudo,
     unknown: unknownPseudo
   });
-
-  /**
-   * Check whether an element matches pseudo selectors.
-   *
-   * @param {AstRule} query
-   *   AST rule (with `pseudoClasses`).
-   * @param {Element} element
-   *   Element.
-   * @param {number | undefined} index
-   *   Index of `element` in `parent`.
-   * @param {Parents | undefined} parent
-   *   Parent of `element`.
-   * @param {State} state
-   *   State.
-   * @returns {boolean}
-   *   Whether `element` matches `query`.
-   */
-  function pseudo(query, element, index, parent, state) {
-    const pseudos = query.pseudoClasses;
-    let offset = -1;
-
-    while (++offset < pseudos.length) {
-      if (!handle$1(pseudos[offset], element, index, parent, state)) return false
-    }
-
-    return true
-  }
 
   /**
    * Check whether an element matches an `:any-link` pseudo.
@@ -56288,17 +56306,24 @@
    *   Whether `element` matches `query`.
    */
   function test(query, element, index, parent, state) {
-    if (query.pseudoElement) {
-      throw new Error('Invalid selector: `::' + query.pseudoElement + '`')
+    for (const item of query.items) {
+      // eslint-disable-next-line unicorn/prefer-switch
+      if (item.type === 'Attribute') {
+        if (!attribute(item, element, state.schema)) return false
+      } else if (item.type === 'Id') {
+        if (!id(item, element)) return false
+      } else if (item.type === 'ClassName') {
+        if (!className(item, element)) return false
+      } else if (item.type === 'PseudoClass') {
+        if (!pseudo(item, element, index, parent, state)) return false
+      } else if (item.type === 'PseudoElement') {
+        throw new Error('Invalid selector: `::' + item.name + '`')
+      } else if (item.type === 'TagName') {
+        if (!name(item, element)) return false
+      } else ;
     }
 
-    return Boolean(
-      (!query.tag || name(query, element)) &&
-        (!query.classNames || className(query, element)) &&
-        (!query.ids || id(query, element)) &&
-        (!query.attributes || attributes$1(query, element, state.schema)) &&
-        (!query.pseudoClasses || pseudo(query, element, index, parent, state))
-    )
+    return true
   }
 
   /**
