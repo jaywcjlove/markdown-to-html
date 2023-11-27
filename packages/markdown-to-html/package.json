@@ -4,6 +4,7 @@
   "description": "Converts markdown text to HTML.",
   "license": "MIT",
   "author": "kenny wang <wowohoo@qq.com> (https://github.com/jaywcjlove)",
+  "funding": "https://jaywcjlove.github.io/#/sponsor",
   "type": "module",
   "main": "./lib/index.js",
   "exports": "./lib/index.js",

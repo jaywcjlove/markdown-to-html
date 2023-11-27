@@ -1,6 +1,7 @@
 Convert Markdown to HTML.
 ===
 
+[![Buy me a coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-048754?logo=buymeacoffee)](https://jaywcjlove.github.io/#/sponsor)
 [![CI](https://github.com/jaywcjlove/markdown-to-html/actions/workflows/ci.yml/badge.svg)](https://github.com/jaywcjlove/markdown-to-html/actions/workflows/ci.yml)
 [![jsDelivr CDN](https://data.jsdelivr.com/v1/package/npm/@wcj/markdown-to-html/badge?style=rounded)](https://www.jsdelivr.com/package/npm/@wcj/markdown-to-html)
 [![npm version](https://img.shields.io/npm/v/@wcj/markdown-to-html.svg)](https://www.npmjs.com/package/@wcj/markdown-to-html)
