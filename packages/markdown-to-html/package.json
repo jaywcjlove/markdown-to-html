@@ -12,8 +12,8 @@
   "unpkg": "dist/markdown.js",
   "jsdelivr": "dist/markdown.js",
   "scripts": {
-    "build": "rollup -c rollup.config.js",
-    "start": "rollup -c rollup.config.js -w"
+    "build": "rollup -c rollup.config.mjs",
+    "start": "rollup -c rollup.config.mjs -w"
   },
   "repository": {
     "type": "git",
@@ -50,13 +50,14 @@
     "vfile": "^6.0.0"
   },
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^25.0.0",
-    "@rollup/plugin-json": "^6.0.0",
-    "@rollup/plugin-node-resolve": "^15.0.0",
-    "@rollup/plugin-terser": "^0.4.3",
-    "@rollup/plugin-typescript": "^11.0.0",
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-json": "^6.0.1",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-terser": "^0.4.0",
+    "@rollup/plugin-typescript": "^11.1.5",
     "bannerjs": "^3.0.0",
-    "rollup": "^3.0.0",
+    "rollup": "^4.0.0",
+    "rollup-plugin-sizes": "^1.0.6",
     "tslib": "^2.4.0",
     "typescript": "^5.0.0"
   }

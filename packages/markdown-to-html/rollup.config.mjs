@@ -3,6 +3,7 @@ import typescript from '@rollup/plugin-typescript';
 import commonjs from '@rollup/plugin-commonjs';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import terser from '@rollup/plugin-terser';
+import sizes from 'rollup-plugin-sizes';
 import json from '@rollup/plugin-json';
 import { multibanner, onebanner } from 'bannerjs';
 import pkg from './package.json' assert { type: 'json' };
@@ -22,7 +23,6 @@ import pkg from './package.json' assert { type: 'json' };
 export default [
   {
     input: 'src/index.ts',
-    // onwarn,
     output: [
       {
         file: pkg.unpkg,
@@ -50,7 +50,6 @@ export default [
   },
   {
     input: 'src/index.ts',
-    // onwarn,
     output: [
       {
         file: pkg.unpkg.replace(/.js$/, '.min.js'),
