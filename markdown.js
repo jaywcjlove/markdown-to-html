@@ -2,7 +2,7 @@
  * @wcj/markdown-to-html v3.0.2 
  * Converts markdown text to HTML. 
  * 
- * Copyright (c) 2023 kenny wang <wowohoo@qq.com> (https://github.com/jaywcjlove) 
+ * Copyright (c) 2024 kenny wang <wowohoo@qq.com> (https://github.com/jaywcjlove) 
  * https://github.com/jaywcjlove/markdown-to-html 
  * 
  * @website: https://github.com/jaywcjlove/markdown-to-html
@@ -1703,7 +1703,7 @@
 
   var extend$1 = /*@__PURE__*/getDefaultExportFromCjs(extend);
 
-  function ok$3() {}
+  function ok$1() {}
 
   function isPlainObject(value) {
   	if (typeof value !== 'object' || value === null) {
@@ -3198,7 +3198,7 @@
    * @returns {Check}
    *   An assertion.
    */
-  const convert$2 =
+  const convert =
     // Note: overloads in JSDoc can’t yet use different `@template`s.
     /**
      * @type {(
@@ -3216,19 +3216,19 @@
        */
       function (test) {
         if (test === null || test === undefined) {
-          return ok$2
+          return ok
         }
 
         if (typeof test === 'function') {
-          return castFactory$3(test)
+          return castFactory$1(test)
         }
 
         if (typeof test === 'object') {
-          return Array.isArray(test) ? anyFactory$3(test) : propsFactory$2(test)
+          return Array.isArray(test) ? anyFactory$1(test) : propsFactory(test)
         }
 
         if (typeof test === 'string') {
-          return typeFactory$2(test)
+          return typeFactory(test)
         }
 
         throw new Error('Expected function, string, or object as test')
@@ -3239,16 +3239,16 @@
    * @param {Array<Props | TestFunction | string>} tests
    * @returns {Check}
    */
-  function anyFactory$3(tests) {
+  function anyFactory$1(tests) {
     /** @type {Array<Check>} */
     const checks = [];
     let index = -1;
 
     while (++index < tests.length) {
-      checks[index] = convert$2(tests[index]);
+      checks[index] = convert(tests[index]);
     }
 
-    return castFactory$3(any)
+    return castFactory$1(any)
 
     /**
      * @this {unknown}
@@ -3271,10 +3271,10 @@
    * @param {Props} check
    * @returns {Check}
    */
-  function propsFactory$2(check) {
+  function propsFactory(check) {
     const checkAsRecord = /** @type {Record<string, unknown>} */ (check);
 
-    return castFactory$3(all)
+    return castFactory$1(all)
 
     /**
      * @param {Node} node
@@ -3302,8 +3302,8 @@
    * @param {string} check
    * @returns {Check}
    */
-  function typeFactory$2(check) {
-    return castFactory$3(type)
+  function typeFactory(check) {
+    return castFactory$1(type)
 
     /**
      * @param {Node} node
@@ -3319,7 +3319,7 @@
    * @param {TestFunction} testFunction
    * @returns {Check}
    */
-  function castFactory$3(testFunction) {
+  function castFactory$1(testFunction) {
     return check
 
     /**
@@ -3339,7 +3339,7 @@
     }
   }
 
-  function ok$2() {
+  function ok() {
     return true
   }
 
@@ -3355,7 +3355,7 @@
    * @param {string} d
    * @returns {string}
    */
-  function color$1(d) {
+  function color(d) {
     return d
   }
 
@@ -3371,17 +3371,17 @@
   /**
    * Continue traversing as normal.
    */
-  const CONTINUE$1 = true;
+  const CONTINUE = true;
 
   /**
    * Stop traversing immediately.
    */
-  const EXIT$1 = false;
+  const EXIT = false;
 
   /**
    * Do not traverse this node’s children.
    */
-  const SKIP$1 = 'skip';
+  const SKIP = 'skip';
 
   /**
    * Visit nodes, with ancestral information.
@@ -3430,7 +3430,7 @@
    * @template {Test} Check
    *   `unist-util-is`-compatible test.
    */
-  function visitParents$1(tree, test, visitor, reverse) {
+  function visitParents(tree, test, visitor, reverse) {
     /** @type {Test} */
     let check;
 
@@ -3443,7 +3443,7 @@
       check = test;
     }
 
-    const is = convert$2(check);
+    const is = convert(check);
     const step = reverse ? -1 : 1;
 
     factory(tree, undefined, [])();
@@ -3470,7 +3470,7 @@
 
         Object.defineProperty(visit, 'name', {
           value:
-            'node (' + color$1(node.type + (name ? '<' + name + '>' : '')) + ')'
+            'node (' + color(node.type + (name ? '<' + name + '>' : '')) + ')'
         });
       }
 
@@ -3488,9 +3488,9 @@
 
         if (!test || is(node, index, parents[parents.length - 1] || undefined)) {
           // @ts-expect-error: `visitor` is now a visitor.
-          result = toResult$1(visitor(node, parents));
+          result = toResult(visitor(node, parents));
 
-          if (result[0] === EXIT$1) {
+          if (result[0] === EXIT) {
             return result
           }
         }
@@ -3498,7 +3498,7 @@
         if ('children' in node && node.children) {
           const nodeAsParent = /** @type {UnistParent} */ (node);
 
-          if (nodeAsParent.children && result[0] !== SKIP$1) {
+          if (nodeAsParent.children && result[0] !== SKIP) {
             offset = (reverse ? nodeAsParent.children.length : -1) + step;
             grandparents = parents.concat(nodeAsParent);
 
@@ -3507,7 +3507,7 @@
 
               subresult = factory(child, offset, grandparents)();
 
-              if (subresult[0] === EXIT$1) {
+              if (subresult[0] === EXIT) {
                 return subresult
               }
 
@@ -3530,13 +3530,13 @@
    * @returns {Readonly<ActionTuple>}
    *   Clean result.
    */
-  function toResult$1(value) {
+  function toResult(value) {
     if (Array.isArray(value)) {
       return value
     }
 
     if (typeof value === 'number') {
-      return [CONTINUE$1, value]
+      return [CONTINUE, value]
     }
 
     return value === null || value === undefined ? empty$3 : [value]
@@ -3571,12 +3571,12 @@
    */
   function findAndReplace(tree, list, options) {
     const settings = options || {};
-    const ignored = convert$2(settings.ignore || []);
+    const ignored = convert(settings.ignore || []);
     const pairs = toPairs(list);
     let pairIndex = -1;
 
     while (++pairIndex < pairs.length) {
-      visitParents$1(tree, 'text', visitor);
+      visitParents(tree, 'text', visitor);
     }
 
     /** @type {import('unist-util-visit-parents').BuildVisitor<Root, 'text'>} */
@@ -3867,7 +3867,7 @@
   function exitLiteralAutolinkWww(token) {
     this.config.exit.data.call(this, token);
     const node = this.stack[this.stack.length - 1];
-    ok$3(node.type === 'link');
+    ok$1(node.type === 'link');
     node.url = 'http://' + this.sliceSerialize(token);
   }
 
@@ -4155,7 +4155,7 @@
   function exitFootnoteDefinitionLabelString(token) {
     const label = this.resume();
     const node = this.stack[this.stack.length - 1];
-    ok$3(node.type === 'footnoteDefinition');
+    ok$1(node.type === 'footnoteDefinition');
     node.label = label;
     node.identifier = normalizeIdentifier(
       this.sliceSerialize(token)
@@ -4193,7 +4193,7 @@
   function exitFootnoteCallString(token) {
     const label = this.resume();
     const node = this.stack[this.stack.length - 1];
-    ok$3(node.type === 'footnoteReference');
+    ok$1(node.type === 'footnoteReference');
     node.label = label;
     node.identifier = normalizeIdentifier(
       this.sliceSerialize(token)
@@ -5373,7 +5373,7 @@
    * @template {Test} Check
    *   `unist-util-is`-compatible test.
    */
-  function visit$1(tree, testOrVisitor, visitorOrReverse, maybeReverse) {
+  function visit(tree, testOrVisitor, visitorOrReverse, maybeReverse) {
     /** @type {boolean | null | undefined} */
     let reverse;
     /** @type {Test} */
@@ -5396,7 +5396,7 @@
       reverse = maybeReverse;
     }
 
-    visitParents$1(tree, test, overload, reverse);
+    visitParents(tree, test, overload, reverse);
 
     /**
      * @param {UnistNode} node
@@ -5436,7 +5436,7 @@
    * @returns {string}
    *   Serialized `value`.
    */
-  function toString$3(value, options) {
+  function toString$2(value, options) {
     const settings = options || emptyOptions$5;
     const includeImageAlt =
       typeof settings.includeImageAlt === 'boolean'
@@ -5445,7 +5445,7 @@
     const includeHtml =
       typeof settings.includeHtml === 'boolean' ? settings.includeHtml : true;
 
-    return one$7(value, includeImageAlt, includeHtml)
+    return one$6(value, includeImageAlt, includeHtml)
   }
 
   /**
@@ -5460,7 +5460,7 @@
    * @returns {string}
    *   Serialized node.
    */
-  function one$7(value, includeImageAlt, includeHtml) {
+  function one$6(value, includeImageAlt, includeHtml) {
     if (node(value)) {
       if ('value' in value) {
         return value.type === 'html' && !includeHtml ? '' : value.value
@@ -5471,12 +5471,12 @@
       }
 
       if ('children' in value) {
-        return all$8(value.children, includeImageAlt, includeHtml)
+        return all$7(value.children, includeImageAlt, includeHtml)
       }
     }
 
     if (Array.isArray(value)) {
-      return all$8(value, includeImageAlt, includeHtml)
+      return all$7(value, includeImageAlt, includeHtml)
     }
 
     return ''
@@ -5494,13 +5494,13 @@
    * @returns {string}
    *   Serialized nodes.
    */
-  function all$8(values, includeImageAlt, includeHtml) {
+  function all$7(values, includeImageAlt, includeHtml) {
     /** @type {Array<string>} */
     const result = [];
     let index = -1;
 
     while (++index < values.length) {
-      result[index] = one$7(values[index], includeImageAlt, includeHtml);
+      result[index] = one$6(values[index], includeImageAlt, includeHtml);
     }
 
     return result.join('')
@@ -5534,19 +5534,19 @@
 
     // Look for literals with a line break.
     // Note that this also
-    visit$1(node, function (node) {
+    visit(node, function (node) {
       if (
         ('value' in node && /\r?\n|\r/.test(node.value)) ||
         node.type === 'break'
       ) {
         literalWithBreak = true;
-        return EXIT$1
+        return EXIT
       }
     });
 
     return Boolean(
       (!node.depth || node.depth < 3) &&
-        toString$3(node) &&
+        toString$2(node) &&
         (state.options.setext || literalWithBreak)
     )
   }
@@ -5892,7 +5892,7 @@
    * @returns {boolean}
    */
   function formatLinkAsAutolink(node, state) {
-    const raw = toString$3(node);
+    const raw = toString$2(node);
 
     return Boolean(
       !state.options.resourceLink &&
@@ -6431,7 +6431,7 @@
   const phrasing =
     /** @type {(node?: unknown) => node is PhrasingContent} */
     (
-      convert$2([
+      convert([
         'break',
         'delete',
         'emphasis',
@@ -6848,7 +6848,7 @@
     }
 
     const node = this.stack[this.stack.length - 1];
-    ok$3(node.type === 'inlineCode');
+    ok$1(node.type === 'inlineCode');
     node.value = value;
     this.exit(token);
   }
@@ -7071,7 +7071,7 @@
   function exitCheck(token) {
     // We’re always in a paragraph, in a list item.
     const node = this.stack[this.stack.length - 2];
-    ok$3(node.type === 'listItem');
+    ok$1(node.type === 'listItem');
     node.checked = token.type === 'taskListCheckValueChecked';
   }
 
@@ -7088,7 +7088,7 @@
       typeof parent.checked === 'boolean'
     ) {
       const node = this.stack[this.stack.length - 1];
-      ok$3(node.type === 'paragraph');
+      ok$1(node.type === 'paragraph');
       const head = node.children[0];
 
       if (head && head.type === 'text') {
@@ -17028,7 +17028,7 @@
   const rehypeAttrs = (options = {}) => {
       const { properties = 'data', codeBlockParames = true } = options;
       return (tree) => {
-          visit$1(tree, 'element', (node, index, parent) => {
+          visit(tree, 'element', (node, index, parent) => {
               if (codeBlockParames && node.tagName === 'pre' && node && Array.isArray(node.children) && parent && Array.isArray(parent.children) && parent.children.length > 1) {
                   const firstChild = node.children[0];
                   if (firstChild && firstChild.tagName === 'code' && typeof index === 'number') {
@@ -19140,7 +19140,7 @@
      * @returns {string}
      */
     function resume() {
-      return toString$3(this.stack.pop())
+      return toString$2(this.stack.pop())
     }
 
     //
@@ -21194,7 +21194,7 @@
 
   const EMPTY = '';
 
-  const {toString: toString$2} = {};
+  const {toString: toString$1} = {};
   const {keys} = Object;
 
   const typeOf = value => {
@@ -21202,7 +21202,7 @@
     if (type !== 'object' || !value)
       return [PRIMITIVE, type];
 
-    const asString = toString$2.call(value).slice(8, -1);
+    const asString = toString$1.call(value).slice(8, -1);
     switch (asString) {
       case 'Array':
         return [ARRAY, EMPTY];
@@ -21618,7 +21618,7 @@
       wrap
     };
 
-    visit$1(tree, function (node) {
+    visit(tree, function (node) {
       if (node.type === 'definition' || node.type === 'footnoteDefinition') {
         const map = node.type === 'definition' ? definitionById : footnoteById;
         const id = String(node.identifier).toUpperCase();
@@ -22166,7 +22166,7 @@
   const RehypeVideo = (options) => {
       const { test = /\/(.*)(.mp4|.mov)$/, details = true } = options || {};
       return (tree) => {
-          visit$1(tree, 'element', (node, index, parent) => {
+          visit(tree, 'element', (node, index, parent) => {
               const isChecked = (str) => test.test(str.replace(/(\?|!|\#|$).+/g, '').toLocaleLowerCase());
               const child = node.children[0];
               const delimiter = /((?:https?:\/\/)(?:(?:[a-z0-9]?(?:[a-z0-9\-]{1,61}[a-z0-9])?\.[^\.|\s])+[a-z\.]*[a-z]+|(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3})(?::\d{1,5})*[a-z0-9.,_\/~#&=;%+?\-\\(\\)]*)/g;
@@ -24055,7 +24055,7 @@
    *   Note that certain legacy DOM nodes (i.e., Attr nodes (2),  CDATA, processing instructions)
    */
   function transform(node, options) {
-    const transformed = one$6(node, options);
+    const transformed = one$5(node, options);
     if (transformed && options.afterTransform)
       options.afterTransform(node, transformed);
     return transformed
@@ -24069,7 +24069,7 @@
    * @returns {HastNodes | undefined}
    *   Equivalent hast node.
    */
-  function one$6(node, options) {
+  function one$5(node, options) {
     switch (node.nodeType) {
       case 1 /* Element */: {
         const domNode = /** @type {Element} */ (node);
@@ -24124,7 +24124,7 @@
    *   Equivalent hast node.
    */
   function root$4(node, options) {
-    return {type: 'root', children: all$7(node, options)}
+    return {type: 'root', children: all$6(node, options)}
   }
 
   /**
@@ -24189,7 +24189,7 @@
       props[attributes[index]] = node.getAttribute(attributes[index]) || '';
     }
 
-    return fn(tagName, props, all$7(content, options))
+    return fn(tagName, props, all$6(content, options))
   }
 
   /**
@@ -24202,7 +24202,7 @@
    * @returns {Array<HastRootContent>}
    *   Equivalent hast nodes.
    */
-  function all$7(node, options) {
+  function all$6(node, options) {
     const nodes = node.childNodes;
     /** @type {Array<HastRootContent>} */
     const children = [];
@@ -24285,7 +24285,7 @@
        * @returns {UnistNode | undefined}
        */
       function (parent, index, test) {
-        const is = convert$2(test);
+        const is = convert(test);
 
         if (!parent || !parent.type || !parent.children) {
           throw new Error('Expected parent node')
@@ -24359,11 +24359,11 @@
 
         // Assume array.
         if (typeof test === 'object') {
-          return anyFactory$2(test)
+          return anyFactory(test)
         }
 
         if (typeof test === 'function') {
-          return castFactory$2(test)
+          return castFactory(test)
         }
 
         throw new Error('Expected function, string, or array as `test`')
@@ -24376,7 +24376,7 @@
    * @param {Array<TestFunction | string>} tests
    * @returns {Check}
    */
-  function anyFactory$2(tests) {
+  function anyFactory(tests) {
     /** @type {Array<Check>} */
     const checks = [];
     let index = -1;
@@ -24385,7 +24385,7 @@
       checks[index] = convertElement(tests[index]);
     }
 
-    return castFactory$2(any)
+    return castFactory(any)
 
     /**
      * @this {unknown}
@@ -24409,7 +24409,7 @@
    * @returns {Check}
    */
   function tagNameFactory(check) {
-    return castFactory$2(tagName)
+    return castFactory(tagName)
 
     /**
      * @param {Element} element
@@ -24426,7 +24426,7 @@
    * @param {TestFunction} testFunction
    * @returns {Check}
    */
-  function castFactory$2(testFunction) {
+  function castFactory(testFunction) {
     return check
 
     /**
@@ -43519,7 +43519,7 @@
      *   Nothing.
      */
     return function (tree, file) {
-      visitParents$1(tree, 'element', function (element, parents) {
+      visitParents(tree, 'element', function (element, parents) {
         const classes = Array.isArray(element.properties.className)
           ? element.properties.className
           : emptyClasses;
@@ -43614,7 +43614,7 @@
 
         const index = parent.children.indexOf(scope);
         parent.children.splice(index, 1, ...result);
-        return SKIP$1
+        return SKIP
       });
     }
   }
@@ -43622,7 +43622,7 @@
   const rehypeIgnore = (options = {}) => {
       const { openDelimiter = 'rehype:ignore:start', closeDelimiter = 'rehype:ignore:end' } = options;
       return (tree) => {
-          visit$1(tree, (node, index, parent) => {
+          visit(tree, (node, index, parent) => {
               if (node.type === 'element' || node.type === 'root') {
                   // const start = node.children.findIndex((item) => item.type === 'comment' && item.value === openDelimiter);
                   // const end = node.children.findIndex((item) => item.type === 'comment' && item.value === closeDelimiter);
@@ -43811,7 +43811,7 @@
   function fromParse5(tree, options) {
     const settings = options || {};
 
-    return one$5(
+    return one$4(
       {
         file: settings.file || undefined,
         location: false,
@@ -43832,7 +43832,7 @@
    * @returns {Nodes}
    *   hast node.
    */
-  function one$5(state, node) {
+  function one$4(state, node) {
     /** @type {Nodes} */
     let result;
 
@@ -43854,7 +43854,7 @@
 
         result = {
           type: 'root',
-          children: all$6(state, node.childNodes),
+          children: all$5(state, node.childNodes),
           data: {quirksMode}
         };
 
@@ -43902,14 +43902,14 @@
    * @returns {Array<RootContent>}
    *   hast nodes.
    */
-  function all$6(state, nodes) {
+  function all$5(state, nodes) {
     let index = -1;
     /** @type {Array<RootContent>} */
     const results = [];
 
     while (++index < nodes.length) {
       // Assume no roots in `nodes`.
-      const result = /** @type {RootContent} */ (one$5(state, nodes[index]));
+      const result = /** @type {RootContent} */ (one$4(state, nodes[index]));
       results.push(result);
     }
 
@@ -43947,7 +43947,7 @@
 
     // Build.
     const fn = state.schema.space === 'svg' ? s$1 : h$1;
-    const result = fn(node.tagName, props, all$6(state, node.childNodes));
+    const result = fn(node.tagName, props, all$5(state, node.childNodes));
     patch$1(state, node, result);
 
     // Switch content.
@@ -43958,7 +43958,7 @@
       const endTag = pos && pos.endTag && position(pos.endTag);
 
       // Root in, root out.
-      const content = /** @type {Root} */ (one$5(state, reference.content));
+      const content = /** @type {Root} */ (one$4(state, reference.content));
 
       if (startTag && endTag && state.file) {
         content.position = {start: startTag.end, end: endTag.start};
@@ -44041,7 +44041,7 @@
           }
         }
 
-        ok$3(location.startTag);
+        ok$1(location.startTag);
         const opening = position(location.startTag);
         const closing = location.endTag ? position(location.endTag) : undefined;
         /** @type {ElementData['position']} */
@@ -44121,7 +44121,7 @@
 
   const own$6 = {}.hasOwnProperty;
 
-  const one$4 = zwitch('type', {handlers: {root: root$3, element: element$2, text: text$2, comment: comment$2, doctype: doctype$2}});
+  const one$3 = zwitch('type', {handlers: {root: root$3, element: element$2, text: text$2, comment: comment$2, doctype: doctype$2}});
 
   /**
    * Transform a hast tree to a `parse5` AST.
@@ -44136,7 +44136,7 @@
   function toParse5(tree, options) {
     const settings = options || emptyOptions$1;
     const space = settings.space;
-    return one$4(tree, space === 'svg' ? svg : html$2)
+    return one$3(tree, space === 'svg' ? svg : html$2)
   }
 
   /**
@@ -44155,7 +44155,7 @@
       mode: (node.data || {}).quirksMode ? 'quirks' : 'no-quirks',
       childNodes: []
     };
-    result.childNodes = all$5(node.children, result, schema);
+    result.childNodes = all$4(node.children, result, schema);
     patch(node, result);
     return result
   }
@@ -44171,7 +44171,7 @@
   function fragment(node, schema) {
     /** @type {Parse5Fragment} */
     const result = {nodeName: '#document-fragment', childNodes: []};
-    result.childNodes = all$5(node.children, result, schema);
+    result.childNodes = all$4(node.children, result, schema);
     patch(node, result);
     return result
   }
@@ -44285,7 +44285,7 @@
       childNodes: [],
       parentNode: null
     };
-    result.childNodes = all$5(node.children, result, currentSchema);
+    result.childNodes = all$4(node.children, result, currentSchema);
     patch(node, result);
 
     if (node.tagName === 'template' && node.content) {
@@ -44362,7 +44362,7 @@
    * @returns {Array<Parse5Content>}
    *   Transformed children.
    */
-  function all$5(children, parentNode, schema) {
+  function all$4(children, parentNode, schema) {
     let index = -1;
     /** @type {Array<Parse5Content>} */
     const results = [];
@@ -44370,7 +44370,7 @@
     if (children) {
       while (++index < children.length) {
         /** @type {Parse5Content} */
-        const child = one$4(children[index], schema);
+        const child = one$3(children[index], schema);
 
         child.parentNode = parentNode;
 
@@ -44395,8 +44395,8 @@
     const position = from.position;
 
     if (position && position.start && position.end) {
-      ok$3(typeof position.start.offset === 'number');
-      ok$3(typeof position.end.offset === 'number');
+      ok$1(typeof position.start.offset === 'number');
+      ok$1(typeof position.end.offset === 'number');
 
       to.sourceCodeLocation = {
         startLine: position.start.line,
@@ -52908,7 +52908,7 @@
     });
 
     if (state.stitches) {
-      visit$1(result, 'comment', function (node, index, parent) {
+      visit(result, 'comment', function (node, index, parent) {
         const stitch = /** @type {Stitch} */ (/** @type {unknown} */ (node));
         if (stitch.value.stitch && parent && index !== undefined) {
           /** @type {Array<RootContent>} */
@@ -52942,7 +52942,7 @@
    * @returns {undefined}
    *   Nothing.
    */
-  function all$4(nodes, state) {
+  function all$3(nodes, state) {
     let index = -1;
 
     /* istanbul ignore else - invalid nodes, see rehypejs/rehype-raw#7. */
@@ -52964,7 +52964,7 @@
    *   Nothing.
    */
   function root$2(node, state) {
-    all$4(node.children, state);
+    all$3(node.children, state);
   }
 
   /**
@@ -52980,7 +52980,7 @@
   function element$1(node, state) {
     startTag(node, state);
 
-    all$4(node.children, state);
+    all$3(node.children, state);
 
     endTag(node, state);
   }
@@ -53889,21 +53889,19 @@
   };
 
   function isIdentStart(c) {
-      return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c === '-' || c === '_' || c === '\\';
+      return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c === '-' || c === '_' || c === '\\' || c >= '\u00a0';
   }
   function isIdent(c) {
-      return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c === '-' || c === '_';
+      return ((c >= 'a' && c <= 'z') ||
+          (c >= 'A' && c <= 'Z') ||
+          (c >= '0' && c <= '9') ||
+          c === '-' ||
+          c === '_' ||
+          c >= '\u00a0');
   }
   function isHex(c) {
       return (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F') || (c >= '0' && c <= '9');
   }
-  var stringEscapeChars = {
-      n: '\n',
-      r: '\r',
-      t: '\t',
-      f: '\f',
-      '\\': '\\'
-  };
   var whitespaceChars = {
       ' ': true,
       '\t': true,
@@ -53927,6 +53925,7 @@
       8: true,
       9: true
   };
+  var maxHexLength = 6;
 
   var errorPrefix = "css-selector-parser parse error: ";
   /**
@@ -54056,16 +54055,22 @@
               }
           }
       }
+      /**
+       * @see https://www.w3.org/TR/css-syntax/#hex-digit-diagram
+       */
       function parseHex() {
           var hex = readAndNext();
-          while (isHex(chr)) {
+          var count = 1;
+          while (isHex(chr) && count < maxHexLength) {
               hex += readAndNext();
+              count++;
           }
-          if (is(' ')) {
-              next();
-          }
+          skipSingleWhitespace();
           return String.fromCharCode(parseInt(hex, 16));
       }
+      /**
+       * @see https://www.w3.org/TR/css-syntax/#string-token-diagram
+       */
       function parseString(quote) {
           var result = '';
           pass(quote);
@@ -54076,33 +54081,53 @@
               }
               else if (is('\\')) {
                   next();
-                  var esc = void 0;
                   if (is(quote)) {
                       result += quote;
+                      next();
                   }
-                  else if ((esc = stringEscapeChars[chr]) !== undefined) {
-                      result += esc;
+                  else if (chr === '\n' || chr === '\f') {
+                      next();
+                  }
+                  else if (chr === '\r') {
+                      next();
+                      if (is('\n')) {
+                          next();
+                      }
                   }
                   else if (isHex(chr)) {
                       result += parseHex();
-                      continue;
                   }
                   else {
                       result += chr;
+                      next();
                   }
               }
               else {
                   result += chr;
+                  next();
               }
-              next();
           }
           return result;
       }
+      /**
+       * @see https://www.w3.org/TR/css-syntax/#ident-token-diagram
+       */
       function parseIdentifier() {
           if (!isIdentStart(chr)) {
               return null;
           }
           var result = '';
+          while (is('-')) {
+              result += chr;
+              next();
+          }
+          if (strict && result.length >= 2) {
+              // Checking this only for strict mode since browsers work fine with these identifiers.
+              fail('Identifiers cannot start with two hyphens with strict mode on.');
+          }
+          if (digitsChars[chr]) {
+              fail('Identifiers cannot start with hyphens followed by digits.');
+          }
           while (pos < l) {
               if (isIdent(chr)) {
                   result += readAndNext();
@@ -54118,7 +54143,7 @@
                   }
               }
               else {
-                  return result;
+                  break;
               }
           }
           return result;
@@ -54147,6 +54172,18 @@
               }
           }
           return result.trim();
+      }
+      function skipSingleWhitespace() {
+          if (chr === ' ' || chr === '\t' || chr === '\f' || chr === '\n') {
+              next();
+              return;
+          }
+          if (chr === '\r') {
+              next();
+          }
+          if (chr === '\n') {
+              next();
+          }
       }
       function skipWhitespace() {
           while (whitespaceChars[chr]) {
@@ -54720,11 +54757,11 @@
    * @returns {string}
    *   Serialized node.
    */
-  function toString$1(node) {
+  function toString(node) {
     // “The concatenation of data of all the Text node descendants of the context
     // object, in tree order.”
     if ('children' in node) {
-      return all$3(node)
+      return all$2(node)
     }
 
     // “Context object’s data.”
@@ -54737,12 +54774,12 @@
    * @returns {string}
    *   Serialized node.
    */
-  function one$3(node) {
+  function one$2(node) {
     if (node.type === 'text') {
       return node.value
     }
 
-    return 'children' in node ? all$3(node) : ''
+    return 'children' in node ? all$2(node) : ''
   }
 
   /**
@@ -54751,13 +54788,13 @@
    * @returns {string}
    *   Serialized node.
    */
-  function all$3(node) {
+  function all$2(node) {
     let index = -1;
     /** @type {Array<string>} */
     const result = [];
 
     while (++index < node.children.length) {
-      result[index] = one$3(node.children[index]);
+      result[index] = one$2(node.children[index]);
     }
 
     return result.join('')
@@ -54832,7 +54869,7 @@
         } else if (dir === 'auto' || node.tagName === 'bdi') {
           if (node.tagName === 'textarea') {
             // Check contents of `<textarea>`.
-            dirInferred = dirBidi(toString$1(node));
+            dirInferred = dirBidi(toString(node));
           } else if (
             node.tagName === 'input' &&
             (type === 'email' ||
@@ -54846,7 +54883,7 @@
               : 'ltr';
           } else {
             // Check text nodes in `node`.
-            visit$1(node, inferDirectionality);
+            visit(node, inferDirectionality);
           }
         }
 
@@ -54877,7 +54914,7 @@
     function inferDirectionality(child) {
       if (child.type === 'text') {
         dirInferred = dirBidi(child.value);
-        return dirInferred ? EXIT$1 : undefined
+        return dirInferred ? EXIT : undefined
       }
 
       if (
@@ -54889,7 +54926,7 @@
           child.tagName === 'textare' ||
           dirProperty(child))
       ) {
-        return SKIP$1
+        return SKIP
       }
     }
   }
@@ -54955,7 +54992,7 @@
       return value !== undefined
     }
 
-    ok$3(query.value.type === 'String');
+    ok$1(query.value.type === 'String');
     let key = query.value.value;
 
     // Case-sensitivity.
@@ -55675,8 +55712,8 @@
    *   Whether `element` matches `query`.
    */
   function dir(query, _1, _2, _3, state) {
-    ok$3(query.argument);
-    ok$3(query.argument.type === 'String');
+    ok$1(query.argument);
+    ok$1(query.argument.type === 'String');
     return state.direction === query.argument.value
   }
 
@@ -55825,8 +55862,8 @@
    *   Whether `element` matches `query`.
    */
   function has(query, element, _1, _2, state) {
-    ok$3(query.argument);
-    ok$3(query.argument.type === 'Selector');
+    ok$1(query.argument);
+    ok$1(query.argument.type === 'Selector');
 
     /** @type {State} */
     const childState = {
@@ -55869,8 +55906,8 @@
    *   Whether `element` matches `query`.
    */
   function is(query, element, _1, _2, state) {
-    ok$3(query.argument);
-    ok$3(query.argument.type === 'Selector');
+    ok$1(query.argument);
+    ok$1(query.argument.type === 'Selector');
 
     /** @type {State} */
     const childState = {
@@ -55908,8 +55945,8 @@
    *   Whether `element` matches `query`.
    */
   function lang(query, _1, _2, _3, state) {
-    ok$3(query.argument);
-    ok$3(query.argument.type === 'String');
+    ok$1(query.argument);
+    ok$1(query.argument.type === 'String');
 
     return (
       state.language !== '' &&
@@ -56350,7 +56387,7 @@
    */
   function walk(state, tree) {
     if (tree) {
-      one$2(state, [], tree, undefined, undefined, tree);
+      one$1(state, [], tree, undefined, undefined, tree);
     }
   }
 
@@ -56387,7 +56424,7 @@
    * @returns {undefined}
    *   Nothing.
    */
-  function all$2(state, nest, node, tree) {
+  function all$1(state, nest, node, tree) {
     const fromParent = combine(nest.descendant, nest.directChild);
     /** @type {Array<AstRule> | undefined} */
     let fromSibling;
@@ -56426,7 +56463,7 @@
       // for parents so that we delve into custom nodes too.
       if ('children' in child) {
         const forSibling = combine(fromParent, fromSibling);
-        const nest = one$2(
+        const nest = one$1(
           state,
           forSibling,
           node.children[index],
@@ -56588,7 +56625,7 @@
    * @returns {Nest}
    *   Nesting.
    */
-  function one$2(state, currentRules, node, index, parent, tree) {
+  function one$1(state, currentRules, node, index, parent, tree) {
     /** @type {Nest} */
     let nestResult = {
       adjacentSibling: undefined,
@@ -56626,7 +56663,7 @@
     // If this is a parent, and we want to delve into them, and we haven’t found
     // our single result yet.
     if ('children' in node && !state.shallow && !(state.one && state.found)) {
-      all$2(state, nestResult, node, tree);
+      all$1(state, nestResult, node, tree);
     }
 
     exit();
@@ -56715,13 +56752,13 @@
           if (selector && typeof selector === 'string') {
               const selected = selectAll(selector, tree);
               if (selected && selected.length > 0) {
-                  visit$1(tree, selected, (node, index, parent) => {
+                  visit(tree, selected, (node, index, parent) => {
                       rewrite(node, index, parent);
                   });
               }
               return;
           }
-          visit$1(tree, (node, index, parent) => {
+          visit(tree, (node, index, parent) => {
               rewrite(node, index, parent);
           });
       };
@@ -58492,8 +58529,8 @@
 
     /** @type {State} */
     const state = {
-      one: one$1,
-      all: all$1,
+      one,
+      all,
       settings: {
         omitOptionalTags: options_.omitOptionalTags || false,
         allowParseErrors: options_.allowParseErrors || false,
@@ -58540,7 +58577,7 @@
    * @returns {string}
    *   Serialized node.
    */
-  function one$1(node, index, parent) {
+  function one(node, index, parent) {
     return handle(node, index, parent, this)
   }
 
@@ -58553,7 +58590,7 @@
    *   Parent whose children to serialize.
    * @returns {string}
    */
-  function all$1(parent) {
+  function all(parent) {
     /** @type {Array<string>} */
     const results = [];
     const children = (parent && parent.children) || emptyChildren;
@@ -58600,665 +58637,13 @@
   /**
    * @typedef {import('unist').Node} Node
    * @typedef {import('unist').Parent} Parent
-   */
-
-
-  /**
-   * Generate an assertion from a test.
    *
-   * Useful if you’re going to test many nodes, for example when creating a
-   * utility where something else passes a compatible test.
+   * @typedef {Exclude<import('unist-util-is').Test, undefined> | undefined} Test
+   *   Test from `unist-util-is`.
    *
-   * The created function is a bit faster because it expects valid input only:
-   * a `node`, `index`, and `parent`.
-   *
-   * @param test
-   *   *   when nullish, checks if `node` is a `Node`.
-   *   *   when `string`, works like passing `(node) => node.type === test`.
-   *   *   when `function` checks if function passed the node is true.
-   *   *   when `object`, checks that all keys in test are in node, and that they have (strictly) equal values.
-   *   *   when `array`, checks if any one of the subtests pass.
-   * @returns
-   *   An assertion.
-   */
-  const convert$1 =
-    /**
-     * @type {(
-     *   (<Kind extends Node>(test: PredicateTest<Kind>) => AssertPredicate<Kind>) &
-     *   ((test?: Test) => AssertAnything)
-     * )}
-     */
-    (
-      /**
-       * @param {Test} [test]
-       * @returns {AssertAnything}
-       */
-      function (test) {
-        if (test === undefined || test === null) {
-          return ok$1
-        }
-
-        if (typeof test === 'string') {
-          return typeFactory$1(test)
-        }
-
-        if (typeof test === 'object') {
-          return Array.isArray(test) ? anyFactory$1(test) : propsFactory$1(test)
-        }
-
-        if (typeof test === 'function') {
-          return castFactory$1(test)
-        }
-
-        throw new Error('Expected function, string, or object as test')
-      }
-    );
-
-  /**
-   * @param {Array<string | Props | TestFunctionAnything>} tests
-   * @returns {AssertAnything}
-   */
-  function anyFactory$1(tests) {
-    /** @type {Array<AssertAnything>} */
-    const checks = [];
-    let index = -1;
-
-    while (++index < tests.length) {
-      checks[index] = convert$1(tests[index]);
-    }
-
-    return castFactory$1(any)
-
-    /**
-     * @this {unknown}
-     * @param {Array<unknown>} parameters
-     * @returns {boolean}
-     */
-    function any(...parameters) {
-      let index = -1;
-
-      while (++index < checks.length) {
-        if (checks[index].call(this, ...parameters)) return true
-      }
-
-      return false
-    }
-  }
-
-  /**
-   * Turn an object into a test for a node with a certain fields.
-   *
-   * @param {Props} check
-   * @returns {AssertAnything}
-   */
-  function propsFactory$1(check) {
-    return castFactory$1(all)
-
-    /**
-     * @param {Node} node
-     * @returns {boolean}
-     */
-    function all(node) {
-      /** @type {string} */
-      let key;
-
-      for (key in check) {
-        // @ts-expect-error: hush, it sure works as an index.
-        if (node[key] !== check[key]) return false
-      }
-
-      return true
-    }
-  }
-
-  /**
-   * Turn a string into a test for a node with a certain type.
-   *
-   * @param {string} check
-   * @returns {AssertAnything}
-   */
-  function typeFactory$1(check) {
-    return castFactory$1(type)
-
-    /**
-     * @param {Node} node
-     */
-    function type(node) {
-      return node && node.type === check
-    }
-  }
-
-  /**
-   * Turn a custom test into a test for a node that passes that test.
-   *
-   * @param {TestFunctionAnything} check
-   * @returns {AssertAnything}
-   */
-  function castFactory$1(check) {
-    return assertion
-
-    /**
-     * @this {unknown}
-     * @param {unknown} node
-     * @param {Array<unknown>} parameters
-     * @returns {boolean}
-     */
-    function assertion(node, ...parameters) {
-      return Boolean(
-        node &&
-          typeof node === 'object' &&
-          'type' in node &&
-          // @ts-expect-error: fine.
-          Boolean(check.call(this, node, ...parameters))
-      )
-    }
-  }
-
-  function ok$1() {
-    return true
-  }
-
-  /**
-   * @param {string} d
-   * @returns {string}
-   */
-  function color(d) {
-    return d
-  }
-
-  /**
-   * @typedef {import('unist').Node} Node
-   * @typedef {import('unist').Parent} Parent
-   * @typedef {import('unist-util-is').Test} Test
-   */
-
-
-  /**
-   * Continue traversing as normal.
-   */
-  const CONTINUE = true;
-
-  /**
-   * Stop traversing immediately.
-   */
-  const EXIT = false;
-
-  /**
-   * Do not traverse this node’s children.
-   */
-  const SKIP = 'skip';
-
-  /**
-   * Visit nodes, with ancestral information.
-   *
-   * This algorithm performs *depth-first* *tree traversal* in *preorder*
-   * (**NLR**) or if `reverse` is given, in *reverse preorder* (**NRL**).
-   *
-   * You can choose for which nodes `visitor` is called by passing a `test`.
-   * For complex tests, you should test yourself in `visitor`, as it will be
-   * faster and will have improved type information.
-   *
-   * Walking the tree is an intensive task.
-   * Make use of the return values of the visitor when possible.
-   * Instead of walking a tree multiple times, walk it once, use `unist-util-is`
-   * to check if a node matches, and then perform different operations.
-   *
-   * You can change the tree.
-   * See `Visitor` for more info.
-   *
-   * @param tree
-   *   Tree to traverse.
-   * @param test
-   *   `unist-util-is`-compatible test
-   * @param visitor
-   *   Handle each node.
-   * @param reverse
-   *   Traverse in reverse preorder (NRL) instead of the default preorder (NLR).
-   * @returns
-   *   Nothing.
-   */
-  const visitParents =
-    /**
-     * @type {(
-     *   (<Tree extends Node, Check extends Test>(tree: Tree, test: Check, visitor: BuildVisitor<Tree, Check>, reverse?: boolean | null | undefined) => void) &
-     *   (<Tree extends Node>(tree: Tree, visitor: BuildVisitor<Tree>, reverse?: boolean | null | undefined) => void)
-     * )}
-     */
-    (
-      /**
-       * @param {Node} tree
-       * @param {Test} test
-       * @param {Visitor<Node>} visitor
-       * @param {boolean | null | undefined} [reverse]
-       * @returns {void}
-       */
-      function (tree, test, visitor, reverse) {
-        if (typeof test === 'function' && typeof visitor !== 'function') {
-          reverse = visitor;
-          // @ts-expect-error no visitor given, so `visitor` is test.
-          visitor = test;
-          test = null;
-        }
-
-        const is = convert$1(test);
-        const step = reverse ? -1 : 1;
-
-        factory(tree, undefined, [])();
-
-        /**
-         * @param {Node} node
-         * @param {number | undefined} index
-         * @param {Array<Parent>} parents
-         */
-        function factory(node, index, parents) {
-          /** @type {Record<string, unknown>} */
-          // @ts-expect-error: hush
-          const value = node && typeof node === 'object' ? node : {};
-
-          if (typeof value.type === 'string') {
-            const name =
-              // `hast`
-              typeof value.tagName === 'string'
-                ? value.tagName
-                : // `xast`
-                typeof value.name === 'string'
-                ? value.name
-                : undefined;
-
-            Object.defineProperty(visit, 'name', {
-              value:
-                'node (' + color(node.type + (name ? '<' + name + '>' : '')) + ')'
-            });
-          }
-
-          return visit
-
-          function visit() {
-            /** @type {ActionTuple} */
-            let result = [];
-            /** @type {ActionTuple} */
-            let subresult;
-            /** @type {number} */
-            let offset;
-            /** @type {Array<Parent>} */
-            let grandparents;
-
-            if (!test || is(node, index, parents[parents.length - 1] || null)) {
-              result = toResult(visitor(node, parents));
-
-              if (result[0] === EXIT) {
-                return result
-              }
-            }
-
-            // @ts-expect-error looks like a parent.
-            if (node.children && result[0] !== SKIP) {
-              // @ts-expect-error looks like a parent.
-              offset = (reverse ? node.children.length : -1) + step;
-              // @ts-expect-error looks like a parent.
-              grandparents = parents.concat(node);
-
-              // @ts-expect-error looks like a parent.
-              while (offset > -1 && offset < node.children.length) {
-                // @ts-expect-error looks like a parent.
-                subresult = factory(node.children[offset], offset, grandparents)();
-
-                if (subresult[0] === EXIT) {
-                  return subresult
-                }
-
-                offset =
-                  typeof subresult[1] === 'number' ? subresult[1] : offset + step;
-              }
-            }
-
-            return result
-          }
-        }
-      }
-    );
-
-  /**
-   * Turn a return value into a clean result.
-   *
-   * @param {VisitorResult} value
-   *   Valid return values from visitors.
-   * @returns {ActionTuple}
-   *   Clean result.
-   */
-  function toResult(value) {
-    if (Array.isArray(value)) {
-      return value
-    }
-
-    if (typeof value === 'number') {
-      return [CONTINUE, value]
-    }
-
-    return [value]
-  }
-
-  /**
-   * @typedef {import('unist').Node} Node
-   * @typedef {import('unist').Parent} Parent
-   * @typedef {import('unist-util-is').Test} Test
-   * @typedef {import('unist-util-visit-parents').VisitorResult} VisitorResult
-   */
-
-
-  /**
-   * Visit nodes.
-   *
-   * This algorithm performs *depth-first* *tree traversal* in *preorder*
-   * (**NLR**) or if `reverse` is given, in *reverse preorder* (**NRL**).
-   *
-   * You can choose for which nodes `visitor` is called by passing a `test`.
-   * For complex tests, you should test yourself in `visitor`, as it will be
-   * faster and will have improved type information.
-   *
-   * Walking the tree is an intensive task.
-   * Make use of the return values of the visitor when possible.
-   * Instead of walking a tree multiple times, walk it once, use `unist-util-is`
-   * to check if a node matches, and then perform different operations.
-   *
-   * You can change the tree.
-   * See `Visitor` for more info.
-   *
-   * @param tree
-   *   Tree to traverse.
-   * @param test
-   *   `unist-util-is`-compatible test
-   * @param visitor
-   *   Handle each node.
-   * @param reverse
-   *   Traverse in reverse preorder (NRL) instead of the default preorder (NLR).
-   * @returns
-   *   Nothing.
-   */
-  const visit =
-    /**
-     * @type {(
-     *   (<Tree extends Node, Check extends Test>(tree: Tree, test: Check, visitor: BuildVisitor<Tree, Check>, reverse?: boolean | null | undefined) => void) &
-     *   (<Tree extends Node>(tree: Tree, visitor: BuildVisitor<Tree>, reverse?: boolean | null | undefined) => void)
-     * )}
-     */
-    (
-      /**
-       * @param {Node} tree
-       * @param {Test} test
-       * @param {Visitor} visitor
-       * @param {boolean | null | undefined} [reverse]
-       * @returns {void}
-       */
-      function (tree, test, visitor, reverse) {
-        if (typeof test === 'function' && typeof visitor !== 'function') {
-          reverse = visitor;
-          visitor = test;
-          test = null;
-        }
-
-        visitParents(tree, test, overload, reverse);
-
-        /**
-         * @param {Node} node
-         * @param {Array<Parent>} parents
-         */
-        function overload(node, parents) {
-          const parent = parents[parents.length - 1];
-          return visitor(
-            node,
-            parent ? parent.children.indexOf(node) : null,
-            parent
-          )
-        }
-      }
-    );
-
-  /**
-   * @fileoverview
-   *   Get the plain-text value of a hast node.
-   * @longdescription
-   *   ## Use
-   *
-   *   ```js
-   *   import {h} from 'hastscript'
-   *   import {toString} from 'hast-util-to-string'
-   *
-   *   toString(h('p', 'Alpha'))
-   *   //=> 'Alpha'
-   *   toString(h('div', [h('b', 'Bold'), ' and ', h('i', 'italic'), '.']))
-   *   //=> 'Bold and italic.'
-   *   ```
-   *
-   *   ## API
-   *
-   *   ### `toString(node)`
-   *
-   *   Transform a node to a string.
-   */
-
-  /**
-   * @typedef {import('hast').Root} Root
-   * @typedef {import('hast').Element} Element
-   * @typedef {Root|Root['children'][number]} Node
-   */
-
-  /**
-   * Get the plain-text value of a hast node.
-   *
-   * @param {Node} node
-   * @returns {string}
-   */
-  function toString(node) {
-    // “The concatenation of data of all the Text node descendants of the context
-    // object, in tree order.”
-    if ('children' in node) {
-      return all(node)
-    }
-
-    // “Context object’s data.”
-    return 'value' in node ? node.value : ''
-  }
-
-  /**
-   * @param {Node} node
-   * @returns {string}
-   */
-  function one(node) {
-    if (node.type === 'text') {
-      return node.value
-    }
-
-    return 'children' in node ? all(node) : ''
-  }
-
-  /**
-   * @param {Root|Element} node
-   * @returns {string}
-   */
-  function all(node) {
-    let index = -1;
-    /** @type {string[]} */
-    const result = [];
-
-    while (++index < node.children.length) {
-      result[index] = one(node.children[index]);
-    }
-
-    return result.join('')
-  }
-
-  /**
-   * @typedef {import('unist').Node} Node
-   * @typedef {import('unist').Parent} Parent
-   */
-
-
-  /**
-   * Generate an assertion from a test.
-   *
-   * Useful if you’re going to test many nodes, for example when creating a
-   * utility where something else passes a compatible test.
-   *
-   * The created function is a bit faster because it expects valid input only:
-   * a `node`, `index`, and `parent`.
-   *
-   * @param test
-   *   *   when nullish, checks if `node` is a `Node`.
-   *   *   when `string`, works like passing `(node) => node.type === test`.
-   *   *   when `function` checks if function passed the node is true.
-   *   *   when `object`, checks that all keys in test are in node, and that they have (strictly) equal values.
-   *   *   when `array`, checks if any one of the subtests pass.
-   * @returns
-   *   An assertion.
-   */
-  const convert =
-    /**
-     * @type {(
-     *   (<Kind extends Node>(test: PredicateTest<Kind>) => AssertPredicate<Kind>) &
-     *   ((test?: Test) => AssertAnything)
-     * )}
-     */
-    (
-      /**
-       * @param {Test} [test]
-       * @returns {AssertAnything}
-       */
-      function (test) {
-        if (test === undefined || test === null) {
-          return ok
-        }
-
-        if (typeof test === 'string') {
-          return typeFactory(test)
-        }
-
-        if (typeof test === 'object') {
-          return Array.isArray(test) ? anyFactory(test) : propsFactory(test)
-        }
-
-        if (typeof test === 'function') {
-          return castFactory(test)
-        }
-
-        throw new Error('Expected function, string, or object as test')
-      }
-    );
-
-  /**
-   * @param {Array<string | Props | TestFunctionAnything>} tests
-   * @returns {AssertAnything}
-   */
-  function anyFactory(tests) {
-    /** @type {Array<AssertAnything>} */
-    const checks = [];
-    let index = -1;
-
-    while (++index < tests.length) {
-      checks[index] = convert(tests[index]);
-    }
-
-    return castFactory(any)
-
-    /**
-     * @this {unknown}
-     * @param {Array<unknown>} parameters
-     * @returns {boolean}
-     */
-    function any(...parameters) {
-      let index = -1;
-
-      while (++index < checks.length) {
-        if (checks[index].call(this, ...parameters)) return true
-      }
-
-      return false
-    }
-  }
-
-  /**
-   * Turn an object into a test for a node with a certain fields.
-   *
-   * @param {Props} check
-   * @returns {AssertAnything}
-   */
-  function propsFactory(check) {
-    return castFactory(all)
-
-    /**
-     * @param {Node} node
-     * @returns {boolean}
-     */
-    function all(node) {
-      /** @type {string} */
-      let key;
-
-      for (key in check) {
-        // @ts-expect-error: hush, it sure works as an index.
-        if (node[key] !== check[key]) return false
-      }
-
-      return true
-    }
-  }
-
-  /**
-   * Turn a string into a test for a node with a certain type.
-   *
-   * @param {string} check
-   * @returns {AssertAnything}
-   */
-  function typeFactory(check) {
-    return castFactory(type)
-
-    /**
-     * @param {Node} node
-     */
-    function type(node) {
-      return node && node.type === check
-    }
-  }
-
-  /**
-   * Turn a custom test into a test for a node that passes that test.
-   *
-   * @param {TestFunctionAnything} check
-   * @returns {AssertAnything}
-   */
-  function castFactory(check) {
-    return assertion
-
-    /**
-     * @this {unknown}
-     * @param {unknown} node
-     * @param {Array<unknown>} parameters
-     * @returns {boolean}
-     */
-    function assertion(node, ...parameters) {
-      return Boolean(
-        node &&
-          typeof node === 'object' &&
-          'type' in node &&
-          // @ts-expect-error: fine.
-          Boolean(check.call(this, node, ...parameters))
-      )
-    }
-  }
-
-  function ok() {
-    return true
-  }
-
-  /**
-   * @typedef {import('unist').Node} Node
-   * @typedef {import('unist').Parent} Parent
-   * @typedef {import('unist-util-is').Test} Test
-   *
-   * @typedef Options
-   *   Configuration (optional).
-   * @property {boolean | null | undefined} [cascade=true]
-   *   Whether to drop parent nodes if they had children, but all their children
-   *   were filtered out.
+   *   Note: we have remove and add `undefined`, because otherwise when generating
+   *   automatic `.d.ts` files, TS tries to flatten paths from a local perspective,
+   *   which doesn’t work when publishing on npm.
    */
 
 
@@ -59270,98 +58655,105 @@
    * The tree is walked in *preorder* (NLR), visiting the node itself, then its
    * head, etc.
    *
-   * @param tree
+   * @template {Node} Tree
+   * @template {Test} Check
+   *
+   * @overload
+   * @param {Tree} tree
+   * @param {Options | null | undefined} options
+   * @param {Check} test
+   * @returns {import('./complex-types.js').Matches<Tree, Check>}
+   *
+   * @overload
+   * @param {Tree} tree
+   * @param {Check} test
+   * @returns {import('./complex-types.js').Matches<Tree, Check>}
+   *
+   * @overload
+   * @param {Tree} tree
+   * @param {null | undefined} [options]
+   * @returns {Tree}
+   *
+   * @param {Node} tree
    *   Tree to filter.
-   * @param options
+   * @param {Options | Test} [options]
    *   Configuration (optional).
-   * @param test
+   * @param {Test} [test]
    *   `unist-util-is` compatible test.
-   * @returns
+   * @returns {Node | undefined}
    *   New filtered tree.
    *
-   *   `null` is returned if `tree` itself didn’t pass the test, or is cascaded
-   *   away.
+   *   `undefined` is returned if `tree` itself didn’t pass the test, or is
+   *   cascaded away.
    */
-  const filter =
+  function filter(tree, options, test) {
+    const is = convert(test || options);
+    const cascadeRaw =
+      options && typeof options === 'object' && 'cascade' in options
+        ? /** @type {boolean | null | undefined} */ (options.cascade)
+        : undefined;
+    const cascade =
+      cascadeRaw === undefined || cascadeRaw === null ? true : cascadeRaw;
+
+    return preorder(tree)
+
     /**
-     * @type {(
-     *  (<Tree extends Node, Check extends Test>(node: Tree, options: Options | null | undefined, test: Check | null | undefined) => import('./complex-types.js').Matches<Tree, Check>) &
-     *  (<Tree extends Node, Check extends Test>(node: Tree, test: Check) => import('./complex-types.js').Matches<Tree, Check>) &
-     *  (<Tree extends Node>(node: Tree, options?: Options | null | undefined) => Tree)
-     * )}
+     * @param {Node} node
+     *   Current node.
+     * @param {number | undefined} [index]
+     *   Index of `node` in `parent`.
+     * @param {Parent | undefined} [parentNode]
+     *   Parent node.
+     * @returns {Node | undefined}
+     *   Shallow copy of `node`.
      */
-    (
-      /**
-       * @param {Node} tree
-       * @param {Options | Test | null | undefined} [options]
-       * @param {Test | null | undefined} [test]
-       * @returns {Node | null}
-       */
-      function (tree, options, test) {
-        const is = convert(test || options);
-        /** @type {boolean | null | undefined} */
-        const cascadeRaw =
-          options && typeof options === 'object' && 'cascade' in options
-            ? /** @type {boolean | null | undefined} */ (options.cascade)
-            : undefined;
-        const cascade =
-          cascadeRaw === undefined || cascadeRaw === null ? true : cascadeRaw;
+    function preorder(node, index, parentNode) {
+      /** @type {Array<Node>} */
+      const children = [];
 
-        return preorder(tree)
+      if (!is(node, index, parentNode)) return undefined
 
-        /**
-         * @param {Node} node
-         *   Current node.
-         * @param {number | undefined} [index]
-         *   Index of `node` in `parent`.
-         * @param {Parent | undefined} [parent]
-         *   Parent node.
-         * @returns {Node | null}
-         *   Shallow copy of `node`.
-         */
-        function preorder(node, index, parent) {
-          /** @type {Array<Node>} */
-          const children = [];
+      if (parent(node)) {
+        let childIndex = -1;
 
-          if (!is(node, index, parent)) return null
+        while (++childIndex < node.children.length) {
+          const result = preorder(node.children[childIndex], childIndex, node);
 
-          // @ts-expect-error: Looks like a parent.
-          if (node.children) {
-            let childIndex = -1;
-
-            // @ts-expect-error Looks like a parent.
-            while (++childIndex < node.children.length) {
-              // @ts-expect-error Looks like a parent.
-              const result = preorder(node.children[childIndex], childIndex, node);
-
-              if (result) {
-                children.push(result);
-              }
-            }
-
-            // @ts-expect-error Looks like a parent.
-            if (cascade && node.children.length > 0 && children.length === 0)
-              return null
+          if (result) {
+            children.push(result);
           }
+        }
 
-          // Create a shallow clone, using the new children.
-          /** @type {typeof node} */
-          // @ts-expect-error all the fields will be copied over.
-          const next = {};
-          /** @type {string} */
-          let key;
-
-          for (key in node) {
-            if (own$2.call(node, key)) {
-              // @ts-expect-error: Looks like a record.
-              next[key] = key === 'children' ? children : node[key];
-            }
-          }
-
-          return next
+        if (cascade && node.children.length > 0 && children.length === 0) {
+          return undefined
         }
       }
-    );
+
+      // Create a shallow clone, using the new children.
+      /** @type {typeof node} */
+      // @ts-expect-error all the fields will be copied over.
+      const next = {};
+      /** @type {string} */
+      let key;
+
+      for (key in node) {
+        if (own$2.call(node, key)) {
+          // @ts-expect-error: Looks like a record.
+          next[key] = key === 'children' ? children : node[key];
+        }
+      }
+
+      return next
+    }
+  }
+
+  /**
+   * @param {Node} node
+   * @returns {node is Parent}
+   */
+  function parent(node) {
+    return 'children' in node && node.children !== undefined
+  }
 
   var parseNumericRange = {exports: {}};
 
