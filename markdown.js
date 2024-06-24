@@ -1714,22 +1714,43 @@
   	return (prototype === null || prototype === Object.prototype || Object.getPrototypeOf(prototype) === null) && !(Symbol.toStringTag in value) && !(Symbol.iterator in value);
   }
 
+  // To do: remove `void`s
+  // To do: remove `null` from output of our APIs, allow it as user APIs.
+
   /**
-   * @typedef {(error?: Error|null|undefined, ...output: Array<any>) => void} Callback
+   * @typedef {(error?: Error | null | undefined, ...output: Array<any>) => void} Callback
+   *   Callback.
+   *
    * @typedef {(...input: Array<any>) => any} Middleware
+   *   Ware.
+   *
+   * @typedef Pipeline
+   *   Pipeline.
+   * @property {Run} run
+   *   Run the pipeline.
+   * @property {Use} use
+   *   Add middleware.
    *
    * @typedef {(...input: Array<any>) => void} Run
    *   Call all middleware.
+   *
+   *   Calls `done` on completion with either an error or the output of the
+   *   last middleware.
+   *
+   *   > 👉 **Note**: as the length of input defines whether async functions get a
+   *   > `next` function,
+   *   > it’s recommended to keep `input` at one value normally.
+
+   *
    * @typedef {(fn: Middleware) => Pipeline} Use
-   *   Add `fn` (middleware) to the list.
-   * @typedef {{run: Run, use: Use}} Pipeline
-   *   Middleware.
+   *   Add middleware.
    */
 
   /**
    * Create new middleware.
    *
    * @returns {Pipeline}
+   *   Pipeline.
    */
   function trough() {
     /** @type {Array<Middleware>} */
@@ -1754,7 +1775,7 @@
       /**
        * Run the next `fn`, or we’re done.
        *
-       * @param {Error|null|undefined} error
+       * @param {Error | null | undefined} error
        * @param {Array<any>} output
        */
       function next(error, ...output) {
@@ -1799,12 +1820,36 @@
   }
 
   /**
-   * Wrap `middleware`.
-   * Can be sync or async; return a promise, receive a callback, or return new
-   * values and errors.
+   * Wrap `middleware` into a uniform interface.
+   *
+   * You can pass all input to the resulting function.
+   * `callback` is then called with the output of `middleware`.
+   *
+   * If `middleware` accepts more arguments than the later given in input,
+   * an extra `done` function is passed to it after that input,
+   * which must be called by `middleware`.
+   *
+   * The first value in `input` is the main input value.
+   * All other input values are the rest input values.
+   * The values given to `callback` are the input values,
+   * merged with every non-nullish output value.
+   *
+   * * if `middleware` throws an error,
+   *   returns a promise that is rejected,
+   *   or calls the given `done` function with an error,
+   *   `callback` is called with that error
+   * * if `middleware` returns a value or returns a promise that is resolved,
+   *   that value is the main output value
+   * * if `middleware` calls `done`,
+   *   all non-nullish values except for the first one (the error) overwrite the
+   *   output values
    *
    * @param {Middleware} middleware
+   *   Function to wrap.
    * @param {Callback} callback
+   *   Callback called with the output of `middleware`.
+   * @returns {Run}
+   *   Wrapped middleware.
    */
   function wrap$1(middleware, callback) {
     /** @type {boolean} */
@@ -1844,7 +1889,7 @@
       }
 
       if (!fnExpectsCallback) {
-        if (result instanceof Promise) {
+        if (result && result.then && typeof result.then === 'function') {
           result.then(then, done);
         } else if (result instanceof Error) {
           done(result);
@@ -1856,6 +1901,7 @@
 
     /**
      * Call `callback`, only once.
+     *
      * @type {Callback}
      */
     function done(error, ...output) {
@@ -1895,20 +1941,25 @@
             // type-coverage:ignore-next-line
             constr.prototype
           );
-          const func = proto[property];
+          const value = proto[property];
           /** @type {(...parameters: Array<unknown>) => unknown} */
           const apply = function () {
-            return func.apply(apply, arguments)
+            return value.apply(apply, arguments)
           };
 
           Object.setPrototypeOf(apply, proto);
 
-          const names = Object.getOwnPropertyNames(func);
-
-          for (const p of names) {
-            const descriptor = Object.getOwnPropertyDescriptor(func, p);
-            if (descriptor) Object.defineProperty(apply, p, descriptor);
-          }
+          // Not needed for us in `unified`: we only call this on the `copy`
+          // function,
+          // and we don't need to add its fields (`length`, `name`)
+          // over.
+          // See also: GH-246.
+          // const names = Object.getOwnPropertyNames(value)
+          //
+          // for (const p of names) {
+          //   const descriptor = Object.getOwnPropertyDescriptor(value, p)
+          //   if (descriptor) Object.defineProperty(apply, p, descriptor)
+          // }
 
           return apply
         }
@@ -2064,7 +2115,7 @@
      * @deprecated
      *   This is a private internal method and should not be used.
      * @returns {Processor<ParseTree, HeadTree, TailTree, CompileTree, CompileResult>}
-     *   New *unfrozen* processor ({@link Processor `Processor`}) that is
+     *   New *unfrozen* processor ({@linkcode Processor}) that is
      *   configured to work the same as its ancestor.
      *   When the descendant processor is configured in the future it does not
      *   affect the ancestral processor.
@@ -2096,11 +2147,11 @@
      * For example, a list of HTML elements that are self-closing, which is
      * needed during all phases.
      *
-     * > 👉 **Note**: setting information cannot occur on *frozen* processors.
+     * > **Note**: setting information cannot occur on *frozen* processors.
      * > Call the processor first to create a new unfrozen processor.
      *
-     * > 👉 **Note**: to register custom data in TypeScript, augment the
-     * > {@link Data `Data`} interface.
+     * > **Note**: to register custom data in TypeScript, augment the
+     * > {@linkcode Data} interface.
      *
      * @example
      *   This example show how to get and set info:
@@ -2224,9 +2275,9 @@
     /**
      * Parse text to a syntax tree.
      *
-     * > 👉 **Note**: `parse` freezes the processor if not already *frozen*.
+     * > **Note**: `parse` freezes the processor if not already *frozen*.
      *
-     * > 👉 **Note**: `parse` performs the parse phase, not the run phase or other
+     * > **Note**: `parse` performs the parse phase, not the run phase or other
      * > phases.
      *
      * @param {Compatible | undefined} [file]
@@ -2246,9 +2297,9 @@
     /**
      * Process the given file as configured on the processor.
      *
-     * > 👉 **Note**: `process` freezes the processor if not already *frozen*.
+     * > **Note**: `process` freezes the processor if not already *frozen*.
      *
-     * > 👉 **Note**: `process` performs the parse, run, and stringify phases.
+     * > **Note**: `process` performs the parse, run, and stringify phases.
      *
      * @overload
      * @param {Compatible | undefined} file
@@ -2272,7 +2323,7 @@
      *   The parsed, transformed, and compiled value is available at
      *   `file.value` (see note).
      *
-     *   > 👉 **Note**: unified typically compiles by serializing: most
+     *   > **Note**: unified typically compiles by serializing: most
      *   > compilers return `string` (or `Uint8Array`).
      *   > Some compilers, such as the one configured with
      *   > [`rehype-react`][rehype-react], return other values (in this case, a
@@ -2281,7 +2332,7 @@
      *   > result values.
      *   >
      *   > To register custom results in TypeScript, add them to
-     *   > {@link CompileResultMap `CompileResultMap`}.
+     *   > {@linkcode CompileResultMap}.
      *
      *   [rehype-react]: https://github.com/rehypejs/rehype-react
      */
@@ -2354,9 +2405,9 @@
      *
      * An error is thrown if asynchronous transforms are configured.
      *
-     * > 👉 **Note**: `processSync` freezes the processor if not already *frozen*.
+     * > **Note**: `processSync` freezes the processor if not already *frozen*.
      *
-     * > 👉 **Note**: `processSync` performs the parse, run, and stringify phases.
+     * > **Note**: `processSync` performs the parse, run, and stringify phases.
      *
      * @param {Compatible | undefined} [file]
      *   File (optional); typically `string` or `VFile`; any value accepted as
@@ -2367,7 +2418,7 @@
      *   The parsed, transformed, and compiled value is available at
      *   `file.value` (see note).
      *
-     *   > 👉 **Note**: unified typically compiles by serializing: most
+     *   > **Note**: unified typically compiles by serializing: most
      *   > compilers return `string` (or `Uint8Array`).
      *   > Some compilers, such as the one configured with
      *   > [`rehype-react`][rehype-react], return other values (in this case, a
@@ -2376,7 +2427,7 @@
      *   > result values.
      *   >
      *   > To register custom results in TypeScript, add them to
-     *   > {@link CompileResultMap `CompileResultMap`}.
+     *   > {@linkcode CompileResultMap}.
      *
      *   [rehype-react]: https://github.com/rehypejs/rehype-react
      */
@@ -2408,9 +2459,9 @@
     /**
      * Run *transformers* on a syntax tree.
      *
-     * > 👉 **Note**: `run` freezes the processor if not already *frozen*.
+     * > **Note**: `run` freezes the processor if not already *frozen*.
      *
-     * > 👉 **Note**: `run` performs the run phase, not other phases.
+     * > **Note**: `run` performs the run phase, not other phases.
      *
      * @overload
      * @param {HeadTree extends undefined ? Node : HeadTree} tree
@@ -2497,9 +2548,9 @@
      *
      * An error is thrown if asynchronous transforms are configured.
      *
-     * > 👉 **Note**: `runSync` freezes the processor if not already *frozen*.
+     * > **Note**: `runSync` freezes the processor if not already *frozen*.
      *
-     * > 👉 **Note**: `runSync` performs the run phase, not other phases.
+     * > **Note**: `runSync` performs the run phase, not other phases.
      *
      * @param {HeadTree extends undefined ? Node : HeadTree} tree
      *   Tree to transform and inspect.
@@ -2533,9 +2584,9 @@
     /**
      * Compile a syntax tree.
      *
-     * > 👉 **Note**: `stringify` freezes the processor if not already *frozen*.
+     * > **Note**: `stringify` freezes the processor if not already *frozen*.
      *
-     * > 👉 **Note**: `stringify` performs the stringify phase, not the run phase
+     * > **Note**: `stringify` performs the stringify phase, not the run phase
      * > or other phases.
      *
      * @param {CompileTree extends undefined ? Node : CompileTree} tree
@@ -2546,7 +2597,7 @@
      * @returns {CompileResult extends undefined ? Value : CompileResult}
      *   Textual representation of the tree (see note).
      *
-     *   > 👉 **Note**: unified typically compiles by serializing: most compilers
+     *   > **Note**: unified typically compiles by serializing: most compilers
      *   > return `string` (or `Uint8Array`).
      *   > Some compilers, such as the one configured with
      *   > [`rehype-react`][rehype-react], return other values (in this case, a
@@ -2555,7 +2606,7 @@
      *   > result values.
      *   >
      *   > To register custom results in TypeScript, add them to
-     *   > {@link CompileResultMap `CompileResultMap`}.
+     *   > {@linkcode CompileResultMap}.
      *
      *   [rehype-react]: https://github.com/rehypejs/rehype-react
      */
@@ -2577,7 +2628,7 @@
      * configuration is changed based on the options that are passed in.
      * In other words, the plugin is not added a second time.
      *
-     * > 👉 **Note**: `use` cannot be called on *frozen* processors.
+     * > **Note**: `use` cannot be called on *frozen* processors.
      * > Call the processor first to create a new unfrozen processor.
      *
      * @example
@@ -2917,8 +2968,6 @@
    * @typedef {import('micromark-util-types').Code} Code
    */
 
-  const unicodePunctuationInternal = regexCheck(/\p{P}/u);
-
   /**
    * Check whether the character code represents an ASCII alpha (`a` through `z`,
    * case insensitive).
@@ -2991,7 +3040,7 @@
       // Special whitespace codes (which have negative values), C0 and Control
       // character DEL
       code !== null && (code < 32 || code === 127)
-    )
+    );
   }
 
   /**
@@ -3058,7 +3107,7 @@
    *   Whether it matches.
    */
   function markdownLineEnding(code) {
-    return code !== null && code < -2
+    return code !== null && code < -2;
   }
 
   /**
@@ -3071,7 +3120,7 @@
    *   Whether it matches.
    */
   function markdownLineEndingOrSpace(code) {
-    return code !== null && (code < 0 || code === 32)
+    return code !== null && (code < 0 || code === 32);
   }
 
   /**
@@ -3090,7 +3139,7 @@
    *   Whether it matches.
    */
   function markdownSpace(code) {
-    return code === -2 || code === -1 || code === 32
+    return code === -2 || code === -1 || code === 32;
   }
 
   // Size note: removing ASCII from the regex and using `asciiPunctuation` here
@@ -3109,14 +3158,12 @@
    * [The Unicode Standard](https://www.unicode.org/versions/).
    * Unicode Consortium.
    *
-   * @param {Code} code
+   * @param code
    *   Code.
-   * @returns {boolean}
+   * @returns
    *   Whether it matches.
    */
-  function unicodePunctuation(code) {
-    return asciiPunctuation(code) || unicodePunctuationInternal(code)
-  }
+  const unicodePunctuation = regexCheck(/\p{P}|\p{S}/u);
 
   /**
    * Check whether the character code represents Unicode whitespace.
@@ -3135,7 +3182,7 @@
    *
    * @param code
    *   Code.
-   * @returns {boolean}
+   * @returns
    *   Whether it matches.
    */
   const unicodeWhitespace = regexCheck(/\s/);
@@ -3147,7 +3194,7 @@
    * @returns {(code: Code) => boolean}
    */
   function regexCheck(regex) {
-    return check
+    return check;
 
     /**
      * Check whether a code matches the bound regex.
@@ -3158,7 +3205,7 @@
      *   Whether the character code matches the bound regex.
      */
     function check(code) {
-      return code !== null && code > -1 && regex.test(String.fromCharCode(code))
+      return code !== null && code > -1 && regex.test(String.fromCharCode(code));
     }
   }
 
@@ -5437,7 +5484,7 @@
    *   Serialized `value`.
    */
   function toString$2(value, options) {
-    const settings = options || emptyOptions$5;
+    const settings = emptyOptions$5;
     const includeImageAlt =
       typeof settings.includeImageAlt === 'boolean'
         ? settings.includeImageAlt
@@ -6413,6 +6460,7 @@
   }
 
   /**
+   * @typedef {import('mdast').Html} Html
    * @typedef {import('mdast').PhrasingContent} PhrasingContent
    */
 
@@ -6429,21 +6477,30 @@
    */
 
   const phrasing =
-    /** @type {(node?: unknown) => node is PhrasingContent} */
+    /** @type {(node?: unknown) => node is Exclude<PhrasingContent, Html>} */
     (
       convert([
         'break',
         'delete',
         'emphasis',
+        // To do: next major: removed since footnotes were added to GFM.
         'footnote',
         'footnoteReference',
         'image',
         'imageReference',
         'inlineCode',
+        // Enabled by `mdast-util-math`:
+        'inlineMath',
         'link',
         'linkReference',
+        // Enabled by `mdast-util-mdx`:
+        'mdxJsxTextElement',
+        // Enabled by `mdast-util-mdx`:
+        'mdxTextExpression',
         'strong',
-        'text'
+        'text',
+        // Enabled by `mdast-util-directive`:
+        'textDirective'
       ])
     );
 
@@ -8509,69 +8566,46 @@
     // a bottleneck for malicious stuff.
     while (++index < events.length) {
       // Find a token that can close.
-      if (
-        events[index][0] === 'enter' &&
-        events[index][1].type === 'attentionSequence' &&
-        events[index][1]._close
-      ) {
+      if (events[index][0] === 'enter' && events[index][1].type === 'attentionSequence' && events[index][1]._close) {
         open = index;
 
         // Now walk back to find an opener.
         while (open--) {
           // Find a token that can open the closer.
-          if (
-            events[open][0] === 'exit' &&
-            events[open][1].type === 'attentionSequence' &&
-            events[open][1]._open &&
-            // If the markers are the same:
-            context.sliceSerialize(events[open][1]).charCodeAt(0) ===
-              context.sliceSerialize(events[index][1]).charCodeAt(0)
-          ) {
+          if (events[open][0] === 'exit' && events[open][1].type === 'attentionSequence' && events[open][1]._open &&
+          // If the markers are the same:
+          context.sliceSerialize(events[open][1]).charCodeAt(0) === context.sliceSerialize(events[index][1]).charCodeAt(0)) {
             // If the opening can close or the closing can open,
             // and the close size *is not* a multiple of three,
             // but the sum of the opening and closing size *is* multiple of three,
             // then don’t match.
-            if (
-              (events[open][1]._close || events[index][1]._open) &&
-              (events[index][1].end.offset - events[index][1].start.offset) % 3 &&
-              !(
-                (events[open][1].end.offset -
-                  events[open][1].start.offset +
-                  events[index][1].end.offset -
-                  events[index][1].start.offset) %
-                3
-              )
-            ) {
-              continue
+            if ((events[open][1]._close || events[index][1]._open) && (events[index][1].end.offset - events[index][1].start.offset) % 3 && !((events[open][1].end.offset - events[open][1].start.offset + events[index][1].end.offset - events[index][1].start.offset) % 3)) {
+              continue;
             }
 
             // Number of markers to use from the sequence.
-            use =
-              events[open][1].end.offset - events[open][1].start.offset > 1 &&
-              events[index][1].end.offset - events[index][1].start.offset > 1
-                ? 2
-                : 1;
+            use = events[open][1].end.offset - events[open][1].start.offset > 1 && events[index][1].end.offset - events[index][1].start.offset > 1 ? 2 : 1;
             const start = Object.assign({}, events[open][1].end);
             const end = Object.assign({}, events[index][1].start);
             movePoint(start, -use);
             movePoint(end, use);
             openingSequence = {
-              type: use > 1 ? 'strongSequence' : 'emphasisSequence',
+              type: use > 1 ? "strongSequence" : "emphasisSequence",
               start,
               end: Object.assign({}, events[open][1].end)
             };
             closingSequence = {
-              type: use > 1 ? 'strongSequence' : 'emphasisSequence',
+              type: use > 1 ? "strongSequence" : "emphasisSequence",
               start: Object.assign({}, events[index][1].start),
               end
             };
             text = {
-              type: use > 1 ? 'strongText' : 'emphasisText',
+              type: use > 1 ? "strongText" : "emphasisText",
               start: Object.assign({}, events[open][1].end),
               end: Object.assign({}, events[index][1].start)
             };
             group = {
-              type: use > 1 ? 'strong' : 'emphasis',
+              type: use > 1 ? "strong" : "emphasis",
               start: Object.assign({}, openingSequence.start),
               end: Object.assign({}, closingSequence.end)
             };
@@ -8581,53 +8615,30 @@
 
             // If there are more markers in the opening, add them before.
             if (events[open][1].end.offset - events[open][1].start.offset) {
-              nextEvents = push(nextEvents, [
-                ['enter', events[open][1], context],
-                ['exit', events[open][1], context]
-              ]);
+              nextEvents = push(nextEvents, [['enter', events[open][1], context], ['exit', events[open][1], context]]);
             }
 
             // Opening.
-            nextEvents = push(nextEvents, [
-              ['enter', group, context],
-              ['enter', openingSequence, context],
-              ['exit', openingSequence, context],
-              ['enter', text, context]
-            ]);
+            nextEvents = push(nextEvents, [['enter', group, context], ['enter', openingSequence, context], ['exit', openingSequence, context], ['enter', text, context]]);
 
             // Always populated by defaults.
 
             // Between.
-            nextEvents = push(
-              nextEvents,
-              resolveAll(
-                context.parser.constructs.insideSpan.null,
-                events.slice(open + 1, index),
-                context
-              )
-            );
+            nextEvents = push(nextEvents, resolveAll(context.parser.constructs.insideSpan.null, events.slice(open + 1, index), context));
 
             // Closing.
-            nextEvents = push(nextEvents, [
-              ['exit', text, context],
-              ['enter', closingSequence, context],
-              ['exit', closingSequence, context],
-              ['exit', group, context]
-            ]);
+            nextEvents = push(nextEvents, [['exit', text, context], ['enter', closingSequence, context], ['exit', closingSequence, context], ['exit', group, context]]);
 
             // If there are more markers in the closing, add them after.
             if (events[index][1].end.offset - events[index][1].start.offset) {
               offset = 2;
-              nextEvents = push(nextEvents, [
-                ['enter', events[index][1], context],
-                ['exit', events[index][1], context]
-              ]);
+              nextEvents = push(nextEvents, [['enter', events[index][1], context], ['exit', events[index][1], context]]);
             } else {
               offset = 0;
             }
             splice(events, open - 1, index - open + 3, nextEvents);
             index = open + nextEvents.length - offset - 2;
-            break
+            break;
           }
         }
       }
@@ -8640,7 +8651,7 @@
         events[index][1].type = 'data';
       }
     }
-    return events
+    return events;
   }
 
   /**
@@ -8654,7 +8665,7 @@
 
     /** @type {NonNullable<Code>} */
     let marker;
-    return start
+    return start;
 
     /**
      * Before a sequence.
@@ -8669,7 +8680,7 @@
     function start(code) {
       marker = code;
       effects.enter('attentionSequence');
-      return inside(code)
+      return inside(code);
     }
 
     /**
@@ -8685,7 +8696,7 @@
     function inside(code) {
       if (code === marker) {
         effects.consume(code);
-        return inside
+        return inside;
       }
       const token = effects.exit('attentionSequence');
 
@@ -8694,13 +8705,11 @@
 
       // Always populated by defaults.
 
-      const open =
-        !after || (after === 2 && before) || attentionMarkers.includes(code);
-      const close =
-        !before || (before === 2 && after) || attentionMarkers.includes(previous);
+      const open = !after || after === 2 && before || attentionMarkers.includes(code);
+      const close = !before || before === 2 && after || attentionMarkers.includes(previous);
       token._open = Boolean(marker === 42 ? open : open && (before || !close));
       token._close = Boolean(marker === 42 ? close : close && (after || !open));
-      return ok(code)
+      return ok(code);
     }
   }
 
@@ -8739,7 +8748,7 @@
    */
   function tokenizeAutolink(effects, ok, nok) {
     let size = 0;
-    return start
+    return start;
 
     /**
      * Start of an autolink.
@@ -8754,12 +8763,12 @@
      * @type {State}
      */
     function start(code) {
-      effects.enter('autolink');
-      effects.enter('autolinkMarker');
+      effects.enter("autolink");
+      effects.enter("autolinkMarker");
       effects.consume(code);
-      effects.exit('autolinkMarker');
-      effects.enter('autolinkProtocol');
-      return open
+      effects.exit("autolinkMarker");
+      effects.enter("autolinkProtocol");
+      return open;
     }
 
     /**
@@ -8777,9 +8786,12 @@
     function open(code) {
       if (asciiAlpha(code)) {
         effects.consume(code);
-        return schemeOrEmailAtext
+        return schemeOrEmailAtext;
       }
-      return emailAtext(code)
+      if (code === 64) {
+        return nok(code);
+      }
+      return emailAtext(code);
     }
 
     /**
@@ -8799,9 +8811,9 @@
       if (code === 43 || code === 45 || code === 46 || asciiAlphanumeric(code)) {
         // Count the previous alphabetical from `open` too.
         size = 1;
-        return schemeInsideOrEmailAtext(code)
+        return schemeInsideOrEmailAtext(code);
       }
-      return emailAtext(code)
+      return emailAtext(code);
     }
 
     /**
@@ -8820,19 +8832,16 @@
       if (code === 58) {
         effects.consume(code);
         size = 0;
-        return urlInside
+        return urlInside;
       }
 
       // ASCII alphanumeric and `+`, `-`, and `.`.
-      if (
-        (code === 43 || code === 45 || code === 46 || asciiAlphanumeric(code)) &&
-        size++ < 32
-      ) {
+      if ((code === 43 || code === 45 || code === 46 || asciiAlphanumeric(code)) && size++ < 32) {
         effects.consume(code);
-        return schemeInsideOrEmailAtext
+        return schemeInsideOrEmailAtext;
       }
       size = 0;
-      return emailAtext(code)
+      return emailAtext(code);
     }
 
     /**
@@ -8847,20 +8856,20 @@
      */
     function urlInside(code) {
       if (code === 62) {
-        effects.exit('autolinkProtocol');
-        effects.enter('autolinkMarker');
+        effects.exit("autolinkProtocol");
+        effects.enter("autolinkMarker");
         effects.consume(code);
-        effects.exit('autolinkMarker');
-        effects.exit('autolink');
-        return ok
+        effects.exit("autolinkMarker");
+        effects.exit("autolink");
+        return ok;
       }
 
       // ASCII control, space, or `<`.
       if (code === null || code === 32 || code === 60 || asciiControl(code)) {
-        return nok(code)
+        return nok(code);
       }
       effects.consume(code);
-      return urlInside
+      return urlInside;
     }
 
     /**
@@ -8876,13 +8885,13 @@
     function emailAtext(code) {
       if (code === 64) {
         effects.consume(code);
-        return emailAtSignOrDot
+        return emailAtSignOrDot;
       }
       if (asciiAtext(code)) {
         effects.consume(code);
-        return emailAtext
+        return emailAtext;
       }
-      return nok(code)
+      return nok(code);
     }
 
     /**
@@ -8896,7 +8905,7 @@
      * @type {State}
      */
     function emailAtSignOrDot(code) {
-      return asciiAlphanumeric(code) ? emailLabel(code) : nok(code)
+      return asciiAlphanumeric(code) ? emailLabel(code) : nok(code);
     }
 
     /**
@@ -8913,18 +8922,18 @@
       if (code === 46) {
         effects.consume(code);
         size = 0;
-        return emailAtSignOrDot
+        return emailAtSignOrDot;
       }
       if (code === 62) {
         // Exit, then change the token type.
-        effects.exit('autolinkProtocol').type = 'autolinkEmail';
-        effects.enter('autolinkMarker');
+        effects.exit("autolinkProtocol").type = "autolinkEmail";
+        effects.enter("autolinkMarker");
         effects.consume(code);
-        effects.exit('autolinkMarker');
-        effects.exit('autolink');
-        return ok
+        effects.exit("autolinkMarker");
+        effects.exit("autolink");
+        return ok;
       }
-      return emailValue(code)
+      return emailValue(code);
     }
 
     /**
@@ -8944,9 +8953,9 @@
       if ((code === 45 || asciiAlphanumeric(code)) && size++ < 63) {
         const next = code === 45 ? emailValue : emailLabel;
         effects.consume(code);
-        return next
+        return next;
       }
-      return nok(code)
+      return nok(code);
     }
   }
 
@@ -9034,7 +9043,7 @@
    * @type {Tokenizer}
    */
   function tokenizeBlankLine(effects, ok, nok) {
-    return start
+    return start;
 
     /**
      * Start of blank line.
@@ -9051,9 +9060,7 @@
      * @type {State}
      */
     function start(code) {
-      return markdownSpace(code)
-        ? factorySpace(effects, after, 'linePrefix')(code)
-        : after(code)
+      return markdownSpace(code) ? factorySpace(effects, after, "linePrefix")(code) : after(code);
     }
 
     /**
@@ -9071,7 +9078,7 @@
      * @type {State}
      */
     function after(code) {
-      return code === null || markdownLineEnding(code) ? ok(code) : nok(code)
+      return code === null || markdownLineEnding(code) ? ok(code) : nok(code);
     }
   }
 
@@ -9099,7 +9106,7 @@
    */
   function tokenizeBlockQuoteStart(effects, ok, nok) {
     const self = this;
-    return start
+    return start;
 
     /**
      * Start of block quote.
@@ -9115,18 +9122,18 @@
       if (code === 62) {
         const state = self.containerState;
         if (!state.open) {
-          effects.enter('blockQuote', {
+          effects.enter("blockQuote", {
             _container: true
           });
           state.open = true;
         }
-        effects.enter('blockQuotePrefix');
-        effects.enter('blockQuoteMarker');
+        effects.enter("blockQuotePrefix");
+        effects.enter("blockQuoteMarker");
         effects.consume(code);
-        effects.exit('blockQuoteMarker');
-        return after
+        effects.exit("blockQuoteMarker");
+        return after;
       }
-      return nok(code)
+      return nok(code);
     }
 
     /**
@@ -9141,14 +9148,14 @@
      */
     function after(code) {
       if (markdownSpace(code)) {
-        effects.enter('blockQuotePrefixWhitespace');
+        effects.enter("blockQuotePrefixWhitespace");
         effects.consume(code);
-        effects.exit('blockQuotePrefixWhitespace');
-        effects.exit('blockQuotePrefix');
-        return ok
+        effects.exit("blockQuotePrefixWhitespace");
+        effects.exit("blockQuotePrefix");
+        return ok;
       }
-      effects.exit('blockQuotePrefix');
-      return ok(code)
+      effects.exit("blockQuotePrefix");
+      return ok(code);
     }
   }
 
@@ -9166,7 +9173,7 @@
    */
   function tokenizeBlockQuoteContinuation(effects, ok, nok) {
     const self = this;
-    return contStart
+    return contStart;
 
     /**
      * Start of block quote continuation.
@@ -9185,16 +9192,9 @@
       if (markdownSpace(code)) {
         // Always populated by defaults.
 
-        return factorySpace(
-          effects,
-          contBefore,
-          'linePrefix',
-          self.parser.constructs.disable.null.includes('codeIndented')
-            ? undefined
-            : 4
-        )(code)
+        return factorySpace(effects, contBefore, "linePrefix", self.parser.constructs.disable.null.includes('codeIndented') ? undefined : 4)(code);
       }
-      return contBefore(code)
+      return contBefore(code);
     }
 
     /**
@@ -9211,13 +9211,13 @@
      * @type {State}
      */
     function contBefore(code) {
-      return effects.attempt(blockQuote, ok, nok)(code)
+      return effects.attempt(blockQuote, ok, nok)(code);
     }
   }
 
   /** @type {Exiter} */
   function exit(effects) {
-    effects.exit('blockQuote');
+    effects.exit("blockQuote");
   }
 
   /**
@@ -9238,7 +9238,7 @@
    * @type {Tokenizer}
    */
   function tokenizeCharacterEscape(effects, ok, nok) {
-    return start
+    return start;
 
     /**
      * Start of character escape.
@@ -9251,11 +9251,11 @@
      * @type {State}
      */
     function start(code) {
-      effects.enter('characterEscape');
-      effects.enter('escapeMarker');
+      effects.enter("characterEscape");
+      effects.enter("escapeMarker");
       effects.consume(code);
-      effects.exit('escapeMarker');
-      return inside
+      effects.exit("escapeMarker");
+      return inside;
     }
 
     /**
@@ -9271,13 +9271,13 @@
     function inside(code) {
       // ASCII punctuation.
       if (asciiPunctuation(code)) {
-        effects.enter('characterEscapeValue');
+        effects.enter("characterEscapeValue");
         effects.consume(code);
-        effects.exit('characterEscapeValue');
-        effects.exit('characterEscape');
-        return ok
+        effects.exit("characterEscapeValue");
+        effects.exit("characterEscape");
+        return ok;
       }
-      return nok(code)
+      return nok(code);
     }
   }
 
@@ -9306,7 +9306,7 @@
     let max;
     /** @type {(code: Code) => boolean} */
     let test;
-    return start
+    return start;
 
     /**
      * Start of character reference.
@@ -9323,11 +9323,11 @@
      * @type {State}
      */
     function start(code) {
-      effects.enter('characterReference');
-      effects.enter('characterReferenceMarker');
+      effects.enter("characterReference");
+      effects.enter("characterReferenceMarker");
       effects.consume(code);
-      effects.exit('characterReferenceMarker');
-      return open
+      effects.exit("characterReferenceMarker");
+      return open;
     }
 
     /**
@@ -9347,15 +9347,15 @@
      */
     function open(code) {
       if (code === 35) {
-        effects.enter('characterReferenceMarkerNumeric');
+        effects.enter("characterReferenceMarkerNumeric");
         effects.consume(code);
-        effects.exit('characterReferenceMarkerNumeric');
-        return numeric
+        effects.exit("characterReferenceMarkerNumeric");
+        return numeric;
       }
-      effects.enter('characterReferenceValue');
+      effects.enter("characterReferenceValue");
       max = 31;
       test = asciiAlphanumeric;
-      return value(code)
+      return value(code);
     }
 
     /**
@@ -9372,18 +9372,18 @@
      */
     function numeric(code) {
       if (code === 88 || code === 120) {
-        effects.enter('characterReferenceMarkerHexadecimal');
+        effects.enter("characterReferenceMarkerHexadecimal");
         effects.consume(code);
-        effects.exit('characterReferenceMarkerHexadecimal');
-        effects.enter('characterReferenceValue');
+        effects.exit("characterReferenceMarkerHexadecimal");
+        effects.enter("characterReferenceValue");
         max = 6;
         test = asciiHexDigit;
-        return value
+        return value;
       }
-      effects.enter('characterReferenceValue');
+      effects.enter("characterReferenceValue");
       max = 7;
       test = asciiDigit;
-      return value(code)
+      return value(code);
     }
 
     /**
@@ -9405,27 +9405,24 @@
      */
     function value(code) {
       if (code === 59 && size) {
-        const token = effects.exit('characterReferenceValue');
-        if (
-          test === asciiAlphanumeric &&
-          !decodeNamedCharacterReference(self.sliceSerialize(token))
-        ) {
-          return nok(code)
+        const token = effects.exit("characterReferenceValue");
+        if (test === asciiAlphanumeric && !decodeNamedCharacterReference(self.sliceSerialize(token))) {
+          return nok(code);
         }
 
         // To do: `markdown-rs` uses a different name:
         // `CharacterReferenceMarkerSemi`.
-        effects.enter('characterReferenceMarker');
+        effects.enter("characterReferenceMarker");
         effects.consume(code);
-        effects.exit('characterReferenceMarker');
-        effects.exit('characterReference');
-        return ok
+        effects.exit("characterReferenceMarker");
+        effects.exit("characterReference");
+        return ok;
       }
       if (test(code) && size++ < max) {
         effects.consume(code);
-        return value
+        return value;
       }
-      return nok(code)
+      return nok(code);
     }
   }
 
@@ -9465,7 +9462,7 @@
     let sizeOpen = 0;
     /** @type {NonNullable<Code>} */
     let marker;
-    return start
+    return start;
 
     /**
      * Start of code.
@@ -9481,7 +9478,7 @@
      */
     function start(code) {
       // To do: parse whitespace like `markdown-rs`.
-      return beforeSequenceOpen(code)
+      return beforeSequenceOpen(code);
     }
 
     /**
@@ -9498,15 +9495,12 @@
      */
     function beforeSequenceOpen(code) {
       const tail = self.events[self.events.length - 1];
-      initialPrefix =
-        tail && tail[1].type === 'linePrefix'
-          ? tail[2].sliceSerialize(tail[1], true).length
-          : 0;
+      initialPrefix = tail && tail[1].type === "linePrefix" ? tail[2].sliceSerialize(tail[1], true).length : 0;
       marker = code;
-      effects.enter('codeFenced');
-      effects.enter('codeFencedFence');
-      effects.enter('codeFencedFenceSequence');
-      return sequenceOpen(code)
+      effects.enter("codeFenced");
+      effects.enter("codeFencedFence");
+      effects.enter("codeFencedFenceSequence");
+      return sequenceOpen(code);
     }
 
     /**
@@ -9525,15 +9519,13 @@
       if (code === marker) {
         sizeOpen++;
         effects.consume(code);
-        return sequenceOpen
+        return sequenceOpen;
       }
       if (sizeOpen < 3) {
-        return nok(code)
+        return nok(code);
       }
-      effects.exit('codeFencedFenceSequence');
-      return markdownSpace(code)
-        ? factorySpace(effects, infoBefore, 'whitespace')(code)
-        : infoBefore(code)
+      effects.exit("codeFencedFenceSequence");
+      return markdownSpace(code) ? factorySpace(effects, infoBefore, "whitespace")(code) : infoBefore(code);
     }
 
     /**
@@ -9550,16 +9542,14 @@
      */
     function infoBefore(code) {
       if (code === null || markdownLineEnding(code)) {
-        effects.exit('codeFencedFence');
-        return self.interrupt
-          ? ok(code)
-          : effects.check(nonLazyContinuation, atNonLazyBreak, after)(code)
+        effects.exit("codeFencedFence");
+        return self.interrupt ? ok(code) : effects.check(nonLazyContinuation, atNonLazyBreak, after)(code);
       }
-      effects.enter('codeFencedFenceInfo');
-      effects.enter('chunkString', {
-        contentType: 'string'
+      effects.enter("codeFencedFenceInfo");
+      effects.enter("chunkString", {
+        contentType: "string"
       });
-      return info(code)
+      return info(code);
     }
 
     /**
@@ -9576,20 +9566,20 @@
      */
     function info(code) {
       if (code === null || markdownLineEnding(code)) {
-        effects.exit('chunkString');
-        effects.exit('codeFencedFenceInfo');
-        return infoBefore(code)
+        effects.exit("chunkString");
+        effects.exit("codeFencedFenceInfo");
+        return infoBefore(code);
       }
       if (markdownSpace(code)) {
-        effects.exit('chunkString');
-        effects.exit('codeFencedFenceInfo');
-        return factorySpace(effects, metaBefore, 'whitespace')(code)
+        effects.exit("chunkString");
+        effects.exit("codeFencedFenceInfo");
+        return factorySpace(effects, metaBefore, "whitespace")(code);
       }
       if (code === 96 && code === marker) {
-        return nok(code)
+        return nok(code);
       }
       effects.consume(code);
-      return info
+      return info;
     }
 
     /**
@@ -9606,13 +9596,13 @@
      */
     function metaBefore(code) {
       if (code === null || markdownLineEnding(code)) {
-        return infoBefore(code)
+        return infoBefore(code);
       }
-      effects.enter('codeFencedFenceMeta');
-      effects.enter('chunkString', {
-        contentType: 'string'
+      effects.enter("codeFencedFenceMeta");
+      effects.enter("chunkString", {
+        contentType: "string"
       });
-      return meta(code)
+      return meta(code);
     }
 
     /**
@@ -9629,15 +9619,15 @@
      */
     function meta(code) {
       if (code === null || markdownLineEnding(code)) {
-        effects.exit('chunkString');
-        effects.exit('codeFencedFenceMeta');
-        return infoBefore(code)
+        effects.exit("chunkString");
+        effects.exit("codeFencedFenceMeta");
+        return infoBefore(code);
       }
       if (code === 96 && code === marker) {
-        return nok(code)
+        return nok(code);
       }
       effects.consume(code);
-      return meta
+      return meta;
     }
 
     /**
@@ -9654,7 +9644,7 @@
      * @type {State}
      */
     function atNonLazyBreak(code) {
-      return effects.attempt(closeStart, after, contentBefore)(code)
+      return effects.attempt(closeStart, after, contentBefore)(code);
     }
 
     /**
@@ -9670,10 +9660,10 @@
      * @type {State}
      */
     function contentBefore(code) {
-      effects.enter('lineEnding');
+      effects.enter("lineEnding");
       effects.consume(code);
-      effects.exit('lineEnding');
-      return contentStart
+      effects.exit("lineEnding");
+      return contentStart;
     }
 
     /**
@@ -9689,14 +9679,7 @@
      * @type {State}
      */
     function contentStart(code) {
-      return initialPrefix > 0 && markdownSpace(code)
-        ? factorySpace(
-            effects,
-            beforeContentChunk,
-            'linePrefix',
-            initialPrefix + 1
-          )(code)
-        : beforeContentChunk(code)
+      return initialPrefix > 0 && markdownSpace(code) ? factorySpace(effects, beforeContentChunk, "linePrefix", initialPrefix + 1)(code) : beforeContentChunk(code);
     }
 
     /**
@@ -9713,10 +9696,10 @@
      */
     function beforeContentChunk(code) {
       if (code === null || markdownLineEnding(code)) {
-        return effects.check(nonLazyContinuation, atNonLazyBreak, after)(code)
+        return effects.check(nonLazyContinuation, atNonLazyBreak, after)(code);
       }
-      effects.enter('codeFlowValue');
-      return contentChunk(code)
+      effects.enter("codeFlowValue");
+      return contentChunk(code);
     }
 
     /**
@@ -9733,11 +9716,11 @@
      */
     function contentChunk(code) {
       if (code === null || markdownLineEnding(code)) {
-        effects.exit('codeFlowValue');
-        return beforeContentChunk(code)
+        effects.exit("codeFlowValue");
+        return beforeContentChunk(code);
       }
       effects.consume(code);
-      return contentChunk
+      return contentChunk;
     }
 
     /**
@@ -9753,8 +9736,8 @@
      * @type {State}
      */
     function after(code) {
-      effects.exit('codeFenced');
-      return ok(code)
+      effects.exit("codeFenced");
+      return ok(code);
     }
 
     /**
@@ -9763,7 +9746,7 @@
      */
     function tokenizeCloseStart(effects, ok, nok) {
       let size = 0;
-      return startBefore
+      return startBefore;
 
       /**
        *
@@ -9771,10 +9754,10 @@
        * @type {State}
        */
       function startBefore(code) {
-        effects.enter('lineEnding');
+        effects.enter("lineEnding");
         effects.consume(code);
-        effects.exit('lineEnding');
-        return start
+        effects.exit("lineEnding");
+        return start;
       }
 
       /**
@@ -9793,17 +9776,8 @@
         // Always populated by defaults.
 
         // To do: `enter` here or in next state?
-        effects.enter('codeFencedFence');
-        return markdownSpace(code)
-          ? factorySpace(
-              effects,
-              beforeSequenceClose,
-              'linePrefix',
-              self.parser.constructs.disable.null.includes('codeIndented')
-                ? undefined
-                : 4
-            )(code)
-          : beforeSequenceClose(code)
+        effects.enter("codeFencedFence");
+        return markdownSpace(code) ? factorySpace(effects, beforeSequenceClose, "linePrefix", self.parser.constructs.disable.null.includes('codeIndented') ? undefined : 4)(code) : beforeSequenceClose(code);
       }
 
       /**
@@ -9820,10 +9794,10 @@
        */
       function beforeSequenceClose(code) {
         if (code === marker) {
-          effects.enter('codeFencedFenceSequence');
-          return sequenceClose(code)
+          effects.enter("codeFencedFenceSequence");
+          return sequenceClose(code);
         }
-        return nok(code)
+        return nok(code);
       }
 
       /**
@@ -9842,15 +9816,13 @@
         if (code === marker) {
           size++;
           effects.consume(code);
-          return sequenceClose
+          return sequenceClose;
         }
         if (size >= sizeOpen) {
-          effects.exit('codeFencedFenceSequence');
-          return markdownSpace(code)
-            ? factorySpace(effects, sequenceCloseAfter, 'whitespace')(code)
-            : sequenceCloseAfter(code)
+          effects.exit("codeFencedFenceSequence");
+          return markdownSpace(code) ? factorySpace(effects, sequenceCloseAfter, "whitespace")(code) : sequenceCloseAfter(code);
         }
-        return nok(code)
+        return nok(code);
       }
 
       /**
@@ -9867,10 +9839,10 @@
        */
       function sequenceCloseAfter(code) {
         if (code === null || markdownLineEnding(code)) {
-          effects.exit('codeFencedFence');
-          return ok(code)
+          effects.exit("codeFencedFence");
+          return ok(code);
         }
-        return nok(code)
+        return nok(code);
       }
     }
   }
@@ -9881,7 +9853,7 @@
    */
   function tokenizeNonLazyContinuation(effects, ok, nok) {
     const self = this;
-    return start
+    return start;
 
     /**
      *
@@ -9890,12 +9862,12 @@
      */
     function start(code) {
       if (code === null) {
-        return nok(code)
+        return nok(code);
       }
-      effects.enter('lineEnding');
+      effects.enter("lineEnding");
       effects.consume(code);
-      effects.exit('lineEnding');
-      return lineStart
+      effects.exit("lineEnding");
+      return lineStart;
     }
 
     /**
@@ -9904,7 +9876,7 @@
      * @type {State}
      */
     function lineStart(code) {
-      return self.parser.lazy[self.now().line] ? nok(code) : ok(code)
+      return self.parser.lazy[self.now().line] ? nok(code) : ok(code);
     }
   }
 
@@ -9933,7 +9905,7 @@
    */
   function tokenizeCodeIndented(effects, ok, nok) {
     const self = this;
-    return start
+    return start;
 
     /**
      * Start of code (indented).
@@ -9952,10 +9924,10 @@
     function start(code) {
       // To do: manually check if interrupting like `markdown-rs`.
 
-      effects.enter('codeIndented');
+      effects.enter("codeIndented");
       // To do: use an improved `space_or_tab` function like `markdown-rs`,
       // so that we can drop the next state.
-      return factorySpace(effects, afterPrefix, 'linePrefix', 4 + 1)(code)
+      return factorySpace(effects, afterPrefix, "linePrefix", 4 + 1)(code);
     }
 
     /**
@@ -9970,11 +9942,7 @@
      */
     function afterPrefix(code) {
       const tail = self.events[self.events.length - 1];
-      return tail &&
-        tail[1].type === 'linePrefix' &&
-        tail[2].sliceSerialize(tail[1], true).length >= 4
-        ? atBreak(code)
-        : nok(code)
+      return tail && tail[1].type === "linePrefix" && tail[2].sliceSerialize(tail[1], true).length >= 4 ? atBreak(code) : nok(code);
     }
 
     /**
@@ -9989,13 +9957,13 @@
      */
     function atBreak(code) {
       if (code === null) {
-        return after(code)
+        return after(code);
       }
       if (markdownLineEnding(code)) {
-        return effects.attempt(furtherStart, atBreak, after)(code)
+        return effects.attempt(furtherStart, atBreak, after)(code);
       }
-      effects.enter('codeFlowValue');
-      return inside(code)
+      effects.enter("codeFlowValue");
+      return inside(code);
     }
 
     /**
@@ -10010,20 +9978,20 @@
      */
     function inside(code) {
       if (code === null || markdownLineEnding(code)) {
-        effects.exit('codeFlowValue');
-        return atBreak(code)
+        effects.exit("codeFlowValue");
+        return atBreak(code);
       }
       effects.consume(code);
-      return inside
+      return inside;
     }
 
     /** @type {State} */
     function after(code) {
-      effects.exit('codeIndented');
+      effects.exit("codeIndented");
       // To do: allow interrupting like `markdown-rs`.
       // Feel free to interrupt.
       // tokenizer.interrupt = false
-      return ok(code)
+      return ok(code);
     }
   }
 
@@ -10033,7 +10001,7 @@
    */
   function tokenizeFurtherStart(effects, ok, nok) {
     const self = this;
-    return furtherStart
+    return furtherStart;
 
     /**
      * At eol, trying to parse another indent.
@@ -10050,13 +10018,13 @@
       // To do: improve `lazy` / `pierce` handling.
       // If this is a lazy line, it can’t be code.
       if (self.parser.lazy[self.now().line]) {
-        return nok(code)
+        return nok(code);
       }
       if (markdownLineEnding(code)) {
-        effects.enter('lineEnding');
+        effects.enter("lineEnding");
         effects.consume(code);
-        effects.exit('lineEnding');
-        return furtherStart
+        effects.exit("lineEnding");
+        return furtherStart;
       }
 
       // To do: the code here in `micromark-js` is a bit different from
@@ -10065,7 +10033,7 @@
       //
       // To do: use an improved `space_or_tab` function like `markdown-rs`,
       // so that we can drop the next state.
-      return factorySpace(effects, afterPrefix, 'linePrefix', 4 + 1)(code)
+      return factorySpace(effects, afterPrefix, "linePrefix", 4 + 1)(code);
     }
 
     /**
@@ -10080,13 +10048,7 @@
      */
     function afterPrefix(code) {
       const tail = self.events[self.events.length - 1];
-      return tail &&
-        tail[1].type === 'linePrefix' &&
-        tail[2].sliceSerialize(tail[1], true).length >= 4
-        ? ok(code)
-        : markdownLineEnding(code)
-        ? furtherStart(code)
-        : nok(code)
+      return tail && tail[1].type === "linePrefix" && tail[2].sliceSerialize(tail[1], true).length >= 4 ? ok(code) : markdownLineEnding(code) ? furtherStart(code) : nok(code);
     }
   }
 
@@ -10119,23 +10081,18 @@
     let enter;
 
     // If we start and end with an EOL or a space.
-    if (
-      (events[headEnterIndex][1].type === 'lineEnding' ||
-        events[headEnterIndex][1].type === 'space') &&
-      (events[tailExitIndex][1].type === 'lineEnding' ||
-        events[tailExitIndex][1].type === 'space')
-    ) {
+    if ((events[headEnterIndex][1].type === "lineEnding" || events[headEnterIndex][1].type === 'space') && (events[tailExitIndex][1].type === "lineEnding" || events[tailExitIndex][1].type === 'space')) {
       index = headEnterIndex;
 
       // And we have data.
       while (++index < tailExitIndex) {
-        if (events[index][1].type === 'codeTextData') {
+        if (events[index][1].type === "codeTextData") {
           // Then we have padding.
-          events[headEnterIndex][1].type = 'codeTextPadding';
-          events[tailExitIndex][1].type = 'codeTextPadding';
+          events[headEnterIndex][1].type = "codeTextPadding";
+          events[tailExitIndex][1].type = "codeTextPadding";
           headEnterIndex += 2;
           tailExitIndex -= 2;
-          break
+          break;
         }
       }
     }
@@ -10145,14 +10102,11 @@
     tailExitIndex++;
     while (++index <= tailExitIndex) {
       if (enter === undefined) {
-        if (index !== tailExitIndex && events[index][1].type !== 'lineEnding') {
+        if (index !== tailExitIndex && events[index][1].type !== "lineEnding") {
           enter = index;
         }
-      } else if (
-        index === tailExitIndex ||
-        events[index][1].type === 'lineEnding'
-      ) {
-        events[enter][1].type = 'codeTextData';
+      } else if (index === tailExitIndex || events[index][1].type === "lineEnding") {
+        events[enter][1].type = "codeTextData";
         if (index !== enter + 2) {
           events[enter][1].end = events[index - 1][1].end;
           events.splice(enter + 2, index - enter - 2);
@@ -10162,7 +10116,7 @@
         enter = undefined;
       }
     }
-    return events
+    return events;
   }
 
   /**
@@ -10171,10 +10125,7 @@
    */
   function previous(code) {
     // If there is a previous code, there will always be a tail.
-    return (
-      code !== 96 ||
-      this.events[this.events.length - 1][1].type === 'characterEscape'
-    )
+    return code !== 96 || this.events[this.events.length - 1][1].type === "characterEscape";
   }
 
   /**
@@ -10187,7 +10138,7 @@
     let size;
     /** @type {Token} */
     let token;
-    return start
+    return start;
 
     /**
      * Start of code (text).
@@ -10202,9 +10153,9 @@
      * @type {State}
      */
     function start(code) {
-      effects.enter('codeText');
-      effects.enter('codeTextSequence');
-      return sequenceOpen(code)
+      effects.enter("codeText");
+      effects.enter("codeTextSequence");
+      return sequenceOpen(code);
     }
 
     /**
@@ -10221,10 +10172,10 @@
       if (code === 96) {
         effects.consume(code);
         sizeOpen++;
-        return sequenceOpen
+        return sequenceOpen;
       }
-      effects.exit('codeTextSequence');
-      return between(code)
+      effects.exit("codeTextSequence");
+      return between(code);
     }
 
     /**
@@ -10240,7 +10191,7 @@
     function between(code) {
       // EOF.
       if (code === null) {
-        return nok(code)
+        return nok(code);
       }
 
       // To do: next major: don’t do spaces in resolve, but when compiling,
@@ -10250,25 +10201,25 @@
         effects.enter('space');
         effects.consume(code);
         effects.exit('space');
-        return between
+        return between;
       }
 
       // Closing fence? Could also be data.
       if (code === 96) {
-        token = effects.enter('codeTextSequence');
+        token = effects.enter("codeTextSequence");
         size = 0;
-        return sequenceClose(code)
+        return sequenceClose(code);
       }
       if (markdownLineEnding(code)) {
-        effects.enter('lineEnding');
+        effects.enter("lineEnding");
         effects.consume(code);
-        effects.exit('lineEnding');
-        return between
+        effects.exit("lineEnding");
+        return between;
       }
 
       // Data.
-      effects.enter('codeTextData');
-      return data(code)
+      effects.enter("codeTextData");
+      return data(code);
     }
 
     /**
@@ -10282,17 +10233,12 @@
      * @type {State}
      */
     function data(code) {
-      if (
-        code === null ||
-        code === 32 ||
-        code === 96 ||
-        markdownLineEnding(code)
-      ) {
-        effects.exit('codeTextData');
-        return between(code)
+      if (code === null || code === 32 || code === 96 || markdownLineEnding(code)) {
+        effects.exit("codeTextData");
+        return between(code);
       }
       effects.consume(code);
-      return data
+      return data;
     }
 
     /**
@@ -10310,19 +10256,271 @@
       if (code === 96) {
         effects.consume(code);
         size++;
-        return sequenceClose
+        return sequenceClose;
       }
 
       // Done!
       if (size === sizeOpen) {
-        effects.exit('codeTextSequence');
-        effects.exit('codeText');
-        return ok(code)
+        effects.exit("codeTextSequence");
+        effects.exit("codeText");
+        return ok(code);
       }
 
       // More or less accents: mark as data.
-      token.type = 'codeTextData';
-      return data(code)
+      token.type = "codeTextData";
+      return data(code);
+    }
+  }
+
+  /**
+   * Some of the internal operations of micromark do lots of editing
+   * operations on very large arrays. This runs into problems with two
+   * properties of most circa-2020 JavaScript interpreters:
+   *
+   *  - Array-length modifications at the high end of an array (push/pop) are
+   *    expected to be common and are implemented in (amortized) time
+   *    proportional to the number of elements added or removed, whereas
+   *    other operations (shift/unshift and splice) are much less efficient.
+   *  - Function arguments are passed on the stack, so adding tens of thousands
+   *    of elements to an array with `arr.push[...newElements]` will frequently
+   *    cause stack overflows. (see <https://stackoverflow.com/questions/22123769/rangeerror-maximum-call-stack-size-exceeded-why>)
+   *
+   * SpliceBuffers are an implementation of gap buffers, which are a
+   * generalization of the "queue made of two stacks" idea. The splice buffer
+   * maintains a cursor, and moving the cursor has cost proportional to the
+   * distance the cursor moves, but inserting, deleting, or splicing in
+   * new information at the cursor is as efficient as the push/pop operation.
+   * This allows for an efficient sequence of splices (or pushes, pops, shifts,
+   * or unshifts) as long such edits happen at the same part of the array or
+   * generally sweep through the array from the beginning to the end.
+   *
+   * The interface for splice buffers also supports large numbers of inputs by
+   * passing a single array argument rather passing multiple arguments on the
+   * function call stack.
+   *
+   * @template T
+   *   Item type.
+   */
+  class SpliceBuffer {
+    /**
+     * @param {ReadonlyArray<T> | null | undefined} [initial]
+     *   Initial items (optional).
+     * @returns
+     *   Splice buffer.
+     */
+    constructor(initial) {
+      /** @type {Array<T>} */
+      this.left = initial ? [...initial] : [];
+      /** @type {Array<T>} */
+      this.right = [];
+    }
+
+    /**
+     * Array access;
+     * does not move the cursor.
+     *
+     * @param {number} index
+     *   Index.
+     * @return {T}
+     *   Item.
+     */
+    get(index) {
+      if (index < 0 || index >= this.left.length + this.right.length) {
+        throw new RangeError('Cannot access index `' + index + '` in a splice buffer of size `' + (this.left.length + this.right.length) + '`');
+      }
+      if (index < this.left.length) return this.left[index];
+      return this.right[this.right.length - index + this.left.length - 1];
+    }
+
+    /**
+     * The length of the splice buffer, one greater than the largest index in the
+     * array.
+     */
+    get length() {
+      return this.left.length + this.right.length;
+    }
+
+    /**
+     * Remove and return `list[0]`;
+     * moves the cursor to `0`.
+     *
+     * @returns {T | undefined}
+     *   Item, optional.
+     */
+    shift() {
+      this.setCursor(0);
+      return this.right.pop();
+    }
+
+    /**
+     * Slice the buffer to get an array;
+     * does not move the cursor.
+     *
+     * @param {number} start
+     *   Start.
+     * @param {number | null | undefined} [end]
+     *   End (optional).
+     * @returns {Array<T>}
+     *   Array of items.
+     */
+    slice(start, end) {
+      /** @type {number} */
+      const stop = end === null || end === undefined ? Number.POSITIVE_INFINITY : end;
+      if (stop < this.left.length) {
+        return this.left.slice(start, stop);
+      }
+      if (start > this.left.length) {
+        return this.right.slice(this.right.length - stop + this.left.length, this.right.length - start + this.left.length).reverse();
+      }
+      return this.left.slice(start).concat(this.right.slice(this.right.length - stop + this.left.length).reverse());
+    }
+
+    /**
+     * Mimics the behavior of Array.prototype.splice() except for the change of
+     * interface necessary to avoid segfaults when patching in very large arrays.
+     *
+     * This operation moves cursor is moved to `start` and results in the cursor
+     * placed after any inserted items.
+     *
+     * @param {number} start
+     *   Start;
+     *   zero-based index at which to start changing the array;
+     *   negative numbers count backwards from the end of the array and values
+     *   that are out-of bounds are clamped to the appropriate end of the array.
+     * @param {number | null | undefined} [deleteCount=0]
+     *   Delete count (default: `0`);
+     *   maximum number of elements to delete, starting from start.
+     * @param {Array<T> | null | undefined} [items=[]]
+     *   Items to include in place of the deleted items (default: `[]`).
+     * @return {Array<T>}
+     *   Any removed items.
+     */
+    splice(start, deleteCount, items) {
+      /** @type {number} */
+      const count = deleteCount || 0;
+      this.setCursor(Math.trunc(start));
+      const removed = this.right.splice(this.right.length - count, Number.POSITIVE_INFINITY);
+      if (items) chunkedPush(this.left, items);
+      return removed.reverse();
+    }
+
+    /**
+     * Remove and return the highest-numbered item in the array, so
+     * `list[list.length - 1]`;
+     * Moves the cursor to `length`.
+     *
+     * @returns {T | undefined}
+     *   Item, optional.
+     */
+    pop() {
+      this.setCursor(Number.POSITIVE_INFINITY);
+      return this.left.pop();
+    }
+
+    /**
+     * Inserts a single item to the high-numbered side of the array;
+     * moves the cursor to `length`.
+     *
+     * @param {T} item
+     *   Item.
+     * @returns {undefined}
+     *   Nothing.
+     */
+    push(item) {
+      this.setCursor(Number.POSITIVE_INFINITY);
+      this.left.push(item);
+    }
+
+    /**
+     * Inserts many items to the high-numbered side of the array.
+     * Moves the cursor to `length`.
+     *
+     * @param {Array<T>} items
+     *   Items.
+     * @returns {undefined}
+     *   Nothing.
+     */
+    pushMany(items) {
+      this.setCursor(Number.POSITIVE_INFINITY);
+      chunkedPush(this.left, items);
+    }
+
+    /**
+     * Inserts a single item to the low-numbered side of the array;
+     * Moves the cursor to `0`.
+     *
+     * @param {T} item
+     *   Item.
+     * @returns {undefined}
+     *   Nothing.
+     */
+    unshift(item) {
+      this.setCursor(0);
+      this.right.push(item);
+    }
+
+    /**
+     * Inserts many items to the low-numbered side of the array;
+     * moves the cursor to `0`.
+     *
+     * @param {Array<T>} items
+     *   Items.
+     * @returns {undefined}
+     *   Nothing.
+     */
+    unshiftMany(items) {
+      this.setCursor(0);
+      chunkedPush(this.right, items.reverse());
+    }
+
+    /**
+     * Move the cursor to a specific position in the array. Requires
+     * time proportional to the distance moved.
+     *
+     * If `n < 0`, the cursor will end up at the beginning.
+     * If `n > length`, the cursor will end up at the end.
+     *
+     * @param {number} n
+     *   Position.
+     * @return {undefined}
+     *   Nothing.
+     */
+    setCursor(n) {
+      if (n === this.left.length || n > this.left.length && this.right.length === 0 || n < 0 && this.left.length === 0) return;
+      if (n < this.left.length) {
+        // Move cursor to the this.left
+        const removed = this.left.splice(n, Number.POSITIVE_INFINITY);
+        chunkedPush(this.right, removed.reverse());
+      } else {
+        // Move cursor to the this.right
+        const removed = this.right.splice(this.left.length + this.right.length - n, Number.POSITIVE_INFINITY);
+        chunkedPush(this.left, removed.reverse());
+      }
+    }
+  }
+
+  /**
+   * Avoid stack overflow by pushing items onto the stack in segments
+   *
+   * @template T
+   *   Item type.
+   * @param {Array<T>} list
+   *   List to inject into.
+   * @param {ReadonlyArray<T>} right
+   *   Items to inject.
+   * @return {undefined}
+   *   Nothing.
+   */
+  function chunkedPush(list, right) {
+    /** @type {number} */
+    let chunkStart = 0;
+    if (right.length < 10000) {
+      list.push(...right);
+    } else {
+      while (chunkStart < right.length) {
+        list.push(...right.slice(chunkStart, chunkStart + 10000));
+        chunkStart += 10000;
+      }
     }
   }
 
@@ -10332,15 +10530,17 @@
    * @typedef {import('micromark-util-types').Token} Token
    */
 
+
   /**
    * Tokenize subcontent.
    *
-   * @param {Array<Event>} events
+   * @param {Array<Event>} eventsArray
    *   List of events.
    * @returns {boolean}
    *   Whether subtokens were found.
-   */ // eslint-disable-next-line complexity
-  function subtokenize(events) {
+   */
+  // eslint-disable-next-line complexity
+  function subtokenize(eventsArray) {
     /** @type {Record<string, number>} */
     const jumps = {};
     let index = -1;
@@ -10358,36 +10558,27 @@
     let subevents;
     /** @type {boolean | undefined} */
     let more;
+    const events = new SpliceBuffer(eventsArray);
     while (++index < events.length) {
       while (index in jumps) {
         index = jumps[index];
       }
-      event = events[index];
+      event = events.get(index);
 
       // Add a hook for the GFM tasklist extension, which needs to know if text
       // is in the first content of a list item.
-      if (
-        index &&
-        event[1].type === 'chunkFlow' &&
-        events[index - 1][1].type === 'listItemPrefix'
-      ) {
+      if (index && event[1].type === "chunkFlow" && events.get(index - 1)[1].type === "listItemPrefix") {
         subevents = event[1]._tokenizer.events;
         otherIndex = 0;
-        if (
-          otherIndex < subevents.length &&
-          subevents[otherIndex][1].type === 'lineEndingBlank'
-        ) {
+        if (otherIndex < subevents.length && subevents[otherIndex][1].type === "lineEndingBlank") {
           otherIndex += 2;
         }
-        if (
-          otherIndex < subevents.length &&
-          subevents[otherIndex][1].type === 'content'
-        ) {
+        if (otherIndex < subevents.length && subevents[otherIndex][1].type === "content") {
           while (++otherIndex < subevents.length) {
-            if (subevents[otherIndex][1].type === 'content') {
-              break
+            if (subevents[otherIndex][1].type === "content") {
+              break;
             }
-            if (subevents[otherIndex][1].type === 'chunkText') {
+            if (subevents[otherIndex][1].type === "chunkText") {
               subevents[otherIndex][1]._isInFirstContentOfListItem = true;
               otherIndex++;
             }
@@ -10408,51 +10599,50 @@
         otherIndex = index;
         lineIndex = undefined;
         while (otherIndex--) {
-          otherEvent = events[otherIndex];
-          if (
-            otherEvent[1].type === 'lineEnding' ||
-            otherEvent[1].type === 'lineEndingBlank'
-          ) {
+          otherEvent = events.get(otherIndex);
+          if (otherEvent[1].type === "lineEnding" || otherEvent[1].type === "lineEndingBlank") {
             if (otherEvent[0] === 'enter') {
               if (lineIndex) {
-                events[lineIndex][1].type = 'lineEndingBlank';
+                events.get(lineIndex)[1].type = "lineEndingBlank";
               }
-              otherEvent[1].type = 'lineEnding';
+              otherEvent[1].type = "lineEnding";
               lineIndex = otherIndex;
             }
           } else {
-            break
+            break;
           }
         }
         if (lineIndex) {
           // Fix position.
-          event[1].end = Object.assign({}, events[lineIndex][1].start);
+          event[1].end = Object.assign({}, events.get(lineIndex)[1].start);
 
           // Switch container exit w/ line endings.
           parameters = events.slice(lineIndex, index);
           parameters.unshift(event);
-          splice(events, lineIndex, index - lineIndex + 1, parameters);
+          events.splice(lineIndex, index - lineIndex + 1, parameters);
         }
       }
     }
-    return !more
+
+    // The changes to the `events` buffer must be copied back into the eventsArray
+    splice(eventsArray, 0, Number.POSITIVE_INFINITY, events.slice(0));
+    return !more;
   }
 
   /**
    * Tokenize embedded tokens.
    *
-   * @param {Array<Event>} events
+   * @param {SpliceBuffer<Event>} events
    * @param {number} eventIndex
    * @returns {Record<string, number>}
    */
   function subcontent(events, eventIndex) {
-    const token = events[eventIndex][1];
-    const context = events[eventIndex][2];
+    const token = events.get(eventIndex)[1];
+    const context = events.get(eventIndex)[2];
     let startPosition = eventIndex - 1;
     /** @type {Array<number>} */
     const startPositions = [];
-    const tokenizer =
-      token._tokenizer || context.parser[token.contentType](token.start);
+    const tokenizer = token._tokenizer || context.parser[token.contentType](token.start);
     const childEvents = tokenizer.events;
     /** @type {Array<[number, number]>} */
     const jumps = [];
@@ -10473,7 +10663,7 @@
     // subtokenizer.
     while (current) {
       // Find the position of the event for this token.
-      while (events[++startPosition][1] !== current) {
+      while (events.get(++startPosition)[1] !== current) {
         // Empty.
       }
       startPositions.push(startPosition);
@@ -10504,12 +10694,8 @@
     current = token;
     while (++index < childEvents.length) {
       if (
-        // Find a void token that includes a break.
-        childEvents[index][0] === 'exit' &&
-        childEvents[index - 1][0] === 'enter' &&
-        childEvents[index][1].type === childEvents[index - 1][1].type &&
-        childEvents[index][1].start.line !== childEvents[index][1].end.line
-      ) {
+      // Find a void token that includes a break.
+      childEvents[index][0] === 'exit' && childEvents[index - 1][0] === 'enter' && childEvents[index][1].type === childEvents[index - 1][1].type && childEvents[index][1].start.line !== childEvents[index][1].end.line) {
         start = index + 1;
         breaks.push(start);
         // Help GC.
@@ -10539,15 +10725,16 @@
     while (index--) {
       const slice = childEvents.slice(breaks[index], breaks[index + 1]);
       const start = startPositions.pop();
-      jumps.unshift([start, start + slice.length - 1]);
-      splice(events, start, 2, slice);
+      jumps.push([start, start + slice.length - 1]);
+      events.splice(start, 2, slice);
     }
+    jumps.reverse();
     index = -1;
     while (++index < jumps.length) {
       gaps[adjust + jumps[index][0]] = adjust + jumps[index][1];
       adjust += jumps[index][1] - jumps[index][0] - 1;
     }
-    return gaps
+    return gaps;
   }
 
   /**
@@ -10582,7 +10769,7 @@
    */
   function resolveContent(events) {
     subtokenize(events);
-    return events
+    return events;
   }
 
   /**
@@ -10592,7 +10779,7 @@
   function tokenizeContent(effects, ok) {
     /** @type {Token | undefined} */
     let previous;
-    return chunkStart
+    return chunkStart;
 
     /**
      * Before a content chunk.
@@ -10605,11 +10792,11 @@
      * @type {State}
      */
     function chunkStart(code) {
-      effects.enter('content');
-      previous = effects.enter('chunkContent', {
-        contentType: 'content'
+      effects.enter("content");
+      previous = effects.enter("chunkContent", {
+        contentType: "content"
       });
-      return chunkInside(code)
+      return chunkInside(code);
     }
 
     /**
@@ -10624,22 +10811,18 @@
      */
     function chunkInside(code) {
       if (code === null) {
-        return contentEnd(code)
+        return contentEnd(code);
       }
 
       // To do: in `markdown-rs`, each line is parsed on its own, and everything
       // is stitched together resolving.
       if (markdownLineEnding(code)) {
-        return effects.check(
-          continuationConstruct,
-          contentContinue,
-          contentEnd
-        )(code)
+        return effects.check(continuationConstruct, contentContinue, contentEnd)(code);
       }
 
       // Data.
       effects.consume(code);
-      return chunkInside
+      return chunkInside;
     }
 
     /**
@@ -10648,9 +10831,9 @@
      * @type {State}
      */
     function contentEnd(code) {
-      effects.exit('chunkContent');
-      effects.exit('content');
-      return ok(code)
+      effects.exit("chunkContent");
+      effects.exit("content");
+      return ok(code);
     }
 
     /**
@@ -10660,13 +10843,13 @@
      */
     function contentContinue(code) {
       effects.consume(code);
-      effects.exit('chunkContent');
-      previous.next = effects.enter('chunkContent', {
-        contentType: 'content',
+      effects.exit("chunkContent");
+      previous.next = effects.enter("chunkContent", {
+        contentType: "content",
         previous
       });
       previous = previous.next;
-      return chunkInside
+      return chunkInside;
     }
   }
 
@@ -10676,7 +10859,7 @@
    */
   function tokenizeContinuation(effects, ok, nok) {
     const self = this;
-    return startLookahead
+    return startLookahead;
 
     /**
      *
@@ -10684,11 +10867,11 @@
      * @type {State}
      */
     function startLookahead(code) {
-      effects.exit('chunkContent');
-      effects.enter('lineEnding');
+      effects.exit("chunkContent");
+      effects.enter("lineEnding");
       effects.consume(code);
-      effects.exit('lineEnding');
-      return factorySpace(effects, prefixed, 'linePrefix')
+      effects.exit("lineEnding");
+      return factorySpace(effects, prefixed, "linePrefix");
     }
 
     /**
@@ -10698,21 +10881,16 @@
      */
     function prefixed(code) {
       if (code === null || markdownLineEnding(code)) {
-        return nok(code)
+        return nok(code);
       }
 
       // Always populated by defaults.
 
       const tail = self.events[self.events.length - 1];
-      if (
-        !self.parser.constructs.disable.null.includes('codeIndented') &&
-        tail &&
-        tail[1].type === 'linePrefix' &&
-        tail[2].sliceSerialize(tail[1], true).length >= 4
-      ) {
-        return ok(code)
+      if (!self.parser.constructs.disable.null.includes('codeIndented') && tail && tail[1].type === "linePrefix" && tail[2].sliceSerialize(tail[1], true).length >= 4) {
+        return ok(code);
       }
-      return effects.interrupt(self.parser.constructs.flow, nok, ok)(code)
+      return effects.interrupt(self.parser.constructs.flow, nok, ok)(code);
     }
   }
 
@@ -11326,7 +11504,7 @@
     const self = this;
     /** @type {string} */
     let identifier;
-    return start
+    return start;
 
     /**
      * At start of a definition.
@@ -11342,8 +11520,8 @@
       // Do not interrupt paragraphs (but do follow definitions).
       // To do: do `interrupt` the way `markdown-rs` does.
       // To do: parse whitespace the way `markdown-rs` does.
-      effects.enter('definition');
-      return before(code)
+      effects.enter("definition");
+      return before(code);
     }
 
     /**
@@ -11359,16 +11537,9 @@
     function before(code) {
       // To do: parse whitespace the way `markdown-rs` does.
 
-      return factoryLabel.call(
-        self,
-        effects,
-        labelAfter,
-        // Note: we don’t need to reset the way `markdown-rs` does.
-        nok,
-        'definitionLabel',
-        'definitionLabelMarker',
-        'definitionLabelString'
-      )(code)
+      return factoryLabel.call(self, effects, labelAfter,
+      // Note: we don’t need to reset the way `markdown-rs` does.
+      nok, "definitionLabel", "definitionLabelMarker", "definitionLabelString")(code);
     }
 
     /**
@@ -11382,16 +11553,14 @@
      * @type {State}
      */
     function labelAfter(code) {
-      identifier = normalizeIdentifier(
-        self.sliceSerialize(self.events[self.events.length - 1][1]).slice(1, -1)
-      );
+      identifier = normalizeIdentifier(self.sliceSerialize(self.events[self.events.length - 1][1]).slice(1, -1));
       if (code === 58) {
-        effects.enter('definitionMarker');
+        effects.enter("definitionMarker");
         effects.consume(code);
-        effects.exit('definitionMarker');
-        return markerAfter
+        effects.exit("definitionMarker");
+        return markerAfter;
       }
-      return nok(code)
+      return nok(code);
     }
 
     /**
@@ -11406,9 +11575,7 @@
      */
     function markerAfter(code) {
       // Note: whitespace is optional.
-      return markdownLineEndingOrSpace(code)
-        ? factoryWhitespace(effects, destinationBefore)(code)
-        : destinationBefore(code)
+      return markdownLineEndingOrSpace(code) ? factoryWhitespace(effects, destinationBefore)(code) : destinationBefore(code);
     }
 
     /**
@@ -11422,17 +11589,9 @@
      * @type {State}
      */
     function destinationBefore(code) {
-      return factoryDestination(
-        effects,
-        destinationAfter,
-        // Note: we don’t need to reset the way `markdown-rs` does.
-        nok,
-        'definitionDestination',
-        'definitionDestinationLiteral',
-        'definitionDestinationLiteralMarker',
-        'definitionDestinationRaw',
-        'definitionDestinationString'
-      )(code)
+      return factoryDestination(effects, destinationAfter,
+      // Note: we don’t need to reset the way `markdown-rs` does.
+      nok, "definitionDestination", "definitionDestinationLiteral", "definitionDestinationLiteralMarker", "definitionDestinationRaw", "definitionDestinationString")(code);
     }
 
     /**
@@ -11446,7 +11605,7 @@
      * @type {State}
      */
     function destinationAfter(code) {
-      return effects.attempt(titleBefore, after, after)(code)
+      return effects.attempt(titleBefore, after, after)(code);
     }
 
     /**
@@ -11462,9 +11621,7 @@
      * @type {State}
      */
     function after(code) {
-      return markdownSpace(code)
-        ? factorySpace(effects, afterWhitespace, 'whitespace')(code)
-        : afterWhitespace(code)
+      return markdownSpace(code) ? factorySpace(effects, afterWhitespace, "whitespace")(code) : afterWhitespace(code);
     }
 
     /**
@@ -11481,7 +11638,7 @@
      */
     function afterWhitespace(code) {
       if (code === null || markdownLineEnding(code)) {
-        effects.exit('definition');
+        effects.exit("definition");
 
         // Note: we don’t care about uniqueness.
         // It’s likely that that doesn’t happen very frequently.
@@ -11491,9 +11648,9 @@
         // To do: `markdown-rs` interrupt.
         // // You’d be interrupting.
         // tokenizer.interrupt = true
-        return ok(code)
+        return ok(code);
       }
-      return nok(code)
+      return nok(code);
     }
   }
 
@@ -11502,7 +11659,7 @@
    * @type {Tokenizer}
    */
   function tokenizeTitleBefore(effects, ok, nok) {
-    return titleBefore
+    return titleBefore;
 
     /**
      * After destination, at whitespace.
@@ -11517,9 +11674,7 @@
      * @type {State}
      */
     function titleBefore(code) {
-      return markdownLineEndingOrSpace(code)
-        ? factoryWhitespace(effects, beforeMarker)(code)
-        : nok(code)
+      return markdownLineEndingOrSpace(code) ? factoryWhitespace(effects, beforeMarker)(code) : nok(code);
     }
 
     /**
@@ -11534,14 +11689,7 @@
      * @type {State}
      */
     function beforeMarker(code) {
-      return factoryTitle(
-        effects,
-        titleAfter,
-        nok,
-        'definitionTitle',
-        'definitionTitleMarker',
-        'definitionTitleString'
-      )(code)
+      return factoryTitle(effects, titleAfter, nok, "definitionTitle", "definitionTitleMarker", "definitionTitleString")(code);
     }
 
     /**
@@ -11555,9 +11703,7 @@
      * @type {State}
      */
     function titleAfter(code) {
-      return markdownSpace(code)
-        ? factorySpace(effects, titleAfterOptionalWhitespace, 'whitespace')(code)
-        : titleAfterOptionalWhitespace(code)
+      return markdownSpace(code) ? factorySpace(effects, titleAfterOptionalWhitespace, "whitespace")(code) : titleAfterOptionalWhitespace(code);
     }
 
     /**
@@ -11571,7 +11717,7 @@
      * @type {State}
      */
     function titleAfterOptionalWhitespace(code) {
-      return code === null || markdownLineEnding(code) ? ok(code) : nok(code)
+      return code === null || markdownLineEnding(code) ? ok(code) : nok(code);
     }
   }
 
@@ -11593,7 +11739,7 @@
    * @type {Tokenizer}
    */
   function tokenizeHardBreakEscape(effects, ok, nok) {
-    return start
+    return start;
 
     /**
      * Start of a hard break (escape).
@@ -11607,9 +11753,9 @@
      * @type {State}
      */
     function start(code) {
-      effects.enter('hardBreakEscape');
+      effects.enter("hardBreakEscape");
       effects.consume(code);
-      return after
+      return after;
     }
 
     /**
@@ -11625,10 +11771,10 @@
      */
     function after(code) {
       if (markdownLineEnding(code)) {
-        effects.exit('hardBreakEscape');
-        return ok(code)
+        effects.exit("hardBreakEscape");
+        return ok(code);
       }
-      return nok(code)
+      return nok(code);
     }
   }
 
@@ -11658,45 +11804,32 @@
     let text;
 
     // Prefix whitespace, part of the opening.
-    if (events[contentStart][1].type === 'whitespace') {
+    if (events[contentStart][1].type === "whitespace") {
       contentStart += 2;
     }
 
     // Suffix whitespace, part of the closing.
-    if (
-      contentEnd - 2 > contentStart &&
-      events[contentEnd][1].type === 'whitespace'
-    ) {
+    if (contentEnd - 2 > contentStart && events[contentEnd][1].type === "whitespace") {
       contentEnd -= 2;
     }
-    if (
-      events[contentEnd][1].type === 'atxHeadingSequence' &&
-      (contentStart === contentEnd - 1 ||
-        (contentEnd - 4 > contentStart &&
-          events[contentEnd - 2][1].type === 'whitespace'))
-    ) {
+    if (events[contentEnd][1].type === "atxHeadingSequence" && (contentStart === contentEnd - 1 || contentEnd - 4 > contentStart && events[contentEnd - 2][1].type === "whitespace")) {
       contentEnd -= contentStart + 1 === contentEnd ? 2 : 4;
     }
     if (contentEnd > contentStart) {
       content = {
-        type: 'atxHeadingText',
+        type: "atxHeadingText",
         start: events[contentStart][1].start,
         end: events[contentEnd][1].end
       };
       text = {
-        type: 'chunkText',
+        type: "chunkText",
         start: events[contentStart][1].start,
         end: events[contentEnd][1].end,
-        contentType: 'text'
+        contentType: "text"
       };
-      splice(events, contentStart, contentEnd - contentStart + 1, [
-        ['enter', content, context],
-        ['enter', text, context],
-        ['exit', text, context],
-        ['exit', content, context]
-      ]);
+      splice(events, contentStart, contentEnd - contentStart + 1, [['enter', content, context], ['enter', text, context], ['exit', text, context], ['exit', content, context]]);
     }
-    return events
+    return events;
   }
 
   /**
@@ -11705,7 +11838,7 @@
    */
   function tokenizeHeadingAtx(effects, ok, nok) {
     let size = 0;
-    return start
+    return start;
 
     /**
      * Start of a heading (atx).
@@ -11719,8 +11852,8 @@
      */
     function start(code) {
       // To do: parse indent like `markdown-rs`.
-      effects.enter('atxHeading');
-      return before(code)
+      effects.enter("atxHeading");
+      return before(code);
     }
 
     /**
@@ -11734,8 +11867,8 @@
      * @type {State}
      */
     function before(code) {
-      effects.enter('atxHeadingSequence');
-      return sequenceOpen(code)
+      effects.enter("atxHeadingSequence");
+      return sequenceOpen(code);
     }
 
     /**
@@ -11751,15 +11884,15 @@
     function sequenceOpen(code) {
       if (code === 35 && size++ < 6) {
         effects.consume(code);
-        return sequenceOpen
+        return sequenceOpen;
       }
 
       // Always at least one `#`.
       if (code === null || markdownLineEndingOrSpace(code)) {
-        effects.exit('atxHeadingSequence');
-        return atBreak(code)
+        effects.exit("atxHeadingSequence");
+        return atBreak(code);
       }
-      return nok(code)
+      return nok(code);
     }
 
     /**
@@ -11774,24 +11907,24 @@
      */
     function atBreak(code) {
       if (code === 35) {
-        effects.enter('atxHeadingSequence');
-        return sequenceFurther(code)
+        effects.enter("atxHeadingSequence");
+        return sequenceFurther(code);
       }
       if (code === null || markdownLineEnding(code)) {
-        effects.exit('atxHeading');
+        effects.exit("atxHeading");
         // To do: interrupt like `markdown-rs`.
         // // Feel free to interrupt.
         // tokenizer.interrupt = false
-        return ok(code)
+        return ok(code);
       }
       if (markdownSpace(code)) {
-        return factorySpace(effects, atBreak, 'whitespace')(code)
+        return factorySpace(effects, atBreak, "whitespace")(code);
       }
 
       // To do: generate `data` tokens, add the `text` token later.
       // Needs edit map, see: `markdown.rs`.
-      effects.enter('atxHeadingText');
-      return data(code)
+      effects.enter("atxHeadingText");
+      return data(code);
     }
 
     /**
@@ -11809,10 +11942,10 @@
     function sequenceFurther(code) {
       if (code === 35) {
         effects.consume(code);
-        return sequenceFurther
+        return sequenceFurther;
       }
-      effects.exit('atxHeadingSequence');
-      return atBreak(code)
+      effects.exit("atxHeadingSequence");
+      return atBreak(code);
     }
 
     /**
@@ -11827,11 +11960,11 @@
      */
     function data(code) {
       if (code === null || code === 35 || markdownLineEndingOrSpace(code)) {
-        effects.exit('atxHeadingText');
-        return atBreak(code)
+        effects.exit("atxHeadingText");
+        return atBreak(code);
       }
       effects.consume(code);
-      return data
+      return data;
     }
   }
 
@@ -11961,11 +12094,11 @@
   function resolveToHtmlFlow(events) {
     let index = events.length;
     while (index--) {
-      if (events[index][0] === 'enter' && events[index][1].type === 'htmlFlow') {
-        break
+      if (events[index][0] === 'enter' && events[index][1].type === "htmlFlow") {
+        break;
       }
     }
-    if (index > 1 && events[index - 2][1].type === 'linePrefix') {
+    if (index > 1 && events[index - 2][1].type === "linePrefix") {
       // Add the prefix start to the HTML token.
       events[index][1].start = events[index - 2][1].start;
       // Add the prefix start to the HTML line token.
@@ -11973,7 +12106,7 @@
       // Remove the line prefix.
       events.splice(index - 2, 2);
     }
-    return events
+    return events;
   }
 
   /**
@@ -11992,7 +12125,7 @@
     let index;
     /** @type {Code} */
     let markerB;
-    return start
+    return start;
 
     /**
      * Start of HTML (flow).
@@ -12006,7 +12139,7 @@
      */
     function start(code) {
       // To do: parse indent like `markdown-rs`.
-      return before(code)
+      return before(code);
     }
 
     /**
@@ -12020,10 +12153,10 @@
      * @type {State}
      */
     function before(code) {
-      effects.enter('htmlFlow');
-      effects.enter('htmlFlowData');
+      effects.enter("htmlFlow");
+      effects.enter("htmlFlowData");
       effects.consume(code);
-      return open
+      return open;
     }
 
     /**
@@ -12043,12 +12176,12 @@
     function open(code) {
       if (code === 33) {
         effects.consume(code);
-        return declarationOpen
+        return declarationOpen;
       }
       if (code === 47) {
         effects.consume(code);
         closingTag = true;
-        return tagCloseStart
+        return tagCloseStart;
       }
       if (code === 63) {
         effects.consume(code);
@@ -12058,7 +12191,7 @@
         // To do: use `markdown-rs` style interrupt.
         // While we’re in an instruction instead of a declaration, we’re on a `?`
         // right now, so we do need to search for `>`, similar to declarations.
-        return self.interrupt ? ok : continuationDeclarationInside
+        return self.interrupt ? ok : continuationDeclarationInside;
       }
 
       // ASCII alphabetical.
@@ -12066,9 +12199,9 @@
         effects.consume(code);
         // @ts-expect-error: not null.
         buffer = String.fromCharCode(code);
-        return tagName
+        return tagName;
       }
-      return nok(code)
+      return nok(code);
     }
 
     /**
@@ -12089,13 +12222,13 @@
       if (code === 45) {
         effects.consume(code);
         marker = 2;
-        return commentOpenInside
+        return commentOpenInside;
       }
       if (code === 91) {
         effects.consume(code);
         marker = 5;
         index = 0;
-        return cdataOpenInside
+        return cdataOpenInside;
       }
 
       // ASCII alphabetical.
@@ -12104,9 +12237,9 @@
         marker = 4;
         // // Do not form containers.
         // tokenizer.concrete = true
-        return self.interrupt ? ok : continuationDeclarationInside
+        return self.interrupt ? ok : continuationDeclarationInside;
       }
-      return nok(code)
+      return nok(code);
     }
 
     /**
@@ -12124,9 +12257,9 @@
         effects.consume(code);
         // // Do not form containers.
         // tokenizer.concrete = true
-        return self.interrupt ? ok : continuationDeclarationInside
+        return self.interrupt ? ok : continuationDeclarationInside;
       }
-      return nok(code)
+      return nok(code);
     }
 
     /**
@@ -12140,17 +12273,17 @@
      * @type {State}
      */
     function cdataOpenInside(code) {
-      const value = 'CDATA[';
+      const value = "CDATA[";
       if (code === value.charCodeAt(index++)) {
         effects.consume(code);
         if (index === value.length) {
           // // Do not form containers.
           // tokenizer.concrete = true
-          return self.interrupt ? ok : continuation
+          return self.interrupt ? ok : continuation;
         }
-        return cdataOpenInside
+        return cdataOpenInside;
       }
-      return nok(code)
+      return nok(code);
     }
 
     /**
@@ -12168,9 +12301,9 @@
         effects.consume(code);
         // @ts-expect-error: not null.
         buffer = String.fromCharCode(code);
-        return tagName
+        return tagName;
       }
-      return nok(code)
+      return nok(code);
     }
 
     /**
@@ -12186,47 +12319,38 @@
      * @type {State}
      */
     function tagName(code) {
-      if (
-        code === null ||
-        code === 47 ||
-        code === 62 ||
-        markdownLineEndingOrSpace(code)
-      ) {
+      if (code === null || code === 47 || code === 62 || markdownLineEndingOrSpace(code)) {
         const slash = code === 47;
         const name = buffer.toLowerCase();
         if (!slash && !closingTag && htmlRawNames.includes(name)) {
           marker = 1;
           // // Do not form containers.
           // tokenizer.concrete = true
-          return self.interrupt ? ok(code) : continuation(code)
+          return self.interrupt ? ok(code) : continuation(code);
         }
         if (htmlBlockNames.includes(buffer.toLowerCase())) {
           marker = 6;
           if (slash) {
             effects.consume(code);
-            return basicSelfClosing
+            return basicSelfClosing;
           }
 
           // // Do not form containers.
           // tokenizer.concrete = true
-          return self.interrupt ? ok(code) : continuation(code)
+          return self.interrupt ? ok(code) : continuation(code);
         }
         marker = 7;
         // Do not support complete HTML when interrupting.
-        return self.interrupt && !self.parser.lazy[self.now().line]
-          ? nok(code)
-          : closingTag
-          ? completeClosingTagAfter(code)
-          : completeAttributeNameBefore(code)
+        return self.interrupt && !self.parser.lazy[self.now().line] ? nok(code) : closingTag ? completeClosingTagAfter(code) : completeAttributeNameBefore(code);
       }
 
       // ASCII alphanumerical and `-`.
       if (code === 45 || asciiAlphanumeric(code)) {
         effects.consume(code);
         buffer += String.fromCharCode(code);
-        return tagName
+        return tagName;
       }
-      return nok(code)
+      return nok(code);
     }
 
     /**
@@ -12244,9 +12368,9 @@
         effects.consume(code);
         // // Do not form containers.
         // tokenizer.concrete = true
-        return self.interrupt ? ok : continuation
+        return self.interrupt ? ok : continuation;
       }
-      return nok(code)
+      return nok(code);
     }
 
     /**
@@ -12262,9 +12386,9 @@
     function completeClosingTagAfter(code) {
       if (markdownSpace(code)) {
         effects.consume(code);
-        return completeClosingTagAfter
+        return completeClosingTagAfter;
       }
-      return completeEnd(code)
+      return completeEnd(code);
     }
 
     /**
@@ -12293,19 +12417,19 @@
     function completeAttributeNameBefore(code) {
       if (code === 47) {
         effects.consume(code);
-        return completeEnd
+        return completeEnd;
       }
 
       // ASCII alphanumerical and `:` and `_`.
       if (code === 58 || code === 95 || asciiAlpha(code)) {
         effects.consume(code);
-        return completeAttributeName
+        return completeAttributeName;
       }
       if (markdownSpace(code)) {
         effects.consume(code);
-        return completeAttributeNameBefore
+        return completeAttributeNameBefore;
       }
-      return completeEnd(code)
+      return completeEnd(code);
     }
 
     /**
@@ -12324,17 +12448,11 @@
      */
     function completeAttributeName(code) {
       // ASCII alphanumerical and `-`, `.`, `:`, and `_`.
-      if (
-        code === 45 ||
-        code === 46 ||
-        code === 58 ||
-        code === 95 ||
-        asciiAlphanumeric(code)
-      ) {
+      if (code === 45 || code === 46 || code === 58 || code === 95 || asciiAlphanumeric(code)) {
         effects.consume(code);
-        return completeAttributeName
+        return completeAttributeName;
       }
-      return completeAttributeNameAfter(code)
+      return completeAttributeNameAfter(code);
     }
 
     /**
@@ -12353,13 +12471,13 @@
     function completeAttributeNameAfter(code) {
       if (code === 61) {
         effects.consume(code);
-        return completeAttributeValueBefore
+        return completeAttributeValueBefore;
       }
       if (markdownSpace(code)) {
         effects.consume(code);
-        return completeAttributeNameAfter
+        return completeAttributeNameAfter;
       }
-      return completeAttributeNameBefore(code)
+      return completeAttributeNameBefore(code);
     }
 
     /**
@@ -12376,25 +12494,19 @@
      * @type {State}
      */
     function completeAttributeValueBefore(code) {
-      if (
-        code === null ||
-        code === 60 ||
-        code === 61 ||
-        code === 62 ||
-        code === 96
-      ) {
-        return nok(code)
+      if (code === null || code === 60 || code === 61 || code === 62 || code === 96) {
+        return nok(code);
       }
       if (code === 34 || code === 39) {
         effects.consume(code);
         markerB = code;
-        return completeAttributeValueQuoted
+        return completeAttributeValueQuoted;
       }
       if (markdownSpace(code)) {
         effects.consume(code);
-        return completeAttributeValueBefore
+        return completeAttributeValueBefore;
       }
-      return completeAttributeValueUnquoted(code)
+      return completeAttributeValueUnquoted(code);
     }
 
     /**
@@ -12413,13 +12525,13 @@
       if (code === markerB) {
         effects.consume(code);
         markerB = null;
-        return completeAttributeValueQuotedAfter
+        return completeAttributeValueQuotedAfter;
       }
       if (code === null || markdownLineEnding(code)) {
-        return nok(code)
+        return nok(code);
       }
       effects.consume(code);
-      return completeAttributeValueQuoted
+      return completeAttributeValueQuoted;
     }
 
     /**
@@ -12433,21 +12545,11 @@
      * @type {State}
      */
     function completeAttributeValueUnquoted(code) {
-      if (
-        code === null ||
-        code === 34 ||
-        code === 39 ||
-        code === 47 ||
-        code === 60 ||
-        code === 61 ||
-        code === 62 ||
-        code === 96 ||
-        markdownLineEndingOrSpace(code)
-      ) {
-        return completeAttributeNameAfter(code)
+      if (code === null || code === 34 || code === 39 || code === 47 || code === 60 || code === 61 || code === 62 || code === 96 || markdownLineEndingOrSpace(code)) {
+        return completeAttributeNameAfter(code);
       }
       effects.consume(code);
-      return completeAttributeValueUnquoted
+      return completeAttributeValueUnquoted;
     }
 
     /**
@@ -12463,9 +12565,9 @@
      */
     function completeAttributeValueQuotedAfter(code) {
       if (code === 47 || code === 62 || markdownSpace(code)) {
-        return completeAttributeNameBefore(code)
+        return completeAttributeNameBefore(code);
       }
-      return nok(code)
+      return nok(code);
     }
 
     /**
@@ -12481,9 +12583,9 @@
     function completeEnd(code) {
       if (code === 62) {
         effects.consume(code);
-        return completeAfter
+        return completeAfter;
       }
-      return nok(code)
+      return nok(code);
     }
 
     /**
@@ -12500,13 +12602,13 @@
       if (code === null || markdownLineEnding(code)) {
         // // Do not form containers.
         // tokenizer.concrete = true
-        return continuation(code)
+        return continuation(code);
       }
       if (markdownSpace(code)) {
         effects.consume(code);
-        return completeAfter
+        return completeAfter;
       }
-      return nok(code)
+      return nok(code);
     }
 
     /**
@@ -12522,38 +12624,34 @@
     function continuation(code) {
       if (code === 45 && marker === 2) {
         effects.consume(code);
-        return continuationCommentInside
+        return continuationCommentInside;
       }
       if (code === 60 && marker === 1) {
         effects.consume(code);
-        return continuationRawTagOpen
+        return continuationRawTagOpen;
       }
       if (code === 62 && marker === 4) {
         effects.consume(code);
-        return continuationClose
+        return continuationClose;
       }
       if (code === 63 && marker === 3) {
         effects.consume(code);
-        return continuationDeclarationInside
+        return continuationDeclarationInside;
       }
       if (code === 93 && marker === 5) {
         effects.consume(code);
-        return continuationCdataInside
+        return continuationCdataInside;
       }
       if (markdownLineEnding(code) && (marker === 6 || marker === 7)) {
-        effects.exit('htmlFlowData');
-        return effects.check(
-          blankLineBefore,
-          continuationAfter,
-          continuationStart
-        )(code)
+        effects.exit("htmlFlowData");
+        return effects.check(blankLineBefore, continuationAfter, continuationStart)(code);
       }
       if (code === null || markdownLineEnding(code)) {
-        effects.exit('htmlFlowData');
-        return continuationStart(code)
+        effects.exit("htmlFlowData");
+        return continuationStart(code);
       }
       effects.consume(code);
-      return continuation
+      return continuation;
     }
 
     /**
@@ -12568,11 +12666,7 @@
      * @type {State}
      */
     function continuationStart(code) {
-      return effects.check(
-        nonLazyContinuationStart,
-        continuationStartNonLazy,
-        continuationAfter
-      )(code)
+      return effects.check(nonLazyContinuationStart, continuationStartNonLazy, continuationAfter)(code);
     }
 
     /**
@@ -12587,10 +12681,10 @@
      * @type {State}
      */
     function continuationStartNonLazy(code) {
-      effects.enter('lineEnding');
+      effects.enter("lineEnding");
       effects.consume(code);
-      effects.exit('lineEnding');
-      return continuationBefore
+      effects.exit("lineEnding");
+      return continuationBefore;
     }
 
     /**
@@ -12606,10 +12700,10 @@
      */
     function continuationBefore(code) {
       if (code === null || markdownLineEnding(code)) {
-        return continuationStart(code)
+        return continuationStart(code);
       }
-      effects.enter('htmlFlowData');
-      return continuation(code)
+      effects.enter("htmlFlowData");
+      return continuation(code);
     }
 
     /**
@@ -12625,9 +12719,9 @@
     function continuationCommentInside(code) {
       if (code === 45) {
         effects.consume(code);
-        return continuationDeclarationInside
+        return continuationDeclarationInside;
       }
-      return continuation(code)
+      return continuation(code);
     }
 
     /**
@@ -12644,9 +12738,9 @@
       if (code === 47) {
         effects.consume(code);
         buffer = '';
-        return continuationRawEndTag
+        return continuationRawEndTag;
       }
-      return continuation(code)
+      return continuation(code);
     }
 
     /**
@@ -12664,17 +12758,17 @@
         const name = buffer.toLowerCase();
         if (htmlRawNames.includes(name)) {
           effects.consume(code);
-          return continuationClose
+          return continuationClose;
         }
-        return continuation(code)
+        return continuation(code);
       }
       if (asciiAlpha(code) && buffer.length < 8) {
         effects.consume(code);
         // @ts-expect-error: not null.
         buffer += String.fromCharCode(code);
-        return continuationRawEndTag
+        return continuationRawEndTag;
       }
-      return continuation(code)
+      return continuation(code);
     }
 
     /**
@@ -12690,9 +12784,9 @@
     function continuationCdataInside(code) {
       if (code === 93) {
         effects.consume(code);
-        return continuationDeclarationInside
+        return continuationDeclarationInside;
       }
-      return continuation(code)
+      return continuation(code);
     }
 
     /**
@@ -12716,15 +12810,15 @@
     function continuationDeclarationInside(code) {
       if (code === 62) {
         effects.consume(code);
-        return continuationClose
+        return continuationClose;
       }
 
       // More dashes.
       if (code === 45 && marker === 2) {
         effects.consume(code);
-        return continuationDeclarationInside
+        return continuationDeclarationInside;
       }
-      return continuation(code)
+      return continuation(code);
     }
 
     /**
@@ -12739,11 +12833,11 @@
      */
     function continuationClose(code) {
       if (code === null || markdownLineEnding(code)) {
-        effects.exit('htmlFlowData');
-        return continuationAfter(code)
+        effects.exit("htmlFlowData");
+        return continuationAfter(code);
       }
       effects.consume(code);
-      return continuationClose
+      return continuationClose;
     }
 
     /**
@@ -12757,12 +12851,12 @@
      * @type {State}
      */
     function continuationAfter(code) {
-      effects.exit('htmlFlow');
+      effects.exit("htmlFlow");
       // // Feel free to interrupt.
       // tokenizer.interrupt = false
       // // No longer concrete.
       // tokenizer.concrete = false
-      return ok(code)
+      return ok(code);
     }
   }
 
@@ -12772,7 +12866,7 @@
    */
   function tokenizeNonLazyContinuationStart(effects, ok, nok) {
     const self = this;
-    return start
+    return start;
 
     /**
      * At eol, before continuation.
@@ -12787,12 +12881,12 @@
      */
     function start(code) {
       if (markdownLineEnding(code)) {
-        effects.enter('lineEnding');
+        effects.enter("lineEnding");
         effects.consume(code);
-        effects.exit('lineEnding');
-        return after
+        effects.exit("lineEnding");
+        return after;
       }
-      return nok(code)
+      return nok(code);
     }
 
     /**
@@ -12807,7 +12901,7 @@
      * @type {State}
      */
     function after(code) {
-      return self.parser.lazy[self.now().line] ? nok(code) : ok(code)
+      return self.parser.lazy[self.now().line] ? nok(code) : ok(code);
     }
   }
 
@@ -12816,7 +12910,7 @@
    * @type {Tokenizer}
    */
   function tokenizeBlankLineBefore(effects, ok, nok) {
-    return start
+    return start;
 
     /**
      * Before eol, expecting blank line.
@@ -12830,10 +12924,10 @@
      * @type {State}
      */
     function start(code) {
-      effects.enter('lineEnding');
+      effects.enter("lineEnding");
       effects.consume(code);
-      effects.exit('lineEnding');
-      return effects.attempt(blankLine, ok, nok)
+      effects.exit("lineEnding");
+      return effects.attempt(blankLine, ok, nok);
     }
   }
 
@@ -12863,7 +12957,7 @@
     let index;
     /** @type {State} */
     let returnState;
-    return start
+    return start;
 
     /**
      * Start of HTML (text).
@@ -12876,10 +12970,10 @@
      * @type {State}
      */
     function start(code) {
-      effects.enter('htmlText');
-      effects.enter('htmlTextData');
+      effects.enter("htmlText");
+      effects.enter("htmlTextData");
       effects.consume(code);
-      return open
+      return open;
     }
 
     /**
@@ -12899,23 +12993,23 @@
     function open(code) {
       if (code === 33) {
         effects.consume(code);
-        return declarationOpen
+        return declarationOpen;
       }
       if (code === 47) {
         effects.consume(code);
-        return tagCloseStart
+        return tagCloseStart;
       }
       if (code === 63) {
         effects.consume(code);
-        return instruction
+        return instruction;
       }
 
       // ASCII alphabetical.
       if (asciiAlpha(code)) {
         effects.consume(code);
-        return tagOpen
+        return tagOpen;
       }
-      return nok(code)
+      return nok(code);
     }
 
     /**
@@ -12935,18 +13029,18 @@
     function declarationOpen(code) {
       if (code === 45) {
         effects.consume(code);
-        return commentOpenInside
+        return commentOpenInside;
       }
       if (code === 91) {
         effects.consume(code);
         index = 0;
-        return cdataOpenInside
+        return cdataOpenInside;
       }
       if (asciiAlpha(code)) {
         effects.consume(code);
-        return declaration
+        return declaration;
       }
-      return nok(code)
+      return nok(code);
     }
 
     /**
@@ -12962,9 +13056,9 @@
     function commentOpenInside(code) {
       if (code === 45) {
         effects.consume(code);
-        return commentEnd
+        return commentEnd;
       }
-      return nok(code)
+      return nok(code);
     }
 
     /**
@@ -12979,18 +13073,18 @@
      */
     function comment(code) {
       if (code === null) {
-        return nok(code)
+        return nok(code);
       }
       if (code === 45) {
         effects.consume(code);
-        return commentClose
+        return commentClose;
       }
       if (markdownLineEnding(code)) {
         returnState = comment;
-        return lineEndingBefore(code)
+        return lineEndingBefore(code);
       }
       effects.consume(code);
-      return comment
+      return comment;
     }
 
     /**
@@ -13006,9 +13100,9 @@
     function commentClose(code) {
       if (code === 45) {
         effects.consume(code);
-        return commentEnd
+        return commentEnd;
       }
-      return comment(code)
+      return comment(code);
     }
 
     /**
@@ -13022,11 +13116,7 @@
      * @type {State}
      */
     function commentEnd(code) {
-      return code === 62
-        ? end(code)
-        : code === 45
-        ? commentClose(code)
-        : comment(code)
+      return code === 62 ? end(code) : code === 45 ? commentClose(code) : comment(code);
     }
 
     /**
@@ -13040,12 +13130,12 @@
      * @type {State}
      */
     function cdataOpenInside(code) {
-      const value = 'CDATA[';
+      const value = "CDATA[";
       if (code === value.charCodeAt(index++)) {
         effects.consume(code);
-        return index === value.length ? cdata : cdataOpenInside
+        return index === value.length ? cdata : cdataOpenInside;
       }
-      return nok(code)
+      return nok(code);
     }
 
     /**
@@ -13060,18 +13150,18 @@
      */
     function cdata(code) {
       if (code === null) {
-        return nok(code)
+        return nok(code);
       }
       if (code === 93) {
         effects.consume(code);
-        return cdataClose
+        return cdataClose;
       }
       if (markdownLineEnding(code)) {
         returnState = cdata;
-        return lineEndingBefore(code)
+        return lineEndingBefore(code);
       }
       effects.consume(code);
-      return cdata
+      return cdata;
     }
 
     /**
@@ -13087,9 +13177,9 @@
     function cdataClose(code) {
       if (code === 93) {
         effects.consume(code);
-        return cdataEnd
+        return cdataEnd;
       }
-      return cdata(code)
+      return cdata(code);
     }
 
     /**
@@ -13104,13 +13194,13 @@
      */
     function cdataEnd(code) {
       if (code === 62) {
-        return end(code)
+        return end(code);
       }
       if (code === 93) {
         effects.consume(code);
-        return cdataEnd
+        return cdataEnd;
       }
-      return cdata(code)
+      return cdata(code);
     }
 
     /**
@@ -13125,14 +13215,14 @@
      */
     function declaration(code) {
       if (code === null || code === 62) {
-        return end(code)
+        return end(code);
       }
       if (markdownLineEnding(code)) {
         returnState = declaration;
-        return lineEndingBefore(code)
+        return lineEndingBefore(code);
       }
       effects.consume(code);
-      return declaration
+      return declaration;
     }
 
     /**
@@ -13147,18 +13237,18 @@
      */
     function instruction(code) {
       if (code === null) {
-        return nok(code)
+        return nok(code);
       }
       if (code === 63) {
         effects.consume(code);
-        return instructionClose
+        return instructionClose;
       }
       if (markdownLineEnding(code)) {
         returnState = instruction;
-        return lineEndingBefore(code)
+        return lineEndingBefore(code);
       }
       effects.consume(code);
-      return instruction
+      return instruction;
     }
 
     /**
@@ -13172,7 +13262,7 @@
      * @type {State}
      */
     function instructionClose(code) {
-      return code === 62 ? end(code) : instruction(code)
+      return code === 62 ? end(code) : instruction(code);
     }
 
     /**
@@ -13189,9 +13279,9 @@
       // ASCII alphabetical.
       if (asciiAlpha(code)) {
         effects.consume(code);
-        return tagClose
+        return tagClose;
       }
-      return nok(code)
+      return nok(code);
     }
 
     /**
@@ -13208,9 +13298,9 @@
       // ASCII alphanumerical and `-`.
       if (code === 45 || asciiAlphanumeric(code)) {
         effects.consume(code);
-        return tagClose
+        return tagClose;
       }
-      return tagCloseBetween(code)
+      return tagCloseBetween(code);
     }
 
     /**
@@ -13226,13 +13316,13 @@
     function tagCloseBetween(code) {
       if (markdownLineEnding(code)) {
         returnState = tagCloseBetween;
-        return lineEndingBefore(code)
+        return lineEndingBefore(code);
       }
       if (markdownSpace(code)) {
         effects.consume(code);
-        return tagCloseBetween
+        return tagCloseBetween;
       }
-      return end(code)
+      return end(code);
     }
 
     /**
@@ -13249,12 +13339,12 @@
       // ASCII alphanumerical and `-`.
       if (code === 45 || asciiAlphanumeric(code)) {
         effects.consume(code);
-        return tagOpen
+        return tagOpen;
       }
       if (code === 47 || code === 62 || markdownLineEndingOrSpace(code)) {
-        return tagOpenBetween(code)
+        return tagOpenBetween(code);
       }
-      return nok(code)
+      return nok(code);
     }
 
     /**
@@ -13270,23 +13360,23 @@
     function tagOpenBetween(code) {
       if (code === 47) {
         effects.consume(code);
-        return end
+        return end;
       }
 
       // ASCII alphabetical and `:` and `_`.
       if (code === 58 || code === 95 || asciiAlpha(code)) {
         effects.consume(code);
-        return tagOpenAttributeName
+        return tagOpenAttributeName;
       }
       if (markdownLineEnding(code)) {
         returnState = tagOpenBetween;
-        return lineEndingBefore(code)
+        return lineEndingBefore(code);
       }
       if (markdownSpace(code)) {
         effects.consume(code);
-        return tagOpenBetween
+        return tagOpenBetween;
       }
-      return end(code)
+      return end(code);
     }
 
     /**
@@ -13301,17 +13391,11 @@
      */
     function tagOpenAttributeName(code) {
       // ASCII alphabetical and `-`, `.`, `:`, and `_`.
-      if (
-        code === 45 ||
-        code === 46 ||
-        code === 58 ||
-        code === 95 ||
-        asciiAlphanumeric(code)
-      ) {
+      if (code === 45 || code === 46 || code === 58 || code === 95 || asciiAlphanumeric(code)) {
         effects.consume(code);
-        return tagOpenAttributeName
+        return tagOpenAttributeName;
       }
-      return tagOpenAttributeNameAfter(code)
+      return tagOpenAttributeNameAfter(code);
     }
 
     /**
@@ -13328,17 +13412,17 @@
     function tagOpenAttributeNameAfter(code) {
       if (code === 61) {
         effects.consume(code);
-        return tagOpenAttributeValueBefore
+        return tagOpenAttributeValueBefore;
       }
       if (markdownLineEnding(code)) {
         returnState = tagOpenAttributeNameAfter;
-        return lineEndingBefore(code)
+        return lineEndingBefore(code);
       }
       if (markdownSpace(code)) {
         effects.consume(code);
-        return tagOpenAttributeNameAfter
+        return tagOpenAttributeNameAfter;
       }
-      return tagOpenBetween(code)
+      return tagOpenBetween(code);
     }
 
     /**
@@ -13353,30 +13437,24 @@
      * @type {State}
      */
     function tagOpenAttributeValueBefore(code) {
-      if (
-        code === null ||
-        code === 60 ||
-        code === 61 ||
-        code === 62 ||
-        code === 96
-      ) {
-        return nok(code)
+      if (code === null || code === 60 || code === 61 || code === 62 || code === 96) {
+        return nok(code);
       }
       if (code === 34 || code === 39) {
         effects.consume(code);
         marker = code;
-        return tagOpenAttributeValueQuoted
+        return tagOpenAttributeValueQuoted;
       }
       if (markdownLineEnding(code)) {
         returnState = tagOpenAttributeValueBefore;
-        return lineEndingBefore(code)
+        return lineEndingBefore(code);
       }
       if (markdownSpace(code)) {
         effects.consume(code);
-        return tagOpenAttributeValueBefore
+        return tagOpenAttributeValueBefore;
       }
       effects.consume(code);
-      return tagOpenAttributeValueUnquoted
+      return tagOpenAttributeValueUnquoted;
     }
 
     /**
@@ -13393,17 +13471,17 @@
       if (code === marker) {
         effects.consume(code);
         marker = undefined;
-        return tagOpenAttributeValueQuotedAfter
+        return tagOpenAttributeValueQuotedAfter;
       }
       if (code === null) {
-        return nok(code)
+        return nok(code);
       }
       if (markdownLineEnding(code)) {
         returnState = tagOpenAttributeValueQuoted;
-        return lineEndingBefore(code)
+        return lineEndingBefore(code);
       }
       effects.consume(code);
-      return tagOpenAttributeValueQuoted
+      return tagOpenAttributeValueQuoted;
     }
 
     /**
@@ -13417,21 +13495,14 @@
      * @type {State}
      */
     function tagOpenAttributeValueUnquoted(code) {
-      if (
-        code === null ||
-        code === 34 ||
-        code === 39 ||
-        code === 60 ||
-        code === 61 ||
-        code === 96
-      ) {
-        return nok(code)
+      if (code === null || code === 34 || code === 39 || code === 60 || code === 61 || code === 96) {
+        return nok(code);
       }
       if (code === 47 || code === 62 || markdownLineEndingOrSpace(code)) {
-        return tagOpenBetween(code)
+        return tagOpenBetween(code);
       }
       effects.consume(code);
-      return tagOpenAttributeValueUnquoted
+      return tagOpenAttributeValueUnquoted;
     }
 
     /**
@@ -13447,9 +13518,9 @@
      */
     function tagOpenAttributeValueQuotedAfter(code) {
       if (code === 47 || code === 62 || markdownLineEndingOrSpace(code)) {
-        return tagOpenBetween(code)
+        return tagOpenBetween(code);
       }
-      return nok(code)
+      return nok(code);
     }
 
     /**
@@ -13465,11 +13536,11 @@
     function end(code) {
       if (code === 62) {
         effects.consume(code);
-        effects.exit('htmlTextData');
-        effects.exit('htmlText');
-        return ok
+        effects.exit("htmlTextData");
+        effects.exit("htmlText");
+        return ok;
       }
-      return nok(code)
+      return nok(code);
     }
 
     /**
@@ -13487,11 +13558,11 @@
      * @type {State}
      */
     function lineEndingBefore(code) {
-      effects.exit('htmlTextData');
-      effects.enter('lineEnding');
+      effects.exit("htmlTextData");
+      effects.enter("lineEnding");
       effects.consume(code);
-      effects.exit('lineEnding');
-      return lineEndingAfter
+      effects.exit("lineEnding");
+      return lineEndingAfter;
     }
 
     /**
@@ -13511,16 +13582,7 @@
     function lineEndingAfter(code) {
       // Always populated by defaults.
 
-      return markdownSpace(code)
-        ? factorySpace(
-            effects,
-            lineEndingAfterPrefix,
-            'linePrefix',
-            self.parser.constructs.disable.null.includes('codeIndented')
-              ? undefined
-              : 4
-          )(code)
-        : lineEndingAfterPrefix(code)
+      return markdownSpace(code) ? factorySpace(effects, lineEndingAfterPrefix, "linePrefix", self.parser.constructs.disable.null.includes('codeIndented') ? undefined : 4)(code) : lineEndingAfterPrefix(code);
     }
 
     /**
@@ -13538,8 +13600,8 @@
      * @type {State}
      */
     function lineEndingAfterPrefix(code) {
-      effects.enter('htmlTextData');
-      return returnState(code)
+      effects.enter("htmlTextData");
+      return returnState(code);
     }
   }
 
@@ -13579,18 +13641,14 @@
     let index = -1;
     while (++index < events.length) {
       const token = events[index][1];
-      if (
-        token.type === 'labelImage' ||
-        token.type === 'labelLink' ||
-        token.type === 'labelEnd'
-      ) {
+      if (token.type === "labelImage" || token.type === "labelLink" || token.type === "labelEnd") {
         // Remove the marker.
-        events.splice(index + 1, token.type === 'labelImage' ? 4 : 2);
-        token.type = 'data';
+        events.splice(index + 1, token.type === "labelImage" ? 4 : 2);
+        token.type = "data";
         index++;
       }
     }
-    return events
+    return events;
   }
 
   /** @type {Resolver} */
@@ -13611,53 +13669,43 @@
       token = events[index][1];
       if (open) {
         // If we see another link, or inactive link label, we’ve been here before.
-        if (
-          token.type === 'link' ||
-          (token.type === 'labelLink' && token._inactive)
-        ) {
-          break
+        if (token.type === "link" || token.type === "labelLink" && token._inactive) {
+          break;
         }
 
         // Mark other link openings as inactive, as we can’t have links in
         // links.
-        if (events[index][0] === 'enter' && token.type === 'labelLink') {
+        if (events[index][0] === 'enter' && token.type === "labelLink") {
           token._inactive = true;
         }
       } else if (close) {
-        if (
-          events[index][0] === 'enter' &&
-          (token.type === 'labelImage' || token.type === 'labelLink') &&
-          !token._balanced
-        ) {
+        if (events[index][0] === 'enter' && (token.type === "labelImage" || token.type === "labelLink") && !token._balanced) {
           open = index;
-          if (token.type !== 'labelLink') {
+          if (token.type !== "labelLink") {
             offset = 2;
-            break
+            break;
           }
         }
-      } else if (token.type === 'labelEnd') {
+      } else if (token.type === "labelEnd") {
         close = index;
       }
     }
     const group = {
-      type: events[open][1].type === 'labelLink' ? 'link' : 'image',
+      type: events[open][1].type === "labelLink" ? "link" : "image",
       start: Object.assign({}, events[open][1].start),
       end: Object.assign({}, events[events.length - 1][1].end)
     };
     const label = {
-      type: 'label',
+      type: "label",
       start: Object.assign({}, events[open][1].start),
       end: Object.assign({}, events[close][1].end)
     };
     const text = {
-      type: 'labelText',
+      type: "labelText",
       start: Object.assign({}, events[open + offset + 2][1].end),
       end: Object.assign({}, events[close - 2][1].start)
     };
-    media = [
-      ['enter', group, context],
-      ['enter', label, context]
-    ];
+    media = [['enter', group, context], ['enter', label, context]];
 
     // Opening marker.
     media = push(media, events.slice(open + 1, open + offset + 3));
@@ -13668,22 +13716,10 @@
     // Always populated by defaults.
 
     // Between.
-    media = push(
-      media,
-      resolveAll(
-        context.parser.constructs.insideSpan.null,
-        events.slice(open + offset + 4, close - 3),
-        context
-      )
-    );
+    media = push(media, resolveAll(context.parser.constructs.insideSpan.null, events.slice(open + offset + 4, close - 3), context));
 
     // Text close, marker close, label close.
-    media = push(media, [
-      ['exit', text, context],
-      events[close - 2],
-      events[close - 1],
-      ['exit', label, context]
-    ]);
+    media = push(media, [['exit', text, context], events[close - 2], events[close - 1], ['exit', label, context]]);
 
     // Reference, resource, or so.
     media = push(media, events.slice(close + 1));
@@ -13691,7 +13727,7 @@
     // Media close.
     media = push(media, [['exit', group, context]]);
     splice(events, open, events.length, media);
-    return events
+    return events;
   }
 
   /**
@@ -13708,16 +13744,12 @@
 
     // Find an opening.
     while (index--) {
-      if (
-        (self.events[index][1].type === 'labelImage' ||
-          self.events[index][1].type === 'labelLink') &&
-        !self.events[index][1]._balanced
-      ) {
+      if ((self.events[index][1].type === "labelImage" || self.events[index][1].type === "labelLink") && !self.events[index][1]._balanced) {
         labelStart = self.events[index][1];
-        break
+        break;
       }
     }
-    return start
+    return start;
 
     /**
      * Start of label end.
@@ -13737,7 +13769,7 @@
     function start(code) {
       // If there is not an okay opening.
       if (!labelStart) {
-        return nok(code)
+        return nok(code);
       }
 
       // If the corresponding label (link) start is marked as inactive,
@@ -13750,22 +13782,18 @@
       //
       // We can’t have that, so it’s just balanced brackets.
       if (labelStart._inactive) {
-        return labelEndNok(code)
+        return labelEndNok(code);
       }
-      defined = self.parser.defined.includes(
-        normalizeIdentifier(
-          self.sliceSerialize({
-            start: labelStart.end,
-            end: self.now()
-          })
-        )
-      );
-      effects.enter('labelEnd');
-      effects.enter('labelMarker');
+      defined = self.parser.defined.includes(normalizeIdentifier(self.sliceSerialize({
+        start: labelStart.end,
+        end: self.now()
+      })));
+      effects.enter("labelEnd");
+      effects.enter("labelMarker");
       effects.consume(code);
-      effects.exit('labelMarker');
-      effects.exit('labelEnd');
-      return after
+      effects.exit("labelMarker");
+      effects.exit("labelEnd");
+      return after;
     }
 
     /**
@@ -13790,24 +13818,16 @@
 
       // Resource (`[asd](fgh)`)?
       if (code === 40) {
-        return effects.attempt(
-          resourceConstruct,
-          labelEndOk,
-          defined ? labelEndOk : labelEndNok
-        )(code)
+        return effects.attempt(resourceConstruct, labelEndOk, defined ? labelEndOk : labelEndNok)(code);
       }
 
       // Full (`[asd][fgh]`) or collapsed (`[asd][]`) reference?
       if (code === 91) {
-        return effects.attempt(
-          referenceFullConstruct,
-          labelEndOk,
-          defined ? referenceNotFull : labelEndNok
-        )(code)
+        return effects.attempt(referenceFullConstruct, labelEndOk, defined ? referenceNotFull : labelEndNok)(code);
       }
 
       // Shortcut (`[asd]`) reference?
-      return defined ? labelEndOk(code) : labelEndNok(code)
+      return defined ? labelEndOk(code) : labelEndNok(code);
     }
 
     /**
@@ -13825,11 +13845,7 @@
      * @type {State}
      */
     function referenceNotFull(code) {
-      return effects.attempt(
-        referenceCollapsedConstruct,
-        labelEndOk,
-        labelEndNok
-      )(code)
+      return effects.attempt(referenceCollapsedConstruct, labelEndOk, labelEndNok)(code);
     }
 
     /**
@@ -13850,7 +13866,7 @@
      */
     function labelEndOk(code) {
       // Note: `markdown-rs` does a bunch of stuff here.
-      return ok(code)
+      return ok(code);
     }
 
     /**
@@ -13871,7 +13887,7 @@
      */
     function labelEndNok(code) {
       labelStart._balanced = true;
-      return nok(code)
+      return nok(code);
     }
   }
 
@@ -13880,7 +13896,7 @@
    * @type {Tokenizer}
    */
   function tokenizeResource(effects, ok, nok) {
-    return resourceStart
+    return resourceStart;
 
     /**
      * At a resource.
@@ -13893,11 +13909,11 @@
      * @type {State}
      */
     function resourceStart(code) {
-      effects.enter('resource');
-      effects.enter('resourceMarker');
+      effects.enter("resource");
+      effects.enter("resourceMarker");
       effects.consume(code);
-      effects.exit('resourceMarker');
-      return resourceBefore
+      effects.exit("resourceMarker");
+      return resourceBefore;
     }
 
     /**
@@ -13911,9 +13927,7 @@
      * @type {State}
      */
     function resourceBefore(code) {
-      return markdownLineEndingOrSpace(code)
-        ? factoryWhitespace(effects, resourceOpen)(code)
-        : resourceOpen(code)
+      return markdownLineEndingOrSpace(code) ? factoryWhitespace(effects, resourceOpen)(code) : resourceOpen(code);
     }
 
     /**
@@ -13928,19 +13942,9 @@
      */
     function resourceOpen(code) {
       if (code === 41) {
-        return resourceEnd(code)
+        return resourceEnd(code);
       }
-      return factoryDestination(
-        effects,
-        resourceDestinationAfter,
-        resourceDestinationMissing,
-        'resourceDestination',
-        'resourceDestinationLiteral',
-        'resourceDestinationLiteralMarker',
-        'resourceDestinationRaw',
-        'resourceDestinationString',
-        32
-      )(code)
+      return factoryDestination(effects, resourceDestinationAfter, resourceDestinationMissing, "resourceDestination", "resourceDestinationLiteral", "resourceDestinationLiteralMarker", "resourceDestinationRaw", "resourceDestinationString", 32)(code);
     }
 
     /**
@@ -13954,9 +13958,7 @@
      * @type {State}
      */
     function resourceDestinationAfter(code) {
-      return markdownLineEndingOrSpace(code)
-        ? factoryWhitespace(effects, resourceBetween)(code)
-        : resourceEnd(code)
+      return markdownLineEndingOrSpace(code) ? factoryWhitespace(effects, resourceBetween)(code) : resourceEnd(code);
     }
 
     /**
@@ -13970,7 +13972,7 @@
      * @type {State}
      */
     function resourceDestinationMissing(code) {
-      return nok(code)
+      return nok(code);
     }
 
     /**
@@ -13985,16 +13987,9 @@
      */
     function resourceBetween(code) {
       if (code === 34 || code === 39 || code === 40) {
-        return factoryTitle(
-          effects,
-          resourceTitleAfter,
-          nok,
-          'resourceTitle',
-          'resourceTitleMarker',
-          'resourceTitleString'
-        )(code)
+        return factoryTitle(effects, resourceTitleAfter, nok, "resourceTitle", "resourceTitleMarker", "resourceTitleString")(code);
       }
-      return resourceEnd(code)
+      return resourceEnd(code);
     }
 
     /**
@@ -14008,9 +14003,7 @@
      * @type {State}
      */
     function resourceTitleAfter(code) {
-      return markdownLineEndingOrSpace(code)
-        ? factoryWhitespace(effects, resourceEnd)(code)
-        : resourceEnd(code)
+      return markdownLineEndingOrSpace(code) ? factoryWhitespace(effects, resourceEnd)(code) : resourceEnd(code);
     }
 
     /**
@@ -14025,13 +14018,13 @@
      */
     function resourceEnd(code) {
       if (code === 41) {
-        effects.enter('resourceMarker');
+        effects.enter("resourceMarker");
         effects.consume(code);
-        effects.exit('resourceMarker');
-        effects.exit('resource');
-        return ok
+        effects.exit("resourceMarker");
+        effects.exit("resource");
+        return ok;
       }
-      return nok(code)
+      return nok(code);
     }
   }
 
@@ -14041,7 +14034,7 @@
    */
   function tokenizeReferenceFull(effects, ok, nok) {
     const self = this;
-    return referenceFull
+    return referenceFull;
 
     /**
      * In a reference (full), at the `[`.
@@ -14054,15 +14047,7 @@
      * @type {State}
      */
     function referenceFull(code) {
-      return factoryLabel.call(
-        self,
-        effects,
-        referenceFullAfter,
-        referenceFullMissing,
-        'reference',
-        'referenceMarker',
-        'referenceString'
-      )(code)
+      return factoryLabel.call(self, effects, referenceFullAfter, referenceFullMissing, "reference", "referenceMarker", "referenceString")(code);
     }
 
     /**
@@ -14076,13 +14061,7 @@
      * @type {State}
      */
     function referenceFullAfter(code) {
-      return self.parser.defined.includes(
-        normalizeIdentifier(
-          self.sliceSerialize(self.events[self.events.length - 1][1]).slice(1, -1)
-        )
-      )
-        ? ok(code)
-        : nok(code)
+      return self.parser.defined.includes(normalizeIdentifier(self.sliceSerialize(self.events[self.events.length - 1][1]).slice(1, -1))) ? ok(code) : nok(code);
     }
 
     /**
@@ -14096,7 +14075,7 @@
      * @type {State}
      */
     function referenceFullMissing(code) {
-      return nok(code)
+      return nok(code);
     }
   }
 
@@ -14105,7 +14084,7 @@
    * @type {Tokenizer}
    */
   function tokenizeReferenceCollapsed(effects, ok, nok) {
-    return referenceCollapsedStart
+    return referenceCollapsedStart;
 
     /**
      * In reference (collapsed), at `[`.
@@ -14122,11 +14101,11 @@
     function referenceCollapsedStart(code) {
       // We only attempt a collapsed label if there’s a `[`.
 
-      effects.enter('reference');
-      effects.enter('referenceMarker');
+      effects.enter("reference");
+      effects.enter("referenceMarker");
       effects.consume(code);
-      effects.exit('referenceMarker');
-      return referenceCollapsedOpen
+      effects.exit("referenceMarker");
+      return referenceCollapsedOpen;
     }
 
     /**
@@ -14143,13 +14122,13 @@
      */
     function referenceCollapsedOpen(code) {
       if (code === 93) {
-        effects.enter('referenceMarker');
+        effects.enter("referenceMarker");
         effects.consume(code);
-        effects.exit('referenceMarker');
-        effects.exit('reference');
-        return ok
+        effects.exit("referenceMarker");
+        effects.exit("reference");
+        return ok;
       }
-      return nok(code)
+      return nok(code);
     }
   }
 
@@ -14174,7 +14153,7 @@
    */
   function tokenizeLabelStartImage(effects, ok, nok) {
     const self = this;
-    return start
+    return start;
 
     /**
      * Start of label (image) start.
@@ -14187,11 +14166,11 @@
      * @type {State}
      */
     function start(code) {
-      effects.enter('labelImage');
-      effects.enter('labelImageMarker');
+      effects.enter("labelImage");
+      effects.enter("labelImageMarker");
       effects.consume(code);
-      effects.exit('labelImageMarker');
-      return open
+      effects.exit("labelImageMarker");
+      return open;
     }
 
     /**
@@ -14206,13 +14185,13 @@
      */
     function open(code) {
       if (code === 91) {
-        effects.enter('labelMarker');
+        effects.enter("labelMarker");
         effects.consume(code);
-        effects.exit('labelMarker');
-        effects.exit('labelImage');
-        return after
+        effects.exit("labelMarker");
+        effects.exit("labelImage");
+        return after;
       }
-      return nok(code)
+      return nok(code);
     }
 
     /**
@@ -14248,9 +14227,7 @@
       // behavior isn’t.
       // Hidden footnotes hook.
       /* c8 ignore next 3 */
-      return code === 94 && '_hiddenFootnoteSupport' in self.parser.constructs
-        ? nok(code)
-        : ok(code)
+      return code === 94 && '_hiddenFootnoteSupport' in self.parser.constructs ? nok(code) : ok(code);
     }
   }
 
@@ -14275,7 +14252,7 @@
    */
   function tokenizeLabelStartLink(effects, ok, nok) {
     const self = this;
-    return start
+    return start;
 
     /**
      * Start of label (link) start.
@@ -14288,12 +14265,12 @@
      * @type {State}
      */
     function start(code) {
-      effects.enter('labelLink');
-      effects.enter('labelMarker');
+      effects.enter("labelLink");
+      effects.enter("labelMarker");
       effects.consume(code);
-      effects.exit('labelMarker');
-      effects.exit('labelLink');
-      return after
+      effects.exit("labelMarker");
+      effects.exit("labelLink");
+      return after;
     }
 
     /** @type {State} */
@@ -14302,9 +14279,7 @@
       // remove.
       // Hidden footnotes hook.
       /* c8 ignore next 3 */
-      return code === 94 && '_hiddenFootnoteSupport' in self.parser.constructs
-        ? nok(code)
-        : ok(code)
+      return code === 94 && '_hiddenFootnoteSupport' in self.parser.constructs ? nok(code) : ok(code);
     }
   }
 
@@ -14326,14 +14301,14 @@
    * @type {Tokenizer}
    */
   function tokenizeLineEnding(effects, ok) {
-    return start
+    return start;
 
     /** @type {State} */
     function start(code) {
-      effects.enter('lineEnding');
+      effects.enter("lineEnding");
       effects.consume(code);
-      effects.exit('lineEnding');
-      return factorySpace(effects, ok, 'linePrefix')
+      effects.exit("lineEnding");
+      return factorySpace(effects, ok, "linePrefix");
     }
   }
 
@@ -14359,7 +14334,7 @@
     let size = 0;
     /** @type {NonNullable<Code>} */
     let marker;
-    return start
+    return start;
 
     /**
      * Start of thematic break.
@@ -14372,9 +14347,9 @@
      * @type {State}
      */
     function start(code) {
-      effects.enter('thematicBreak');
+      effects.enter("thematicBreak");
       // To do: parse indent like `markdown-rs`.
-      return before(code)
+      return before(code);
     }
 
     /**
@@ -14389,7 +14364,7 @@
      */
     function before(code) {
       marker = code;
-      return atBreak(code)
+      return atBreak(code);
     }
 
     /**
@@ -14404,14 +14379,14 @@
      */
     function atBreak(code) {
       if (code === marker) {
-        effects.enter('thematicBreakSequence');
-        return sequence(code)
+        effects.enter("thematicBreakSequence");
+        return sequence(code);
       }
       if (size >= 3 && (code === null || markdownLineEnding(code))) {
-        effects.exit('thematicBreak');
-        return ok(code)
+        effects.exit("thematicBreak");
+        return ok(code);
       }
-      return nok(code)
+      return nok(code);
     }
 
     /**
@@ -14428,12 +14403,10 @@
       if (code === marker) {
         effects.consume(code);
         size++;
-        return sequence
+        return sequence;
       }
-      effects.exit('thematicBreakSequence');
-      return markdownSpace(code)
-        ? factorySpace(effects, atBreak, 'whitespace')(code)
-        : atBreak(code)
+      effects.exit("thematicBreakSequence");
+      return markdownSpace(code) ? factorySpace(effects, atBreak, "whitespace")(code) : atBreak(code);
     }
   }
 
@@ -14480,108 +14453,81 @@
   function tokenizeListStart(effects, ok, nok) {
     const self = this;
     const tail = self.events[self.events.length - 1];
-    let initialSize =
-      tail && tail[1].type === 'linePrefix'
-        ? tail[2].sliceSerialize(tail[1], true).length
-        : 0;
+    let initialSize = tail && tail[1].type === "linePrefix" ? tail[2].sliceSerialize(tail[1], true).length : 0;
     let size = 0;
-    return start
+    return start;
 
     /** @type {State} */
     function start(code) {
-      const kind =
-        self.containerState.type ||
-        (code === 42 || code === 43 || code === 45
-          ? 'listUnordered'
-          : 'listOrdered');
-      if (
-        kind === 'listUnordered'
-          ? !self.containerState.marker || code === self.containerState.marker
-          : asciiDigit(code)
-      ) {
+      const kind = self.containerState.type || (code === 42 || code === 43 || code === 45 ? "listUnordered" : "listOrdered");
+      if (kind === "listUnordered" ? !self.containerState.marker || code === self.containerState.marker : asciiDigit(code)) {
         if (!self.containerState.type) {
           self.containerState.type = kind;
           effects.enter(kind, {
             _container: true
           });
         }
-        if (kind === 'listUnordered') {
-          effects.enter('listItemPrefix');
-          return code === 42 || code === 45
-            ? effects.check(thematicBreak$1, nok, atMarker)(code)
-            : atMarker(code)
+        if (kind === "listUnordered") {
+          effects.enter("listItemPrefix");
+          return code === 42 || code === 45 ? effects.check(thematicBreak$1, nok, atMarker)(code) : atMarker(code);
         }
         if (!self.interrupt || code === 49) {
-          effects.enter('listItemPrefix');
-          effects.enter('listItemValue');
-          return inside(code)
+          effects.enter("listItemPrefix");
+          effects.enter("listItemValue");
+          return inside(code);
         }
       }
-      return nok(code)
+      return nok(code);
     }
 
     /** @type {State} */
     function inside(code) {
       if (asciiDigit(code) && ++size < 10) {
         effects.consume(code);
-        return inside
+        return inside;
       }
-      if (
-        (!self.interrupt || size < 2) &&
-        (self.containerState.marker
-          ? code === self.containerState.marker
-          : code === 41 || code === 46)
-      ) {
-        effects.exit('listItemValue');
-        return atMarker(code)
+      if ((!self.interrupt || size < 2) && (self.containerState.marker ? code === self.containerState.marker : code === 41 || code === 46)) {
+        effects.exit("listItemValue");
+        return atMarker(code);
       }
-      return nok(code)
+      return nok(code);
     }
 
     /**
      * @type {State}
      **/
     function atMarker(code) {
-      effects.enter('listItemMarker');
+      effects.enter("listItemMarker");
       effects.consume(code);
-      effects.exit('listItemMarker');
+      effects.exit("listItemMarker");
       self.containerState.marker = self.containerState.marker || code;
-      return effects.check(
-        blankLine,
-        // Can’t be empty when interrupting.
-        self.interrupt ? nok : onBlank,
-        effects.attempt(
-          listItemPrefixWhitespaceConstruct,
-          endOfPrefix,
-          otherPrefix
-        )
-      )
+      return effects.check(blankLine,
+      // Can’t be empty when interrupting.
+      self.interrupt ? nok : onBlank, effects.attempt(listItemPrefixWhitespaceConstruct, endOfPrefix, otherPrefix));
     }
 
     /** @type {State} */
     function onBlank(code) {
       self.containerState.initialBlankLine = true;
       initialSize++;
-      return endOfPrefix(code)
+      return endOfPrefix(code);
     }
 
     /** @type {State} */
     function otherPrefix(code) {
       if (markdownSpace(code)) {
-        effects.enter('listItemPrefixWhitespace');
+        effects.enter("listItemPrefixWhitespace");
         effects.consume(code);
-        effects.exit('listItemPrefixWhitespace');
-        return endOfPrefix
+        effects.exit("listItemPrefixWhitespace");
+        return endOfPrefix;
       }
-      return nok(code)
+      return nok(code);
     }
 
     /** @type {State} */
     function endOfPrefix(code) {
-      self.containerState.size =
-        initialSize +
-        self.sliceSerialize(effects.exit('listItemPrefix'), true).length;
-      return ok(code)
+      self.containerState.size = initialSize + self.sliceSerialize(effects.exit("listItemPrefix"), true).length;
+      return ok(code);
     }
   }
 
@@ -14592,22 +14538,15 @@
   function tokenizeListContinuation(effects, ok, nok) {
     const self = this;
     self.containerState._closeFlow = undefined;
-    return effects.check(blankLine, onBlank, notBlank)
+    return effects.check(blankLine, onBlank, notBlank);
 
     /** @type {State} */
     function onBlank(code) {
-      self.containerState.furtherBlankLines =
-        self.containerState.furtherBlankLines ||
-        self.containerState.initialBlankLine;
+      self.containerState.furtherBlankLines = self.containerState.furtherBlankLines || self.containerState.initialBlankLine;
 
       // We have a blank line.
       // Still, try to consume at most the items size.
-      return factorySpace(
-        effects,
-        ok,
-        'listItemIndent',
-        self.containerState.size + 1
-      )(code)
+      return factorySpace(effects, ok, "listItemIndent", self.containerState.size + 1)(code);
     }
 
     /** @type {State} */
@@ -14615,11 +14554,11 @@
       if (self.containerState.furtherBlankLines || !markdownSpace(code)) {
         self.containerState.furtherBlankLines = undefined;
         self.containerState.initialBlankLine = undefined;
-        return notInCurrentItem(code)
+        return notInCurrentItem(code);
       }
       self.containerState.furtherBlankLines = undefined;
       self.containerState.initialBlankLine = undefined;
-      return effects.attempt(indentConstruct, ok, notInCurrentItem)(code)
+      return effects.attempt(indentConstruct, ok, notInCurrentItem)(code);
     }
 
     /** @type {State} */
@@ -14630,14 +14569,7 @@
       self.interrupt = undefined;
       // Always populated by defaults.
 
-      return factorySpace(
-        effects,
-        effects.attempt(list$1, ok, nok),
-        'linePrefix',
-        self.parser.constructs.disable.null.includes('codeIndented')
-          ? undefined
-          : 4
-      )(code)
+      return factorySpace(effects, effects.attempt(list$1, ok, nok), "linePrefix", self.parser.constructs.disable.null.includes('codeIndented') ? undefined : 4)(code);
     }
   }
 
@@ -14647,21 +14579,12 @@
    */
   function tokenizeIndent$1(effects, ok, nok) {
     const self = this;
-    return factorySpace(
-      effects,
-      afterPrefix,
-      'listItemIndent',
-      self.containerState.size + 1
-    )
+    return factorySpace(effects, afterPrefix, "listItemIndent", self.containerState.size + 1);
 
     /** @type {State} */
     function afterPrefix(code) {
       const tail = self.events[self.events.length - 1];
-      return tail &&
-        tail[1].type === 'listItemIndent' &&
-        tail[2].sliceSerialize(tail[1], true).length === self.containerState.size
-        ? ok(code)
-        : nok(code)
+      return tail && tail[1].type === "listItemIndent" && tail[2].sliceSerialize(tail[1], true).length === self.containerState.size ? ok(code) : nok(code);
     }
   }
 
@@ -14682,23 +14605,12 @@
 
     // Always populated by defaults.
 
-    return factorySpace(
-      effects,
-      afterPrefix,
-      'listItemPrefixWhitespace',
-      self.parser.constructs.disable.null.includes('codeIndented')
-        ? undefined
-        : 4 + 1
-    )
+    return factorySpace(effects, afterPrefix, "listItemPrefixWhitespace", self.parser.constructs.disable.null.includes('codeIndented') ? undefined : 4 + 1);
 
     /** @type {State} */
     function afterPrefix(code) {
       const tail = self.events[self.events.length - 1];
-      return !markdownSpace(code) &&
-        tail &&
-        tail[1].type === 'listItemPrefixWhitespace'
-        ? ok(code)
-        : nok(code)
+      return !markdownSpace(code) && tail && tail[1].type === "listItemPrefixWhitespace" ? ok(code) : nok(code);
     }
   }
 
@@ -14733,33 +14645,33 @@
     // It’ll always exist: we don’t tokenize if it isn’t there.
     while (index--) {
       if (events[index][0] === 'enter') {
-        if (events[index][1].type === 'content') {
+        if (events[index][1].type === "content") {
           content = index;
-          break
+          break;
         }
-        if (events[index][1].type === 'paragraph') {
+        if (events[index][1].type === "paragraph") {
           text = index;
         }
       }
       // Exit
       else {
-        if (events[index][1].type === 'content') {
+        if (events[index][1].type === "content") {
           // Remove the content end (if needed we’ll add it later)
           events.splice(index, 1);
         }
-        if (!definition && events[index][1].type === 'definition') {
+        if (!definition && events[index][1].type === "definition") {
           definition = index;
         }
       }
     }
     const heading = {
-      type: 'setextHeading',
+      type: "setextHeading",
       start: Object.assign({}, events[text][1].start),
       end: Object.assign({}, events[events.length - 1][1].end)
     };
 
     // Change the paragraph to setext heading text.
-    events[text][1].type = 'setextHeadingText';
+    events[text][1].type = "setextHeadingText";
 
     // If we have definitions in the content, we’ll keep on having content,
     // but we need move it.
@@ -14773,7 +14685,7 @@
 
     // Add the heading exit at the end.
     events.push(['exit', heading, context]);
-    return events
+    return events;
   }
 
   /**
@@ -14784,7 +14696,7 @@
     const self = this;
     /** @type {NonNullable<Code>} */
     let marker;
-    return start
+    return start;
 
     /**
      * At start of heading (setext) underline.
@@ -14805,24 +14717,20 @@
       while (index--) {
         // Skip enter/exit of line ending, line prefix, and content.
         // We can now either have a definition or a paragraph.
-        if (
-          self.events[index][1].type !== 'lineEnding' &&
-          self.events[index][1].type !== 'linePrefix' &&
-          self.events[index][1].type !== 'content'
-        ) {
-          paragraph = self.events[index][1].type === 'paragraph';
-          break
+        if (self.events[index][1].type !== "lineEnding" && self.events[index][1].type !== "linePrefix" && self.events[index][1].type !== "content") {
+          paragraph = self.events[index][1].type === "paragraph";
+          break;
         }
       }
 
       // To do: handle lazy/pierce like `markdown-rs`.
       // To do: parse indent like `markdown-rs`.
       if (!self.parser.lazy[self.now().line] && (self.interrupt || paragraph)) {
-        effects.enter('setextHeadingLine');
+        effects.enter("setextHeadingLine");
         marker = code;
-        return before(code)
+        return before(code);
       }
-      return nok(code)
+      return nok(code);
     }
 
     /**
@@ -14837,8 +14745,8 @@
      * @type {State}
      */
     function before(code) {
-      effects.enter('setextHeadingLineSequence');
-      return inside(code)
+      effects.enter("setextHeadingLineSequence");
+      return inside(code);
     }
 
     /**
@@ -14855,12 +14763,10 @@
     function inside(code) {
       if (code === marker) {
         effects.consume(code);
-        return inside
+        return inside;
       }
-      effects.exit('setextHeadingLineSequence');
-      return markdownSpace(code)
-        ? factorySpace(effects, after, 'lineSuffix')(code)
-        : after(code)
+      effects.exit("setextHeadingLineSequence");
+      return markdownSpace(code) ? factorySpace(effects, after, "lineSuffix")(code) : after(code);
     }
 
     /**
@@ -14876,10 +14782,10 @@
      */
     function after(code) {
       if (code === null || markdownLineEnding(code)) {
-        effects.exit('setextHeadingLine');
-        return ok(code)
+        effects.exit("setextHeadingLine");
+        return ok(code);
       }
-      return nok(code)
+      return nok(code);
     }
   }
 
@@ -17054,7 +16960,6 @@
           });
       };
   };
-  var rehypeAttrs$1 = rehypeAttrs;
 
   /**
    * @typedef {import('micromark-util-types').InitialConstruct} InitialConstruct
@@ -18670,11 +18575,7 @@
       options = encoding;
       encoding = undefined;
     }
-    return compiler(options)(
-      postprocess(
-        parse$4(options).document().write(preprocess()(value, encoding, true))
-      )
-    )
+    return compiler(options)(postprocess(parse$4(options).document().write(preprocess()(value, encoding, true))));
   }
 
   /**
@@ -18741,6 +18642,7 @@
         characterReferenceMarkerHexadecimal: onexitcharacterreferencemarker,
         characterReferenceMarkerNumeric: onexitcharacterreferencemarker,
         characterReferenceValue: onexitcharacterreferencevalue,
+        characterReference: onexitcharacterreference,
         codeFenced: closer(onexitcodefenced),
         codeFencedFence: onexitcodefencedfence,
         codeFencedFenceInfo: onexitcodefencedfenceinfo,
@@ -18785,7 +18687,7 @@
 
     /** @type {CompileData} */
     const data = {};
-    return compile
+    return compile;
 
     /**
      * Turn micromark events into an mdast tree.
@@ -18818,10 +18720,7 @@
       while (++index < events.length) {
         // We preprocess lists to add `listItem` tokens, and to infer whether
         // items the list itself are spread out.
-        if (
-          events[index][1].type === 'listOrdered' ||
-          events[index][1].type === 'listUnordered'
-        ) {
+        if (events[index][1].type === "listOrdered" || events[index][1].type === "listUnordered") {
           if (events[index][0] === 'enter') {
             listStack.push(index);
           } else {
@@ -18834,15 +18733,9 @@
       while (++index < events.length) {
         const handler = config[events[index][0]];
         if (own$b.call(handler, events[index][1].type)) {
-          handler[events[index][1].type].call(
-            Object.assign(
-              {
-                sliceSerialize: events[index][2].sliceSerialize
-              },
-              context
-            ),
-            events[index][1]
-          );
+          handler[events[index][1].type].call(Object.assign({
+            sliceSerialize: events[index][2].sliceSerialize
+          }, context), events[index][1]);
         }
       }
 
@@ -18855,24 +18748,16 @@
 
       // Figure out `root` position.
       tree.position = {
-        start: point$2(
-          events.length > 0
-            ? events[0][1].start
-            : {
-                line: 1,
-                column: 1,
-                offset: 0
-              }
-        ),
-        end: point$2(
-          events.length > 0
-            ? events[events.length - 2][1].end
-            : {
-                line: 1,
-                column: 1,
-                offset: 0
-              }
-        )
+        start: point$2(events.length > 0 ? events[0][1].start : {
+          line: 1,
+          column: 1,
+          offset: 0
+        }),
+        end: point$2(events.length > 0 ? events[events.length - 2][1].end : {
+          line: 1,
+          column: 1,
+          offset: 0
+        })
       };
 
       // Call transforms.
@@ -18880,7 +18765,7 @@
       while (++index < config.transforms.length) {
         tree = config.transforms[index](tree) || tree;
       }
-      return tree
+      return tree;
     }
 
     /**
@@ -18904,98 +18789,74 @@
       while (++index <= length) {
         const event = events[index];
         switch (event[1].type) {
-          case 'listUnordered':
-          case 'listOrdered':
-          case 'blockQuote': {
-            if (event[0] === 'enter') {
-              containerBalance++;
-            } else {
-              containerBalance--;
-            }
-            atMarker = undefined;
-            break
-          }
-          case 'lineEndingBlank': {
-            if (event[0] === 'enter') {
-              if (
-                listItem &&
-                !atMarker &&
-                !containerBalance &&
-                !firstBlankLineIndex
-              ) {
-                firstBlankLineIndex = index;
+          case "listUnordered":
+          case "listOrdered":
+          case "blockQuote":
+            {
+              if (event[0] === 'enter') {
+                containerBalance++;
+              } else {
+                containerBalance--;
               }
               atMarker = undefined;
+              break;
             }
-            break
-          }
-          case 'linePrefix':
-          case 'listItemValue':
-          case 'listItemMarker':
-          case 'listItemPrefix':
-          case 'listItemPrefixWhitespace': {
-            // Empty.
+          case "lineEndingBlank":
+            {
+              if (event[0] === 'enter') {
+                if (listItem && !atMarker && !containerBalance && !firstBlankLineIndex) {
+                  firstBlankLineIndex = index;
+                }
+                atMarker = undefined;
+              }
+              break;
+            }
+          case "linePrefix":
+          case "listItemValue":
+          case "listItemMarker":
+          case "listItemPrefix":
+          case "listItemPrefixWhitespace":
+            {
+              // Empty.
 
-            break
-          }
-          default: {
-            atMarker = undefined;
-          }
+              break;
+            }
+          default:
+            {
+              atMarker = undefined;
+            }
         }
-        if (
-          (!containerBalance &&
-            event[0] === 'enter' &&
-            event[1].type === 'listItemPrefix') ||
-          (containerBalance === -1 &&
-            event[0] === 'exit' &&
-            (event[1].type === 'listUnordered' ||
-              event[1].type === 'listOrdered'))
-        ) {
+        if (!containerBalance && event[0] === 'enter' && event[1].type === "listItemPrefix" || containerBalance === -1 && event[0] === 'exit' && (event[1].type === "listUnordered" || event[1].type === "listOrdered")) {
           if (listItem) {
             let tailIndex = index;
             lineIndex = undefined;
             while (tailIndex--) {
               const tailEvent = events[tailIndex];
-              if (
-                tailEvent[1].type === 'lineEnding' ||
-                tailEvent[1].type === 'lineEndingBlank'
-              ) {
-                if (tailEvent[0] === 'exit') continue
+              if (tailEvent[1].type === "lineEnding" || tailEvent[1].type === "lineEndingBlank") {
+                if (tailEvent[0] === 'exit') continue;
                 if (lineIndex) {
-                  events[lineIndex][1].type = 'lineEndingBlank';
+                  events[lineIndex][1].type = "lineEndingBlank";
                   listSpread = true;
                 }
-                tailEvent[1].type = 'lineEnding';
+                tailEvent[1].type = "lineEnding";
                 lineIndex = tailIndex;
-              } else if (
-                tailEvent[1].type === 'linePrefix' ||
-                tailEvent[1].type === 'blockQuotePrefix' ||
-                tailEvent[1].type === 'blockQuotePrefixWhitespace' ||
-                tailEvent[1].type === 'blockQuoteMarker' ||
-                tailEvent[1].type === 'listItemIndent'
-              ) ; else {
-                break
+              } else if (tailEvent[1].type === "linePrefix" || tailEvent[1].type === "blockQuotePrefix" || tailEvent[1].type === "blockQuotePrefixWhitespace" || tailEvent[1].type === "blockQuoteMarker" || tailEvent[1].type === "listItemIndent") ; else {
+                break;
               }
             }
-            if (
-              firstBlankLineIndex &&
-              (!lineIndex || firstBlankLineIndex < lineIndex)
-            ) {
+            if (firstBlankLineIndex && (!lineIndex || firstBlankLineIndex < lineIndex)) {
               listItem._spread = true;
             }
 
             // Fix position.
-            listItem.end = Object.assign(
-              {},
-              lineIndex ? events[lineIndex][1].start : event[1].end
-            );
+            listItem.end = Object.assign({}, lineIndex ? events[lineIndex][1].start : event[1].end);
             events.splice(lineIndex || index, 0, ['exit', listItem, event[2]]);
             index++;
             length++;
           }
 
           // Create a new list item.
-          if (event[1].type === 'listItemPrefix') {
+          if (event[1].type === "listItemPrefix") {
             /** @type {Token} */
             const item = {
               type: 'listItem',
@@ -19014,7 +18875,7 @@
         }
       }
       events[start][1]._spread = listSpread;
-      return length
+      return length;
     }
 
     /**
@@ -19028,7 +18889,7 @@
      *   Handle.
      */
     function opener(create, and) {
-      return open
+      return open;
 
       /**
        * @this {CompileContext}
@@ -19087,7 +18948,7 @@
      *   Handle.
      */
     function closer(and) {
-      return close
+      return close;
 
       /**
        * @this {CompileContext}
@@ -19114,16 +18975,10 @@
       const node = this.stack.pop();
       const open = this.tokenStack.pop();
       if (!open) {
-        throw new Error(
-          'Cannot close `' +
-            token.type +
-            '` (' +
-            stringifyPosition({
-              start: token.start,
-              end: token.end
-            }) +
-            '): it’s not open'
-        )
+        throw new Error('Cannot close `' + token.type + '` (' + stringifyPosition({
+          start: token.start,
+          end: token.end
+        }) + '): it’s not open');
       } else if (open[0].type !== token.type) {
         if (onExitError) {
           onExitError.call(this, token, open[0]);
@@ -19140,7 +18995,7 @@
      * @returns {string}
      */
     function resume() {
-      return toString$2(this.stack.pop())
+      return toString$2(this.stack.pop());
     }
 
     //
@@ -19193,7 +19048,7 @@
      */
     function onexitcodefencedfence() {
       // Exit if this is the closing fence.
-      if (this.data.flowCodeInside) return
+      if (this.data.flowCodeInside) return;
       this.buffer();
       this.data.flowCodeInside = true;
     }
@@ -19227,9 +19082,7 @@
       const label = this.resume();
       const node = this.stack[this.stack.length - 1];
       node.label = label;
-      node.identifier = normalizeIdentifier(
-        this.sliceSerialize(token)
-      ).toLowerCase();
+      node.identifier = normalizeIdentifier(this.sliceSerialize(token)).toLowerCase();
     }
 
     /**
@@ -19335,12 +19188,9 @@
         const tail = context.children[context.children.length - 1];
         tail.position.end = point$2(token.end);
         this.data.atHardBreak = undefined;
-        return
+        return;
       }
-      if (
-        !this.data.setextHeadingSlurpLineEnding &&
-        config.canContainEols.includes(context.type)
-      ) {
+      if (!this.data.setextHeadingSlurpLineEnding && config.canContainEols.includes(context.type)) {
         onenterdata.call(this, token);
         onexitdata.call(this, token);
       }
@@ -19397,6 +19247,7 @@
       const node = this.stack[this.stack.length - 1];
       // Note: there are also `identifier` and `label` fields on this link node!
       // These are used / cleaned here.
+
       // To do: clean.
       if (this.data.inReference) {
         /** @type {ReferenceType} */
@@ -19425,6 +19276,7 @@
       const node = this.stack[this.stack.length - 1];
       // Note: there are also `identifier` and `label` fields on this link node!
       // These are used / cleaned here.
+
       // To do: clean.
       if (this.data.inReference) {
         /** @type {ReferenceType} */
@@ -19531,9 +19383,7 @@
       // later.
       node.label = label;
       // @ts-expect-error: same as above.
-      node.identifier = normalizeIdentifier(
-        this.sliceSerialize(token)
-      ).toLowerCase();
+      node.identifier = normalizeIdentifier(this.sliceSerialize(token)).toLowerCase();
       this.data.referenceType = 'full';
     }
 
@@ -19556,17 +19406,22 @@
       /** @type {string} */
       let value;
       if (type) {
-        value = decodeNumericCharacterReference(
-          data,
-          type === 'characterReferenceMarkerNumeric' ? 10 : 16
-        );
+        value = decodeNumericCharacterReference(data, type === "characterReferenceMarkerNumeric" ? 10 : 16);
         this.data.characterReferenceType = undefined;
       } else {
         const result = decodeNamedCharacterReference(data);
         value = result;
       }
-      const tail = this.stack.pop();
+      const tail = this.stack[this.stack.length - 1];
       tail.value += value;
+    }
+
+    /**
+     * @this {CompileContext}
+     * @type {Handle}
+     */
+    function onexitcharacterreference(token) {
+      const tail = this.stack.pop();
       tail.position.end = point$2(token.end);
     }
 
@@ -19599,7 +19454,7 @@
       return {
         type: 'blockquote',
         children: []
-      }
+      };
     }
 
     /** @returns {Code} */
@@ -19609,7 +19464,7 @@
         lang: null,
         meta: null,
         value: ''
-      }
+      };
     }
 
     /** @returns {InlineCode} */
@@ -19617,7 +19472,7 @@
       return {
         type: 'inlineCode',
         value: ''
-      }
+      };
     }
 
     /** @returns {Definition} */
@@ -19628,7 +19483,7 @@
         label: null,
         title: null,
         url: ''
-      }
+      };
     }
 
     /** @returns {Emphasis} */
@@ -19636,7 +19491,7 @@
       return {
         type: 'emphasis',
         children: []
-      }
+      };
     }
 
     /** @returns {Heading} */
@@ -19646,14 +19501,14 @@
         // @ts-expect-error `depth` will be set later.
         depth: 0,
         children: []
-      }
+      };
     }
 
     /** @returns {Break} */
     function hardBreak() {
       return {
         type: 'break'
-      }
+      };
     }
 
     /** @returns {Html} */
@@ -19661,7 +19516,7 @@
       return {
         type: 'html',
         value: ''
-      }
+      };
     }
 
     /** @returns {Image} */
@@ -19671,7 +19526,7 @@
         title: null,
         url: '',
         alt: null
-      }
+      };
     }
 
     /** @returns {Link} */
@@ -19681,7 +19536,7 @@
         title: null,
         url: '',
         children: []
-      }
+      };
     }
 
     /**
@@ -19695,7 +19550,7 @@
         start: null,
         spread: token._spread,
         children: []
-      }
+      };
     }
 
     /**
@@ -19708,7 +19563,7 @@
         spread: token._spread,
         checked: null,
         children: []
-      }
+      };
     }
 
     /** @returns {Paragraph} */
@@ -19716,7 +19571,7 @@
       return {
         type: 'paragraph',
         children: []
-      }
+      };
     }
 
     /** @returns {Strong} */
@@ -19724,7 +19579,7 @@
       return {
         type: 'strong',
         children: []
-      }
+      };
     }
 
     /** @returns {Text} */
@@ -19732,14 +19587,14 @@
       return {
         type: 'text',
         value: ''
-      }
+      };
     }
 
     /** @returns {ThematicBreak} */
     function thematicBreak() {
       return {
         type: 'thematicBreak'
-      }
+      };
     }
   }
 
@@ -19756,7 +19611,7 @@
       line: d.line,
       column: d.column,
       offset: d.offset
-    }
+    };
   }
 
   /**
@@ -19787,28 +19642,31 @@
     for (key in extension) {
       if (own$b.call(extension, key)) {
         switch (key) {
-          case 'canContainEols': {
-            const right = extension[key];
-            if (right) {
-              combined[key].push(...right);
+          case 'canContainEols':
+            {
+              const right = extension[key];
+              if (right) {
+                combined[key].push(...right);
+              }
+              break;
             }
-            break
-          }
-          case 'transforms': {
-            const right = extension[key];
-            if (right) {
-              combined[key].push(...right);
+          case 'transforms':
+            {
+              const right = extension[key];
+              if (right) {
+                combined[key].push(...right);
+              }
+              break;
             }
-            break
-          }
           case 'enter':
-          case 'exit': {
-            const right = extension[key];
-            if (right) {
-              Object.assign(combined[key], right);
+          case 'exit':
+            {
+              const right = extension[key];
+              if (right) {
+                Object.assign(combined[key], right);
+              }
+              break;
             }
-            break
-          }
           // No default
         }
       }
@@ -19818,34 +19676,18 @@
   /** @type {OnEnterError} */
   function defaultOnError(left, right) {
     if (left) {
-      throw new Error(
-        'Cannot close `' +
-          left.type +
-          '` (' +
-          stringifyPosition({
-            start: left.start,
-            end: left.end
-          }) +
-          '): a different token (`' +
-          right.type +
-          '`, ' +
-          stringifyPosition({
-            start: right.start,
-            end: right.end
-          }) +
-          ') is open'
-      )
+      throw new Error('Cannot close `' + left.type + '` (' + stringifyPosition({
+        start: left.start,
+        end: left.end
+      }) + '): a different token (`' + right.type + '`, ' + stringifyPosition({
+        start: right.start,
+        end: right.end
+      }) + ') is open');
     } else {
-      throw new Error(
-        'Cannot close document, a token (`' +
-          right.type +
-          '`, ' +
-          stringifyPosition({
-            start: right.start,
-            end: right.end
-          }) +
-          ') is still open'
-      )
+      throw new Error('Cannot close document, a token (`' + right.type + '`, ' + stringifyPosition({
+        start: right.start,
+        end: right.end
+      }) + ') is still open');
     }
   }
 
@@ -20253,17 +20095,17 @@
    */
   function imageReference(state, node) {
     const id = String(node.identifier).toUpperCase();
-    const def = state.definitionById.get(id);
+    const definition = state.definitionById.get(id);
 
-    if (!def) {
+    if (!definition) {
       return revert(state, node)
     }
 
     /** @type {Properties} */
-    const properties = {src: normalizeUri(def.url || ''), alt: node.alt};
+    const properties = {src: normalizeUri(definition.url || ''), alt: node.alt};
 
-    if (def.title !== null && def.title !== undefined) {
-      properties.title = def.title;
+    if (definition.title !== null && definition.title !== undefined) {
+      properties.title = definition.title;
     }
 
     /** @type {Element} */
@@ -20363,17 +20205,17 @@
    */
   function linkReference(state, node) {
     const id = String(node.identifier).toUpperCase();
-    const def = state.definitionById.get(id);
+    const definition = state.definitionById.get(id);
 
-    if (!def) {
+    if (!definition) {
       return revert(state, node)
     }
 
     /** @type {Properties} */
-    const properties = {href: normalizeUri(def.url || '')};
+    const properties = {href: normalizeUri(definition.url || '')};
 
-    if (def.title !== null && def.title !== undefined) {
-      properties.title = def.title;
+    if (definition.title !== null && definition.title !== undefined) {
+      properties.title = definition.title;
     }
 
     /** @type {Element} */
@@ -21449,14 +21291,16 @@
     let referenceIndex = -1;
 
     while (++referenceIndex < state.footnoteOrder.length) {
-      const def = state.footnoteById.get(state.footnoteOrder[referenceIndex]);
+      const definition = state.footnoteById.get(
+        state.footnoteOrder[referenceIndex]
+      );
 
-      if (!def) {
+      if (!definition) {
         continue
       }
 
-      const content = state.all(def);
-      const id = String(def.identifier).toUpperCase();
+      const content = state.all(definition);
+      const id = String(definition.identifier).toUpperCase();
       const safeId = normalizeUri(id.toLowerCase());
       let rereferenceIndex = 0;
       /** @type {Array<ElementContent>} */
@@ -21522,7 +21366,7 @@
         children: state.wrap(content, true)
       };
 
-      state.patch(def, listItem);
+      state.patch(definition, listItem);
 
       listItems.push(listItem);
     }
@@ -21569,6 +21413,8 @@
    * @typedef {import('mdast').FootnoteDefinition} MdastFootnoteDefinition
    * @typedef {import('mdast').Nodes} MdastNodes
    * @typedef {import('mdast').Parents} MdastParents
+   *
+   * @typedef {import('vfile').VFile} VFile
    *
    * @typedef {import('./footer.js').FootnoteBackContentTemplate} FootnoteBackContentTemplate
    * @typedef {import('./footer.js').FootnoteBackLabelTemplate} FootnoteBackLabelTemplate
@@ -22076,7 +21922,9 @@
        */
       return async function (tree, file) {
         // Cast because root in -> root out.
-        const hastTree = /** @type {HastRoot} */ (toHast(tree, options));
+        const hastTree = /** @type {HastRoot} */ (
+          toHast(tree, {file, ...options})
+        );
         await destination.run(hastTree, file);
       }
     }
@@ -22084,9 +21932,11 @@
     /**
      * @type {TransformMutate}
      */
-    return function (tree) {
+    return function (tree, file) {
       // Cast because root in -> root out.
-      return /** @type {HastRoot} */ (toHast(tree, options || destination))
+      return /** @type {HastRoot} */ (
+        toHast(tree, {file, ...(options || destination)})
+      )
     }
   }
 
@@ -22182,7 +22032,6 @@
           });
       };
   };
-  var rehypeVideo = RehypeVideo;
 
   /**
    * @typedef {import('./info.js').Info} Info
@@ -22531,7 +22380,7 @@
       autoFocus: boolean,
       autoPlay: boolean,
       blocking: spaceSeparated,
-      capture: boolean,
+      capture: null,
       charSet: null,
       checked: boolean,
       cite: null,
@@ -22716,6 +22565,7 @@
       scoped: boolean,
       seamless: boolean,
       selected: boolean,
+      shadowRootClonable: boolean,
       shadowRootDelegatesFocus: boolean,
       shadowRootMode: null,
       shape: null,
@@ -22741,6 +22591,7 @@
       value: booleanish,
       width: number,
       wrap: null,
+      writingSuggestions: null,
 
       // Legacy.
       // See: https://html.spec.whatwg.org/#other-elements,-attributes-and-apis
@@ -23658,7 +23509,7 @@
    *   `h`.
    */
   function createH(schema, defaultTagName, caseSensitive) {
-    const adjust = caseSensitive && createAdjustMap$1(caseSensitive);
+    const adjust = caseSensitive && createAdjustMap(caseSensitive);
 
     /**
      * Hyperscript compatible DSL for creating virtual hast trees.
@@ -23933,7 +23784,7 @@
    * @returns {Record<string, string>}
    *   Map of lowercase keys to uppercase keys.
    */
-  function createAdjustMap$1(values) {
+  function createAdjustMap(values) {
     /** @type {Record<string, string>} */
     const result = {};
     let index = -1;
@@ -24041,7 +23892,7 @@
    *   Equivalent hast node.
    */
   function fromDom(tree, options) {
-    return transform(tree, options || {}) || {type: 'root', children: []}
+    return transform(tree, {}) || {type: 'root', children: []}
   }
 
   /**
@@ -24227,13 +24078,12 @@
    */
 
 
-  const parser$1 = new DOMParser();
+  new DOMParser();
 
   /** @type {FromHtmlIsomorphic} */
   function fromHtmlIsomorphic(value, options) {
-    const node = options?.fragment
-      ? parseFragment(value)
-      : parser$1.parseFromString(value, 'text/html');
+    const node = parseFragment(value)
+      ;
 
     return /** @type {Root} */ (fromDom(node))
   }
@@ -24544,6 +24394,7 @@
     'hr', // Flow content
     'html', // Page
     'legend', // Flow content
+    'li', // Lists (as `display: list-item`)
     'listing', // Flow content (legacy)
     'main', // Flow content
     'menu', // Lists
@@ -24585,16 +24436,17 @@
    *
    * @param {Nodes} tree
    *   Tree to turn into text.
-   * @param {Options} [options]
+   * @param {Readonly<Options> | null | undefined} [options]
    *   Configuration (optional).
    * @returns {string}
    *   Serialized `tree`.
    */
-  function toText(tree, options = {}) {
+  function toText(tree, options) {
+    const options_ = options || {};
     const children = 'children' in tree ? tree.children : [];
     const block = blockOrCaption(tree);
     const whitespace = inferWhitespace(tree, {
-      whitespace: options.whitespace || 'normal',
+      whitespace: options_.whitespace || 'normal',
       breakBefore: false,
       breakAfter: false
     });
@@ -25011,7 +24863,7 @@
    */
   function inferWhitespace(node, info) {
     if (node.type === 'element') {
-      const props = node.properties || {};
+      const properties = node.properties || {};
       switch (node.tagName) {
         case 'listing':
         case 'plaintext':
@@ -25024,12 +24876,12 @@
         }
 
         case 'pre': {
-          return props.wrap ? 'pre-wrap' : 'pre'
+          return properties.wrap ? 'pre-wrap' : 'pre'
         }
 
         case 'td':
         case 'th': {
-          return props.noWrap ? 'nowrap' : info.whitespace
+          return properties.noWrap ? 'nowrap' : info.whitespace
         }
 
         case 'textarea': {
@@ -25322,12 +25174,34 @@
   };
   /**
    * Return the protocol of a URL, or "_relative" if the URL does not specify a
-   * protocol (and thus is relative).
+   * protocol (and thus is relative), or `null` if URL has invalid protocol
+   * (so should be outright rejected).
    */
 
   var protocolFromUrl = function protocolFromUrl(url) {
-    var protocol = /^\s*([^\\/#]*?)(?::|&#0*58|&#x0*3a)/i.exec(url);
-    return protocol != null ? protocol[1] : "_relative";
+    // Check for possible leading protocol.
+    // https://url.spec.whatwg.org/#url-parsing strips leading whitespace
+    // (U+20) or C0 control (U+00-U+1F) characters.
+    // eslint-disable-next-line no-control-regex
+    var protocol = /^[\x00-\x20]*([^\\/#?]*?)(:|&#0*58|&#x0*3a|&colon)/i.exec(url);
+
+    if (!protocol) {
+      return "_relative";
+    } // Reject weird colons
+
+
+    if (protocol[2] !== ":") {
+      return null;
+    } // Reject invalid characters in scheme according to
+    // https://datatracker.ietf.org/doc/html/rfc3986#section-3.1
+
+
+    if (!/^[a-zA-Z][a-zA-Z0-9+\-.]*$/.test(protocol[1])) {
+      return null;
+    } // Lowercase the protocol
+
+
+    return protocol[1].toLowerCase();
   };
   var utils = {
     contains,
@@ -25577,7 +25451,13 @@
 
     isTrusted(context) {
       if (context.url && !context.protocol) {
-        context.protocol = utils.protocolFromUrl(context.url);
+        var protocol = utils.protocolFromUrl(context.url);
+
+        if (protocol == null) {
+          return false;
+        }
+
+        context.protocol = protocol;
       }
 
       var trust = typeof this.trust === "function" ? this.trust(context) : this.trust;
@@ -29151,7 +29031,7 @@
     }
 
     toMarkup() {
-      var markup = "<img  src='" + this.src + " 'alt='" + this.alt + "' "; // Add the styles, after hyphenation
+      var markup = "<img src=\"" + utils.escape(this.src) + "\"" + (" alt=\"" + utils.escape(this.alt) + "\""); // Add the styles, after hyphenation
 
       var styles = "";
 
@@ -29342,7 +29222,7 @@
 
       for (var attr in this.attributes) {
         if (Object.prototype.hasOwnProperty.call(this.attributes, attr)) {
-          markup += " " + attr + "='" + this.attributes[attr] + "'";
+          markup += " " + attr + "=\"" + utils.escape(this.attributes[attr]) + "\"";
         }
       }
 
@@ -29380,9 +29260,9 @@
 
     toMarkup() {
       if (this.alternate) {
-        return "<path d='" + this.alternate + "'/>";
+        return "<path d=\"" + utils.escape(this.alternate) + "\"/>";
       } else {
-        return "<path d='" + path[this.pathName] + "'/>";
+        return "<path d=\"" + utils.escape(path[this.pathName]) + "\"/>";
       }
     }
 
@@ -29411,7 +29291,7 @@
 
       for (var attr in this.attributes) {
         if (Object.prototype.hasOwnProperty.call(this.attributes, attr)) {
-          markup += " " + attr + "='" + this.attributes[attr] + "'";
+          markup += " " + attr + "=\"" + utils.escape(this.attributes[attr]) + "\"";
         }
       }
 
@@ -29613,7 +29493,7 @@
   defineSymbol(math, main, rel, "\u2196", "\\nwarrow", true);
   defineSymbol(math, main, rel, "\u21cc", "\\rightleftharpoons", true); // AMS Negated Binary Relations
 
-  defineSymbol(math, ams, rel, "\u226e", "\\nless", true); // Symbol names preceeded by "@" each have a corresponding macro.
+  defineSymbol(math, ams, rel, "\u226e", "\\nless", true); // Symbol names preceded by "@" each have a corresponding macro.
 
   defineSymbol(math, ams, rel, "\ue010", "\\@nleqslant");
   defineSymbol(math, ams, rel, "\ue011", "\\@nleqq");
@@ -41403,6 +41283,19 @@
       return args;
     }
     /**
+     * Increment `expansionCount` by the specified amount.
+     * Throw an error if it exceeds `maxExpand`.
+     */
+
+
+    countExpansion(amount) {
+      this.expansionCount += amount;
+
+      if (this.expansionCount > this.settings.maxExpand) {
+        throw new ParseError("Too many expansions: infinite loop or " + "need to increase maxExpand setting");
+      }
+    }
+    /**
      * Expand the next token only once if possible.
      *
      * If the token is expanded, the resulting tokens will be pushed onto
@@ -41437,12 +41330,7 @@
         return false;
       }
 
-      this.expansionCount++;
-
-      if (this.expansionCount > this.settings.maxExpand) {
-        throw new ParseError("Too many expansions: infinite loop or " + "need to increase maxExpand setting");
-      }
-
+      this.countExpansion(1);
       var tokens = expansion.tokens;
       var args = this.consumeArgs(expansion.numArgs, expansion.delimiters);
 
@@ -41548,8 +41436,11 @@
 
           output.push(token);
         }
-      }
+      } // Count all of these tokens as additional expansions, to prevent
+      // exponential blowup from linearly many \edef's.
 
+
+      this.countExpansion(output.length);
       return output;
     }
     /**
@@ -42557,8 +42448,9 @@
           // We treat these similarly to the unicode-math package.
           // So we render a string of Unicode (sub|super)scripts the
           // same as a (sub|super)script of regular characters.
-          var str = uSubsAndSups[lex.text];
           var isSub = unicodeSubRegEx.test(lex.text);
+          var subsupTokens = [];
+          subsupTokens.push(new Token$1(uSubsAndSups[lex.text]));
           this.consume(); // Continue fetching tokens to fill out the string.
 
           while (true) {
@@ -42572,12 +42464,12 @@
               break;
             }
 
+            subsupTokens.unshift(new Token$1(uSubsAndSups[token]));
             this.consume();
-            str += uSubsAndSups[token];
           } // Now create a (sub|super)script.
 
 
-          var body = new Parser(str, this.settings).parse();
+          var body = this.subparse(subsupTokens);
 
           if (isSub) {
             subscript = {
@@ -43387,7 +43279,7 @@
     /**
      * Current KaTeX version
      */
-    version: "0.16.9",
+    version: "0.16.10",
 
     /**
      * Renders the given LaTeX into an HTML+MathML combination, and adds
@@ -43607,7 +43499,7 @@
         }
 
         if (typeof result === 'string') {
-          const root = fromHtmlIsomorphic(result, {fragment: true});
+          const root = fromHtmlIsomorphic(result);
           // Cast as we don’t expect `doctypes` in KaTeX result.
           result = /** @type {Array<ElementContent>} */ (root.children);
         }
@@ -43649,7 +43541,6 @@
           });
       };
   };
-  var rehypeIgnore$1 = rehypeIgnore;
 
   /**
    * @typedef {import('vfile').VFile} VFile
@@ -52838,6 +52729,8 @@
    * @typedef {import('hast').RootContent} RootContent
    * @typedef {import('hast').Text} Text
    *
+   * @typedef {import('hast-util-raw').Options} Options
+   *
    * @typedef {import('mdast-util-to-hast').Raw} Raw
    *
    * @typedef {import('parse5').DefaultTreeAdapterMap} DefaultTreeAdapterMap
@@ -52849,8 +52742,6 @@
    * @typedef {import('parse5').Token.TagToken} TagToken
    *
    * @typedef {import('unist').Point} Point
-   *
-   * @typedef {import('vfile').VFile} VFile
    */
 
 
@@ -52996,6 +52887,15 @@
    *   Nothing.
    */
   function text$1(node, state) {
+    // Allow `DATA` through `PLAINTEXT`,
+    // but when hanging in a tag for example,
+    // switch back to `DATA`.
+    // Note: `State` is not exposed by `parse5`, so these numbers are fragile.
+    // See: <https://github.com/inikulin/parse5/blob/46cba43/packages/parse5/lib/tokenizer/index.ts#L58>
+    if (state.parser.tokenizer.state > 4) {
+      state.parser.tokenizer.state = 0;
+    }
+
     /** @type {CharacterToken} */
     const token = {
       type: TokenType.CHARACTER,
@@ -53318,6 +53218,8 @@
    *   Nothing.
    */
   function startTag(node, state) {
+    const tagName = node.tagName.toLowerCase();
+
     // Ignore tags if we’re in plain text.
     if (state.parser.tokenizer.state === TokenizerMode.PLAINTEXT) return
 
@@ -53326,7 +53228,7 @@
     const current = state.parser.openElements.current;
     let ns = 'namespaceURI' in current ? current.namespaceURI : webNamespaces.html;
 
-    if (ns === webNamespaces.html && node.tagName === 'svg') {
+    if (ns === webNamespaces.html && tagName === 'svg') {
       ns = webNamespaces.svg;
     }
 
@@ -53335,19 +53237,18 @@
       {...node, children: []},
       {space: ns === webNamespaces.svg ? 'svg' : 'html'}
     );
-    // Always element.
-    /* c8 ignore next */
-    const attrs = 'attrs' in result ? result.attrs : [];
 
     /** @type {TagToken} */
     const tag = {
       type: TokenType.START_TAG,
-      tagName: node.tagName,
-      tagID: getTagID(node.tagName),
+      tagName,
+      tagID: getTagID(tagName),
       // We always send start and end tags.
       selfClosing: false,
       ackSelfClosing: false,
-      attrs,
+      // Always element.
+      /* c8 ignore next */
+      attrs: 'attrs' in result ? result.attrs : [],
       location: createParse5Location(node)
     };
 
@@ -53367,7 +53268,7 @@
     // do, such as:
 
     // Set a tag name, similar to how the tokenizer would do it.
-    state.parser.tokenizer.lastStartTagName = node.tagName;
+    state.parser.tokenizer.lastStartTagName = tagName;
 
     // `inForeignNode` is correctly set by the parser.
   }
@@ -53383,10 +53284,11 @@
    *   Nothing.
    */
   function endTag(node, state) {
+    const tagName = node.tagName.toLowerCase();
     // Do not emit closing tags for HTML void elements.
     if (
       !state.parser.tokenizer.inForeignNode &&
-      htmlVoidElements.includes(node.tagName)
+      htmlVoidElements.includes(tagName)
     ) {
       return
     }
@@ -53399,8 +53301,8 @@
     /** @type {TagToken} */
     const tag = {
       type: TokenType.END_TAG,
-      tagName: node.tagName,
-      tagID: getTagID(node.tagName),
+      tagName,
+      tagID: getTagID(tagName),
       selfClosing: false,
       ackSelfClosing: false,
       attrs: [],
@@ -53426,7 +53328,7 @@
     // tags:
     if (
       // Current element is closed.
-      tag.tagName === state.parser.tokenizer.lastStartTagName &&
+      tagName === state.parser.tokenizer.lastStartTagName &&
       // `<textarea>` and `<title>`
       (state.parser.tokenizer.state === TokenizerMode.RCDATA ||
         // `<iframe>`, `<noembed>`, `<style>`, `<xmp>`
@@ -53451,7 +53353,7 @@
     return Boolean(
       head &&
         (head.type === 'doctype' ||
-          (head.type === 'element' && head.tagName === 'html'))
+          (head.type === 'element' && head.tagName.toLowerCase() === 'html'))
     )
   }
 
@@ -54120,6 +54022,9 @@
           while (is('-')) {
               result += chr;
               next();
+          }
+          if (result === '-' && !isIdent(chr) && !is('\\')) {
+              fail('Identifiers cannot consist of a single hyphen.');
           }
           if (strict && result.length >= 2) {
               // Checking this only for strict mode since browsers work fine with these identifiers.
@@ -56697,7 +56602,7 @@
    *   This could include `tree` itself.
    */
   function selectAll(selector, tree, space) {
-    const state = createState(selector, tree, space);
+    const state = createState(selector, tree);
     walk(state, tree || undefined);
     return state.results
   }
@@ -56724,7 +56629,7 @@
       // State of the query.
       results: [],
       rootQuery: parse$1(selector),
-      schema: space === 'svg' ? svg : html$2,
+      schema: html$2,
       scopeElements: tree ? (tree.type === 'root' ? tree.children : [tree]) : [],
       shallow: false,
       typeIndex: undefined,
@@ -56766,7 +56671,7 @@
 
   /**
    * @typedef CoreOptions
-   * @property {Array<string>} [subset=[]]
+   * @property {ReadonlyArray<string>} [subset=[]]
    *   Whether to only escape the given subset of characters.
    * @property {boolean} [escapeOnly=false]
    *   Whether to only escape possibly dangerous characters.
@@ -56779,6 +56684,16 @@
    * @typedef {CoreOptions & FormatOptions & import('./util/format-smart.js').FormatSmartOptions} CoreWithFormatOptions
    */
 
+  const defaultSubsetRegex = /["&'<>`]/g;
+  const surrogatePairsRegex = /[\uD800-\uDBFF][\uDC00-\uDFFF]/g;
+  const controlCharactersRegex =
+    // eslint-disable-next-line no-control-regex, unicorn/no-hex-escape
+    /[\x01-\t\v\f\x0E-\x1F\x7F\x81\x8D\x8F\x90\x9D\xA0-\uFFFF]/g;
+  const regexEscapeRegex = /[|\\{}()[\]^$+*?.]/g;
+
+  /** @type {WeakMap<ReadonlyArray<string>, RegExp>} */
+  const subsetToRegexCache = new WeakMap();
+
   /**
    * Encode certain characters in `value`.
    *
@@ -56788,7 +56703,9 @@
    */
   function core$1(value, options) {
     value = value.replace(
-      options.subset ? charactersToExpression(options.subset) : /["&'<>`]/g,
+      options.subset
+        ? charactersToExpressionCached(options.subset)
+        : defaultSubsetRegex,
       basic
     );
 
@@ -56799,14 +56716,10 @@
     return (
       value
         // Surrogate pairs.
-        .replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, surrogate)
+        .replace(surrogatePairsRegex, surrogate)
         // BMP control characters (C0 except for LF, CR, SP; DEL; and some more
         // non-ASCII ones).
-        .replace(
-          // eslint-disable-next-line no-control-regex, unicorn/no-hex-escape
-          /[\x01-\t\v\f\x0E-\x1F\x7F\x81\x8D\x8F\x90\x9D\xA0-\uFFFF]/g,
-          basic
-        )
+        .replace(controlCharactersRegex, basic)
     )
 
     /**
@@ -56840,7 +56753,26 @@
   }
 
   /**
-   * @param {Array<string>} subset
+   * A wrapper function that caches the result of `charactersToExpression` with a WeakMap.
+   * This can improve performance when tooling calls `charactersToExpression` repeatedly
+   * with the same subset.
+   *
+   * @param {ReadonlyArray<string>} subset
+   * @returns {RegExp}
+   */
+  function charactersToExpressionCached(subset) {
+    let cached = subsetToRegexCache.get(subset);
+
+    if (!cached) {
+      cached = charactersToExpression(subset);
+      subsetToRegexCache.set(subset, cached);
+    }
+
+    return cached
+  }
+
+  /**
+   * @param {ReadonlyArray<string>} subset
    * @returns {RegExp}
    */
   function charactersToExpression(subset) {
@@ -56849,11 +56781,13 @@
     let index = -1;
 
     while (++index < subset.length) {
-      groups.push(subset[index].replace(/[|\\{}()[\]^$+*?.]/g, '\\$&'));
+      groups.push(subset[index].replace(regexEscapeRegex, '\\$&'));
     }
 
     return new RegExp('(?:' + groups.join('|') + ')', 'g')
   }
+
+  const hexadecimalRegex = /[\dA-Fa-f]/;
 
   /**
    * Configurable ways to encode characters as hexadecimal references.
@@ -56865,10 +56799,12 @@
    */
   function toHexadecimal(code, next, omit) {
     const value = '&#x' + code.toString(16).toUpperCase();
-    return omit && next && !/[\dA-Fa-f]/.test(String.fromCharCode(next))
+    return omit && next && !hexadecimalRegex.test(String.fromCharCode(next))
       ? value
       : value + ';'
   }
+
+  const decimalRegex = /\d/;
 
   /**
    * Configurable ways to encode characters as decimal references.
@@ -56880,7 +56816,7 @@
    */
   function toDecimal(code, next, omit) {
     const value = '&#' + String(code);
-    return omit && next && !/\d/.test(String.fromCharCode(next))
+    return omit && next && !decimalRegex.test(String.fromCharCode(next))
       ? value
       : value + ';'
   }
@@ -57294,6 +57230,8 @@
     }
   }
 
+  const notAlphanumericRegex = /[^\dA-Za-z]/;
+
   /**
    * Configurable ways to encode characters as named references.
    *
@@ -57317,7 +57255,7 @@
         (!attribute ||
           (next &&
             next !== 61 /* `=` */ &&
-            /[^\da-z]/i.test(String.fromCharCode(next))))
+            notAlphanumericRegex.test(String.fromCharCode(next))))
       ) {
         return value
       }
@@ -57423,6 +57361,12 @@
    */
 
 
+  const htmlCommentRegex = /^>|^->|<!--|-->|--!>|<!-$/g;
+
+  // Declare arrays as variables so it can be cached by `stringifyEntities`
+  const bogusCommentEntitySubset = ['>'];
+  const commentEntitySubset = ['<', '>'];
+
   /**
    * Serialize a comment.
    *
@@ -57443,10 +57387,12 @@
       ? '<?' +
           stringifyEntities(
             node.value,
-            Object.assign({}, state.settings.characterReferences, {subset: ['>']})
+            Object.assign({}, state.settings.characterReferences, {
+              subset: bogusCommentEntitySubset
+            })
           ) +
           '>'
-      : '<!--' + node.value.replace(/^>|^->|<!--|-->|--!>|<!-$/g, encode) + '-->'
+      : '<!--' + node.value.replace(htmlCommentRegex, encode) + '-->'
 
     /**
      * @param {string} $0
@@ -57455,7 +57401,7 @@
       return stringifyEntities(
         $0,
         Object.assign({}, state.settings.characterReferences, {
-          subset: ['<', '>']
+          subset: commentEntitySubset
         })
       )
     }
@@ -58161,7 +58107,7 @@
       state.schema = svg;
     }
 
-    const attrs = serializeAttributes(state, node.properties);
+    const attributes = serializeAttributes(state, node.properties);
 
     const content = state.all(
       schema.space === 'html' && node.tagName === 'template' ? node.content : node
@@ -58177,14 +58123,14 @@
     // longer void.
     if (content) selfClosing = false;
 
-    if (attrs || !omit || !opening(node, index, parent)) {
-      parts.push('<', node.tagName, attrs ? ' ' + attrs : '');
+    if (attributes || !omit || !opening(node, index, parent)) {
+      parts.push('<', node.tagName, attributes ? ' ' + attributes : '');
 
       if (
         selfClosing &&
         (schema.space === 'svg' || state.settings.closeSelfClosing)
       ) {
-        last = attrs.charAt(attrs.length - 1);
+        last = attributes.charAt(attributes.length - 1);
         if (
           !state.settings.tightSelfClosing ||
           last === '/' ||
@@ -58210,20 +58156,20 @@
 
   /**
    * @param {State} state
-   * @param {Properties | null | undefined} props
+   * @param {Properties | null | undefined} properties
    * @returns {string}
    */
-  function serializeAttributes(state, props) {
+  function serializeAttributes(state, properties) {
     /** @type {Array<string>} */
     const values = [];
     let index = -1;
     /** @type {string} */
     let key;
 
-    if (props) {
-      for (key in props) {
-        if (props[key] !== null && props[key] !== undefined) {
-          const value = serializeAttribute(state, key, props[key]);
+    if (properties) {
+      for (key in properties) {
+        if (properties[key] !== null && properties[key] !== undefined) {
+          const value = serializeAttribute(state, key, properties[key]);
           if (value) values.push(value);
         }
       }
@@ -58362,6 +58308,9 @@
    */
 
 
+  // Declare array as variable so it can be cached by `stringifyEntities`
+  const textEntitySubset = ['<', '&'];
+
   /**
    * Serialize a text node.
    *
@@ -58385,7 +58334,7 @@
       : stringifyEntities(
           node.value,
           Object.assign({}, state.settings.characterReferences, {
-            subset: ['<', '&']
+            subset: textEntitySubset
           })
         )
   }
@@ -58687,7 +58636,7 @@
    *   cascaded away.
    */
   function filter(tree, options, test) {
-    const is = convert(test || options);
+    const is = convert(options);
     const cascadeRaw =
       options && typeof options === 'object' && 'cascade' in options
         ? /** @type {boolean | null | undefined} */ (options.cascade)
@@ -59354,7 +59303,7 @@
        * @returns {RegExp}
        */
       function re(pattern, replacements, flags) {
-        return RegExp(replace(pattern, replacements), flags || '')
+        return RegExp(replace(pattern, replacements), '')
       }
 
       /**
@@ -63205,7 +63154,6 @@
    * @param {Array<string>} [caseSensitive]
    */
   function core(schema, defaultTagName, caseSensitive) {
-    const adjust = caseSensitive && createAdjustMap(caseSensitive);
 
     const h =
       /**
@@ -63238,9 +63186,6 @@
             node = parseSelector(selector, defaultTagName);
             // Normalize the name.
             node.tagName = node.tagName.toLowerCase();
-            if (adjust && own$1.call(adjust, node.tagName)) {
-              node.tagName = adjust[node.tagName];
-            }
 
             // Handle props.
             if (isProperties(properties, node.tagName)) {
@@ -63440,26 +63385,6 @@
     }
 
     return result.join('; ')
-  }
-
-  /**
-   * Create a map to adjust casing.
-   *
-   * @param {Array<string>} values
-   *   List of properly cased keys.
-   * @returns {Record<string, string>}
-   *   Map of lowercase keys to uppercase keys.
-   */
-  function createAdjustMap(values) {
-    /** @type {Record<string, string>} */
-    const result = {};
-    let index = -1;
-
-    while (++index < values.length) {
-      result[values[index].toLowerCase()] = values[index];
-    }
-
-    return result
   }
 
   /**
@@ -66391,7 +66316,7 @@
         })
       }
       function re(pattern, replacements, flags) {
-        return RegExp(replace(pattern, replacements), flags || '')
+        return RegExp(replace(pattern, replacements), flags )
       }
       var types = /bool|clip|float|int|string|val/.source;
       var internals = [
@@ -79799,7 +79724,7 @@
        * @returns {RegExp}
        */
       function re(pattern, replacements, flags) {
-        return RegExp(replace(pattern, replacements), flags || '')
+        return RegExp(replace(pattern, replacements), '')
       }
 
       /**
@@ -85099,7 +85024,7 @@
   refractor.register(yang);
   refractor.register(zig);
 
-  function a(){a=function(e,r){return new t(e,void 0,r)};var e=RegExp.prototype,r=new WeakMap;function t(e,n,i){var o=new RegExp(e,n);return r.set(o,i||r.get(e)),l(o,t.prototype)}function n(e,t){var n=r.get(t);return Object.keys(n).reduce(function(r,t){var i=n[t];if("number"==typeof i)r[t]=e[i];else {for(var o=0;void 0===e[i[o]]&&o+1<i.length;)o++;r[t]=e[i[o]];}return r},Object.create(null))}return function(e,r){if("function"!=typeof r&&null!==r)throw new TypeError("Super expression must either be null or a function");e.prototype=Object.create(r&&r.prototype,{constructor:{value:e,writable:!0,configurable:!0}}),Object.defineProperty(e,"prototype",{writable:!1}),r&&l(e,r);}(t,RegExp),t.prototype.exec=function(r){var t=e.exec.call(this,r);if(t){t.groups=n(t,this);var i=t.indices;i&&(i.groups=n(i,this));}return t},t.prototype[Symbol.replace]=function(t,i){if("string"==typeof i){var o=r.get(this);return e[Symbol.replace].call(this,t,i.replace(/\$<([^>]+)>/g,function(e,r){var t=o[r];return "$"+(Array.isArray(t)?t.join("$"):t)}))}if("function"==typeof i){var a=this;return e[Symbol.replace].call(this,t,function(){var e=arguments;return "object"!=typeof e[e.length-1]&&(e=[].slice.call(e)).push(n(e,a)),i.apply(this,e)})}return e[Symbol.replace].call(this,t,i)},a.apply(this,arguments)}function l(e,r){return l=Object.setPrototypeOf?Object.setPrototypeOf.bind():function(e,r){return e.__proto__=r,e},l(e,r)}function s(e,r){(null==r||r>e.length)&&(r=e.length);for(var t=0,n=new Array(r);t<r;t++)n[t]=e[t];return n}function u(e,r){var t="undefined"!=typeof Symbol&&e[Symbol.iterator]||e["@@iterator"];if(t)return (t=t.call(e)).next.bind(t);if(Array.isArray(e)||(t=function(e,r){if(e){if("string"==typeof e)return s(e,r);var t=Object.prototype.toString.call(e).slice(8,-1);return "Object"===t&&e.constructor&&(t=e.constructor.name),"Map"===t||"Set"===t?Array.from(e):"Arguments"===t||/^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t)?s(e,r):void 0}}(e))||r&&e&&"number"==typeof e.length){t&&(e=t);var n=0;return function(){return n>=e.length?{done:!0}:{done:!1,value:e[n++]}}}throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}var c=function(i){return function(o){return void 0===o&&(o={}),function(e,r){if(r&&!e.registered(r))throw new Error('The default language "'+r+'" is not registered with refractor.')}(i,o.defaultLanguage),function(r){visit(r,"element",l);};function l(e,l,s){var c,p;if(s&&"pre"===s.tagName&&"code"===e.tagName){var f=(null==e||null==(c=e.data)?void 0:c.meta)||(null==e||null==(p=e.properties)?void 0:p.metastring)||"";e.properties.className?"boolean"==typeof e.properties.className?e.properties.className=[]:Array.isArray(e.properties.className)||(e.properties.className=[e.properties.className]):e.properties.className=[];var m,h,d=function(e){for(var r,t=u(e.properties.className);!(r=t()).done;){var n=r.value;if("language-"===n.slice(0,9))return n.slice(9).toLowerCase()}return null}(e);if(!d&&o.defaultLanguage&&e.properties.className.push("language-"+(d=o.defaultLanguage)),e.properties.className.push("code-highlight"),d)try{var g,v;v=null!=(g=d)&&g.includes("diff-")?d.split("-")[1]:d,m=i.highlight(toString(e),v),s.properties.className=(s.properties.className||[]).concat("language-"+v);}catch(r){if(!o.ignoreMissing||!/Unknown language/.test(r.message))throw r;m=e;}else m=e;m.children=(h=1,function e(r){return r.reduce(function(r,t){if("text"===t.type){var n=t.value,i=(n.match(/\n/g)||"").length;if(0===i)t.position={start:{line:h,column:1},end:{line:h,column:1}},r.push(t);else for(var o,a=n.split("\n"),l=u(a.entries());!(o=l()).done;){var s=o.value,c=s[0],p=s[1];r.push({type:"text",value:c===a.length-1?p:p+"\n",position:{start:{line:h+c,column:1},end:{line:h+c,column:1}}});}return h+=i,r}if(Object.prototype.hasOwnProperty.call(t,"children")){var f=h;return t.children=e(t.children),r.push(t),t.position={start:{line:f,column:1},end:{line:h,column:1}},r}return r.push(t),r},[])})(m.children),m.position=m.children.length>0?{start:{line:m.children[0].position.start.line,column:0},end:{line:m.children[m.children.length-1].position.end.line,column:0}}:{start:{line:0,column:0},end:{line:0,column:0}};for(var y,b=function(e){var r=/{([\d,-]+)}/,t=e.split(",").map(function(e){return e.trim()}).join();if(r.test(t)){var i=r.exec(t)[1],o=n(i);return function(e){return o.includes(e+1)}}return function(){return !1}}(f),w=function(e){var r=/*#__PURE__*/a(/showLineNumbers=(\d+)/i,{lines:1});if(r.test(e)){var t=r.exec(e);return Number(t.groups.lines)}return 1}(f),N=function(e){for(var r=new Array(e),t=0;t<e;t++)r[t]={type:"element",tagName:"span",properties:{className:[]},children:[]};return r}(m.position.end.line),j=["showlinenumbers=false",'showlinenumbers="false"',"showlinenumbers={false}"],x=function(){var e,n,i=y.value,a=i[0],l=i[1];l.properties.className=["code-line"];var s=filter(m,function(e){return e.position.start.line<=a+1&&e.position.end.line>=a+1});l.children=s.children,!f.toLowerCase().includes("showLineNumbers".toLowerCase())&&!o.showLineNumbers||j.some(function(e){return f.toLowerCase().includes(e)})||(l.properties.line=[(a+w).toString()],l.properties.className.push("line-number")),b(a)&&l.properties.className.push("highlight-line"),("diff"===d||null!=(e=d)&&e.includes("diff-"))&&"-"===toString(l).substring(0,1)?l.properties.className.push("deleted"):("diff"===d||null!=(n=d)&&n.includes("diff-"))&&"+"===toString(l).substring(0,1)&&l.properties.className.push("inserted");},O=u(N.entries());!(y=O()).done;)x();N.length>0&&""===toString(N[N.length-1]).trim()&&N.pop(),e.children=N;}}}},f=c(refractor);
+  function a(){a=function(e,r){return new t(e,void 0,r)};var e=RegExp.prototype,r=new WeakMap;function t(e,n,i){var o=new RegExp(e,n);return r.set(o,i||r.get(e)),l(o,t.prototype)}function n(e,t){var n=r.get(t);return Object.keys(n).reduce(function(r,t){var i=n[t];if("number"==typeof i)r[t]=e[i];else {for(var o=0;void 0===e[i[o]]&&o+1<i.length;)o++;r[t]=e[i[o]];}return r},Object.create(null))}return function(e,r){if("function"!=typeof r&&null!==r)throw new TypeError("Super expression must either be null or a function");e.prototype=Object.create(r&&r.prototype,{constructor:{value:e,writable:!0,configurable:!0}}),Object.defineProperty(e,"prototype",{writable:!1}),r&&l(e,r);}(t,RegExp),t.prototype.exec=function(r){var t=e.exec.call(this,r);if(t){t.groups=n(t,this);var i=t.indices;i&&(i.groups=n(i,this));}return t},t.prototype[Symbol.replace]=function(t,i){if("string"==typeof i){var o=r.get(this);return e[Symbol.replace].call(this,t,i.replace(/\$<([^>]+)>/g,function(e,r){var t=o[r];return "$"+(Array.isArray(t)?t.join("$"):t)}))}if("function"==typeof i){var a=this;return e[Symbol.replace].call(this,t,function(){var e=arguments;return "object"!=typeof e[e.length-1]&&(e=[].slice.call(e)).push(n(e,a)),i.apply(this,e)})}return e[Symbol.replace].call(this,t,i)},a.apply(this,arguments)}function l(e,r){return l=Object.setPrototypeOf?Object.setPrototypeOf.bind():function(e,r){return e.__proto__=r,e},l(e,r)}function s(e,r){(null==r||r>e.length)&&(r=e.length);for(var t=0,n=new Array(r);t<r;t++)n[t]=e[t];return n}function u(e,r){var t="undefined"!=typeof Symbol&&e[Symbol.iterator]||e["@@iterator"];if(t)return (t=t.call(e)).next.bind(t);if(Array.isArray(e)||(t=function(e,r){if(e){if("string"==typeof e)return s(e,r);var t=Object.prototype.toString.call(e).slice(8,-1);return "Object"===t&&e.constructor&&(t=e.constructor.name),"Map"===t||"Set"===t?Array.from(e):"Arguments"===t||/^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t)?s(e,r):void 0}}(e))||r){t&&(e=t);var n=0;return function(){return n>=e.length?{done:!0}:{done:!1,value:e[n++]}}}throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}var c=function(i){return function(o){return void 0===o&&(o={}),function(e,r){if(r&&!e.registered(r))throw new Error('The default language "'+r+'" is not registered with refractor.')}(i,o.defaultLanguage),function(r){visit(r,"element",l);};function l(e,l,s){var c,p;if(s&&"pre"===s.tagName&&"code"===e.tagName){var f=(null==e||null==(c=e.data)?void 0:c.meta)||(null==e||null==(p=e.properties)?void 0:p.metastring)||"";e.properties.className?"boolean"==typeof e.properties.className?e.properties.className=[]:Array.isArray(e.properties.className)||(e.properties.className=[e.properties.className]):e.properties.className=[];var m,h,d=function(e){for(var r,t=u(e.properties.className);!(r=t()).done;){var n=r.value;if("language-"===n.slice(0,9))return n.slice(9).toLowerCase()}return null}(e);if(!d&&o.defaultLanguage&&e.properties.className.push("language-"+(d=o.defaultLanguage)),e.properties.className.push("code-highlight"),d)try{var g,v;v=null!=(g=d)&&g.includes("diff-")?d.split("-")[1]:d,m=i.highlight(toString(e),v),s.properties.className=(s.properties.className||[]).concat("language-"+v);}catch(r){if(!o.ignoreMissing||!/Unknown language/.test(r.message))throw r;m=e;}else m=e;m.children=(h=1,function e(r){return r.reduce(function(r,t){if("text"===t.type){var n=t.value,i=(n.match(/\n/g)||"").length;if(0===i)t.position={start:{line:h,column:1},end:{line:h,column:1}},r.push(t);else for(var o,a=n.split("\n"),l=u(a.entries());!(o=l()).done;){var s=o.value,c=s[0],p=s[1];r.push({type:"text",value:c===a.length-1?p:p+"\n",position:{start:{line:h+c,column:1},end:{line:h+c,column:1}}});}return h+=i,r}if(Object.prototype.hasOwnProperty.call(t,"children")){var f=h;return t.children=e(t.children),r.push(t),t.position={start:{line:f,column:1},end:{line:h,column:1}},r}return r.push(t),r},[])})(m.children),m.position=m.children.length>0?{start:{line:m.children[0].position.start.line,column:0},end:{line:m.children[m.children.length-1].position.end.line,column:0}}:{start:{line:0,column:0},end:{line:0,column:0}};for(var y,b=function(e){var r=/{([\d,-]+)}/,t=e.split(",").map(function(e){return e.trim()}).join();if(r.test(t)){var i=r.exec(t)[1],o=n(i);return function(e){return o.includes(e+1)}}return function(){return !1}}(f),w=function(e){var r=/*#__PURE__*/a(/showLineNumbers=(\d+)/i,{lines:1});if(r.test(e)){var t=r.exec(e);return Number(t.groups.lines)}return 1}(f),N=function(e){for(var r=new Array(e),t=0;t<e;t++)r[t]={type:"element",tagName:"span",properties:{className:[]},children:[]};return r}(m.position.end.line),j=["showlinenumbers=false",'showlinenumbers="false"',"showlinenumbers={false}"],x=function(){var e,n,i=y.value,a=i[0],l=i[1];l.properties.className=["code-line"];var s=filter(m,function(e){return e.position.start.line<=a+1&&e.position.end.line>=a+1});l.children=s.children,!f.toLowerCase().includes("showLineNumbers".toLowerCase())&&!o.showLineNumbers||j.some(function(e){return f.toLowerCase().includes(e)})||(l.properties.line=[(a+w).toString()],l.properties.className.push("line-number")),b(a)&&l.properties.className.push("highlight-line"),("diff"===d||null!=(e=d)&&e.includes("diff-"))&&"-"===toString(l).substring(0,1)?l.properties.className.push("deleted"):("diff"===d||null!=(n=d)&&n.includes("diff-"))&&"+"===toString(l).substring(0,1)&&l.properties.className.push("inserted");},O=u(N.entries());!(y=O()).done;)x();N.length>0&&""===toString(N[N.length-1]).trim()&&N.pop(),e.children=N;}}}},f=c(refractor);
 
   Object.defineProperty(f, 'name', {
       value: 'rehypePrism',
@@ -85110,10 +85035,10 @@
       const remarkPlugins = [remarkGfm, ...(options.remarkPlugins || [])];
       const rehypePlugins = [
           rehypeRaw,
-          rehypeVideo,
+          RehypeVideo,
           [f, { ignoreMissing: true, showLineNumbers }],
-          [rehypeAttrs$1, { properties: 'attr', codeBlockParames: false }],
-          rehypeIgnore$1,
+          [rehypeAttrs, { properties: 'attr', codeBlockParames: false }],
+          rehypeIgnore,
           ...(options.rehypePlugins || []),
           [
               remarkRewrite,
