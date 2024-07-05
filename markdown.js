@@ -7434,14 +7434,7 @@
   }
 
   /**
-   * @typedef {import('micromark-util-types').Code} Code
-   * @typedef {import('micromark-util-types').ConstructRecord} ConstructRecord
-   * @typedef {import('micromark-util-types').Event} Event
-   * @typedef {import('micromark-util-types').Extension} Extension
-   * @typedef {import('micromark-util-types').Previous} Previous
-   * @typedef {import('micromark-util-types').State} State
-   * @typedef {import('micromark-util-types').TokenizeContext} TokenizeContext
-   * @typedef {import('micromark-util-types').Tokenizer} Tokenizer
+   * @import {Code, ConstructRecord, Event, Extension, Previous, State, TokenizeContext, Tokenizer} from 'micromark-util-types'
    */
 
   const wwwPrefix = {
@@ -7465,14 +7458,17 @@
     partial: true
   };
   const wwwAutolink = {
+    name: 'wwwAutolink',
     tokenize: tokenizeWwwAutolink,
     previous: previousWww
   };
   const protocolAutolink = {
+    name: 'protocolAutolink',
     tokenize: tokenizeProtocolAutolink,
     previous: previousProtocol
   };
   const emailAutolink = {
+    name: 'emailAutolink',
     tokenize: tokenizeEmailAutolink,
     previous: previousEmail
   };
@@ -7491,7 +7487,7 @@
   function gfmAutolinkLiteral() {
     return {
       text: text$8
-    }
+    };
   }
 
   /** @type {Code} */
@@ -7501,8 +7497,7 @@
   while (code$1 < 123) {
     text$8[code$1] = emailAutolink;
     code$1++;
-    if (code$1 === 58) code$1 = 65;
-    else if (code$1 === 91) code$1 = 97;
+    if (code$1 === 58) code$1 = 65;else if (code$1 === 91) code$1 = 97;
   }
   text$8[43] = emailAutolink;
   text$8[45] = emailAutolink;
@@ -7536,7 +7531,7 @@
     let dot;
     /** @type {boolean} */
     let data;
-    return start
+    return start;
 
     /**
      * Start of email autolink literal.
@@ -7549,16 +7544,12 @@
      * @type {State}
      */
     function start(code) {
-      if (
-        !gfmAtext(code) ||
-        !previousEmail.call(self, self.previous) ||
-        previousUnbalanced(self.events)
-      ) {
-        return nok(code)
+      if (!gfmAtext(code) || !previousEmail.call(self, self.previous) || previousUnbalanced(self.events)) {
+        return nok(code);
       }
       effects.enter('literalAutolink');
       effects.enter('literalAutolinkEmail');
-      return atext(code)
+      return atext(code);
     }
 
     /**
@@ -7574,13 +7565,13 @@
     function atext(code) {
       if (gfmAtext(code)) {
         effects.consume(code);
-        return atext
+        return atext;
       }
       if (code === 64) {
         effects.consume(code);
-        return emailDomain
+        return emailDomain;
       }
-      return nok(code)
+      return nok(code);
     }
 
     /**
@@ -7600,18 +7591,14 @@
     function emailDomain(code) {
       // Dot followed by alphanumerical (not `-` or `_`).
       if (code === 46) {
-        return effects.check(
-          emailDomainDotTrail,
-          emailDomainAfter,
-          emailDomainDot
-        )(code)
+        return effects.check(emailDomainDotTrail, emailDomainAfter, emailDomainDot)(code);
       }
 
       // Alphanumerical, `-`, and `_`.
       if (code === 45 || code === 95 || asciiAlphanumeric(code)) {
         data = true;
         effects.consume(code);
-        return emailDomain
+        return emailDomain;
       }
 
       // To do: `/` if xmpp.
@@ -7620,7 +7607,7 @@
       // However, email autolink literals cannot contain any of those markers,
       // except for `.`, but that can only occur if it isn’t trailing.
       // So we can ignore truncating!
-      return emailDomainAfter(code)
+      return emailDomainAfter(code);
     }
 
     /**
@@ -7636,7 +7623,7 @@
     function emailDomainDot(code) {
       effects.consume(code);
       dot = true;
-      return emailDomain
+      return emailDomain;
     }
 
     /**
@@ -7655,9 +7642,9 @@
       if (data && dot && asciiAlpha(self.previous)) {
         effects.exit('literalAutolinkEmail');
         effects.exit('literalAutolink');
-        return ok(code)
+        return ok(code);
       }
-      return nok(code)
+      return nok(code);
     }
   }
 
@@ -7674,7 +7661,7 @@
    */
   function tokenizeWwwAutolink(effects, ok, nok) {
     const self = this;
-    return wwwStart
+    return wwwStart;
 
     /**
      * Start of www autolink literal.
@@ -7687,22 +7674,14 @@
      * @type {State}
      */
     function wwwStart(code) {
-      if (
-        (code !== 87 && code !== 119) ||
-        !previousWww.call(self, self.previous) ||
-        previousUnbalanced(self.events)
-      ) {
-        return nok(code)
+      if (code !== 87 && code !== 119 || !previousWww.call(self, self.previous) || previousUnbalanced(self.events)) {
+        return nok(code);
       }
       effects.enter('literalAutolink');
       effects.enter('literalAutolinkWww');
       // Note: we *check*, so we can discard the `www.` we parsed.
       // If it worked, we consider it as a part of the domain.
-      return effects.check(
-        wwwPrefix,
-        effects.attempt(domain, effects.attempt(path$1, wwwAfter), nok),
-        nok
-      )(code)
+      return effects.check(wwwPrefix, effects.attempt(domain, effects.attempt(path$1, wwwAfter), nok), nok)(code);
     }
 
     /**
@@ -7718,7 +7697,7 @@
     function wwwAfter(code) {
       effects.exit('literalAutolinkWww');
       effects.exit('literalAutolink');
-      return ok(code)
+      return ok(code);
     }
   }
 
@@ -7737,7 +7716,7 @@
     const self = this;
     let buffer = '';
     let seen = false;
-    return protocolStart
+    return protocolStart;
 
     /**
      * Start of protocol autolink literal.
@@ -7750,18 +7729,14 @@
      * @type {State}
      */
     function protocolStart(code) {
-      if (
-        (code === 72 || code === 104) &&
-        previousProtocol.call(self, self.previous) &&
-        !previousUnbalanced(self.events)
-      ) {
+      if ((code === 72 || code === 104) && previousProtocol.call(self, self.previous) && !previousUnbalanced(self.events)) {
         effects.enter('literalAutolink');
         effects.enter('literalAutolinkHttp');
         buffer += String.fromCodePoint(code);
         effects.consume(code);
-        return protocolPrefixInside
+        return protocolPrefixInside;
       }
-      return nok(code)
+      return nok(code);
     }
 
     /**
@@ -7780,16 +7755,16 @@
         // @ts-expect-error: definitely number.
         buffer += String.fromCodePoint(code);
         effects.consume(code);
-        return protocolPrefixInside
+        return protocolPrefixInside;
       }
       if (code === 58) {
         const protocol = buffer.toLowerCase();
         if (protocol === 'http' || protocol === 'https') {
           effects.consume(code);
-          return protocolSlashesInside
+          return protocolSlashesInside;
         }
       }
-      return nok(code)
+      return nok(code);
     }
 
     /**
@@ -7806,12 +7781,12 @@
       if (code === 47) {
         effects.consume(code);
         if (seen) {
-          return afterProtocol
+          return afterProtocol;
         }
         seen = true;
-        return protocolSlashesInside
+        return protocolSlashesInside;
       }
-      return nok(code)
+      return nok(code);
     }
 
     /**
@@ -7827,13 +7802,7 @@
     function afterProtocol(code) {
       // To do: this is different from `markdown-rs`:
       // https://github.com/wooorm/markdown-rs/blob/b3a921c761309ae00a51fe348d8a43adbc54b518/src/construct/gfm_autolink_literal.rs#L172-L182
-      return code === null ||
-        asciiControl(code) ||
-        markdownLineEndingOrSpace(code) ||
-        unicodeWhitespace(code) ||
-        unicodePunctuation(code)
-        ? nok(code)
-        : effects.attempt(domain, effects.attempt(path$1, protocolAfter), nok)(code)
+      return code === null || asciiControl(code) || markdownLineEndingOrSpace(code) || unicodeWhitespace(code) || unicodePunctuation(code) ? nok(code) : effects.attempt(domain, effects.attempt(path$1, protocolAfter), nok)(code);
     }
 
     /**
@@ -7849,7 +7818,7 @@
     function protocolAfter(code) {
       effects.exit('literalAutolinkHttp');
       effects.exit('literalAutolink');
-      return ok(code)
+      return ok(code);
     }
   }
 
@@ -7866,7 +7835,7 @@
    */
   function tokenizeWwwPrefix(effects, ok, nok) {
     let size = 0;
-    return wwwPrefixInside
+    return wwwPrefixInside;
 
     /**
      * In www prefix.
@@ -7882,13 +7851,13 @@
       if ((code === 87 || code === 119) && size < 3) {
         size++;
         effects.consume(code);
-        return wwwPrefixInside
+        return wwwPrefixInside;
       }
       if (code === 46 && size === 3) {
         effects.consume(code);
-        return wwwPrefixAfter
+        return wwwPrefixAfter;
       }
-      return nok(code)
+      return nok(code);
     }
 
     /**
@@ -7903,7 +7872,7 @@
      */
     function wwwPrefixAfter(code) {
       // If there is *anything*, we can link.
-      return code === null ? nok(code) : ok(code)
+      return code === null ? nok(code) : ok(code);
     }
   }
 
@@ -7925,7 +7894,7 @@
     let underscoreInLastLastSegment;
     /** @type {boolean | undefined} */
     let seen;
-    return domainInside
+    return domainInside;
 
     /**
      * In domain.
@@ -7942,7 +7911,7 @@
       // marker, optionally followed by more trailing markers, and then
       // followed by an end.
       if (code === 46 || code === 95) {
-        return effects.check(trail, domainAfter, domainAtPunctuation)(code)
+        return effects.check(trail, domainAfter, domainAtPunctuation)(code);
       }
 
       // GH documents that only alphanumerics (other than `-`, `.`, and `_`) can
@@ -7951,17 +7920,12 @@
       // Instead of some new production for Unicode alphanumerics, markdown
       // already has that for Unicode punctuation and whitespace, so use those.
       // Source: <https://github.com/github/cmark-gfm/blob/ef1cfcb/extensions/autolink.c#L12>.
-      if (
-        code === null ||
-        markdownLineEndingOrSpace(code) ||
-        unicodeWhitespace(code) ||
-        (code !== 45 && unicodePunctuation(code))
-      ) {
-        return domainAfter(code)
+      if (code === null || markdownLineEndingOrSpace(code) || unicodeWhitespace(code) || code !== 45 && unicodePunctuation(code)) {
+        return domainAfter(code);
       }
       seen = true;
       effects.consume(code);
-      return domainInside
+      return domainInside;
     }
 
     /**
@@ -7986,7 +7950,7 @@
         underscoreInLastSegment = undefined;
       }
       effects.consume(code);
-      return domainInside
+      return domainInside;
     }
 
     /**
@@ -8002,9 +7966,9 @@
       // Note: that’s GH says a dot is needed, but it’s not true:
       // <https://github.com/github/cmark-gfm/issues/279>
       if (underscoreInLastLastSegment || underscoreInLastSegment || !seen) {
-        return nok(code)
+        return nok(code);
       }
-      return ok(code)
+      return ok(code);
     }
   }
 
@@ -8022,7 +7986,7 @@
   function tokenizePath(effects, ok) {
     let sizeOpen = 0;
     let sizeClose = 0;
-    return pathInside
+    return pathInside;
 
     /**
      * In path.
@@ -8038,47 +8002,27 @@
       if (code === 40) {
         sizeOpen++;
         effects.consume(code);
-        return pathInside
+        return pathInside;
       }
 
       // To do: `markdown-rs` also needs this.
       // If this is a paren, and there are less closings than openings,
       // we don’t check for a trail.
       if (code === 41 && sizeClose < sizeOpen) {
-        return pathAtPunctuation(code)
+        return pathAtPunctuation(code);
       }
 
       // Check whether this trailing punctuation marker is optionally
       // followed by more trailing markers, and then followed
       // by an end.
-      if (
-        code === 33 ||
-        code === 34 ||
-        code === 38 ||
-        code === 39 ||
-        code === 41 ||
-        code === 42 ||
-        code === 44 ||
-        code === 46 ||
-        code === 58 ||
-        code === 59 ||
-        code === 60 ||
-        code === 63 ||
-        code === 93 ||
-        code === 95 ||
-        code === 126
-      ) {
-        return effects.check(trail, ok, pathAtPunctuation)(code)
+      if (code === 33 || code === 34 || code === 38 || code === 39 || code === 41 || code === 42 || code === 44 || code === 46 || code === 58 || code === 59 || code === 60 || code === 63 || code === 93 || code === 95 || code === 126) {
+        return effects.check(trail, ok, pathAtPunctuation)(code);
       }
-      if (
-        code === null ||
-        markdownLineEndingOrSpace(code) ||
-        unicodeWhitespace(code)
-      ) {
-        return ok(code)
+      if (code === null || markdownLineEndingOrSpace(code) || unicodeWhitespace(code)) {
+        return ok(code);
       }
       effects.consume(code);
-      return pathInside
+      return pathInside;
     }
 
     /**
@@ -8097,7 +8041,7 @@
         sizeClose++;
       }
       effects.consume(code);
-      return pathInside
+      return pathInside;
     }
   }
 
@@ -8117,7 +8061,7 @@
    * @type {Tokenizer}
    */
   function tokenizeTrail(effects, ok, nok) {
-    return trail
+    return trail;
 
     /**
      * In trail of domain or path.
@@ -8131,22 +8075,9 @@
      */
     function trail(code) {
       // Regular trailing punctuation.
-      if (
-        code === 33 ||
-        code === 34 ||
-        code === 39 ||
-        code === 41 ||
-        code === 42 ||
-        code === 44 ||
-        code === 46 ||
-        code === 58 ||
-        code === 59 ||
-        code === 63 ||
-        code === 95 ||
-        code === 126
-      ) {
+      if (code === 33 || code === 34 || code === 39 || code === 41 || code === 42 || code === 44 || code === 46 || code === 58 || code === 59 || code === 63 || code === 95 || code === 126) {
         effects.consume(code);
-        return trail
+        return trail;
       }
 
       // `&` followed by one or more alphabeticals and then a `;`, is
@@ -8154,7 +8085,7 @@
       // In all other cases, it is considered as continuation of the URL.
       if (code === 38) {
         effects.consume(code);
-        return trailCharRefStart
+        return trailCharacterReferenceStart;
       }
 
       // Needed because we allow literals after `[`, as we fix:
@@ -8162,19 +8093,16 @@
       // Check that it is not followed by `(` or `[`.
       if (code === 93) {
         effects.consume(code);
-        return trailBracketAfter
+        return trailBracketAfter;
       }
       if (
-        // `<` is an end.
-        code === 60 ||
-        // So is whitespace.
-        code === null ||
-        markdownLineEndingOrSpace(code) ||
-        unicodeWhitespace(code)
-      ) {
-        return ok(code)
+      // `<` is an end.
+      code === 60 ||
+      // So is whitespace.
+      code === null || markdownLineEndingOrSpace(code) || unicodeWhitespace(code)) {
+        return ok(code);
       }
-      return nok(code)
+      return nok(code);
     }
 
     /**
@@ -8193,16 +8121,10 @@
     function trailBracketAfter(code) {
       // Whitespace or something that could start a resource or reference is the end.
       // Switch back to trail otherwise.
-      if (
-        code === null ||
-        code === 40 ||
-        code === 91 ||
-        markdownLineEndingOrSpace(code) ||
-        unicodeWhitespace(code)
-      ) {
-        return ok(code)
+      if (code === null || code === 40 || code === 91 || markdownLineEndingOrSpace(code) || unicodeWhitespace(code)) {
+        return ok(code);
       }
-      return trail(code)
+      return trail(code);
     }
 
     /**
@@ -8215,9 +8137,9 @@
      *
      * @type {State}
      */
-    function trailCharRefStart(code) {
+    function trailCharacterReferenceStart(code) {
       // When non-alpha, it’s not a trail.
-      return asciiAlpha(code) ? trailCharRefInside(code) : nok(code)
+      return asciiAlpha(code) ? trailCharacterReferenceInside(code) : nok(code);
     }
 
     /**
@@ -8230,19 +8152,19 @@
      *
      * @type {State}
      */
-    function trailCharRefInside(code) {
+    function trailCharacterReferenceInside(code) {
       // Switch back to trail if this is well-formed.
       if (code === 59) {
         effects.consume(code);
-        return trail
+        return trail;
       }
       if (asciiAlpha(code)) {
         effects.consume(code);
-        return trailCharRefInside
+        return trailCharacterReferenceInside;
       }
 
       // It’s not a trail.
-      return nok(code)
+      return nok(code);
     }
   }
 
@@ -8262,7 +8184,7 @@
    * @type {Tokenizer}
    */
   function tokenizeEmailDomainDotTrail(effects, ok, nok) {
-    return start
+    return start;
 
     /**
      * Dot.
@@ -8277,7 +8199,7 @@
     function start(code) {
       // Must be dot.
       effects.consume(code);
-      return after
+      return after;
     }
 
     /**
@@ -8292,7 +8214,7 @@
      */
     function after(code) {
       // Not a trail if alphanumeric.
-      return asciiAlphanumeric(code) ? nok(code) : ok(code)
+      return asciiAlphanumeric(code) ? nok(code) : ok(code);
     }
   }
 
@@ -8303,16 +8225,7 @@
    * @type {Previous}
    */
   function previousWww(code) {
-    return (
-      code === null ||
-      code === 40 ||
-      code === 42 ||
-      code === 95 ||
-      code === 91 ||
-      code === 93 ||
-      code === 126 ||
-      markdownLineEndingOrSpace(code)
-    )
+    return code === null || code === 40 || code === 42 || code === 95 || code === 91 || code === 93 || code === 126 || markdownLineEndingOrSpace(code);
   }
 
   /**
@@ -8322,7 +8235,7 @@
    * @type {Previous}
    */
   function previousProtocol(code) {
-    return !asciiAlpha(code)
+    return !asciiAlpha(code);
   }
 
   /**
@@ -8334,7 +8247,7 @@
     // The reference code is a bit weird, but that’s what it results in.
     // Source: <https://github.com/github/cmark-gfm/blob/ef1cfcb/extensions/autolink.c#L307>.
     // Other than slash, every preceding character is allowed.
-    return !(code === 47 || gfmAtext(code))
+    return !(code === 47 || gfmAtext(code));
   }
 
   /**
@@ -8342,13 +8255,7 @@
    * @returns {boolean}
    */
   function gfmAtext(code) {
-    return (
-      code === 43 ||
-      code === 45 ||
-      code === 46 ||
-      code === 95 ||
-      asciiAlphanumeric(code)
-    )
+    return code === 43 || code === 45 || code === 46 || code === 95 || asciiAlphanumeric(code);
   }
 
   /**
@@ -8360,19 +8267,16 @@
     let result = false;
     while (index--) {
       const token = events[index][1];
-      if (
-        (token.type === 'labelLink' || token.type === 'labelImage') &&
-        !token._balanced
-      ) {
+      if ((token.type === 'labelLink' || token.type === 'labelImage') && !token._balanced) {
         result = true;
-        break
+        break;
       }
 
       // If we’ve seen this token, and it was marked as not having any unbalanced
       // bracket before it, we can exit.
       if (token._gfmAutolinkLiteralWalkedInto) {
         result = false;
-        break
+        break;
       }
     }
     if (events.length > 0 && !result) {
@@ -8380,7 +8284,7 @@
       // anything.
       events[events.length - 1][1]._gfmAutolinkLiteralWalkedInto = true;
     }
-    return result
+    return result;
   }
 
   /**
@@ -15314,21 +15218,8 @@
   }
 
   /**
-   * @typedef {import('micromark-util-types').Event} Event
-   * @typedef {import('micromark-util-types').Extension} Extension
-   * @typedef {import('micromark-util-types').Resolver} Resolver
-   * @typedef {import('micromark-util-types').State} State
-   * @typedef {import('micromark-util-types').Token} Token
-   * @typedef {import('micromark-util-types').TokenizeContext} TokenizeContext
-   * @typedef {import('micromark-util-types').Tokenizer} Tokenizer
-   *
-   * @typedef Options
-   *   Configuration (optional).
-   * @property {boolean | null | undefined} [singleTilde=true]
-   *   Whether to support strikethrough with a single tilde (default: `true`).
-   *
-   *   Single tildes work on github.com, but are technically prohibited by the
-   *   GFM spec.
+   * @import {Options} from 'micromark-extension-gfm-strikethrough'
+   * @import {Event, Extension, Resolver, State, Token, TokenizeContext, Tokenizer} from 'micromark-util-types'
    */
 
   /**
@@ -15344,6 +15235,7 @@
     const options_ = options || {};
     let single = options_.singleTilde;
     const tokenizer = {
+      name: 'strikethrough',
       tokenize: tokenizeStrikethrough,
       resolveAll: resolveAllStrikethrough
     };
@@ -15360,7 +15252,7 @@
       attentionMarkers: {
         null: [126]
       }
-    }
+    };
 
     /**
      * Take events and resolve strikethrough.
@@ -15373,24 +15265,15 @@
       // Walk through all events.
       while (++index < events.length) {
         // Find a token that can close.
-        if (
-          events[index][0] === 'enter' &&
-          events[index][1].type === 'strikethroughSequenceTemporary' &&
-          events[index][1]._close
-        ) {
+        if (events[index][0] === 'enter' && events[index][1].type === 'strikethroughSequenceTemporary' && events[index][1]._close) {
           let open = index;
 
           // Now walk back to find an opener.
           while (open--) {
             // Find a token that can open the closer.
-            if (
-              events[open][0] === 'exit' &&
-              events[open][1].type === 'strikethroughSequenceTemporary' &&
-              events[open][1]._open &&
-              // If the sizes are the same:
-              events[index][1].end.offset - events[index][1].start.offset ===
-                events[open][1].end.offset - events[open][1].start.offset
-            ) {
+            if (events[open][0] === 'exit' && events[open][1].type === 'strikethroughSequenceTemporary' && events[open][1]._open &&
+            // If the sizes are the same:
+            events[index][1].end.offset - events[index][1].start.offset === events[open][1].end.offset - events[open][1].start.offset) {
               events[index][1].type = 'strikethroughSequence';
               events[open][1].type = 'strikethroughSequence';
 
@@ -15410,33 +15293,18 @@
 
               // Opening.
               /** @type {Array<Event>} */
-              const nextEvents = [
-                ['enter', strikethrough, context],
-                ['enter', events[open][1], context],
-                ['exit', events[open][1], context],
-                ['enter', text, context]
-              ];
+              const nextEvents = [['enter', strikethrough, context], ['enter', events[open][1], context], ['exit', events[open][1], context], ['enter', text, context]];
               const insideSpan = context.parser.constructs.insideSpan.null;
               if (insideSpan) {
                 // Between.
-                splice(
-                  nextEvents,
-                  nextEvents.length,
-                  0,
-                  resolveAll(insideSpan, events.slice(open + 1, index), context)
-                );
+                splice(nextEvents, nextEvents.length, 0, resolveAll(insideSpan, events.slice(open + 1, index), context));
               }
 
               // Closing.
-              splice(nextEvents, nextEvents.length, 0, [
-                ['exit', text, context],
-                ['enter', events[index][1], context],
-                ['exit', events[index][1], context],
-                ['exit', strikethrough, context]
-              ]);
+              splice(nextEvents, nextEvents.length, 0, [['exit', text, context], ['enter', events[index][1], context], ['exit', events[index][1], context], ['exit', strikethrough, context]]);
               splice(events, open - 1, index - open + 3, nextEvents);
               index = open + nextEvents.length - 2;
-              break
+              break;
             }
           }
         }
@@ -15444,10 +15312,10 @@
       index = -1;
       while (++index < events.length) {
         if (events[index][1].type === 'strikethroughSequenceTemporary') {
-          events[index][1].type = 'data';
+          events[index][1].type = "data";
         }
       }
-      return events
+      return events;
     }
 
     /**
@@ -15458,18 +15326,15 @@
       const previous = this.previous;
       const events = this.events;
       let size = 0;
-      return start
+      return start;
 
       /** @type {State} */
       function start(code) {
-        if (
-          previous === 126 &&
-          events[events.length - 1][1].type !== 'characterEscape'
-        ) {
-          return nok(code)
+        if (previous === 126 && events[events.length - 1][1].type !== "characterEscape") {
+          return nok(code);
         }
         effects.enter('strikethroughSequenceTemporary');
-        return more(code)
+        return more(code);
       }
 
       /** @type {State} */
@@ -15477,23 +15342,23 @@
         const before = classifyCharacter(previous);
         if (code === 126) {
           // If this is the third marker, exit.
-          if (size > 1) return nok(code)
+          if (size > 1) return nok(code);
           effects.consume(code);
           size++;
-          return more
+          return more;
         }
-        if (size < 2 && !single) return nok(code)
+        if (size < 2 && !single) return nok(code);
         const token = effects.exit('strikethroughSequenceTemporary');
         const after = classifyCharacter(code);
-        token._open = !after || (after === 2 && Boolean(before));
-        token._close = !before || (before === 2 && Boolean(after));
-        return ok(code)
+        token._open = !after || after === 2 && Boolean(before);
+        token._close = !before || before === 2 && Boolean(after);
+        return ok(code);
       }
     }
   }
 
   /**
-   * @typedef {import('micromark-util-types').Event} Event
+   * @import {Event} from 'micromark-util-types'
    */
 
   // Port of `edit_map.rs` from `markdown-rs`.
@@ -15539,7 +15404,7 @@
      * @returns {undefined}
      */
     add(index, remove, add) {
-      addImpl(this, index, remove, add);
+      addImplementation(this, index, remove, add);
     }
 
     // To do: add this when moving to `micromark`.
@@ -15552,7 +15417,7 @@
     //  * @returns {undefined}
     //  */
     // addBefore(index, remove, add) {
-    //   addImpl(this, index, remove, add, true)
+    //   addImplementation(this, index, remove, add, true)
     // }
 
     /**
@@ -15563,12 +15428,12 @@
      */
     consume(events) {
       this.map.sort(function (a, b) {
-        return a[0] - b[0]
+        return a[0] - b[0];
       });
 
       /* c8 ignore next 3 -- `resolve` is never called without tables, so without edits. */
       if (this.map.length === 0) {
-        return
+        return;
       }
 
       // To do: if links are added in events, like they are in `markdown-rs`,
@@ -15594,10 +15459,7 @@
       const vecs = [];
       while (index > 0) {
         index -= 1;
-        vecs.push(
-          events.slice(this.map[index][0] + this.map[index][1]),
-          this.map[index][2]
-        );
+        vecs.push(events.slice(this.map[index][0] + this.map[index][1]), this.map[index][2]);
 
         // Truncate rest.
         events.length = this.map[index][0];
@@ -15624,12 +15486,12 @@
    * @param {Array<Event>} add
    * @returns {undefined}
    */
-  function addImpl(editMap, at, remove, add) {
+  function addImplementation(editMap, at, remove, add) {
     let index = 0;
 
     /* c8 ignore next 3 -- `resolve` is never called without tables, so without edits. */
     if (remove === 0 && add.length === 0) {
-      return
+      return;
     }
     while (index < editMap.map.length) {
       if (editMap.map[index][0] === at) {
@@ -15643,7 +15505,7 @@
         editMap.map[index][2].push(...add);
         // }
 
-        return
+        return;
       }
       index += 1;
     }
@@ -15697,7 +15559,7 @@
   // }
 
   /**
-   * @typedef {import('micromark-util-types').Event} Event
+   * @import {Event} from 'micromark-util-types'
    */
 
   /**
@@ -15725,11 +15587,7 @@
           // Start of alignment value: set a new column.
           // To do: `markdown-rs` uses `tableDelimiterCellValue`.
           if (event[1].type === 'tableContent') {
-            align.push(
-              events[index + 1][1].type === 'tableDelimiterMarker'
-                ? 'left'
-                : 'none'
-            );
+            align.push(events[index + 1][1].type === 'tableDelimiterMarker' ? 'left' : 'none');
           }
         }
         // Exits:
@@ -15743,25 +15601,18 @@
         }
         // Done!
         else if (event[1].type === 'tableDelimiterRow') {
-          break
+          break;
         }
       } else if (event[0] === 'enter' && event[1].type === 'tableDelimiterRow') {
         inDelimiterRow = true;
       }
       index += 1;
     }
-    return align
+    return align;
   }
 
   /**
-   * @typedef {import('micromark-util-types').Event} Event
-   * @typedef {import('micromark-util-types').Extension} Extension
-   * @typedef {import('micromark-util-types').Point} Point
-   * @typedef {import('micromark-util-types').Resolver} Resolver
-   * @typedef {import('micromark-util-types').State} State
-   * @typedef {import('micromark-util-types').Token} Token
-   * @typedef {import('micromark-util-types').TokenizeContext} TokenizeContext
-   * @typedef {import('micromark-util-types').Tokenizer} Tokenizer
+   * @import {Event, Extension, Point, Resolver, State, Token, TokenizeContext, Tokenizer} from 'micromark-util-types'
    */
 
 
@@ -15776,11 +15627,12 @@
     return {
       flow: {
         null: {
+          name: 'table',
           tokenize: tokenizeTable,
           resolveAll: resolveTable
         }
       }
-    }
+    };
   }
 
   /**
@@ -15793,7 +15645,7 @@
     let sizeB = 0;
     /** @type {boolean | undefined} */
     let seen;
-    return start
+    return start;
 
     /**
      * Start of a GFM table.
@@ -15815,23 +15667,18 @@
       let index = self.events.length - 1;
       while (index > -1) {
         const type = self.events[index][1].type;
-        if (
-          type === 'lineEnding' ||
-          // Note: markdown-rs uses `whitespace` instead of `linePrefix`
-          type === 'linePrefix'
-        )
-          index--;
-        else break
+        if (type === "lineEnding" ||
+        // Note: markdown-rs uses `whitespace` instead of `linePrefix`
+        type === "linePrefix") index--;else break;
       }
       const tail = index > -1 ? self.events[index][1].type : null;
-      const next =
-        tail === 'tableHead' || tail === 'tableRow' ? bodyRowStart : headRowBefore;
+      const next = tail === 'tableHead' || tail === 'tableRow' ? bodyRowStart : headRowBefore;
 
       // Don’t allow lazy body rows.
       if (next === bodyRowStart && self.parser.lazy[self.now().line]) {
-        return nok(code)
+        return nok(code);
       }
-      return next(code)
+      return next(code);
     }
 
     /**
@@ -15849,7 +15696,7 @@
     function headRowBefore(code) {
       effects.enter('tableHead');
       effects.enter('tableRow');
-      return headRowStart(code)
+      return headRowStart(code);
     }
 
     /**
@@ -15866,7 +15713,7 @@
      */
     function headRowStart(code) {
       if (code === 124) {
-        return headRowBreak(code)
+        return headRowBreak(code);
       }
 
       // To do: micromark-js should let us parse our own whitespace in extensions,
@@ -15882,7 +15729,7 @@
       seen = true;
       // Count the first character, that isn’t a pipe, double.
       sizeB += 1;
-      return headRowBreak(code)
+      return headRowBreak(code);
     }
 
     /**
@@ -15902,7 +15749,7 @@
     function headRowBreak(code) {
       if (code === null) {
         // Note: in `markdown-rs`, we need to reset, in `micromark-js` we don‘t.
-        return nok(code)
+        return nok(code);
       }
       if (markdownLineEnding(code)) {
         // If anything other than one pipe (ignoring whitespace) was used, it’s fine.
@@ -15912,20 +15759,20 @@
           // Feel free to interrupt:
           self.interrupt = true;
           effects.exit('tableRow');
-          effects.enter('lineEnding');
+          effects.enter("lineEnding");
           effects.consume(code);
-          effects.exit('lineEnding');
-          return headDelimiterStart
+          effects.exit("lineEnding");
+          return headDelimiterStart;
         }
 
         // Note: in `markdown-rs`, we need to reset, in `micromark-js` we don‘t.
-        return nok(code)
+        return nok(code);
       }
       if (markdownSpace(code)) {
         // To do: check if this is fine.
         // effects.attempt(State::Next(StateName::GfmTableHeadRowBreak), State::Nok)
         // State::Retry(space_or_tab(tokenizer))
-        return factorySpace(effects, headRowBreak, 'whitespace')(code)
+        return factorySpace(effects, headRowBreak, "whitespace")(code);
       }
       sizeB += 1;
       if (seen) {
@@ -15939,12 +15786,12 @@
         effects.exit('tableCellDivider');
         // Whether a delimiter was seen.
         seen = true;
-        return headRowBreak
+        return headRowBreak;
       }
 
       // Anything else is cell data.
-      effects.enter('data');
-      return headRowData(code)
+      effects.enter("data");
+      return headRowData(code);
     }
 
     /**
@@ -15961,11 +15808,11 @@
      */
     function headRowData(code) {
       if (code === null || code === 124 || markdownLineEndingOrSpace(code)) {
-        effects.exit('data');
-        return headRowBreak(code)
+        effects.exit("data");
+        return headRowBreak(code);
       }
       effects.consume(code);
-      return code === 92 ? headRowEscape : headRowData
+      return code === 92 ? headRowEscape : headRowData;
     }
 
     /**
@@ -15983,9 +15830,9 @@
     function headRowEscape(code) {
       if (code === 92 || code === 124) {
         effects.consume(code);
-        return headRowData
+        return headRowData;
       }
-      return headRowData(code)
+      return headRowData(code);
     }
 
     /**
@@ -16006,22 +15853,15 @@
 
       // Note: in `markdown-rs`, we need to handle piercing here too.
       if (self.parser.lazy[self.now().line]) {
-        return nok(code)
+        return nok(code);
       }
       effects.enter('tableDelimiterRow');
       // Track if we’ve seen a `:` or `|`.
       seen = false;
       if (markdownSpace(code)) {
-        return factorySpace(
-          effects,
-          headDelimiterBefore,
-          'linePrefix',
-          self.parser.constructs.disable.null.includes('codeIndented')
-            ? undefined
-            : 4
-        )(code)
+        return factorySpace(effects, headDelimiterBefore, "linePrefix", self.parser.constructs.disable.null.includes('codeIndented') ? undefined : 4)(code);
       }
-      return headDelimiterBefore(code)
+      return headDelimiterBefore(code);
     }
 
     /**
@@ -16040,7 +15880,7 @@
      */
     function headDelimiterBefore(code) {
       if (code === 45 || code === 58) {
-        return headDelimiterValueBefore(code)
+        return headDelimiterValueBefore(code);
       }
       if (code === 124) {
         seen = true;
@@ -16048,11 +15888,11 @@
         effects.enter('tableCellDivider');
         effects.consume(code);
         effects.exit('tableCellDivider');
-        return headDelimiterCellBefore
+        return headDelimiterCellBefore;
       }
 
       // More whitespace / empty row not allowed at start.
-      return headDelimiterNok(code)
+      return headDelimiterNok(code);
     }
 
     /**
@@ -16068,9 +15908,9 @@
      */
     function headDelimiterCellBefore(code) {
       if (markdownSpace(code)) {
-        return factorySpace(effects, headDelimiterValueBefore, 'whitespace')(code)
+        return factorySpace(effects, headDelimiterValueBefore, "whitespace")(code);
       }
-      return headDelimiterValueBefore(code)
+      return headDelimiterValueBefore(code);
     }
 
     /**
@@ -16092,19 +15932,19 @@
         effects.enter('tableDelimiterMarker');
         effects.consume(code);
         effects.exit('tableDelimiterMarker');
-        return headDelimiterLeftAlignmentAfter
+        return headDelimiterLeftAlignmentAfter;
       }
 
       // Align: none.
       if (code === 45) {
         sizeB += 1;
         // To do: seems weird that this *isn’t* left aligned, but that state is used?
-        return headDelimiterLeftAlignmentAfter(code)
+        return headDelimiterLeftAlignmentAfter(code);
       }
       if (code === null || markdownLineEnding(code)) {
-        return headDelimiterCellAfter(code)
+        return headDelimiterCellAfter(code);
       }
-      return headDelimiterNok(code)
+      return headDelimiterNok(code);
     }
 
     /**
@@ -16121,11 +15961,11 @@
     function headDelimiterLeftAlignmentAfter(code) {
       if (code === 45) {
         effects.enter('tableDelimiterFiller');
-        return headDelimiterFiller(code)
+        return headDelimiterFiller(code);
       }
 
       // Anything else is not ok after the left-align colon.
-      return headDelimiterNok(code)
+      return headDelimiterNok(code);
     }
 
     /**
@@ -16142,7 +15982,7 @@
     function headDelimiterFiller(code) {
       if (code === 45) {
         effects.consume(code);
-        return headDelimiterFiller
+        return headDelimiterFiller;
       }
 
       // Align is `center` if it was `left`, `right` otherwise.
@@ -16152,10 +15992,10 @@
         effects.enter('tableDelimiterMarker');
         effects.consume(code);
         effects.exit('tableDelimiterMarker');
-        return headDelimiterRightAlignmentAfter
+        return headDelimiterRightAlignmentAfter;
       }
       effects.exit('tableDelimiterFiller');
-      return headDelimiterRightAlignmentAfter(code)
+      return headDelimiterRightAlignmentAfter(code);
     }
 
     /**
@@ -16171,9 +16011,9 @@
      */
     function headDelimiterRightAlignmentAfter(code) {
       if (markdownSpace(code)) {
-        return factorySpace(effects, headDelimiterCellAfter, 'whitespace')(code)
+        return factorySpace(effects, headDelimiterCellAfter, "whitespace")(code);
       }
-      return headDelimiterCellAfter(code)
+      return headDelimiterCellAfter(code);
     }
 
     /**
@@ -16189,7 +16029,7 @@
      */
     function headDelimiterCellAfter(code) {
       if (code === 124) {
-        return headDelimiterBefore(code)
+        return headDelimiterBefore(code);
       }
       if (code === null || markdownLineEnding(code)) {
         // Exit when:
@@ -16197,7 +16037,7 @@
         //   underline instead)
         // * the header cell count is not the delimiter cell count
         if (!seen || size !== sizeB) {
-          return headDelimiterNok(code)
+          return headDelimiterNok(code);
         }
 
         // Note: in markdown-rs`, a reset is needed here.
@@ -16205,9 +16045,9 @@
         effects.exit('tableHead');
         // To do: in `markdown-rs`, resolvers need to be registered manually.
         // effects.register_resolver(ResolveName::GfmTable)
-        return ok(code)
+        return ok(code);
       }
-      return headDelimiterNok(code)
+      return headDelimiterNok(code);
     }
 
     /**
@@ -16223,7 +16063,7 @@
      */
     function headDelimiterNok(code) {
       // Note: in `markdown-rs`, we need to reset, in `micromark-js` we don‘t.
-      return nok(code)
+      return nok(code);
     }
 
     /**
@@ -16243,7 +16083,7 @@
       // but in `micromark-js` that is done for us, so if we’re here, we’re
       // never at whitespace.
       effects.enter('tableRow');
-      return bodyRowBreak(code)
+      return bodyRowBreak(code);
     }
 
     /**
@@ -16265,19 +16105,19 @@
         effects.enter('tableCellDivider');
         effects.consume(code);
         effects.exit('tableCellDivider');
-        return bodyRowBreak
+        return bodyRowBreak;
       }
       if (code === null || markdownLineEnding(code)) {
         effects.exit('tableRow');
-        return ok(code)
+        return ok(code);
       }
       if (markdownSpace(code)) {
-        return factorySpace(effects, bodyRowBreak, 'whitespace')(code)
+        return factorySpace(effects, bodyRowBreak, "whitespace")(code);
       }
 
       // Anything else is cell content.
-      effects.enter('data');
-      return bodyRowData(code)
+      effects.enter("data");
+      return bodyRowData(code);
     }
 
     /**
@@ -16294,11 +16134,11 @@
      */
     function bodyRowData(code) {
       if (code === null || code === 124 || markdownLineEndingOrSpace(code)) {
-        effects.exit('data');
-        return bodyRowBreak(code)
+        effects.exit("data");
+        return bodyRowBreak(code);
       }
       effects.consume(code);
-      return code === 92 ? bodyRowEscape : bodyRowData
+      return code === 92 ? bodyRowEscape : bodyRowData;
     }
 
     /**
@@ -16316,9 +16156,9 @@
     function bodyRowEscape(code) {
       if (code === 92 || code === 124) {
         effects.consume(code);
-        return bodyRowData
+        return bodyRowData;
       }
-      return bodyRowData(code)
+      return bodyRowData(code);
     }
   }
 
@@ -16365,10 +16205,7 @@
             end: Object.assign({}, token.end)
           };
           map.add(index, 0, [['enter', currentTable, context]]);
-        } else if (
-          token.type === 'tableRow' ||
-          token.type === 'tableDelimiterRow'
-        ) {
+        } else if (token.type === 'tableRow' || token.type === 'tableDelimiterRow') {
           inFirstCellAwaitingPipe = true;
           currentCell = undefined;
           lastCell = [0, 0, 0, 0];
@@ -16388,26 +16225,14 @@
           rowKind = token.type === 'tableDelimiterRow' ? 2 : currentBody ? 3 : 1;
         }
         // Cell data.
-        else if (
-          rowKind &&
-          (token.type === 'data' ||
-            token.type === 'tableDelimiterMarker' ||
-            token.type === 'tableDelimiterFiller')
-        ) {
+        else if (rowKind && (token.type === "data" || token.type === 'tableDelimiterMarker' || token.type === 'tableDelimiterFiller')) {
           inFirstCellAwaitingPipe = false;
 
           // First value in cell.
           if (cell[2] === 0) {
             if (lastCell[1] !== 0) {
               cell[0] = cell[1];
-              currentCell = flushCell(
-                map,
-                context,
-                lastCell,
-                rowKind,
-                undefined,
-                currentCell
-              );
+              currentCell = flushCell(map, context, lastCell, rowKind, undefined, currentCell);
               lastCell = [0, 0, 0, 0];
             }
             cell[2] = index;
@@ -16418,14 +16243,7 @@
           } else {
             if (lastCell[1] !== 0) {
               cell[0] = cell[1];
-              currentCell = flushCell(
-                map,
-                context,
-                lastCell,
-                rowKind,
-                undefined,
-                currentCell
-              );
+              currentCell = flushCell(map, context, lastCell, rowKind, undefined, currentCell);
             }
             lastCell = cell;
             cell = [lastCell[1], index, 0, 0];
@@ -16436,31 +16254,16 @@
       else if (token.type === 'tableHead') {
         afterHeadAwaitingFirstBodyRow = true;
         lastTableEnd = index;
-      } else if (
-        token.type === 'tableRow' ||
-        token.type === 'tableDelimiterRow'
-      ) {
+      } else if (token.type === 'tableRow' || token.type === 'tableDelimiterRow') {
         lastTableEnd = index;
         if (lastCell[1] !== 0) {
           cell[0] = cell[1];
-          currentCell = flushCell(
-            map,
-            context,
-            lastCell,
-            rowKind,
-            index,
-            currentCell
-          );
+          currentCell = flushCell(map, context, lastCell, rowKind, index, currentCell);
         } else if (cell[1] !== 0) {
           currentCell = flushCell(map, context, cell, rowKind, index, currentCell);
         }
         rowKind = 0;
-      } else if (
-        rowKind &&
-        (token.type === 'data' ||
-          token.type === 'tableDelimiterMarker' ||
-          token.type === 'tableDelimiterFiller')
-      ) {
+      } else if (rowKind && (token.type === "data" || token.type === 'tableDelimiterMarker' || token.type === 'tableDelimiterFiller')) {
         cell[3] = index;
       }
     }
@@ -16479,7 +16282,7 @@
         event[1]._align = gfmTableAlign(context.events, index);
       }
     }
-    return events
+    return events;
   }
 
   /**
@@ -16497,12 +16300,7 @@
   function flushCell(map, context, range, rowKind, rowEnd, previousCell) {
     // `markdown-rs` uses:
     // rowKind === 2 ? 'tableDelimiterCell' : 'tableCell'
-    const groupName =
-      rowKind === 1
-        ? 'tableHeader'
-        : rowKind === 2
-        ? 'tableDelimiter'
-        : 'tableData';
+    const groupName = rowKind === 1 ? 'tableHeader' : rowKind === 2 ? 'tableDelimiter' : 'tableData';
     // `markdown-rs` uses:
     // rowKind === 2 ? 'tableDelimiterCellValue' : 'tableCellText'
     const valueName = 'tableContent';
@@ -16559,8 +16357,8 @@
         const start = context.events[range[2]];
         const end = context.events[range[3]];
         start[1].end = Object.assign({}, end[1].end);
-        start[1].type = 'chunkText';
-        start[1].contentType = 'text';
+        start[1].type = "chunkText";
+        start[1].contentType = "text";
 
         // Remove if needed.
         if (range[3] > range[2] + 1) {
@@ -16584,7 +16382,7 @@
       map.add(rowEnd, 0, [['exit', previousCell, context]]);
       previousCell = undefined;
     }
-    return previousCell
+    return previousCell;
   }
 
   /**
@@ -16618,17 +16416,15 @@
   function getPoint(events, index) {
     const event = events[index];
     const side = event[0] === 'enter' ? 'start' : 'end';
-    return event[1][side]
+    return event[1][side];
   }
 
   /**
-   * @typedef {import('micromark-util-types').Extension} Extension
-   * @typedef {import('micromark-util-types').State} State
-   * @typedef {import('micromark-util-types').TokenizeContext} TokenizeContext
-   * @typedef {import('micromark-util-types').Tokenizer} Tokenizer
+   * @import {Extension, State, TokenizeContext, Tokenizer} from 'micromark-util-types'
    */
 
   const tasklistCheck = {
+    name: 'tasklistCheck',
     tokenize: tokenizeTasklistCheck
   };
 
@@ -16645,7 +16441,7 @@
       text: {
         [91]: tasklistCheck
       }
-    }
+    };
   }
 
   /**
@@ -16654,7 +16450,7 @@
    */
   function tokenizeTasklistCheck(effects, ok, nok) {
     const self = this;
-    return open
+    return open;
 
     /**
      * At start of task list item check.
@@ -16668,19 +16464,18 @@
      */
     function open(code) {
       if (
-        // Exit if there’s stuff before.
-        self.previous !== null ||
-        // Exit if not in the first content that is the first child of a list
-        // item.
-        !self._gfmTasklistFirstContentOfListItem
-      ) {
-        return nok(code)
+      // Exit if there’s stuff before.
+      self.previous !== null ||
+      // Exit if not in the first content that is the first child of a list
+      // item.
+      !self._gfmTasklistFirstContentOfListItem) {
+        return nok(code);
       }
       effects.enter('taskListCheck');
       effects.enter('taskListCheckMarker');
       effects.consume(code);
       effects.exit('taskListCheckMarker');
-      return inside
+      return inside;
     }
 
     /**
@@ -16701,15 +16496,15 @@
         effects.enter('taskListCheckValueUnchecked');
         effects.consume(code);
         effects.exit('taskListCheckValueUnchecked');
-        return close
+        return close;
       }
       if (code === 88 || code === 120) {
         effects.enter('taskListCheckValueChecked');
         effects.consume(code);
         effects.exit('taskListCheckValueChecked');
-        return close
+        return close;
       }
-      return nok(code)
+      return nok(code);
     }
 
     /**
@@ -16728,9 +16523,9 @@
         effects.consume(code);
         effects.exit('taskListCheckMarker');
         effects.exit('taskListCheck');
-        return after
+        return after;
       }
-      return nok(code)
+      return nok(code);
     }
 
     /**
@@ -16739,23 +16534,19 @@
     function after(code) {
       // EOL in paragraph means there must be something else after it.
       if (markdownLineEnding(code)) {
-        return ok(code)
+        return ok(code);
       }
 
       // Space or tab?
       // Check what comes after.
       if (markdownSpace(code)) {
-        return effects.check(
-          {
-            tokenize: spaceThenNonSpace
-          },
-          ok,
-          nok
-        )(code)
+        return effects.check({
+          tokenize: spaceThenNonSpace
+        }, ok, nok)(code);
       }
 
       // EOF, or non-whitespace, both wrong.
-      return nok(code)
+      return nok(code);
     }
   }
 
@@ -16764,7 +16555,7 @@
    * @type {Tokenizer}
    */
   function spaceThenNonSpace(effects, ok, nok) {
-    return factorySpace(effects, after, 'whitespace')
+    return factorySpace(effects, after, "whitespace");
 
     /**
      * After whitespace, after task list item check.
@@ -16781,7 +16572,7 @@
       // EOL means there’s content after it, so good.
       // Impossible to have more spaces.
       // Anything else is good.
-      return code === null ? nok(code) : ok(code)
+      return code === null ? nok(code) : ok(code);
     }
   }
 
@@ -28180,7 +27971,7 @@
     sqrtRuleThickness: [0.04, 0.04, 0.04],
     // This value determines how large a pt is, for metrics which are defined
     // in terms of pts.
-    // This value is also used in katex.less; if you change it make sure the
+    // This value is also used in katex.scss; if you change it make sure the
     // values match.
     ptPerEm: [10.0, 10.0, 10.0],
     // The space between adjacent `|` columns in an array definition. From
@@ -30116,11 +29907,11 @@
 
     defineSymbol(math, main, mathord, _ch3, wideChar);
     defineSymbol(text$3, main, textord, _ch3, wideChar);
-    wideChar = String.fromCharCode(0xD835, 0xDD04 + _i3); // A-Z a-z Fractur
+    wideChar = String.fromCharCode(0xD835, 0xDD04 + _i3); // A-Z a-z Fraktur
 
     defineSymbol(math, main, mathord, _ch3, wideChar);
     defineSymbol(text$3, main, textord, _ch3, wideChar);
-    wideChar = String.fromCharCode(0xD835, 0xDD6C + _i3); // A-Z a-z bold Fractur
+    wideChar = String.fromCharCode(0xD835, 0xDD6C + _i3); // A-Z a-z bold Fraktur
 
     defineSymbol(math, main, mathord, _ch3, wideChar);
     defineSymbol(text$3, main, textord, _ch3, wideChar);
@@ -39599,9 +39390,11 @@
       return options.withTextFontFamily(textFontFamilies[font]);
     } else if (textFontWeights[font]) {
       return options.withTextFontWeight(textFontWeights[font]);
-    } else {
-      return options.withTextFontShape(textFontShapes[font]);
+    } else if (font === "\\emph") {
+      return options.fontShape === "textit" ? options.withTextFontShape("textup") : options.withTextFontShape("textit");
     }
+
+    return options.withTextFontShape(textFontShapes[font]);
   };
 
   defineFunction({
@@ -39609,7 +39402,7 @@
     names: [// Font families
     "\\text", "\\textrm", "\\textsf", "\\texttt", "\\textnormal", // Font weights
     "\\textbf", "\\textmd", // Font Shapes
-    "\\textit", "\\textup"],
+    "\\textit", "\\textup", "\\emph"],
     props: {
       numArgs: 1,
       argTypes: ["text"],
@@ -43279,7 +43072,7 @@
     /**
      * Current KaTeX version
      */
-    version: "0.16.10",
+    version: "0.16.11",
 
     /**
      * Renders the given LaTeX into an HTML+MathML combination, and adds
