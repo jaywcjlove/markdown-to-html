@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "prepare": "husky install",
+    "prepare": "husky",
     "build": "lerna exec --scope @wcj/markdown-to-html -- tsbb build",
     "build:dist": "lerna exec \"npm run build\" --scope @wcj/markdown-to-html",
     "watch": "lerna exec --scope @wcj/markdown-to-html -- tsbb watch",
@@ -39,7 +39,7 @@
     ]
   },
   "devDependencies": {
-    "husky": "~8.0.0",
+    "husky": "^9.0.11",
     "lerna": "^7.3.0",
     "lint-staged": "~14.0.0",
     "prettier": "~3.0.0",
