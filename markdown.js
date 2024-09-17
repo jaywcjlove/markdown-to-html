@@ -1,5 +1,5 @@
 /**! 
- * @wcj/markdown-to-html v3.0.2 
+ * @wcj/markdown-to-html v3.0.3 
  * Converts markdown text to HTML. 
  * 
  * Copyright (c) 2024 kenny wang <wowohoo@qq.com> (https://github.com/jaywcjlove) 
@@ -453,7 +453,7 @@
   // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
   // USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-  const path$2 = {basename, dirname, extname, join, sep: '/'};
+  const minpath = {basename, dirname, extname, join, sep: '/'};
 
   /* eslint-disable max-depth, complexity */
 
@@ -462,13 +462,13 @@
    *
    * @param {string} path
    *   File path.
-   * @param {string | null | undefined} [ext]
+   * @param {string | null | undefined} [extname]
    *   Extension to strip.
    * @returns {string}
    *   Stem or basename.
    */
-  function basename(path, ext) {
-    if (ext !== undefined && typeof ext !== 'string') {
+  function basename(path, extname) {
+    if (extname !== undefined && typeof extname !== 'string') {
       throw new TypeError('"ext" argument must be a string')
     }
 
@@ -479,7 +479,11 @@
     /** @type {boolean | undefined} */
     let seenNonSlash;
 
-    if (ext === undefined || ext.length === 0 || ext.length > path.length) {
+    if (
+      extname === undefined ||
+      extname.length === 0 ||
+      extname.length > path.length
+    ) {
       while (index--) {
         if (path.codePointAt(index) === 47 /* `/` */) {
           // If we reached a path separator that was not part of a set of path
@@ -499,12 +503,12 @@
       return end < 0 ? '' : path.slice(start, end)
     }
 
-    if (ext === path) {
+    if (extname === path) {
       return ''
     }
 
     let firstNonSlashEnd = -1;
-    let extIndex = ext.length - 1;
+    let extnameIndex = extname.length - 1;
 
     while (index--) {
       if (path.codePointAt(index) === 47 /* `/` */) {
@@ -522,10 +526,10 @@
           firstNonSlashEnd = index + 1;
         }
 
-        if (extIndex > -1) {
+        if (extnameIndex > -1) {
           // Try to match the explicit extension.
-          if (path.codePointAt(index) === ext.codePointAt(extIndex--)) {
-            if (extIndex < 0) {
+          if (path.codePointAt(index) === extname.codePointAt(extnameIndex--)) {
+            if (extnameIndex < 0) {
               // We matched the extension, so mark this as the end of our path
               // component
               end = index;
@@ -533,7 +537,7 @@
           } else {
             // Extension does not match, so our result is the entire path
             // component
-            extIndex = -1;
+            extnameIndex = -1;
             end = firstNonSlashEnd;
           }
         }
@@ -587,8 +591,8 @@
         ? '/'
         : '.'
       : end === 1 && path.codePointAt(0) === 47 /* `/` */
-      ? '//'
-      : path.slice(0, end)
+        ? '//'
+        : path.slice(0, end)
   }
 
   /**
@@ -826,7 +830,7 @@
   // Somewhat based on:
   // <https://github.com/defunctzombie/node-process/blob/master/browser.js>.
   // But I don’t think one tiny line of code can be copyrighted. 😅
-  const proc = {cwd};
+  const minproc = {cwd};
 
   function cwd() {
     return '/'
@@ -938,12 +942,9 @@
   }
 
   /**
-   * @typedef {import('unist').Node} Node
-   * @typedef {import('unist').Point} Point
-   * @typedef {import('unist').Position} Position
-   * @typedef {import('vfile-message').Options} MessageOptions
-   * @typedef {import('../index.js').Data} Data
-   * @typedef {import('../index.js').Value} Value
+   * @import {Node, Point, Position} from 'unist'
+   * @import {Options as MessageOptions} from 'vfile-message'
+   * @import {Compatible, Data, Map, Options, Value} from 'vfile'
    */
 
 
@@ -1005,7 +1006,9 @@
        *
        * @type {string}
        */
-      this.cwd = proc.cwd();
+      // Prevent calling `cwd` (which could be expensive) if it’s not needed;
+      // the empty string will be overridden in the next block.
+      this.cwd = 'cwd' in options ? '' : minproc.cwd();
 
       /**
        * Place to store custom info (default: `{}`).
@@ -1076,29 +1079,29 @@
       let index = -1;
 
       while (++index < order.length) {
-        const prop = order[index];
+        const field = order[index];
 
         // Note: we specifically use `in` instead of `hasOwnProperty` to accept
         // `vfile`s too.
         if (
-          prop in options &&
-          options[prop] !== undefined &&
-          options[prop] !== null
+          field in options &&
+          options[field] !== undefined &&
+          options[field] !== null
         ) {
           // @ts-expect-error: TS doesn’t understand basic reality.
-          this[prop] = prop === 'history' ? [...options[prop]] : options[prop];
+          this[field] = field === 'history' ? [...options[field]] : options[field];
         }
       }
 
       /** @type {string} */
-      let prop;
+      let field;
 
       // Set non-path related properties.
-      for (prop in options) {
+      for (field in options) {
         // @ts-expect-error: fine to set other things.
-        if (!order.includes(prop)) {
+        if (!order.includes(field)) {
           // @ts-expect-error: fine to set other things.
-          this[prop] = options[prop];
+          this[field] = options[field];
         }
       }
     }
@@ -1110,7 +1113,9 @@
      *   Basename.
      */
     get basename() {
-      return typeof this.path === 'string' ? path$2.basename(this.path) : undefined
+      return typeof this.path === 'string'
+        ? minpath.basename(this.path)
+        : undefined
     }
 
     /**
@@ -1128,7 +1133,7 @@
     set basename(basename) {
       assertNonEmpty(basename, 'basename');
       assertPart(basename, 'basename');
-      this.path = path$2.join(this.dirname || '', basename);
+      this.path = minpath.join(this.dirname || '', basename);
     }
 
     /**
@@ -1138,7 +1143,9 @@
      *   Dirname.
      */
     get dirname() {
-      return typeof this.path === 'string' ? path$2.dirname(this.path) : undefined
+      return typeof this.path === 'string'
+        ? minpath.dirname(this.path)
+        : undefined
     }
 
     /**
@@ -1153,7 +1160,7 @@
      */
     set dirname(dirname) {
       assertPath(this.basename, 'dirname');
-      this.path = path$2.join(dirname || '', this.basename);
+      this.path = minpath.join(dirname || '', this.basename);
     }
 
     /**
@@ -1163,7 +1170,9 @@
      *   Extname.
      */
     get extname() {
-      return typeof this.path === 'string' ? path$2.extname(this.path) : undefined
+      return typeof this.path === 'string'
+        ? minpath.extname(this.path)
+        : undefined
     }
 
     /**
@@ -1192,7 +1201,7 @@
         }
       }
 
-      this.path = path$2.join(this.dirname, this.stem + (extname || ''));
+      this.path = minpath.join(this.dirname, this.stem + (extname || ''));
     }
 
     /**
@@ -1237,7 +1246,7 @@
      */
     get stem() {
       return typeof this.path === 'string'
-        ? path$2.basename(this.path, this.extname)
+        ? minpath.basename(this.path, this.extname)
         : undefined
     }
 
@@ -1256,7 +1265,7 @@
     set stem(stem) {
       assertNonEmpty(stem, 'stem');
       assertPart(stem, 'stem');
-      this.path = path$2.join(this.dirname || '', stem + (this.extname || ''));
+      this.path = minpath.join(this.dirname || '', stem + (this.extname || ''));
     }
 
     // Normal prototypal methods.
@@ -1512,9 +1521,9 @@
    *   Nothing.
    */
   function assertPart(part, name) {
-    if (part && part.includes(path$2.sep)) {
+    if (part && part.includes(minpath.sep)) {
       throw new Error(
-        '`' + name + '` cannot be a path: did not expect `' + path$2.sep + '`'
+        '`' + name + '` cannot be a path: did not expect `' + minpath.sep + '`'
       )
     }
   }
@@ -3802,19 +3811,10 @@
   }
 
   /**
-   * @typedef {import('mdast').Link} Link
-   * @typedef {import('mdast').PhrasingContent} PhrasingContent
-   *
-   * @typedef {import('mdast-util-from-markdown').CompileContext} CompileContext
-   * @typedef {import('mdast-util-from-markdown').Extension} FromMarkdownExtension
-   * @typedef {import('mdast-util-from-markdown').Handle} FromMarkdownHandle
-   * @typedef {import('mdast-util-from-markdown').Transform} FromMarkdownTransform
-   *
-   * @typedef {import('mdast-util-to-markdown').ConstructName} ConstructName
-   * @typedef {import('mdast-util-to-markdown').Options} ToMarkdownExtension
-   *
-   * @typedef {import('mdast-util-find-and-replace').RegExpMatchObject} RegExpMatchObject
-   * @typedef {import('mdast-util-find-and-replace').ReplaceFunction} ReplaceFunction
+   * @import {RegExpMatchObject, ReplaceFunction} from 'mdast-util-find-and-replace'
+   * @import {CompileContext, Extension as FromMarkdownExtension, Handle as FromMarkdownHandle, Transform as FromMarkdownTransform} from 'mdast-util-from-markdown'
+   * @import {ConstructName, Options as ToMarkdownExtension} from 'mdast-util-to-markdown'
+   * @import {Link, PhrasingContent} from 'mdast'
    */
 
 
@@ -3940,7 +3940,7 @@
       tree,
       [
         [/(https?:\/\/|www(?=\.))([-.\w]+)([^ \t\r\n]*)/gi, findUrl],
-        [/([-.\w+]+)@([-\w]+(?:\.[-\w]+)+)/g, findEmail]
+        [/(?<=^|\s|\p{P}|\p{S})([-.\w+]+)@([-\w]+(?:\.[-\w]+)+)/gu, findEmail]
       ],
       {ignore: ['link', 'linkReference']}
     );
@@ -4082,6 +4082,7 @@
       (match.index === 0 ||
         unicodeWhitespace(code) ||
         unicodePunctuation(code)) &&
+      // If it’s an email, the previous character should not be a slash.
       (!email || code !== 47)
     )
   }
@@ -14694,14 +14695,7 @@
   }
 
   /**
-   * @typedef {import('micromark-util-types').Event} Event
-   * @typedef {import('micromark-util-types').Exiter} Exiter
-   * @typedef {import('micromark-util-types').Extension} Extension
-   * @typedef {import('micromark-util-types').Resolver} Resolver
-   * @typedef {import('micromark-util-types').State} State
-   * @typedef {import('micromark-util-types').Token} Token
-   * @typedef {import('micromark-util-types').TokenizeContext} TokenizeContext
-   * @typedef {import('micromark-util-types').Tokenizer} Tokenizer
+   * @import {Event, Exiter, Extension, Resolver, State, Token, TokenizeContext, Tokenizer} from 'micromark-util-types'
    */
 
   const indent = {
@@ -14727,6 +14721,7 @@
     return {
       document: {
         [91]: {
+          name: 'gfmFootnoteDefinition',
           tokenize: tokenizeDefinitionStart,
           continuation: {
             tokenize: tokenizeDefinitionContinuation
@@ -14736,15 +14731,17 @@
       },
       text: {
         [91]: {
+          name: 'gfmFootnoteCall',
           tokenize: tokenizeGfmFootnoteCall
         },
         [93]: {
+          name: 'gfmPotentialFootnoteCall',
           add: 'after',
           tokenize: tokenizePotentialGfmFootnoteCall,
           resolveTo: resolveToPotentialGfmFootnoteCall
         }
       }
-    }
+    };
   }
 
   // To do: remove after micromark update.
@@ -14762,44 +14759,36 @@
     // Find an opening.
     while (index--) {
       const token = self.events[index][1];
-      if (token.type === 'labelImage') {
+      if (token.type === "labelImage") {
         labelStart = token;
-        break
+        break;
       }
 
       // Exit if we’ve walked far enough.
-      if (
-        token.type === 'gfmFootnoteCall' ||
-        token.type === 'labelLink' ||
-        token.type === 'label' ||
-        token.type === 'image' ||
-        token.type === 'link'
-      ) {
-        break
+      if (token.type === 'gfmFootnoteCall' || token.type === "labelLink" || token.type === "label" || token.type === "image" || token.type === "link") {
+        break;
       }
     }
-    return start
+    return start;
 
     /**
      * @type {State}
      */
     function start(code) {
       if (!labelStart || !labelStart._balanced) {
-        return nok(code)
+        return nok(code);
       }
-      const id = normalizeIdentifier(
-        self.sliceSerialize({
-          start: labelStart.end,
-          end: self.now()
-        })
-      );
+      const id = normalizeIdentifier(self.sliceSerialize({
+        start: labelStart.end,
+        end: self.now()
+      }));
       if (id.codePointAt(0) !== 94 || !defined.includes(id.slice(1))) {
-        return nok(code)
+        return nok(code);
       }
       effects.enter('gfmFootnoteCallLabelMarker');
       effects.consume(code);
       effects.exit('gfmFootnoteCallLabelMarker');
-      return ok(code)
+      return ok(code);
     }
   }
 
@@ -14810,16 +14799,13 @@
 
     // Find an opening.
     while (index--) {
-      if (
-        events[index][1].type === 'labelImage' &&
-        events[index][0] === 'enter'
-      ) {
+      if (events[index][1].type === "labelImage" && events[index][0] === 'enter') {
         events[index][1];
-        break
+        break;
       }
     }
     // Change the `labelImageMarker` to a `data`.
-    events[index + 1][1].type = 'data';
+    events[index + 1][1].type = "data";
     events[index + 3][1].type = 'gfmFootnoteCallLabelMarker';
 
     // The whole (without `!`):
@@ -14848,7 +14834,7 @@
     };
     /** @type {Token} */
     const chunk = {
-      type: 'chunkString',
+      type: "chunkString",
       contentType: 'string',
       start: Object.assign({}, string.start),
       end: Object.assign({}, string.end)
@@ -14856,28 +14842,18 @@
 
     /** @type {Array<Event>} */
     const replacement = [
-      // Take the `labelImageMarker` (now `data`, the `!`)
-      events[index + 1],
-      events[index + 2],
-      ['enter', call, context],
-      // The `[`
-      events[index + 3],
-      events[index + 4],
-      // The `^`.
-      ['enter', marker, context],
-      ['exit', marker, context],
-      // Everything in between.
-      ['enter', string, context],
-      ['enter', chunk, context],
-      ['exit', chunk, context],
-      ['exit', string, context],
-      // The ending (`]`, properly parsed and labelled).
-      events[events.length - 2],
-      events[events.length - 1],
-      ['exit', call, context]
-    ];
+    // Take the `labelImageMarker` (now `data`, the `!`)
+    events[index + 1], events[index + 2], ['enter', call, context],
+    // The `[`
+    events[index + 3], events[index + 4],
+    // The `^`.
+    ['enter', marker, context], ['exit', marker, context],
+    // Everything in between.
+    ['enter', string, context], ['enter', chunk, context], ['exit', chunk, context], ['exit', string, context],
+    // The ending (`]`, properly parsed and labelled).
+    events[events.length - 2], events[events.length - 1], ['exit', call, context]];
     events.splice(index, events.length - index + 1, ...replacement);
-    return events
+    return events;
   }
 
   /**
@@ -14896,7 +14872,7 @@
     // Therefore, it can include footnote logic inside `label-end`.
     // We can’t do that, but luckily, we can parse footnotes in a simpler way than
     // needed for labels.
-    return start
+    return start;
 
     /**
      * Start of footnote label.
@@ -14913,7 +14889,7 @@
       effects.enter('gfmFootnoteCallLabelMarker');
       effects.consume(code);
       effects.exit('gfmFootnoteCallLabelMarker');
-      return callStart
+      return callStart;
     }
 
     /**
@@ -14927,13 +14903,13 @@
      * @type {State}
      */
     function callStart(code) {
-      if (code !== 94) return nok(code)
+      if (code !== 94) return nok(code);
       effects.enter('gfmFootnoteCallMarker');
       effects.consume(code);
       effects.exit('gfmFootnoteCallMarker');
       effects.enter('gfmFootnoteCallString');
       effects.enter('chunkString').contentType = 'string';
-      return callData
+      return callData;
     }
 
     /**
@@ -14948,36 +14924,33 @@
      */
     function callData(code) {
       if (
-        // Too long.
-        size > 999 ||
-        // Closing brace with nothing.
-        (code === 93 && !data) ||
-        // Space or tab is not supported by GFM for some reason.
-        // `\n` and `[` not being supported makes sense.
-        code === null ||
-        code === 91 ||
-        markdownLineEndingOrSpace(code)
-      ) {
-        return nok(code)
+      // Too long.
+      size > 999 ||
+      // Closing brace with nothing.
+      code === 93 && !data ||
+      // Space or tab is not supported by GFM for some reason.
+      // `\n` and `[` not being supported makes sense.
+      code === null || code === 91 || markdownLineEndingOrSpace(code)) {
+        return nok(code);
       }
       if (code === 93) {
         effects.exit('chunkString');
         const token = effects.exit('gfmFootnoteCallString');
         if (!defined.includes(normalizeIdentifier(self.sliceSerialize(token)))) {
-          return nok(code)
+          return nok(code);
         }
         effects.enter('gfmFootnoteCallLabelMarker');
         effects.consume(code);
         effects.exit('gfmFootnoteCallLabelMarker');
         effects.exit('gfmFootnoteCall');
-        return ok
+        return ok;
       }
       if (!markdownLineEndingOrSpace(code)) {
         data = true;
       }
       size++;
       effects.consume(code);
-      return code === 92 ? callEscape : callData
+      return code === 92 ? callEscape : callData;
     }
 
     /**
@@ -14994,9 +14967,9 @@
       if (code === 91 || code === 92 || code === 93) {
         effects.consume(code);
         size++;
-        return callData
+        return callData;
       }
-      return callData(code)
+      return callData(code);
     }
   }
 
@@ -15012,7 +14985,7 @@
     let size = 0;
     /** @type {boolean | undefined} */
     let data;
-    return start
+    return start;
 
     /**
      * Start of GFM footnote definition.
@@ -15030,7 +15003,7 @@
       effects.enter('gfmFootnoteDefinitionLabelMarker');
       effects.consume(code);
       effects.exit('gfmFootnoteDefinitionLabelMarker');
-      return labelAtMarker
+      return labelAtMarker;
     }
 
     /**
@@ -15050,9 +15023,9 @@
         effects.exit('gfmFootnoteDefinitionMarker');
         effects.enter('gfmFootnoteDefinitionLabelString');
         effects.enter('chunkString').contentType = 'string';
-        return labelInside
+        return labelInside;
       }
-      return nok(code)
+      return nok(code);
     }
 
     /**
@@ -15070,17 +15043,14 @@
      */
     function labelInside(code) {
       if (
-        // Too long.
-        size > 999 ||
-        // Closing brace with nothing.
-        (code === 93 && !data) ||
-        // Space or tab is not supported by GFM for some reason.
-        // `\n` and `[` not being supported makes sense.
-        code === null ||
-        code === 91 ||
-        markdownLineEndingOrSpace(code)
-      ) {
-        return nok(code)
+      // Too long.
+      size > 999 ||
+      // Closing brace with nothing.
+      code === 93 && !data ||
+      // Space or tab is not supported by GFM for some reason.
+      // `\n` and `[` not being supported makes sense.
+      code === null || code === 91 || markdownLineEndingOrSpace(code)) {
+        return nok(code);
       }
       if (code === 93) {
         effects.exit('chunkString');
@@ -15090,14 +15060,14 @@
         effects.consume(code);
         effects.exit('gfmFootnoteDefinitionLabelMarker');
         effects.exit('gfmFootnoteDefinitionLabel');
-        return labelAfter
+        return labelAfter;
       }
       if (!markdownLineEndingOrSpace(code)) {
         data = true;
       }
       size++;
       effects.consume(code);
-      return code === 92 ? labelEscape : labelInside
+      return code === 92 ? labelEscape : labelInside;
     }
 
     /**
@@ -15117,9 +15087,9 @@
       if (code === 91 || code === 92 || code === 93) {
         effects.consume(code);
         size++;
-        return labelInside
+        return labelInside;
       }
-      return labelInside(code)
+      return labelInside(code);
     }
 
     /**
@@ -15144,13 +15114,9 @@
         // Any whitespace after the marker is eaten, forming indented code
         // is not possible.
         // No space is also fine, just like a block quote marker.
-        return factorySpace(
-          effects,
-          whitespaceAfter,
-          'gfmFootnoteDefinitionWhitespace'
-        )
+        return factorySpace(effects, whitespaceAfter, 'gfmFootnoteDefinitionWhitespace');
       }
-      return nok(code)
+      return nok(code);
     }
 
     /**
@@ -15165,7 +15131,7 @@
      */
     function whitespaceAfter(code) {
       // `markdown-rs` has a wrapping token for the prefix that is closed here.
-      return ok(code)
+      return ok(code);
     }
   }
 
@@ -15183,7 +15149,7 @@
     /// ```
     //
     // Either a blank line, which is okay, or an indented thing.
-    return effects.check(blankLine, ok, effects.attempt(indent, ok, nok))
+    return effects.check(blankLine, ok, effects.attempt(indent, ok, nok));
   }
 
   /** @type {Exiter} */
@@ -15197,23 +15163,14 @@
    */
   function tokenizeIndent(effects, ok, nok) {
     const self = this;
-    return factorySpace(
-      effects,
-      afterPrefix,
-      'gfmFootnoteDefinitionIndent',
-      4 + 1
-    )
+    return factorySpace(effects, afterPrefix, 'gfmFootnoteDefinitionIndent', 4 + 1);
 
     /**
      * @type {State}
      */
     function afterPrefix(code) {
       const tail = self.events[self.events.length - 1];
-      return tail &&
-        tail[1].type === 'gfmFootnoteDefinitionIndent' &&
-        tail[2].sliceSerialize(tail[1], true).length === 4
-        ? ok(code)
-        : nok(code)
+      return tail && tail[1].type === 'gfmFootnoteDefinitionIndent' && tail[2].sliceSerialize(tail[1], true).length === 4 ? ok(code) : nok(code);
     }
   }
 
@@ -18202,7 +18159,7 @@
    * @returns {Array<Chunk>}
    */
 
-  const search$3 = /[\0\t\n\r]/g;
+  const search$2 = /[\0\t\n\r]/g;
 
   /**
    * @returns {Preprocessor}
@@ -18246,8 +18203,8 @@
         start = undefined;
       }
       while (startPosition < value.length) {
-        search$3.lastIndex = startPosition;
-        match = search$3.exec(value);
+        search$2.lastIndex = startPosition;
+        match = search$2.exec(value);
         endPosition =
           match && match.index !== undefined ? match.index : value.length;
         code = value.charCodeAt(endPosition);
@@ -21788,14 +21745,70 @@
       };
   }
 
+  const trackNode = (query = {}) => {
+      const resultTrack = {};
+      const resultElement = [];
+      const resultQuery = {};
+      const result = { query: resultQuery, element: resultElement };
+      Object.keys(query).forEach((key) => {
+          let keyMatch = key.trim().match(/track\[['"](\w+:?\w+)['"]\]/i);
+          let queryKey = keyMatch ? keyMatch[1] : null;
+          if (queryKey) {
+              let [lang, keyString] = queryKey.split(':');
+              if (!resultTrack[lang])
+                  resultTrack[lang] = {};
+              const value = query[key];
+              resultTrack[lang][keyString ?? "src"] = value;
+          }
+          else {
+              resultQuery[key] = query[key];
+          }
+      });
+      Object.keys(resultTrack).forEach((lang) => {
+          const track = resultTrack[lang];
+          resultElement.push({
+              type: 'element',
+              tagName: 'track',
+              properties: {
+                  kind: track.kind || 'subtitles',
+                  ...track
+              },
+              children: []
+          });
+      });
+      result.query = resultQuery;
+      result.element = resultElement;
+      return { ...result };
+  };
+
+  function isValidURL(string) {
+      try {
+          new URL(string);
+          return true;
+      }
+      catch (err) {
+          return false;
+      }
+  }
   const properties$1 = { muted: 'muted', controls: 'controls', style: 'max-height:640px;' };
-  const queryStringToObject = (url) => [...new URLSearchParams(url.split('?!#')[1])].reduce((a, [k, v]) => ((a[k] = v), a), {});
-  function reElement(node, details, href) {
-      const filename = href.split('/').pop()?.replace(/(\?|!|\#|$).+/, '');
-      node.properties = { ...properties$1, src: href };
+  const queryStringToObject = (url) => [...new URLSearchParams(url.split('?')[1])].reduce((a, [k, v]) => ((a[k] = v), a), {});
+  function reElement(node, details, track, href) {
+      const url = isValidURL(href.trim()) ? new URL(href) : null;
+      const pathname = url?.pathname || href;
+      const filename = pathname.split('/').pop()?.replace(/(\?|!|\#|$).+/, '');
+      const params = queryStringToObject(href.replace(/\?\!/, "?").replace(/\?\!\#/, "?"));
+      const { title = filename } = params;
+      const result = trackNode(params);
+      const searchParams = new URLSearchParams({ ...result.query });
+      if (url) {
+          url.search = searchParams.toString() ?? "";
+      }
       node.tagName = 'video';
       node.children = [];
-      const { title = filename } = queryStringToObject(href);
+      node.properties = { ...properties$1, src: url?.toString() || href };
+      if (track) {
+          result.element.forEach((tr) => node.children.push({ ...tr }));
+      }
       if (details) {
           const reNode = detailsNode(title);
           reNode.children.push({ ...node });
@@ -21805,19 +21818,23 @@
       }
   }
   const RehypeVideo = (options) => {
-      const { test = /\/(.*)(.mp4|.mov)$/, details = true } = options || {};
+      const { test = /\/(.*)(.mp4|.mov)$/i, details = true, track = true } = options || {};
       return (tree) => {
           visit(tree, 'element', (node, index, parent) => {
-              const isChecked = (str) => test.test(str.replace(/(\?|!|\#|$).+/g, '').toLocaleLowerCase());
+              const isChecked = (str) => {
+                  if (test instanceof RegExp)
+                      return test.test(str.replace(/(\?|!|\#|$).+/g, '').toLocaleLowerCase());
+                  if (typeof test === 'function')
+                      return test(str);
+                  return false;
+              };
               const child = node.children[0];
-              const delimiter = /((?:https?:\/\/)(?:(?:[a-z0-9]?(?:[a-z0-9\-]{1,61}[a-z0-9])?\.[^\.|\s])+[a-z\.]*[a-z]+|(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3})(?::\d{1,5})*[a-z0-9.,_\/~#&=;%+?\-\\(\\)]*)/g;
-              // const delimiter = /((?:https?:\/\/)?(?:(?:[a-z0-9]?(?:[a-z0-9\-]{1,61}[a-z0-9])?\.[^\.|\s])+[a-z\.]*[a-z]+|(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3})(?::\d{1,5})*[a-z0-9.,_\/~#&=;%+?\-\\(\\)]*)/g;
               if (node.tagName === 'p' && node.children.length === 1) {
-                  if (child.type === 'text' && delimiter.test(child.value) && isChecked(child.value)) {
-                      reElement(node, details, child.value);
+                  if (child.type === 'text' && isValidURL(child.value) && isChecked(child.value)) {
+                      reElement(node, details, track, child.value);
                   }
                   if (child.type === 'element' && child.tagName === 'a' && child.properties && typeof child.properties.href === 'string' && isChecked(child.properties.href)) {
-                      reElement(node, details, child.properties.href);
+                      reElement(node, details, track, child.properties.href);
                   }
               }
           });
@@ -23185,7 +23202,7 @@
    *   Extract tag name from a simple selector.
    */
 
-  const search$2 = /[#.]/g;
+  const search$1 = /[#.]/g;
 
   /**
    * Create a hast element from a simple CSS selector.
@@ -23216,8 +23233,8 @@
     let tagName;
 
     while (start < value.length) {
-      search$2.lastIndex = start;
-      const match = search$2.exec(value);
+      search$1.lastIndex = start;
+      const match = search$1.exec(value);
       const subvalue = value.slice(start, match ? match.index : value.length);
 
       if (subvalue) {
@@ -43167,12 +43184,9 @@
   };
 
   /**
-   * @typedef {import('hast').ElementContent} ElementContent
-   * @typedef {import('hast').Root} Root
-   *
-   * @typedef {import('katex').KatexOptions} KatexOptions
-   *
-   * @typedef {import('vfile').VFile} VFile
+   * @import {ElementContent, Root} from 'hast'
+   * @import {KatexOptions} from 'katex'
+   * @import {VFile} from 'vfile'
    */
 
 
@@ -43264,18 +43278,19 @@
             source: 'rehype-katex'
           });
 
-          // KaTeX can handle `ParseError` itself, but not others.
-          if (ruleId === 'parseerror') {
+          // KaTeX *should* handle `ParseError` itself, but not others.
+          // it doesn’t always:
+          // <https://github.com/remarkjs/react-markdown/issues/853>
+          try {
             result = katex.renderToString(value, {
               ...settings,
               displayMode,
               strict: 'ignore',
               throwOnError: false
             });
-          }
-          // Generate similar markup if this is an other error.
-          // See: <https://github.com/KaTeX/KaTeX/blob/5dc7af0/docs/error.md>.
-          else {
+          } catch {
+            // Generate similar markup if this is an other error.
+            // See: <https://github.com/KaTeX/KaTeX/blob/5dc7af0/docs/error.md>.
             result = [
               {
                 type: 'element',
@@ -43336,51 +43351,9 @@
   };
 
   /**
-   * @typedef {import('vfile').VFile} VFile
-   * @typedef {import('vfile').Value} Value
-   * @typedef {import('unist').Point} UnistPoint
+   * @import {VFile, Value} from 'vfile'
+   * @import {Location} from 'vfile-location'
    */
-
-  /**
-   *
-   * @typedef PointLike
-   *   unist point, allowed as input.
-   * @property {number | null | undefined} [line]
-   *   Line.
-   * @property {number | null | undefined} [column]
-   *   Column.
-   * @property {number | null | undefined} [offset]
-   *   Offset.
-   *
-   * @callback ToPoint
-   *   Get the line/column based `Point` for `offset` in the bound indices.
-   *
-   *   Returns `undefined` when given out of bounds input.
-   *
-   *   Also implemented in Rust in [`wooorm/markdown-rs`][markdown-rs].
-   *
-   *   [markdown-rs]: https://github.com/wooorm/markdown-rs/blob/main/src/util/location.rs
-   * @param {number | null | undefined} [offset]
-   *   Something that should be an `offset.
-   * @returns {UnistPoint | undefined}
-   *   Point, if `offset` is valid and in-bounds input.
-   *
-   * @callback ToOffset
-   *   Get the `offset` from a line/column based `Point` in the bound indices.
-   * @param {PointLike | null | undefined} [point]
-   *   Something that should be a `point.
-   * @returns {number | undefined}
-   *   Offset (`number`) or `undefined` for invalid or out of bounds input.
-   *
-   * @typedef Location
-   *   Accessors for index.
-   * @property {ToPoint} toPoint
-   *   Get the line/column based `Point` for `offset` in the bound indices.
-   * @property {ToOffset} toOffset
-   *   Get the `offset` from a line/column based `Point` in the bound indices.
-   */
-
-  const search$1 = /\r?\n|\r/g;
 
   /**
    * Create an index of the given document to translate between line/column and
@@ -43405,56 +43378,70 @@
      */
     const indices = [];
 
-    search$1.lastIndex = 0;
+    return {toOffset, toPoint}
 
-    while (search$1.test(value)) {
-      indices.push(search$1.lastIndex);
-    }
-
-    indices.push(value.length + 1);
-
-    return {toPoint, toOffset}
-
-    /** @type {ToPoint} */
+    /** @type {Location['toPoint']} */
     function toPoint(offset) {
-      let index = -1;
+      if (typeof offset === 'number' && offset > -1 && offset <= value.length) {
+        let index = 0;
 
-      if (
-        typeof offset === 'number' &&
-        offset > -1 &&
-        offset < indices[indices.length - 1]
-      ) {
-        while (++index < indices.length) {
-          if (indices[index] > offset) {
+        while (true) {
+          let end = indices[index];
+
+          if (end === undefined) {
+            const eol = next(value, indices[index - 1]);
+            end = eol === -1 ? value.length + 1 : eol + 1;
+            indices[index] = end;
+          }
+
+          if (end > offset) {
             return {
               line: index + 1,
               column: offset - (index > 0 ? indices[index - 1] : 0) + 1,
               offset
             }
           }
+
+          index++;
         }
       }
     }
 
-    /** @type {ToOffset} */
+    /** @type {Location['toOffset']} */
     function toOffset(point) {
-      const line = point && point.line;
-      const column = point && point.column;
-
       if (
-        typeof line === 'number' &&
-        typeof column === 'number' &&
-        !Number.isNaN(line) &&
-        !Number.isNaN(column) &&
-        line - 1 in indices
+        point &&
+        typeof point.line === 'number' &&
+        typeof point.column === 'number' &&
+        !Number.isNaN(point.line) &&
+        !Number.isNaN(point.column)
       ) {
-        const offset = (indices[line - 2] || 0) + column - 1 || 0;
-
-        if (offset > -1 && offset < indices[indices.length - 1]) {
-          return offset
+        while (indices.length < point.line) {
+          const from = indices[indices.length - 1];
+          const eol = next(value, from);
+          const end = eol === -1 ? value.length + 1 : eol + 1;
+          if (from === end) break
+          indices.push(end);
         }
+
+        const offset =
+          (point.line > 1 ? indices[point.line - 2] : 0) + point.column - 1;
+        // The given `column` could not exist on this line.
+        if (offset < indices[point.line - 1]) return offset
       }
     }
+  }
+
+  /**
+   * @param {string} value
+   * @param {number} from
+   */
+  function next(value, from) {
+    const cr = value.indexOf('\r', from);
+    const lf = value.indexOf('\n', from);
+    if (lf === -1) return cr
+    if (cr === -1 || cr + 1 === lf) return lf
+    return cr < lf ? cr : lf
   }
 
   /**
@@ -57147,10 +57134,8 @@
   }
 
   /**
-   * @typedef {import('hast').Comment} Comment
-   * @typedef {import('hast').Parents} Parents
-   *
-   * @typedef {import('../index.js').State} State
+   * @import {Comment, Parents} from 'hast'
+   * @import {State} from '../index.js'
    */
 
 
@@ -57201,12 +57186,9 @@
   }
 
   /**
-   * @typedef {import('hast').Doctype} Doctype
-   * @typedef {import('hast').Parents} Parents
-   *
-   * @typedef {import('../index.js').State} State
+   * @import {Doctype, Parents} from 'hast'
+   * @import {State} from '../index.js'
    */
-
 
   /**
    * Serialize a doctype.
@@ -57232,8 +57214,7 @@
   }
 
   /**
-   * @typedef {import('hast').Parents} Parents
-   * @typedef {import('hast').RootContent} RootContent
+   * @import {Parents, RootContent} from 'hast'
    */
 
 
@@ -57283,8 +57264,7 @@
   }
 
   /**
-   * @typedef {import('hast').Element} Element
-   * @typedef {import('hast').Parents} Parents
+   * @import {Element, Parents} from 'hast'
    */
 
   /**
@@ -57329,8 +57309,7 @@
   }
 
   /**
-   * @typedef {import('hast').Element} Element
-   * @typedef {import('hast').Parents} Parents
+   * @import {Element, Parents} from 'hast'
    */
 
 
@@ -57686,8 +57665,7 @@
   }
 
   /**
-   * @typedef {import('hast').Element} Element
-   * @typedef {import('hast').Parents} Parents
+   * @import {Element, Parents} from 'hast'
    */
 
 
@@ -57721,23 +57699,25 @@
    *   Whether the opening tag can be omitted.
    */
   function head(node) {
-    const children = node.children;
-    /** @type {Array<string>} */
-    const seen = [];
-    let index = -1;
+    /** @type {Set<string>} */
+    const seen = new Set();
 
-    while (++index < children.length) {
-      const child = children[index];
+    // Whether `srcdoc` or not,
+    // make sure the content model at least doesn’t have too many `base`s/`title`s.
+    for (const child of node.children) {
       if (
         child.type === 'element' &&
-        (child.tagName === 'title' || child.tagName === 'base')
+        (child.tagName === 'base' || child.tagName === 'title')
       ) {
-        if (seen.includes(child.tagName)) return false
-        seen.push(child.tagName);
+        if (seen.has(child.tagName)) return false
+        seen.add(child.tagName);
       }
     }
 
-    return children.length > 0
+    // “May be omitted if the element is empty,
+    // or if the first thing inside the head element is an element.”
+    const child = node.children[0];
+    return !child || child.type === 'element'
   }
 
   /**
@@ -57830,11 +57810,8 @@
   }
 
   /**
-   * @typedef {import('hast').Element} Element
-   * @typedef {import('hast').Parents} Parents
-   * @typedef {import('hast').Properties} Properties
-   *
-   * @typedef {import('../index.js').State} State
+   * @import {Element, Parents, Properties} from 'hast'
+   * @import {State} from '../index.js'
    */
 
 
@@ -58092,12 +58069,9 @@
   }
 
   /**
-   * @typedef {import('hast').Parents} Parents
-   * @typedef {import('hast').Text} Text
-   *
-   * @typedef {import('mdast-util-to-hast').Raw} Raw
-   *
-   * @typedef {import('../index.js').State} State
+   * @import {Parents, Text} from 'hast'
+   * @import {Raw} from 'mdast-util-to-hast'
+   * @import {State} from '../index.js'
    */
 
 
@@ -58133,11 +58107,9 @@
   }
 
   /**
-   * @typedef {import('hast').Parents} Parents
-   *
-   * @typedef {import('mdast-util-to-hast').Raw} Raw
-   *
-   * @typedef {import('../index.js').State} State
+   * @import {Parents} from 'hast'
+   * @import {Raw} from 'mdast-util-to-hast'
+   * @import {State} from '../index.js'
    */
 
 
@@ -58162,12 +58134,9 @@
   }
 
   /**
-   * @typedef {import('hast').Parents} Parents
-   * @typedef {import('hast').Root} Root
-   *
-   * @typedef {import('../index.js').State} State
+   * @import {Parents, Root} from 'hast'
+   * @import {State} from '../index.js'
    */
-
 
   /**
    * Serialize a root.
@@ -58188,10 +58157,8 @@
   }
 
   /**
-   * @typedef {import('hast').Nodes} Nodes
-   * @typedef {import('hast').Parents} Parents
-   *
-   * @typedef {import('../index.js').State} State
+   * @import {Nodes, Parents} from 'hast'
+   * @import {State} from '../index.js'
    */
 
 
@@ -58231,13 +58198,9 @@
   }
 
   /**
-   * @typedef {import('hast').Nodes} Nodes
-   * @typedef {import('hast').Parents} Parents
-   * @typedef {import('hast').RootContent} RootContent
-   *
-   * @typedef {import('property-information').Schema} Schema
-   *
-   * @typedef {import('stringify-entities').Options} StringifyEntitiesOptions
+   * @import {Nodes, Parents, RootContent} from 'hast'
+   * @import {Schema} from 'property-information'
+   * @import {Options as StringifyEntitiesOptions} from 'stringify-entities'
    */
 
 
@@ -66109,7 +66072,7 @@
         })
       }
       function re(pattern, replacements, flags) {
-        return RegExp(replace(pattern, replacements), flags )
+        return RegExp(replace(pattern, replacements), flags)
       }
       var types = /bool|clip|float|int|string|val/.source;
       var internals = [
@@ -84828,7 +84791,12 @@
       const remarkPlugins = [remarkGfm, ...(options.remarkPlugins || [])];
       const rehypePlugins = [
           rehypeRaw,
-          RehypeVideo,
+          [
+              RehypeVideo,
+              {
+                  test: (url) => /\.(mp4|mov)|[?&]rehype=video/i.test(url),
+              },
+          ],
           [f, { ignoreMissing: true, showLineNumbers }],
           [rehypeAttrs, { properties: 'attr', codeBlockParames: false }],
           rehypeIgnore,
