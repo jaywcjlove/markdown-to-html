@@ -1,5 +1,5 @@
 /**! 
- * @wcj/markdown-to-html v3.0.3 
+ * @wcj/markdown-to-html v3.0.4 
  * Converts markdown text to HTML. 
  * 
  * Copyright (c) 2024 kenny wang <wowohoo@qq.com> (https://github.com/jaywcjlove) 
@@ -84794,6 +84794,7 @@
       const { filterPlugins, showLineNumbers = true, katexOptions = {} } = options;
       const remarkPlugins = [remarkGfm, ...(options.remarkPlugins || [])];
       const rehypePlugins = [
+          [f, { ignoreMissing: true, showLineNumbers }],
           rehypeRaw,
           [
               RehypeVideo,
@@ -84801,7 +84802,6 @@
                   test: (url) => /\.(mp4|mov)|[?&]rehype=video/i.test(url),
               },
           ],
-          [f, { ignoreMissing: true, showLineNumbers }],
           [rehypeAttrs, { properties: 'attr', codeBlockParames: false }],
           rehypeIgnore,
           ...(options.rehypePlugins || []),
