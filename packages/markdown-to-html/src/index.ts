@@ -43,6 +43,7 @@ function markdown(markdownStr: string = '', options: Options = {}) {
   const { filterPlugins, showLineNumbers = true, katexOptions = {} } = options;
   const remarkPlugins: PluggableList = [remarkGfm, ...(options.remarkPlugins || [])];
   const rehypePlugins: PluggableList = [
+    [rehypePrism, { ignoreMissing: true, showLineNumbers }],
     rehypeRaw,
     [
       rehypeVideo,
@@ -50,7 +51,6 @@ function markdown(markdownStr: string = '', options: Options = {}) {
         test: (url: string) => /\.(mp4|mov)|[?&]rehype=video/i.test(url),
       },
     ],
-    [rehypePrism, { ignoreMissing: true, showLineNumbers }],
     [rehypeAttrs, { properties: 'attr', codeBlockParames: false }],
     rehypeIgnore,
     ...(options.rehypePlugins || []),
