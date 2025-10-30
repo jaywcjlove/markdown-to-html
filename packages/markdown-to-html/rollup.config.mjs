@@ -6,23 +6,43 @@ import terser from '@rollup/plugin-terser';
 import sizes from 'rollup-plugin-sizes';
 import json from '@rollup/plugin-json';
 import { multibanner, onebanner } from 'bannerjs';
-import pkg from './package.json' assert { type: 'json' };
+// import pkg from './package.json' assert { type: 'json' };
 
-// const onwarn = (warning, rollupWarn) => {
-//   // Silence circular dependency warning for moment package
-//   // if (
-//   //   warning.code === 'CIRCULAR_DEPENDENCY'
-//   //   && !warning.ids.indexOf(path.normalize('node_modules/hast-util-select/lib/'))
-//   // ) {
-//   //   return
-//   // }
+import fs from 'fs';
+const pkg = JSON.parse(fs.readFileSync(path.resolve('./package.json'), 'utf8'));
 
-//   console.warn(`Circular dependency: ${warning.message}`);
-// }
+const onwarn = (warning, rollupWarn) => {
+  // 忽略来自第三方库的 "this" 重写警告
+  if (warning.code === 'THIS_IS_UNDEFINED') {
+    return;
+  }
+
+  // 忽略特定的循环依赖警告
+  if (
+    warning.code === 'CIRCULAR_DEPENDENCY' &&
+    warning.ids.some(id => id.includes('node_modules/hast-util-select/lib/'))
+  ) {
+    return;
+  }
+
+  // 忽略来自 css-selector-parser 的 this 警告
+  if (
+    warning.code === 'THIS_IS_UNDEFINED' &&
+    warning.loc &&
+    warning.loc.file &&
+    warning.loc.file.includes('css-selector-parser')
+  ) {
+    return;
+  }
+
+  // 显示其他警告
+  rollupWarn(warning);
+}
 
 export default [
   {
     input: 'src/index.ts',
+    onwarn,
     output: [
       {
         file: pkg.unpkg,
@@ -42,14 +62,18 @@ export default [
         tsconfig: './tsconfig.json',
         compilerOptions: {
           outDir: 'dist',
-          declarationDir: '.',
+          declarationDir: 'dist',
         },
       }),
-      commonjs(),
+      commonjs({
+        transformMixedEsModules: true,
+        ignoreTryCatch: false,
+      }),
     ],
   },
   {
     input: 'src/index.ts',
+    onwarn,
     output: [
       {
         file: pkg.unpkg.replace(/.js$/, '.min.js'),
@@ -69,11 +93,14 @@ export default [
         tsconfig: './tsconfig.json',
         compilerOptions: {
           outDir: 'dist',
-          declarationDir: '.',
+          declarationDir: 'dist',
         },
       }),
       terser({}),
-      commonjs(),
+      commonjs({
+        transformMixedEsModules: true,
+        ignoreTryCatch: false,
+      }),
     ],
   },
 ];
