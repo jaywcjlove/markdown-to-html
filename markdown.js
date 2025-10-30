@@ -1,8 +1,8 @@
 /**! 
- * @wcj/markdown-to-html v3.0.4 
+ * @wcj/markdown-to-html v3.0.5 
  * Converts markdown text to HTML. 
  * 
- * Copyright (c) 2024 kenny wang <wowohoo@qq.com> (https://github.com/jaywcjlove) 
+ * Copyright (c) 2025 kenny wang <wowohoo@qq.com> (https://github.com/jaywcjlove) 
  * https://github.com/jaywcjlove/markdown-to-html 
  * 
  * @website: https://github.com/jaywcjlove/markdown-to-html
@@ -102,9 +102,7 @@
   }
 
   /**
-   * @typedef {import('unist').Node} Node
-   * @typedef {import('unist').Point} Point
-   * @typedef {import('unist').Position} Position
+   * @import {Node, Point, Position} from 'unist'
    */
 
 
@@ -243,7 +241,6 @@
           ? options.place.start
           : options.place;
 
-      /* eslint-disable no-unused-expressions */
       /**
        * Stack of ancestor nodes surrounding the message.
        *
@@ -281,7 +278,7 @@
        *
        * @type {string | undefined}
        */
-      this.file;
+      this.file = '';
 
       // Field from `Error`.
       /**
@@ -359,21 +356,21 @@
        *
        * @type {string | undefined}
        */
-      this.actual;
+      this.actual = undefined;
 
       /**
        * Suggest acceptable values that can be used instead of `actual`.
        *
        * @type {Array<string> | undefined}
        */
-      this.expected;
+      this.expected = undefined;
 
       /**
        * Long form description of the message (you should use markdown).
        *
        * @type {string | undefined}
        */
-      this.note;
+      this.note = undefined;
 
       /**
        * Link to docs for the message.
@@ -383,8 +380,7 @@
        *
        * @type {string | undefined}
        */
-      this.url;
-      /* eslint-enable no-unused-expressions */
+      this.url = undefined;
     }
   }
 
@@ -688,7 +684,7 @@
       }
     }
 
-    return joined === undefined ? '.' : normalize$1(joined)
+    return joined === undefined ? '.' : normalize$3(joined)
   }
 
   /**
@@ -701,7 +697,7 @@
    */
   // Note: `normalize` is not exposed as `path.normalize`, so some code is
   // manually removed from it.
-  function normalize$1(path) {
+  function normalize$3(path) {
     assertPath$1(path);
 
     const absolute = path.codePointAt(0) === 47; /* `/` */
@@ -1594,123 +1590,133 @@
   	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
   }
 
-  var hasOwn = Object.prototype.hasOwnProperty;
-  var toStr = Object.prototype.toString;
-  var defineProperty = Object.defineProperty;
-  var gOPD = Object.getOwnPropertyDescriptor;
+  var extend$1;
+  var hasRequiredExtend;
 
-  var isArray = function isArray(arr) {
-  	if (typeof Array.isArray === 'function') {
-  		return Array.isArray(arr);
-  	}
+  function requireExtend () {
+  	if (hasRequiredExtend) return extend$1;
+  	hasRequiredExtend = 1;
 
-  	return toStr.call(arr) === '[object Array]';
-  };
+  	var hasOwn = Object.prototype.hasOwnProperty;
+  	var toStr = Object.prototype.toString;
+  	var defineProperty = Object.defineProperty;
+  	var gOPD = Object.getOwnPropertyDescriptor;
 
-  var isPlainObject$1 = function isPlainObject(obj) {
-  	if (!obj || toStr.call(obj) !== '[object Object]') {
-  		return false;
-  	}
-
-  	var hasOwnConstructor = hasOwn.call(obj, 'constructor');
-  	var hasIsPrototypeOf = obj.constructor && obj.constructor.prototype && hasOwn.call(obj.constructor.prototype, 'isPrototypeOf');
-  	// Not own constructor property must be Object
-  	if (obj.constructor && !hasOwnConstructor && !hasIsPrototypeOf) {
-  		return false;
-  	}
-
-  	// Own properties are enumerated firstly, so to speed up,
-  	// if last one is own, then all properties are own.
-  	var key;
-  	for (key in obj) { /**/ }
-
-  	return typeof key === 'undefined' || hasOwn.call(obj, key);
-  };
-
-  // If name is '__proto__', and Object.defineProperty is available, define __proto__ as an own property on target
-  var setProperty = function setProperty(target, options) {
-  	if (defineProperty && options.name === '__proto__') {
-  		defineProperty(target, options.name, {
-  			enumerable: true,
-  			configurable: true,
-  			value: options.newValue,
-  			writable: true
-  		});
-  	} else {
-  		target[options.name] = options.newValue;
-  	}
-  };
-
-  // Return undefined instead of __proto__ if '__proto__' is not an own property
-  var getProperty = function getProperty(obj, name) {
-  	if (name === '__proto__') {
-  		if (!hasOwn.call(obj, name)) {
-  			return void 0;
-  		} else if (gOPD) {
-  			// In early versions of node, obj['__proto__'] is buggy when obj has
-  			// __proto__ as an own property. Object.getOwnPropertyDescriptor() works.
-  			return gOPD(obj, name).value;
+  	var isArray = function isArray(arr) {
+  		if (typeof Array.isArray === 'function') {
+  			return Array.isArray(arr);
   		}
-  	}
 
-  	return obj[name];
-  };
+  		return toStr.call(arr) === '[object Array]';
+  	};
 
-  var extend = function extend() {
-  	var options, name, src, copy, copyIsArray, clone;
-  	var target = arguments[0];
-  	var i = 1;
-  	var length = arguments.length;
-  	var deep = false;
+  	var isPlainObject = function isPlainObject(obj) {
+  		if (!obj || toStr.call(obj) !== '[object Object]') {
+  			return false;
+  		}
 
-  	// Handle a deep copy situation
-  	if (typeof target === 'boolean') {
-  		deep = target;
-  		target = arguments[1] || {};
-  		// skip the boolean and the target
-  		i = 2;
-  	}
-  	if (target == null || (typeof target !== 'object' && typeof target !== 'function')) {
-  		target = {};
-  	}
+  		var hasOwnConstructor = hasOwn.call(obj, 'constructor');
+  		var hasIsPrototypeOf = obj.constructor && obj.constructor.prototype && hasOwn.call(obj.constructor.prototype, 'isPrototypeOf');
+  		// Not own constructor property must be Object
+  		if (obj.constructor && !hasOwnConstructor && !hasIsPrototypeOf) {
+  			return false;
+  		}
 
-  	for (; i < length; ++i) {
-  		options = arguments[i];
-  		// Only deal with non-null/undefined values
-  		if (options != null) {
-  			// Extend the base object
-  			for (name in options) {
-  				src = getProperty(target, name);
-  				copy = getProperty(options, name);
+  		// Own properties are enumerated firstly, so to speed up,
+  		// if last one is own, then all properties are own.
+  		var key;
+  		for (key in obj) { /**/ }
 
-  				// Prevent never-ending loop
-  				if (target !== copy) {
-  					// Recurse if we're merging plain objects or arrays
-  					if (deep && copy && (isPlainObject$1(copy) || (copyIsArray = isArray(copy)))) {
-  						if (copyIsArray) {
-  							copyIsArray = false;
-  							clone = src && isArray(src) ? src : [];
-  						} else {
-  							clone = src && isPlainObject$1(src) ? src : {};
+  		return typeof key === 'undefined' || hasOwn.call(obj, key);
+  	};
+
+  	// If name is '__proto__', and Object.defineProperty is available, define __proto__ as an own property on target
+  	var setProperty = function setProperty(target, options) {
+  		if (defineProperty && options.name === '__proto__') {
+  			defineProperty(target, options.name, {
+  				enumerable: true,
+  				configurable: true,
+  				value: options.newValue,
+  				writable: true
+  			});
+  		} else {
+  			target[options.name] = options.newValue;
+  		}
+  	};
+
+  	// Return undefined instead of __proto__ if '__proto__' is not an own property
+  	var getProperty = function getProperty(obj, name) {
+  		if (name === '__proto__') {
+  			if (!hasOwn.call(obj, name)) {
+  				return void 0;
+  			} else if (gOPD) {
+  				// In early versions of node, obj['__proto__'] is buggy when obj has
+  				// __proto__ as an own property. Object.getOwnPropertyDescriptor() works.
+  				return gOPD(obj, name).value;
+  			}
+  		}
+
+  		return obj[name];
+  	};
+
+  	extend$1 = function extend() {
+  		var options, name, src, copy, copyIsArray, clone;
+  		var target = arguments[0];
+  		var i = 1;
+  		var length = arguments.length;
+  		var deep = false;
+
+  		// Handle a deep copy situation
+  		if (typeof target === 'boolean') {
+  			deep = target;
+  			target = arguments[1] || {};
+  			// skip the boolean and the target
+  			i = 2;
+  		}
+  		if (target == null || (typeof target !== 'object' && typeof target !== 'function')) {
+  			target = {};
+  		}
+
+  		for (; i < length; ++i) {
+  			options = arguments[i];
+  			// Only deal with non-null/undefined values
+  			if (options != null) {
+  				// Extend the base object
+  				for (name in options) {
+  					src = getProperty(target, name);
+  					copy = getProperty(options, name);
+
+  					// Prevent never-ending loop
+  					if (target !== copy) {
+  						// Recurse if we're merging plain objects or arrays
+  						if (deep && copy && (isPlainObject(copy) || (copyIsArray = isArray(copy)))) {
+  							if (copyIsArray) {
+  								copyIsArray = false;
+  								clone = src && isArray(src) ? src : [];
+  							} else {
+  								clone = src && isPlainObject(src) ? src : {};
+  							}
+
+  							// Never move original objects, clone them
+  							setProperty(target, { name: name, newValue: extend(deep, clone, copy) });
+
+  						// Don't bring in undefined values
+  						} else if (typeof copy !== 'undefined') {
+  							setProperty(target, { name: name, newValue: copy });
   						}
-
-  						// Never move original objects, clone them
-  						setProperty(target, { name: name, newValue: extend(deep, clone, copy) });
-
-  					// Don't bring in undefined values
-  					} else if (typeof copy !== 'undefined') {
-  						setProperty(target, { name: name, newValue: copy });
   					}
   				}
   			}
   		}
-  	}
 
-  	// Return the modified object
-  	return target;
-  };
+  		// Return the modified object
+  		return target;
+  	};
+  	return extend$1;
+  }
 
-  var extend$1 = /*@__PURE__*/getDefaultExportFromCjs(extend);
+  var extendExports = requireExtend();
+  var extend = /*@__PURE__*/getDefaultExportFromCjs(extendExports);
 
   function ok$1() {}
 
@@ -2142,7 +2148,7 @@
         destination.use(...attacher);
       }
 
-      destination.data(extend$1(true, {}, this.namespace));
+      destination.data(extend(true, {}, this.namespace));
 
       return destination
     }
@@ -2740,7 +2746,7 @@
         addList(result.plugins);
 
         if (result.settings) {
-          namespace.settings = extend$1(true, namespace.settings, result.settings);
+          namespace.settings = extend(true, namespace.settings, result.settings);
         }
       }
 
@@ -2786,7 +2792,7 @@
           let [primary, ...rest] = parameters;
           const currentPrimary = attachers[entryIndex][1];
           if (isPlainObject(currentPrimary) && isPlainObject(primary)) {
-            primary = extend$1(true, currentPrimary, primary);
+            primary = extend(true, currentPrimary, primary);
           }
 
           attachers[entryIndex] = [plugin, primary, ...rest];
@@ -2974,7 +2980,7 @@
   }
 
   /**
-   * @typedef {import('micromark-util-types').Code} Code
+   * @import {Code} from 'micromark-util-types'
    */
 
   /**
@@ -3200,7 +3206,9 @@
    * Create a code check from a regex.
    *
    * @param {RegExp} regex
+   *   Expression.
    * @returns {(code: Code) => boolean}
+   *   Check.
    */
   function regexCheck(regex) {
     return check;
@@ -3231,8 +3239,7 @@
   }
 
   /**
-   * @typedef {import('unist').Node} Node
-   * @typedef {import('unist').Parent} Parent
+   * @import {Node, Parent} from 'unist'
    */
 
 
@@ -3280,7 +3287,11 @@
         }
 
         if (typeof test === 'object') {
-          return Array.isArray(test) ? anyFactory$1(test) : propsFactory(test)
+          return Array.isArray(test)
+            ? anyFactory$1(test)
+            : // Cast because `ReadonlyArray` goes into the above but `isArray`
+              // narrows to `Array`.
+              propertiesFactory(/** @type {Props} */ (test))
         }
 
         if (typeof test === 'string') {
@@ -3327,7 +3338,7 @@
    * @param {Props} check
    * @returns {Check}
    */
-  function propsFactory(check) {
+  function propertiesFactory(check) {
     const checkAsRecord = /** @type {Record<string, unknown>} */ (check);
 
     return castFactory$1(all)
@@ -3416,8 +3427,7 @@
   }
 
   /**
-   * @typedef {import('unist').Node} UnistNode
-   * @typedef {import('unist').Parent} UnistParent
+   * @import {Node as UnistNode, Parent as UnistParent} from 'unist'
    */
 
 
@@ -3520,9 +3530,9 @@
           typeof value.tagName === 'string'
             ? value.tagName
             : // `xast`
-            typeof value.name === 'string'
-            ? value.name
-            : undefined;
+              typeof value.name === 'string'
+              ? value.name
+              : undefined;
 
         Object.defineProperty(visit, 'name', {
           value:
@@ -3599,13 +3609,8 @@
   }
 
   /**
-   * @typedef {import('mdast').Nodes} Nodes
-   * @typedef {import('mdast').Parents} Parents
-   * @typedef {import('mdast').PhrasingContent} PhrasingContent
-   * @typedef {import('mdast').Root} Root
-   * @typedef {import('mdast').Text} Text
-   * @typedef {import('unist-util-visit-parents').Test} Test
-   * @typedef {import('unist-util-visit-parents').VisitorResult} VisitorResult
+   * @import {Nodes, Parents, PhrasingContent, Root, Text} from 'mdast'
+   * @import {BuildVisitor, Test, VisitorResult} from 'unist-util-visit-parents'
    */
 
 
@@ -3635,7 +3640,7 @@
       visitParents(tree, 'text', visitor);
     }
 
-    /** @type {import('unist-util-visit-parents').BuildVisitor<Root, 'text'>} */
+    /** @type {BuildVisitor<Root, 'text'>} */
     function visitor(node, parents) {
       let index = -1;
       /** @type {Parents | undefined} */
@@ -4107,74 +4112,60 @@
    *   Normalized identifier.
    */
   function normalizeIdentifier(value) {
-    return (
-      value
-        // Collapse markdown whitespace.
-        .replace(/[\t\n\r ]+/g, ' ')
-        // Trim.
-        .replace(/^ | $/g, '')
-        // Some characters are considered “uppercase”, but if their lowercase
-        // counterpart is uppercased will result in a different uppercase
-        // character.
-        // Hence, to get that form, we perform both lower- and uppercase.
-        // Upper case makes sure keys will not interact with default prototypal
-        // methods: no method is uppercase.
-        .toLowerCase()
-        .toUpperCase()
-    )
+    return value
+    // Collapse markdown whitespace.
+    .replace(/[\t\n\r ]+/g, " ")
+    // Trim.
+    .replace(/^ | $/g, '')
+    // Some characters are considered “uppercase”, but if their lowercase
+    // counterpart is uppercased will result in a different uppercase
+    // character.
+    // Hence, to get that form, we perform both lower- and uppercase.
+    // Upper case makes sure keys will not interact with default prototypal
+    // methods: no method is uppercase.
+    .toLowerCase().toUpperCase();
   }
 
   /**
-   * @typedef {import('mdast').FootnoteDefinition} FootnoteDefinition
-   * @typedef {import('mdast').FootnoteReference} FootnoteReference
-   * @typedef {import('mdast-util-from-markdown').CompileContext} CompileContext
-   * @typedef {import('mdast-util-from-markdown').Extension} FromMarkdownExtension
-   * @typedef {import('mdast-util-from-markdown').Handle} FromMarkdownHandle
-   * @typedef {import('mdast-util-to-markdown').Handle} ToMarkdownHandle
-   * @typedef {import('mdast-util-to-markdown').Map} Map
-   * @typedef {import('mdast-util-to-markdown').Options} ToMarkdownExtension
+   * @import {
+   *   CompileContext,
+   *   Extension as FromMarkdownExtension,
+   *   Handle as FromMarkdownHandle
+   * } from 'mdast-util-from-markdown'
+   * @import {ToMarkdownOptions} from 'mdast-util-gfm-footnote'
+   * @import {
+   *   Handle as ToMarkdownHandle,
+   *   Map,
+   *   Options as ToMarkdownExtension
+   * } from 'mdast-util-to-markdown'
+   * @import {FootnoteDefinition, FootnoteReference} from 'mdast'
    */
 
 
   footnoteReference$1.peek = footnoteReferencePeek;
 
   /**
-   * Create an extension for `mdast-util-from-markdown` to enable GFM footnotes
-   * in markdown.
-   *
-   * @returns {FromMarkdownExtension}
-   *   Extension for `mdast-util-from-markdown`.
+   * @this {CompileContext}
+   * @type {FromMarkdownHandle}
    */
-  function gfmFootnoteFromMarkdown() {
-    return {
-      enter: {
-        gfmFootnoteDefinition: enterFootnoteDefinition,
-        gfmFootnoteDefinitionLabelString: enterFootnoteDefinitionLabelString,
-        gfmFootnoteCall: enterFootnoteCall,
-        gfmFootnoteCallString: enterFootnoteCallString
-      },
-      exit: {
-        gfmFootnoteDefinition: exitFootnoteDefinition,
-        gfmFootnoteDefinitionLabelString: exitFootnoteDefinitionLabelString,
-        gfmFootnoteCall: exitFootnoteCall,
-        gfmFootnoteCallString: exitFootnoteCallString
-      }
-    }
+  function enterFootnoteCallString() {
+    this.buffer();
   }
 
   /**
-   * Create an extension for `mdast-util-to-markdown` to enable GFM footnotes
-   * in markdown.
-   *
-   * @returns {ToMarkdownExtension}
-   *   Extension for `mdast-util-to-markdown`.
+   * @this {CompileContext}
+   * @type {FromMarkdownHandle}
    */
-  function gfmFootnoteToMarkdown() {
-    return {
-      // This is on by default already.
-      unsafe: [{character: '[', inConstruct: ['phrasing', 'label', 'reference']}],
-      handlers: {footnoteDefinition, footnoteReference: footnoteReference$1}
-    }
+  function enterFootnoteCall(token) {
+    this.enter({type: 'footnoteReference', identifier: '', label: ''}, token);
+  }
+
+  /**
+   * @this {CompileContext}
+   * @type {FromMarkdownHandle}
+   */
+  function enterFootnoteDefinitionLabelString() {
+    this.buffer();
   }
 
   /**
@@ -4192,8 +4183,22 @@
    * @this {CompileContext}
    * @type {FromMarkdownHandle}
    */
-  function enterFootnoteDefinitionLabelString() {
-    this.buffer();
+  function exitFootnoteCallString(token) {
+    const label = this.resume();
+    const node = this.stack[this.stack.length - 1];
+    ok$1(node.type === 'footnoteReference');
+    node.identifier = normalizeIdentifier(
+      this.sliceSerialize(token)
+    ).toLowerCase();
+    node.label = label;
+  }
+
+  /**
+   * @this {CompileContext}
+   * @type {FromMarkdownHandle}
+   */
+  function exitFootnoteCall(token) {
+    this.exit(token);
   }
 
   /**
@@ -4204,10 +4209,10 @@
     const label = this.resume();
     const node = this.stack[this.stack.length - 1];
     ok$1(node.type === 'footnoteDefinition');
-    node.label = label;
     node.identifier = normalizeIdentifier(
       this.sliceSerialize(token)
     ).toLowerCase();
+    node.label = label;
   }
 
   /**
@@ -4218,42 +4223,9 @@
     this.exit(token);
   }
 
-  /**
-   * @this {CompileContext}
-   * @type {FromMarkdownHandle}
-   */
-  function enterFootnoteCall(token) {
-    this.enter({type: 'footnoteReference', identifier: '', label: ''}, token);
-  }
-
-  /**
-   * @this {CompileContext}
-   * @type {FromMarkdownHandle}
-   */
-  function enterFootnoteCallString() {
-    this.buffer();
-  }
-
-  /**
-   * @this {CompileContext}
-   * @type {FromMarkdownHandle}
-   */
-  function exitFootnoteCallString(token) {
-    const label = this.resume();
-    const node = this.stack[this.stack.length - 1];
-    ok$1(node.type === 'footnoteReference');
-    node.label = label;
-    node.identifier = normalizeIdentifier(
-      this.sliceSerialize(token)
-    ).toLowerCase();
-  }
-
-  /**
-   * @this {CompileContext}
-   * @type {FromMarkdownHandle}
-   */
-  function exitFootnoteCall(token) {
-    this.exit(token);
+  /** @type {ToMarkdownHandle} */
+  function footnoteReferencePeek() {
+    return '['
   }
 
   /**
@@ -4266,11 +4238,7 @@
     const exit = state.enter('footnoteReference');
     const subexit = state.enter('reference');
     value += tracker.move(
-      state.safe(state.associationId(node), {
-        ...tracker.current(),
-        before: value,
-        after: ']'
-      })
+      state.safe(state.associationId(node), {after: ']', before: value})
     );
     subexit();
     exit();
@@ -4278,46 +4246,94 @@
     return value
   }
 
-  /** @type {ToMarkdownHandle} */
-  function footnoteReferencePeek() {
-    return '['
+  /**
+   * Create an extension for `mdast-util-from-markdown` to enable GFM footnotes
+   * in markdown.
+   *
+   * @returns {FromMarkdownExtension}
+   *   Extension for `mdast-util-from-markdown`.
+   */
+  function gfmFootnoteFromMarkdown() {
+    return {
+      enter: {
+        gfmFootnoteCallString: enterFootnoteCallString,
+        gfmFootnoteCall: enterFootnoteCall,
+        gfmFootnoteDefinitionLabelString: enterFootnoteDefinitionLabelString,
+        gfmFootnoteDefinition: enterFootnoteDefinition
+      },
+      exit: {
+        gfmFootnoteCallString: exitFootnoteCallString,
+        gfmFootnoteCall: exitFootnoteCall,
+        gfmFootnoteDefinitionLabelString: exitFootnoteDefinitionLabelString,
+        gfmFootnoteDefinition: exitFootnoteDefinition
+      }
+    }
   }
 
   /**
-   * @type {ToMarkdownHandle}
-   * @param {FootnoteDefinition} node
+   * Create an extension for `mdast-util-to-markdown` to enable GFM footnotes
+   * in markdown.
+   *
+   * @param {ToMarkdownOptions | null | undefined} [options]
+   *   Configuration (optional).
+   * @returns {ToMarkdownExtension}
+   *   Extension for `mdast-util-to-markdown`.
    */
-  function footnoteDefinition(node, _, state, info) {
-    const tracker = state.createTracker(info);
-    let value = tracker.move('[^');
-    const exit = state.enter('footnoteDefinition');
-    const subexit = state.enter('label');
-    value += tracker.move(
-      state.safe(state.associationId(node), {
-        ...tracker.current(),
-        before: value,
-        after: ']'
-      })
-    );
-    subexit();
-    value += tracker.move(
-      ']:' + (node.children && node.children.length > 0 ? ' ' : '')
-    );
-    tracker.shift(4);
-    value += tracker.move(
-      state.indentLines(state.containerFlow(node, tracker.current()), map$2)
-    );
-    exit();
+  function gfmFootnoteToMarkdown(options) {
+    // To do: next major: change default.
+    let firstLineBlank = false;
 
-    return value
+    if (options && options.firstLineBlank) {
+      firstLineBlank = true;
+    }
+
+    return {
+      handlers: {footnoteDefinition, footnoteReference: footnoteReference$1},
+      // This is on by default already.
+      unsafe: [{character: '[', inConstruct: ['label', 'phrasing', 'reference']}]
+    }
+
+    /**
+     * @type {ToMarkdownHandle}
+     * @param {FootnoteDefinition} node
+     */
+    function footnoteDefinition(node, _, state, info) {
+      const tracker = state.createTracker(info);
+      let value = tracker.move('[^');
+      const exit = state.enter('footnoteDefinition');
+      const subexit = state.enter('label');
+      value += tracker.move(
+        state.safe(state.associationId(node), {before: value, after: ']'})
+      );
+      subexit();
+
+      value += tracker.move(']:');
+
+      if (node.children && node.children.length > 0) {
+        tracker.shift(4);
+
+        value += tracker.move(
+          (firstLineBlank ? '\n' : ' ') +
+            state.indentLines(
+              state.containerFlow(node, tracker.current()),
+              firstLineBlank ? mapAll : mapExceptFirst
+            )
+        );
+      }
+
+      exit();
+
+      return value
+    }
   }
 
   /** @type {Map} */
-  function map$2(line, index, blank) {
-    if (index === 0) {
-      return line
-    }
+  function mapExceptFirst(line, index, blank) {
+    return index === 0 ? line : mapAll(line, index, blank)
+  }
 
+  /** @type {Map} */
+  function mapAll(line, index, blank) {
     return (blank ? '' : '    ') + line
   }
 
@@ -4428,19 +4444,18 @@
     return '~'
   }
 
+  // To do: next major: remove.
+  /**
+   * @typedef {Options} MarkdownTableOptions
+   *   Configuration.
+   */
+
   /**
    * @typedef Options
-   *   Configuration (optional).
-   * @property {string|null|ReadonlyArray<string|null|undefined>} [align]
-   *   One style for all columns, or styles for their respective columns.
-   *   Each style is either `'l'` (left), `'r'` (right), or `'c'` (center).
-   *   Other values are treated as `''`, which doesn’t place the colon in the
-   *   alignment row but does align left.
-   *   *Only the lowercased first character is used, so `Right` is fine.*
-   * @property {boolean} [padding=true]
-   *   Whether to add a space of padding between delimiters and cells.
-   *
-   *   When `true`, there is padding:
+   *   Configuration.
+   * @property {boolean | null | undefined} [alignDelimiters=true]
+   *   Whether to align the delimiters (default: `true`);
+   *   they are aligned by default:
    *
    *   ```markdown
    *   | Alpha | B     |
@@ -4448,36 +4463,22 @@
    *   | C     | Delta |
    *   ```
    *
-   *   When `false`, there is no padding:
+   *   Pass `false` to make them staggered:
    *
    *   ```markdown
-   *   |Alpha|B    |
-   *   |-----|-----|
-   *   |C    |Delta|
+   *   | Alpha | B |
+   *   | - | - |
+   *   | C | Delta |
    *   ```
-   * @property {boolean} [delimiterStart=true]
-   *   Whether to begin each row with the delimiter.
-   *
-   *   > 👉 **Note**: please don’t use this: it could create fragile structures
-   *   > that aren’t understandable to some markdown parsers.
-   *
-   *   When `true`, there are starting delimiters:
-   *
-   *   ```markdown
-   *   | Alpha | B     |
-   *   | ----- | ----- |
-   *   | C     | Delta |
-   *   ```
-   *
-   *   When `false`, there are no starting delimiters:
-   *
-   *   ```markdown
-   *   Alpha | B     |
-   *   ----- | ----- |
-   *   C     | Delta |
-   *   ```
-   * @property {boolean} [delimiterEnd=true]
-   *   Whether to end each row with the delimiter.
+   * @property {ReadonlyArray<string | null | undefined> | string | null | undefined} [align]
+   *   How to align columns (default: `''`);
+   *   one style for all columns or styles for their respective columns;
+   *   each style is either `'l'` (left), `'r'` (right), or `'c'` (center);
+   *   other values are treated as `''`, which doesn’t place the colon in the
+   *   alignment row but does align left;
+   *   *only the lowercased first character is used, so `Right` is fine.*
+   * @property {boolean | null | undefined} [delimiterEnd=true]
+   *   Whether to end each row with the delimiter (default: `true`).
    *
    *   > 👉 **Note**: please don’t use this: it could create fragile structures
    *   > that aren’t understandable to some markdown parsers.
@@ -4497,9 +4498,13 @@
    *   | ----- | -----
    *   | C     | Delta
    *   ```
-   * @property {boolean} [alignDelimiters=true]
-   *   Whether to align the delimiters.
-   *   By default, they are aligned:
+   * @property {boolean | null | undefined} [delimiterStart=true]
+   *   Whether to begin each row with the delimiter (default: `true`).
+   *
+   *   > 👉 **Note**: please don’t use this: it could create fragile structures
+   *   > that aren’t understandable to some markdown parsers.
+   *
+   *   When `true`, there are starting delimiters:
    *
    *   ```markdown
    *   | Alpha | B     |
@@ -4507,21 +4512,40 @@
    *   | C     | Delta |
    *   ```
    *
-   *   Pass `false` to make them staggered:
+   *   When `false`, there are no starting delimiters:
    *
    *   ```markdown
-   *   | Alpha | B |
-   *   | - | - |
-   *   | C | Delta |
+   *   Alpha | B     |
+   *   ----- | ----- |
+   *   C     | Delta |
    *   ```
-   * @property {(value: string) => number} [stringLength]
-   *   Function to detect the length of table cell content.
-   *   This is used when aligning the delimiters (`|`) between table cells.
-   *   Full-width characters and emoji mess up delimiter alignment when viewing
-   *   the markdown source.
-   *   To fix this, you can pass this function, which receives the cell content
-   *   and returns its “visible” size.
-   *   Note that what is and isn’t visible depends on where the text is displayed.
+   * @property {boolean | null | undefined} [padding=true]
+   *   Whether to add a space of padding between delimiters and cells
+   *   (default: `true`).
+   *
+   *   When `true`, there is padding:
+   *
+   *   ```markdown
+   *   | Alpha | B     |
+   *   | ----- | ----- |
+   *   | C     | Delta |
+   *   ```
+   *
+   *   When `false`, there is no padding:
+   *
+   *   ```markdown
+   *   |Alpha|B    |
+   *   |-----|-----|
+   *   |C    |Delta|
+   *   ```
+   * @property {((value: string) => number) | null | undefined} [stringLength]
+   *   Function to detect the length of table cell content (optional);
+   *   this is used when aligning the delimiters (`|`) between table cells;
+   *   full-width characters and emoji mess up delimiter alignment when viewing
+   *   the markdown source;
+   *   to fix this, you can pass this function,
+   *   which receives the cell content and returns its “visible” size;
+   *   note that what is and isn’t visible depends on where the text is displayed.
    *
    *   Without such a function, the following:
    *
@@ -4568,23 +4592,32 @@
    */
 
   /**
-   * @typedef {Options} MarkdownTableOptions
-   * @todo
-   *   Remove next major.
+   * @param {string} value
+   *   Cell value.
+   * @returns {number}
+   *   Cell size.
    */
+  function defaultStringLength(value) {
+    return value.length
+  }
 
   /**
-   * Generate a markdown ([GFM](https://docs.github.com/en/github/writing-on-github/working-with-advanced-formatting/organizing-information-with-tables)) table..
+   * Generate a markdown
+   * ([GFM](https://docs.github.com/en/github/writing-on-github/working-with-advanced-formatting/organizing-information-with-tables))
+   * table.
    *
-   * @param {ReadonlyArray<ReadonlyArray<string|null|undefined>>} table
+   * @param {ReadonlyArray<ReadonlyArray<string | null | undefined>>} table
    *   Table data (matrix of strings).
-   * @param {Options} [options]
+   * @param {Readonly<Options> | null | undefined} [options]
    *   Configuration (optional).
    * @returns {string}
+   *   Result.
    */
-  function markdownTable(table, options = {}) {
-    const align = (options.align || []).concat();
-    const stringLength = options.stringLength || defaultStringLength;
+  function markdownTable(table, options) {
+    const settings = options || {};
+    // To do: next major: change to spread.
+    const align = (settings.align || []).concat();
+    const stringLength = settings.stringLength || defaultStringLength;
     /** @type {Array<number>} Character codes as symbols for alignment per column. */
     const alignments = [];
     /** @type {Array<Array<string>>} Cells per row. */
@@ -4612,7 +4645,7 @@
       while (++columnIndex < table[rowIndex].length) {
         const cell = serialize$1(table[rowIndex][columnIndex]);
 
-        if (options.alignDelimiters !== false) {
+        if (settings.alignDelimiters !== false) {
           const size = stringLength(cell);
           sizes[columnIndex] = size;
 
@@ -4669,7 +4702,7 @@
 
       // There *must* be at least one hyphen-minus in each alignment cell.
       let size =
-        options.alignDelimiters === false
+        settings.alignDelimiters === false
           ? 1
           : Math.max(
               1,
@@ -4678,7 +4711,7 @@
 
       const cell = before + '-'.repeat(size) + after;
 
-      if (options.alignDelimiters !== false) {
+      if (settings.alignDelimiters !== false) {
         size = before.length + size + after.length;
 
         if (size > longestCellByColumn[columnIndex]) {
@@ -4711,7 +4744,7 @@
         let before = '';
         let after = '';
 
-        if (options.alignDelimiters !== false) {
+        if (settings.alignDelimiters !== false) {
           const size =
             longestCellByColumn[columnIndex] - (sizes[columnIndex] || 0);
           const code = alignments[columnIndex];
@@ -4731,36 +4764,36 @@
           }
         }
 
-        if (options.delimiterStart !== false && !columnIndex) {
+        if (settings.delimiterStart !== false && !columnIndex) {
           line.push('|');
         }
 
         if (
-          options.padding !== false &&
+          settings.padding !== false &&
           // Don’t add the opening space if we’re not aligning and the cell is
           // empty: there will be a closing space.
-          !(options.alignDelimiters === false && cell === '') &&
-          (options.delimiterStart !== false || columnIndex)
+          !(settings.alignDelimiters === false && cell === '') &&
+          (settings.delimiterStart !== false || columnIndex)
         ) {
           line.push(' ');
         }
 
-        if (options.alignDelimiters !== false) {
+        if (settings.alignDelimiters !== false) {
           line.push(before);
         }
 
         line.push(cell);
 
-        if (options.alignDelimiters !== false) {
+        if (settings.alignDelimiters !== false) {
           line.push(after);
         }
 
-        if (options.padding !== false) {
+        if (settings.padding !== false) {
           line.push(' ');
         }
 
         if (
-          options.delimiterEnd !== false ||
+          settings.delimiterEnd !== false ||
           columnIndex !== mostCellsPerRow - 1
         ) {
           line.push('|');
@@ -4768,7 +4801,7 @@
       }
 
       lines.push(
-        options.delimiterEnd === false
+        settings.delimiterEnd === false
           ? line.join('').replace(/ +$/, '')
           : line.join('')
       );
@@ -4778,24 +4811,20 @@
   }
 
   /**
-   * @param {string|null|undefined} [value]
+   * @param {string | null | undefined} [value]
+   *   Value to serialize.
    * @returns {string}
+   *   Result.
    */
   function serialize$1(value) {
     return value === null || value === undefined ? '' : String(value)
   }
 
   /**
-   * @param {string} value
+   * @param {string | null | undefined} value
+   *   Value.
    * @returns {number}
-   */
-  function defaultStringLength(value) {
-    return value.length
-  }
-
-  /**
-   * @param {string|null|undefined} value
-   * @returns {number}
+   *   Alignment.
    */
   function toAlignment(value) {
     const code = typeof value === 'string' ? value.codePointAt(0) : 0;
@@ -4803,10 +4832,10 @@
     return code === 67 /* `C` */ || code === 99 /* `c` */
       ? 99 /* `c` */
       : code === 76 /* `L` */ || code === 108 /* `l` */
-      ? 108 /* `l` */
-      : code === 82 /* `R` */ || code === 114 /* `r` */
-      ? 114 /* `r` */
-      : 0
+        ? 108 /* `l` */
+        : code === 82 /* `R` */ || code === 114 /* `r` */
+          ? 114 /* `r` */
+          : 0
   }
 
   /**
@@ -4929,11 +4958,8 @@
   }
 
   /**
-   * @typedef {import('mdast').Blockquote} Blockquote
-   * @typedef {import('mdast').Parents} Parents
-   * @typedef {import('../types.js').Info} Info
-   * @typedef {import('../types.js').Map} Map
-   * @typedef {import('../types.js').State} State
+   * @import {Blockquote, Parents} from 'mdast'
+   * @import {Info, Map, State} from 'mdast-util-to-markdown'
    */
 
   /**
@@ -4962,8 +4988,7 @@
   }
 
   /**
-   * @typedef {import('../types.js').ConstructName} ConstructName
-   * @typedef {import('../types.js').Unsafe} Unsafe
+   * @import {ConstructName, Unsafe} from 'mdast-util-to-markdown'
    */
 
   /**
@@ -5005,10 +5030,8 @@
   }
 
   /**
-   * @typedef {import('mdast').Break} Break
-   * @typedef {import('mdast').Parents} Parents
-   * @typedef {import('../types.js').Info} Info
-   * @typedef {import('../types.js').State} State
+   * @import {Break, Parents} from 'mdast'
+   * @import {Info, State} from 'mdast-util-to-markdown'
    */
 
 
@@ -5074,8 +5097,8 @@
   }
 
   /**
-   * @typedef {import('mdast').Code} Code
-   * @typedef {import('../types.js').State} State
+   * @import {State} from 'mdast-util-to-markdown'
+   * @import {Code} from 'mdast'
    */
 
   /**
@@ -5097,8 +5120,7 @@
   }
 
   /**
-   * @typedef {import('../types.js').Options} Options
-   * @typedef {import('../types.js').State} State
+   * @import {Options, State} from 'mdast-util-to-markdown'
    */
 
   /**
@@ -5120,11 +5142,8 @@
   }
 
   /**
-   * @typedef {import('mdast').Code} Code
-   * @typedef {import('mdast').Parents} Parents
-   * @typedef {import('../types.js').Info} Info
-   * @typedef {import('../types.js').Map} Map
-   * @typedef {import('../types.js').State} State
+   * @import {Info, Map, State} from 'mdast-util-to-markdown'
+   * @import {Code, Parents} from 'mdast'
    */
 
 
@@ -5196,8 +5215,7 @@
   }
 
   /**
-   * @typedef {import('../types.js').Options} Options
-   * @typedef {import('../types.js').State} State
+   * @import {Options, State} from 'mdast-util-to-markdown'
    */
 
   /**
@@ -5219,10 +5237,8 @@
   }
 
   /**
-   * @typedef {import('mdast').Definition} Definition
-   * @typedef {import('mdast').Parents} Parents
-   * @typedef {import('../types.js').Info} Info
-   * @typedef {import('../types.js').State} State
+   * @import {Info, State} from 'mdast-util-to-markdown'
+   * @import {Definition, Parents} from 'mdast'
    */
 
 
@@ -5297,8 +5313,7 @@
   }
 
   /**
-   * @typedef {import('../types.js').Options} Options
-   * @typedef {import('../types.js').State} State
+   * @import {Options, State} from 'mdast-util-to-markdown'
    */
 
   /**
@@ -5320,19 +5335,134 @@
   }
 
   /**
-   * @typedef {import('mdast').Emphasis} Emphasis
-   * @typedef {import('mdast').Parents} Parents
-   * @typedef {import('../types.js').Info} Info
-   * @typedef {import('../types.js').State} State
+   * Encode a code point as a character reference.
+   *
+   * @param {number} code
+   *   Code point to encode.
+   * @returns {string}
+   *   Encoded character reference.
+   */
+  function encodeCharacterReference(code) {
+    return '&#x' + code.toString(16).toUpperCase() + ';'
+  }
+
+  /**
+   * @import {Code} from 'micromark-util-types'
+   */
+
+  /**
+   * Classify whether a code represents whitespace, punctuation, or something
+   * else.
+   *
+   * Used for attention (emphasis, strong), whose sequences can open or close
+   * based on the class of surrounding characters.
+   *
+   * > 👉 **Note**: eof (`null`) is seen as whitespace.
+   *
+   * @param {Code} code
+   *   Code.
+   * @returns {typeof constants.characterGroupWhitespace | typeof constants.characterGroupPunctuation | undefined}
+   *   Group.
+   */
+  function classifyCharacter(code) {
+    if (code === null || markdownLineEndingOrSpace(code) || unicodeWhitespace(code)) {
+      return 1;
+    }
+    if (unicodePunctuation(code)) {
+      return 2;
+    }
+  }
+
+  /**
+   * @import {EncodeSides} from '../types.js'
+   */
+
+
+  /**
+   * Check whether to encode (as a character reference) the characters
+   * surrounding an attention run.
+   *
+   * Which characters are around an attention run influence whether it works or
+   * not.
+   *
+   * See <https://github.com/orgs/syntax-tree/discussions/60> for more info.
+   * See this markdown in a particular renderer to see what works:
+   *
+   * ```markdown
+   * |                         | A (letter inside) | B (punctuation inside) | C (whitespace inside) | D (nothing inside) |
+   * | ----------------------- | ----------------- | ---------------------- | --------------------- | ------------------ |
+   * | 1 (letter outside)      | x*y*z             | x*.*z                  | x* *z                 | x**z               |
+   * | 2 (punctuation outside) | .*y*.             | .*.*.                  | .* *.                 | .**.               |
+   * | 3 (whitespace outside)  | x *y* z           | x *.* z                | x * * z               | x ** z             |
+   * | 4 (nothing outside)     | *x*               | *.*                    | * *                   | **                 |
+   * ```
+   *
+   * @param {number} outside
+   *   Code point on the outer side of the run.
+   * @param {number} inside
+   *   Code point on the inner side of the run.
+   * @param {'*' | '_'} marker
+   *   Marker of the run.
+   *   Underscores are handled more strictly (they form less often) than
+   *   asterisks.
+   * @returns {EncodeSides}
+   *   Whether to encode characters.
+   */
+  // Important: punctuation must never be encoded.
+  // Punctuation is solely used by markdown constructs.
+  // And by encoding itself.
+  // Encoding them will break constructs or double encode things.
+  function encodeInfo(outside, inside, marker) {
+    const outsideKind = classifyCharacter(outside);
+    const insideKind = classifyCharacter(inside);
+
+    // Letter outside:
+    if (outsideKind === undefined) {
+      return insideKind === undefined
+        ? // Letter inside:
+          // we have to encode *both* letters for `_` as it is looser.
+          // it already forms for `*` (and GFMs `~`).
+          marker === '_'
+          ? {inside: true, outside: true}
+          : {inside: false, outside: false}
+        : insideKind === 1
+          ? // Whitespace inside: encode both (letter, whitespace).
+            {inside: true, outside: true}
+          : // Punctuation inside: encode outer (letter)
+            {inside: false, outside: true}
+    }
+
+    // Whitespace outside:
+    if (outsideKind === 1) {
+      return insideKind === undefined
+        ? // Letter inside: already forms.
+          {inside: false, outside: false}
+        : insideKind === 1
+          ? // Whitespace inside: encode both (whitespace).
+            {inside: true, outside: true}
+          : // Punctuation inside: already forms.
+            {inside: false, outside: false}
+    }
+
+    // Punctuation outside:
+    return insideKind === undefined
+      ? // Letter inside: already forms.
+        {inside: false, outside: false}
+      : insideKind === 1
+        ? // Whitespace inside: encode inner (whitespace).
+          {inside: true, outside: false}
+        : // Punctuation inside: already forms.
+          {inside: false, outside: false}
+  }
+
+  /**
+   * @import {Info, State} from 'mdast-util-to-markdown'
+   * @import {Emphasis, Parents} from 'mdast'
    */
 
 
   emphasis$1.peek = emphasisPeek;
 
-  // To do: there are cases where emphasis cannot “form” depending on the
-  // previous or next character of sequences.
-  // There’s no way around that though, except for injecting zero-width stuff.
-  // Do we need to safeguard against that?
   /**
    * @param {Emphasis} node
    * @param {Parents | undefined} _
@@ -5344,17 +5474,42 @@
     const marker = checkEmphasis(state);
     const exit = state.enter('emphasis');
     const tracker = state.createTracker(info);
-    let value = tracker.move(marker);
-    value += tracker.move(
+    const before = tracker.move(marker);
+
+    let between = tracker.move(
       state.containerPhrasing(node, {
-        before: value,
         after: marker,
+        before,
         ...tracker.current()
       })
     );
-    value += tracker.move(marker);
+    const betweenHead = between.charCodeAt(0);
+    const open = encodeInfo(
+      info.before.charCodeAt(info.before.length - 1),
+      betweenHead,
+      marker
+    );
+
+    if (open.inside) {
+      between = encodeCharacterReference(betweenHead) + between.slice(1);
+    }
+
+    const betweenTail = between.charCodeAt(between.length - 1);
+    const close = encodeInfo(info.after.charCodeAt(0), betweenTail, marker);
+
+    if (close.inside) {
+      between = between.slice(0, -1) + encodeCharacterReference(betweenTail);
+    }
+
+    const after = tracker.move(marker);
+
     exit();
-    return value
+
+    state.attentionEncodeSurroundingInfo = {
+      after: close.outside,
+      before: open.outside
+    };
+    return before + between + after
   }
 
   /**
@@ -5567,8 +5722,8 @@
   }
 
   /**
-   * @typedef {import('mdast').Heading} Heading
-   * @typedef {import('../types.js').State} State
+   * @import {State} from 'mdast-util-to-markdown'
+   * @import {Heading} from 'mdast'
    */
 
 
@@ -5600,10 +5755,8 @@
   }
 
   /**
-   * @typedef {import('mdast').Heading} Heading
-   * @typedef {import('mdast').Parents} Parents
-   * @typedef {import('../types.js').Info} Info
-   * @typedef {import('../types.js').State} State
+   * @import {Info, State} from 'mdast-util-to-markdown'
+   * @import {Heading, Parents} from 'mdast'
    */
 
 
@@ -5660,11 +5813,7 @@
 
     if (/^[\t ]/.test(value)) {
       // To do: what effect has the character reference on tracking?
-      value =
-        '&#x' +
-        value.charCodeAt(0).toString(16).toUpperCase() +
-        ';' +
-        value.slice(1);
+      value = encodeCharacterReference(value.charCodeAt(0)) + value.slice(1);
     }
 
     value = value ? sequence + ' ' + value : sequence;
@@ -5680,16 +5829,16 @@
   }
 
   /**
-   * @typedef {import('mdast').Html} Html
+   * @import {Html} from 'mdast'
    */
 
-  html$5.peek = htmlPeek;
+  html$9.peek = htmlPeek;
 
   /**
    * @param {Html} node
    * @returns {string}
    */
-  function html$5(node) {
+  function html$9(node) {
     return node.value || ''
   }
 
@@ -5701,10 +5850,8 @@
   }
 
   /**
-   * @typedef {import('mdast').Image} Image
-   * @typedef {import('mdast').Parents} Parents
-   * @typedef {import('../types.js').Info} Info
-   * @typedef {import('../types.js').State} State
+   * @import {Info, State} from 'mdast-util-to-markdown'
+   * @import {Image, Parents} from 'mdast'
    */
 
 
@@ -5785,10 +5932,8 @@
   }
 
   /**
-   * @typedef {import('mdast').ImageReference} ImageReference
-   * @typedef {import('mdast').Parents} Parents
-   * @typedef {import('../types.js').Info} Info
-   * @typedef {import('../types.js').State} State
+   * @import {Info, State} from 'mdast-util-to-markdown'
+   * @import {ImageReference, Parents} from 'mdast'
    */
 
   imageReference$1.peek = imageReferencePeek;
@@ -5851,9 +5996,8 @@
   }
 
   /**
-   * @typedef {import('mdast').InlineCode} InlineCode
-   * @typedef {import('mdast').Parents} Parents
-   * @typedef {import('../types.js').State} State
+   * @import {State} from 'mdast-util-to-markdown'
+   * @import {InlineCode, Parents} from 'mdast'
    */
 
   inlineCode$1.peek = inlineCodePeek;
@@ -5929,8 +6073,8 @@
   }
 
   /**
-   * @typedef {import('mdast').Link} Link
-   * @typedef {import('../types.js').State} State
+   * @import {State} from 'mdast-util-to-markdown'
+   * @import {Link} from 'mdast'
    */
 
 
@@ -5963,11 +6107,9 @@
   }
 
   /**
-   * @typedef {import('mdast').Link} Link
-   * @typedef {import('mdast').Parents} Parents
-   * @typedef {import('../types.js').Exit} Exit
-   * @typedef {import('../types.js').Info} Info
-   * @typedef {import('../types.js').State} State
+   * @import {Info, State} from 'mdast-util-to-markdown'
+   * @import {Link, Parents} from 'mdast'
+   * @import {Exit} from '../types.js'
    */
 
 
@@ -6078,10 +6220,8 @@
   }
 
   /**
-   * @typedef {import('mdast').LinkReference} LinkReference
-   * @typedef {import('mdast').Parents} Parents
-   * @typedef {import('../types.js').Info} Info
-   * @typedef {import('../types.js').State} State
+   * @import {Info, State} from 'mdast-util-to-markdown'
+   * @import {LinkReference, Parents} from 'mdast'
    */
 
   linkReference$1.peek = linkReferencePeek;
@@ -6144,8 +6284,7 @@
   }
 
   /**
-   * @typedef {import('../types.js').Options} Options
-   * @typedef {import('../types.js').State} State
+   * @import {Options, State} from 'mdast-util-to-markdown'
    */
 
   /**
@@ -6167,8 +6306,7 @@
   }
 
   /**
-   * @typedef {import('../types.js').Options} Options
-   * @typedef {import('../types.js').State} State
+   * @import {Options, State} from 'mdast-util-to-markdown'
    */
 
 
@@ -6206,8 +6344,7 @@
   }
 
   /**
-   * @typedef {import('../types.js').Options} Options
-   * @typedef {import('../types.js').State} State
+   * @import {Options, State} from 'mdast-util-to-markdown'
    */
 
   /**
@@ -6229,8 +6366,7 @@
   }
 
   /**
-   * @typedef {import('../types.js').Options} Options
-   * @typedef {import('../types.js').State} State
+   * @import {Options, State} from 'mdast-util-to-markdown'
    */
 
   /**
@@ -6252,10 +6388,8 @@
   }
 
   /**
-   * @typedef {import('mdast').List} List
-   * @typedef {import('mdast').Parents} Parents
-   * @typedef {import('../types.js').Info} Info
-   * @typedef {import('../types.js').State} State
+   * @import {Info, State} from 'mdast-util-to-markdown'
+   * @import {List, Parents} from 'mdast'
    */
 
 
@@ -6351,8 +6485,7 @@
   }
 
   /**
-   * @typedef {import('../types.js').Options} Options
-   * @typedef {import('../types.js').State} State
+   * @import {Options, State} from 'mdast-util-to-markdown'
    */
 
   /**
@@ -6374,11 +6507,8 @@
   }
 
   /**
-   * @typedef {import('mdast').ListItem} ListItem
-   * @typedef {import('mdast').Parents} Parents
-   * @typedef {import('../types.js').Info} Info
-   * @typedef {import('../types.js').Map} Map
-   * @typedef {import('../types.js').State} State
+   * @import {Info, Map, State} from 'mdast-util-to-markdown'
+   * @import {ListItem, Parents} from 'mdast'
    */
 
 
@@ -6438,10 +6568,8 @@
   }
 
   /**
-   * @typedef {import('mdast').Paragraph} Paragraph
-   * @typedef {import('mdast').Parents} Parents
-   * @typedef {import('../types.js').Info} Info
-   * @typedef {import('../types.js').State} State
+   * @import {Info, State} from 'mdast-util-to-markdown'
+   * @import {Paragraph, Parents} from 'mdast'
    */
 
   /**
@@ -6506,10 +6634,8 @@
     );
 
   /**
-   * @typedef {import('mdast').Parents} Parents
-   * @typedef {import('mdast').Root} Root
-   * @typedef {import('../types.js').Info} Info
-   * @typedef {import('../types.js').State} State
+   * @import {Info, State} from 'mdast-util-to-markdown'
+   * @import {Parents, Root} from 'mdast'
    */
 
 
@@ -6525,13 +6651,13 @@
     const hasPhrasing = node.children.some(function (d) {
       return phrasing(d)
     });
-    const fn = hasPhrasing ? state.containerPhrasing : state.containerFlow;
-    return fn.call(state, node, info)
+
+    const container = hasPhrasing ? state.containerPhrasing : state.containerFlow;
+    return container.call(state, node, info)
   }
 
   /**
-   * @typedef {import('../types.js').Options} Options
-   * @typedef {import('../types.js').State} State
+   * @import {Options, State} from 'mdast-util-to-markdown'
    */
 
   /**
@@ -6553,19 +6679,13 @@
   }
 
   /**
-   * @typedef {import('mdast').Parents} Parents
-   * @typedef {import('mdast').Strong} Strong
-   * @typedef {import('../types.js').Info} Info
-   * @typedef {import('../types.js').State} State
+   * @import {Info, State} from 'mdast-util-to-markdown'
+   * @import {Parents, Strong} from 'mdast'
    */
 
 
   strong$1.peek = strongPeek;
 
-  // To do: there are cases where emphasis cannot “form” depending on the
-  // previous or next character of sequences.
-  // There’s no way around that though, except for injecting zero-width stuff.
-  // Do we need to safeguard against that?
   /**
    * @param {Strong} node
    * @param {Parents | undefined} _
@@ -6577,17 +6697,42 @@
     const marker = checkStrong(state);
     const exit = state.enter('strong');
     const tracker = state.createTracker(info);
-    let value = tracker.move(marker + marker);
-    value += tracker.move(
+    const before = tracker.move(marker + marker);
+
+    let between = tracker.move(
       state.containerPhrasing(node, {
-        before: value,
         after: marker,
+        before,
         ...tracker.current()
       })
     );
-    value += tracker.move(marker + marker);
+    const betweenHead = between.charCodeAt(0);
+    const open = encodeInfo(
+      info.before.charCodeAt(info.before.length - 1),
+      betweenHead,
+      marker
+    );
+
+    if (open.inside) {
+      between = encodeCharacterReference(betweenHead) + between.slice(1);
+    }
+
+    const betweenTail = between.charCodeAt(between.length - 1);
+    const close = encodeInfo(info.after.charCodeAt(0), betweenTail, marker);
+
+    if (close.inside) {
+      between = between.slice(0, -1) + encodeCharacterReference(betweenTail);
+    }
+
+    const after = tracker.move(marker + marker);
+
     exit();
-    return value
+
+    state.attentionEncodeSurroundingInfo = {
+      after: close.outside,
+      before: open.outside
+    };
+    return before + between + after
   }
 
   /**
@@ -6601,10 +6746,8 @@
   }
 
   /**
-   * @typedef {import('mdast').Parents} Parents
-   * @typedef {import('mdast').Text} Text
-   * @typedef {import('../types.js').Info} Info
-   * @typedef {import('../types.js').State} State
+   * @import {Info, State} from 'mdast-util-to-markdown'
+   * @import {Parents, Text} from 'mdast'
    */
 
   /**
@@ -6619,8 +6762,7 @@
   }
 
   /**
-   * @typedef {import('../types.js').Options} Options
-   * @typedef {import('../types.js').State} State
+   * @import {Options, State} from 'mdast-util-to-markdown'
    */
 
   /**
@@ -6642,9 +6784,8 @@
   }
 
   /**
-   * @typedef {import('mdast').Parents} Parents
-   * @typedef {import('mdast').ThematicBreak} ThematicBreak
-   * @typedef {import('../types.js').State} State
+   * @import {State} from 'mdast-util-to-markdown'
+   * @import {Parents, ThematicBreak} from 'mdast'
    */
 
 
@@ -6673,7 +6814,7 @@
     emphasis: emphasis$1,
     hardBreak: hardBreak$1,
     heading: heading$1,
-    html: html$5,
+    html: html$9,
     image: image$1,
     imageReference: imageReference$1,
     inlineCode: inlineCode$1,
@@ -6690,18 +6831,18 @@
 
   /// <reference lib="dom" />
 
-  /* eslint-env browser */
+  /* global document */
 
   const element$6 = document.createElement('i');
 
   /**
    * @param {string} value
-   * @returns {string|false}
+   * @returns {string | false}
    */
   function decodeNamedCharacterReference(value) {
     const characterReference = '&' + value + ';';
     element$6.innerHTML = characterReference;
-    const char = element$6.textContent;
+    const character = element$6.textContent;
 
     // Some named character references do not require the closing semicolon
     // (`&not`, for instance), which leads to situations where parsing the assumed
@@ -6709,9 +6850,12 @@
     // When we encounter a trailing semicolon after parsing, and the character
     // reference to decode was not a semicolon (`&semi;`), we can assume that the
     // matching was not complete.
-    // @ts-expect-error: TypeScript is wrong that `textContent` on elements can
-    // yield `null`.
-    if (char.charCodeAt(char.length - 1) === 59 /* `;` */ && value !== 'semi') {
+    if (
+      // @ts-expect-error: TypeScript is wrong that `textContent` on elements can
+      // yield `null`.
+      character.charCodeAt(character.length - 1) === 59 /* `;` */ &&
+      value !== 'semi'
+    ) {
       return false
     }
 
@@ -6719,7 +6863,7 @@
     // not valid.
     // @ts-expect-error: TypeScript is wrong that `textContent` on elements can
     // yield `null`.
-    return char === characterReference ? false : char
+    return character === characterReference ? false : character
   }
 
   /**
@@ -6755,8 +6899,7 @@
     return String.fromCodePoint(code);
   }
 
-  const characterEscapeOrReference =
-    /\\([!-/:-@[-`{-~])|&(#(?:\d{1,7}|x[\da-f]{1,6})|[\da-z]{1,31});/gi;
+  const characterEscapeOrReference = /\\([!-/:-@[-`{-~])|&(#(?:\d{1,7}|x[\da-f]{1,6})|[\da-z]{1,31});/gi;
 
   /**
    * Decode markdown strings (which occur in places such as fenced code info
@@ -6771,19 +6914,23 @@
    *   Decoded value.
    */
   function decodeString(value) {
-    return value.replace(characterEscapeOrReference, decode)
+    return value.replace(characterEscapeOrReference, decode);
   }
 
   /**
    * @param {string} $0
+   *   Match.
    * @param {string} $1
+   *   Character escape.
    * @param {string} $2
+   *   Character reference.
    * @returns {string}
+   *   Decoded value
    */
   function decode($0, $1, $2) {
     if ($1) {
       // Escape.
-      return $1
+      return $1;
     }
 
     // Reference.
@@ -6791,9 +6938,9 @@
     if (head === 35) {
       const head = $2.charCodeAt(1);
       const hex = head === 120 || head === 88;
-      return decodeNumericCharacterReference($2.slice(hex ? 2 : 1), hex ? 16 : 10)
+      return decodeNumericCharacterReference($2.slice(hex ? 2 : 1), hex ? 16 : 10);
     }
-    return decodeNamedCharacterReference($2) || $0
+    return decodeNamedCharacterReference($2) || $0;
   }
 
   /**
@@ -7221,8 +7368,9 @@
   }
 
   /**
-   * @typedef {import('mdast-util-from-markdown').Extension} FromMarkdownExtension
-   * @typedef {import('mdast-util-to-markdown').Options} ToMarkdownExtension
+   * @import {Extension as FromMarkdownExtension} from 'mdast-util-from-markdown'
+   * @import {Options} from 'mdast-util-gfm'
+   * @import {Options as ToMarkdownExtension} from 'mdast-util-to-markdown'
    */
 
 
@@ -7249,7 +7397,7 @@
    * literals, footnotes, strikethrough, tables, tasklists).
    *
    * @param {Options | null | undefined} [options]
-   *   Configuration.
+   *   Configuration (optional).
    * @returns {ToMarkdownExtension}
    *   Extension for `mdast-util-to-markdown` to enable GFM (autolink literals,
    *   footnotes, strikethrough, tables, tasklists).
@@ -7258,7 +7406,7 @@
     return {
       extensions: [
         gfmAutolinkLiteralToMarkdown(),
-        gfmFootnoteToMarkdown(),
+        gfmFootnoteToMarkdown(options),
         gfmStrikethroughToMarkdown(),
         gfmTableToMarkdown(options),
         gfmTaskListItemToMarkdown()
@@ -7343,16 +7491,18 @@
   function push(list, items) {
     if (list.length > 0) {
       splice(list, list.length, 0, items);
-      return list
+      return list;
     }
-    return items
+    return items;
   }
 
   /**
-   * @typedef {import('micromark-util-types').Extension} Extension
-   * @typedef {import('micromark-util-types').Handles} Handles
-   * @typedef {import('micromark-util-types').HtmlExtension} HtmlExtension
-   * @typedef {import('micromark-util-types').NormalizedExtension} NormalizedExtension
+   * @import {
+   *   Extension,
+   *   Handles,
+   *   HtmlExtension,
+   *   NormalizedExtension
+   * } from 'micromark-util-types'
    */
 
 
@@ -7361,7 +7511,7 @@
   /**
    * Combine multiple syntax extensions into one.
    *
-   * @param {Array<Extension>} extensions
+   * @param {ReadonlyArray<Extension>} extensions
    *   List of syntax extensions.
    * @returns {NormalizedExtension}
    *   A single combined extension.
@@ -7386,6 +7536,7 @@
    * @param {Extension} extension
    *   Extension to merge.
    * @returns {undefined}
+   *   Nothing.
    */
   function syntaxExtension(all, extension) {
     /** @type {keyof Extension} */
@@ -7419,8 +7570,11 @@
    * Mutates `existing`.
    *
    * @param {Array<unknown>} existing
+   *   List of constructs to merge into.
    * @param {Array<unknown>} list
+   *   List of constructs to merge.
    * @returns {undefined}
+   *   Nothing.
    */
   function constructs(existing, list) {
     let index = -1;
@@ -8311,11 +8465,7 @@
       let replace = '';
 
       // A correct percent encoded value.
-      if (
-        code === 37 &&
-        asciiAlphanumeric(value.charCodeAt(index + 1)) &&
-        asciiAlphanumeric(value.charCodeAt(index + 2))
-      ) {
+      if (code === 37 && asciiAlphanumeric(value.charCodeAt(index + 1)) && asciiAlphanumeric(value.charCodeAt(index + 2))) {
         skip = 2;
       }
       // ASCII.
@@ -8335,7 +8485,7 @@
         }
         // Lone surrogate.
         else {
-          replace = '\uFFFD';
+          replace = "\uFFFD";
         }
       }
       // Unicode.
@@ -8352,50 +8502,17 @@
         skip = 0;
       }
     }
-    return result.join('') + value.slice(start)
+    return result.join('') + value.slice(start);
   }
 
   /**
-   * @typedef {import('micromark-util-types').Code} Code
-   */
-
-  /**
-   * Classify whether a code represents whitespace, punctuation, or something
-   * else.
-   *
-   * Used for attention (emphasis, strong), whose sequences can open or close
-   * based on the class of surrounding characters.
-   *
-   * > 👉 **Note**: eof (`null`) is seen as whitespace.
-   *
-   * @param {Code} code
-   *   Code.
-   * @returns {typeof constants.characterGroupWhitespace | typeof constants.characterGroupPunctuation | undefined}
-   *   Group.
-   */
-  function classifyCharacter(code) {
-    if (
-      code === null ||
-      markdownLineEndingOrSpace(code) ||
-      unicodeWhitespace(code)
-    ) {
-      return 1
-    }
-    if (unicodePunctuation(code)) {
-      return 2
-    }
-  }
-
-  /**
-   * @typedef {import('micromark-util-types').Event} Event
-   * @typedef {import('micromark-util-types').Resolver} Resolver
-   * @typedef {import('micromark-util-types').TokenizeContext} TokenizeContext
+   * @import {Event, Resolver, TokenizeContext} from 'micromark-util-types'
    */
 
   /**
    * Call all `resolveAll`s.
    *
-   * @param {Array<{resolveAll?: Resolver | undefined}>} constructs
+   * @param {ReadonlyArray<{resolveAll?: Resolver | undefined}>} constructs
    *   List of constructs, optionally with `resolveAll`s.
    * @param {Array<Event>} events
    *   List of events.
@@ -8422,22 +8539,24 @@
   }
 
   /**
-   * @typedef {import('micromark-util-types').Code} Code
-   * @typedef {import('micromark-util-types').Construct} Construct
-   * @typedef {import('micromark-util-types').Event} Event
-   * @typedef {import('micromark-util-types').Point} Point
-   * @typedef {import('micromark-util-types').Resolver} Resolver
-   * @typedef {import('micromark-util-types').State} State
-   * @typedef {import('micromark-util-types').Token} Token
-   * @typedef {import('micromark-util-types').TokenizeContext} TokenizeContext
-   * @typedef {import('micromark-util-types').Tokenizer} Tokenizer
+   * @import {
+   *   Code,
+   *   Construct,
+   *   Event,
+   *   Point,
+   *   Resolver,
+   *   State,
+   *   TokenizeContext,
+   *   Tokenizer,
+   *   Token
+   * } from 'micromark-util-types'
    */
 
   /** @type {Construct} */
   const attention = {
     name: 'attention',
-    tokenize: tokenizeAttention,
-    resolveAll: resolveAllAttention
+    resolveAll: resolveAllAttention,
+    tokenize: tokenizeAttention
   };
 
   /**
@@ -8490,32 +8609,52 @@
 
             // Number of markers to use from the sequence.
             use = events[open][1].end.offset - events[open][1].start.offset > 1 && events[index][1].end.offset - events[index][1].start.offset > 1 ? 2 : 1;
-            const start = Object.assign({}, events[open][1].end);
-            const end = Object.assign({}, events[index][1].start);
+            const start = {
+              ...events[open][1].end
+            };
+            const end = {
+              ...events[index][1].start
+            };
             movePoint(start, -use);
             movePoint(end, use);
             openingSequence = {
               type: use > 1 ? "strongSequence" : "emphasisSequence",
               start,
-              end: Object.assign({}, events[open][1].end)
+              end: {
+                ...events[open][1].end
+              }
             };
             closingSequence = {
               type: use > 1 ? "strongSequence" : "emphasisSequence",
-              start: Object.assign({}, events[index][1].start),
+              start: {
+                ...events[index][1].start
+              },
               end
             };
             text = {
               type: use > 1 ? "strongText" : "emphasisText",
-              start: Object.assign({}, events[open][1].end),
-              end: Object.assign({}, events[index][1].start)
+              start: {
+                ...events[open][1].end
+              },
+              end: {
+                ...events[index][1].start
+              }
             };
             group = {
               type: use > 1 ? "strong" : "emphasis",
-              start: Object.assign({}, openingSequence.start),
-              end: Object.assign({}, closingSequence.end)
+              start: {
+                ...openingSequence.start
+              },
+              end: {
+                ...closingSequence.end
+              }
             };
-            events[open][1].end = Object.assign({}, openingSequence.start);
-            events[index][1].start = Object.assign({}, closingSequence.end);
+            events[open][1].end = {
+              ...openingSequence.start
+            };
+            events[index][1].start = {
+              ...closingSequence.end
+            };
             nextEvents = [];
 
             // If there are more markers in the opening, add them before.
@@ -8561,6 +8700,7 @@
 
   /**
    * @this {TokenizeContext}
+   *   Context.
    * @type {Tokenizer}
    */
   function tokenizeAttention(effects, ok) {
@@ -8625,8 +8765,11 @@
    * chunks (replacement characters, tabs, or line endings).
    *
    * @param {Point} point
+   *   Point.
    * @param {number} offset
+   *   Amount to move.
    * @returns {undefined}
+   *   Nothing.
    */
   function movePoint(point, offset) {
     point.column += offset;
@@ -8635,10 +8778,12 @@
   }
 
   /**
-   * @typedef {import('micromark-util-types').Construct} Construct
-   * @typedef {import('micromark-util-types').State} State
-   * @typedef {import('micromark-util-types').TokenizeContext} TokenizeContext
-   * @typedef {import('micromark-util-types').Tokenizer} Tokenizer
+   * @import {
+   *   Construct,
+   *   State,
+   *   TokenizeContext,
+   *   Tokenizer
+   * } from 'micromark-util-types'
    */
 
   /** @type {Construct} */
@@ -8649,6 +8794,7 @@
 
   /**
    * @this {TokenizeContext}
+   *   Context.
    * @type {Tokenizer}
    */
   function tokenizeAutolink(effects, ok, nok) {
@@ -8865,9 +9011,7 @@
   }
 
   /**
-   * @typedef {import('micromark-util-types').Effects} Effects
-   * @typedef {import('micromark-util-types').State} State
-   * @typedef {import('micromark-util-types').TokenType} TokenType
+   * @import {Effects, State, TokenType} from 'micromark-util-types'
    */
 
 
@@ -8908,43 +9052,46 @@
   function factorySpace(effects, ok, type, max) {
     const limit = max ? max - 1 : Number.POSITIVE_INFINITY;
     let size = 0;
-    return start
+    return start;
 
     /** @type {State} */
     function start(code) {
       if (markdownSpace(code)) {
         effects.enter(type);
-        return prefix(code)
+        return prefix(code);
       }
-      return ok(code)
+      return ok(code);
     }
 
     /** @type {State} */
     function prefix(code) {
       if (markdownSpace(code) && size++ < limit) {
         effects.consume(code);
-        return prefix
+        return prefix;
       }
       effects.exit(type);
-      return ok(code)
+      return ok(code);
     }
   }
 
   /**
-   * @typedef {import('micromark-util-types').Construct} Construct
-   * @typedef {import('micromark-util-types').State} State
-   * @typedef {import('micromark-util-types').TokenizeContext} TokenizeContext
-   * @typedef {import('micromark-util-types').Tokenizer} Tokenizer
+   * @import {
+   *   Construct,
+   *   State,
+   *   TokenizeContext,
+   *   Tokenizer
+   * } from 'micromark-util-types'
    */
 
   /** @type {Construct} */
   const blankLine = {
-    tokenize: tokenizeBlankLine,
-    partial: true
+    partial: true,
+    tokenize: tokenizeBlankLine
   };
 
   /**
    * @this {TokenizeContext}
+   *   Context.
    * @type {Tokenizer}
    */
   function tokenizeBlankLine(effects, ok, nok) {
@@ -8988,25 +9135,28 @@
   }
 
   /**
-   * @typedef {import('micromark-util-types').Construct} Construct
-   * @typedef {import('micromark-util-types').Exiter} Exiter
-   * @typedef {import('micromark-util-types').State} State
-   * @typedef {import('micromark-util-types').TokenizeContext} TokenizeContext
-   * @typedef {import('micromark-util-types').Tokenizer} Tokenizer
+   * @import {
+   *   Construct,
+   *   Exiter,
+   *   State,
+   *   TokenizeContext,
+   *   Tokenizer
+   * } from 'micromark-util-types'
    */
 
   /** @type {Construct} */
   const blockQuote = {
-    name: 'blockQuote',
-    tokenize: tokenizeBlockQuoteStart,
     continuation: {
       tokenize: tokenizeBlockQuoteContinuation
     },
-    exit
+    exit,
+    name: 'blockQuote',
+    tokenize: tokenizeBlockQuoteStart
   };
 
   /**
    * @this {TokenizeContext}
+   *   Context.
    * @type {Tokenizer}
    */
   function tokenizeBlockQuoteStart(effects, ok, nok) {
@@ -9074,6 +9224,7 @@
    * ```
    *
    * @this {TokenizeContext}
+   *   Context.
    * @type {Tokenizer}
    */
   function tokenizeBlockQuoteContinuation(effects, ok, nok) {
@@ -9126,10 +9277,12 @@
   }
 
   /**
-   * @typedef {import('micromark-util-types').Construct} Construct
-   * @typedef {import('micromark-util-types').State} State
-   * @typedef {import('micromark-util-types').TokenizeContext} TokenizeContext
-   * @typedef {import('micromark-util-types').Tokenizer} Tokenizer
+   * @import {
+   *   Construct,
+   *   State,
+   *   TokenizeContext,
+   *   Tokenizer
+   * } from 'micromark-util-types'
    */
 
   /** @type {Construct} */
@@ -9140,6 +9293,7 @@
 
   /**
    * @this {TokenizeContext}
+   *   Context.
    * @type {Tokenizer}
    */
   function tokenizeCharacterEscape(effects, ok, nok) {
@@ -9187,11 +9341,13 @@
   }
 
   /**
-   * @typedef {import('micromark-util-types').Code} Code
-   * @typedef {import('micromark-util-types').Construct} Construct
-   * @typedef {import('micromark-util-types').State} State
-   * @typedef {import('micromark-util-types').TokenizeContext} TokenizeContext
-   * @typedef {import('micromark-util-types').Tokenizer} Tokenizer
+   * @import {
+   *   Code,
+   *   Construct,
+   *   State,
+   *   TokenizeContext,
+   *   Tokenizer
+   * } from 'micromark-util-types'
    */
 
   /** @type {Construct} */
@@ -9202,6 +9358,7 @@
 
   /**
    * @this {TokenizeContext}
+   *   Context.
    * @type {Tokenizer}
    */
   function tokenizeCharacterReference(effects, ok, nok) {
@@ -9332,36 +9489,39 @@
   }
 
   /**
-   * @typedef {import('micromark-util-types').Code} Code
-   * @typedef {import('micromark-util-types').Construct} Construct
-   * @typedef {import('micromark-util-types').State} State
-   * @typedef {import('micromark-util-types').TokenizeContext} TokenizeContext
-   * @typedef {import('micromark-util-types').Tokenizer} Tokenizer
+   * @import {
+   *   Code,
+   *   Construct,
+   *   State,
+   *   TokenizeContext,
+   *   Tokenizer
+   * } from 'micromark-util-types'
    */
 
   /** @type {Construct} */
   const nonLazyContinuation = {
-    tokenize: tokenizeNonLazyContinuation,
-    partial: true
+    partial: true,
+    tokenize: tokenizeNonLazyContinuation
   };
 
   /** @type {Construct} */
   const codeFenced = {
+    concrete: true,
     name: 'codeFenced',
-    tokenize: tokenizeCodeFenced,
-    concrete: true
+    tokenize: tokenizeCodeFenced
   };
 
   /**
    * @this {TokenizeContext}
+   *   Context.
    * @type {Tokenizer}
    */
   function tokenizeCodeFenced(effects, ok, nok) {
     const self = this;
     /** @type {Construct} */
     const closeStart = {
-      tokenize: tokenizeCloseStart,
-      partial: true
+      partial: true,
+      tokenize: tokenizeCloseStart
     };
     let initialPrefix = 0;
     let sizeOpen = 0;
@@ -9647,6 +9807,7 @@
 
     /**
      * @this {TokenizeContext}
+     *   Context.
      * @type {Tokenizer}
      */
     function tokenizeCloseStart(effects, ok, nok) {
@@ -9754,6 +9915,7 @@
 
   /**
    * @this {TokenizeContext}
+   *   Context.
    * @type {Tokenizer}
    */
   function tokenizeNonLazyContinuation(effects, ok, nok) {
@@ -9786,10 +9948,12 @@
   }
 
   /**
-   * @typedef {import('micromark-util-types').Construct} Construct
-   * @typedef {import('micromark-util-types').State} State
-   * @typedef {import('micromark-util-types').TokenizeContext} TokenizeContext
-   * @typedef {import('micromark-util-types').Tokenizer} Tokenizer
+   * @import {
+   *   Construct,
+   *   State,
+   *   TokenizeContext,
+   *   Tokenizer
+   * } from 'micromark-util-types'
    */
 
   /** @type {Construct} */
@@ -9800,12 +9964,13 @@
 
   /** @type {Construct} */
   const furtherStart = {
-    tokenize: tokenizeFurtherStart,
-    partial: true
+    partial: true,
+    tokenize: tokenizeFurtherStart
   };
 
   /**
    * @this {TokenizeContext}
+   *   Context.
    * @type {Tokenizer}
    */
   function tokenizeCodeIndented(effects, ok, nok) {
@@ -9902,6 +10067,7 @@
 
   /**
    * @this {TokenizeContext}
+   *   Context.
    * @type {Tokenizer}
    */
   function tokenizeFurtherStart(effects, ok, nok) {
@@ -9958,21 +10124,23 @@
   }
 
   /**
-   * @typedef {import('micromark-util-types').Construct} Construct
-   * @typedef {import('micromark-util-types').Previous} Previous
-   * @typedef {import('micromark-util-types').Resolver} Resolver
-   * @typedef {import('micromark-util-types').State} State
-   * @typedef {import('micromark-util-types').Token} Token
-   * @typedef {import('micromark-util-types').TokenizeContext} TokenizeContext
-   * @typedef {import('micromark-util-types').Tokenizer} Tokenizer
+   * @import {
+   *   Construct,
+   *   Previous,
+   *   Resolver,
+   *   State,
+   *   TokenizeContext,
+   *   Tokenizer,
+   *   Token
+   * } from 'micromark-util-types'
    */
 
   /** @type {Construct} */
   const codeText = {
     name: 'codeText',
-    tokenize: tokenizeCodeText,
+    previous,
     resolve: resolveCodeText,
-    previous
+    tokenize: tokenizeCodeText
   };
 
   // To do: next major: don’t resolve, like `markdown-rs`.
@@ -10026,6 +10194,7 @@
 
   /**
    * @this {TokenizeContext}
+   *   Context.
    * @type {Previous}
    */
   function previous(code) {
@@ -10035,6 +10204,7 @@
 
   /**
    * @this {TokenizeContext}
+   *   Context.
    * @type {Tokenizer}
    */
   function tokenizeCodeText(effects, ok, nok) {
@@ -10187,7 +10357,7 @@
    *    proportional to the number of elements added or removed, whereas
    *    other operations (shift/unshift and splice) are much less efficient.
    *  - Function arguments are passed on the stack, so adding tens of thousands
-   *    of elements to an array with `arr.push[...newElements]` will frequently
+   *    of elements to an array with `arr.push(...newElements)` will frequently
    *    cause stack overflows. (see <https://stackoverflow.com/questions/22123769/rangeerror-maximum-call-stack-size-exceeded-why>)
    *
    * SpliceBuffers are an implementation of gap buffers, which are a
@@ -10430,9 +10600,7 @@
   }
 
   /**
-   * @typedef {import('micromark-util-types').Chunk} Chunk
-   * @typedef {import('micromark-util-types').Event} Event
-   * @typedef {import('micromark-util-types').Token} Token
+   * @import {Chunk, Event, Token} from 'micromark-util-types'
    */
 
 
@@ -10513,13 +10681,15 @@
               otherEvent[1].type = "lineEnding";
               lineIndex = otherIndex;
             }
-          } else {
+          } else if (otherEvent[1].type === "linePrefix" || otherEvent[1].type === "listItemIndent") ; else {
             break;
           }
         }
         if (lineIndex) {
           // Fix position.
-          event[1].end = Object.assign({}, events.get(lineIndex)[1].start);
+          event[1].end = {
+            ...events.get(lineIndex)[1].start
+          };
 
           // Switch container exit w/ line endings.
           parameters = events.slice(lineIndex, index);
@@ -10538,8 +10708,11 @@
    * Tokenize embedded tokens.
    *
    * @param {SpliceBuffer<Event>} events
+   *   Events.
    * @param {number} eventIndex
+   *   Index.
    * @returns {Record<string, number>}
+   *   Gaps.
    */
   function subcontent(events, eventIndex) {
     const token = events.get(eventIndex)[1];
@@ -10547,7 +10720,13 @@
     let startPosition = eventIndex - 1;
     /** @type {Array<number>} */
     const startPositions = [];
-    const tokenizer = token._tokenizer || context.parser[token.contentType](token.start);
+    let tokenizer = token._tokenizer;
+    if (!tokenizer) {
+      tokenizer = context.parser[token.contentType](token.start);
+      if (token._contentTypeTextTrailing) {
+        tokenizer._contentTypeTextTrailing = true;
+      }
+    }
     const childEvents = tokenizer.events;
     /** @type {Array<[number, number]>} */
     const jumps = [];
@@ -10643,12 +10822,14 @@
   }
 
   /**
-   * @typedef {import('micromark-util-types').Construct} Construct
-   * @typedef {import('micromark-util-types').Resolver} Resolver
-   * @typedef {import('micromark-util-types').State} State
-   * @typedef {import('micromark-util-types').Token} Token
-   * @typedef {import('micromark-util-types').TokenizeContext} TokenizeContext
-   * @typedef {import('micromark-util-types').Tokenizer} Tokenizer
+   * @import {
+   *   Construct,
+   *   Resolver,
+   *   State,
+   *   TokenizeContext,
+   *   Tokenizer,
+   *   Token
+   * } from 'micromark-util-types'
    */
 
   /**
@@ -10656,14 +10837,14 @@
    * @type {Construct}
    */
   const content$1 = {
-    tokenize: tokenizeContent,
-    resolve: resolveContent
+    resolve: resolveContent,
+    tokenize: tokenizeContent
   };
 
   /** @type {Construct} */
   const continuationConstruct = {
-    tokenize: tokenizeContinuation,
-    partial: true
+    partial: true,
+    tokenize: tokenizeContinuation
   };
 
   /**
@@ -10679,6 +10860,7 @@
 
   /**
    * @this {TokenizeContext}
+   *   Context.
    * @type {Tokenizer}
    */
   function tokenizeContent(effects, ok) {
@@ -10760,6 +10942,7 @@
 
   /**
    * @this {TokenizeContext}
+   *   Context.
    * @type {Tokenizer}
    */
   function tokenizeContinuation(effects, ok, nok) {
@@ -10800,9 +10983,7 @@
   }
 
   /**
-   * @typedef {import('micromark-util-types').Effects} Effects
-   * @typedef {import('micromark-util-types').State} State
-   * @typedef {import('micromark-util-types').TokenType} TokenType
+   * @import {Effects, State, TokenType} from 'micromark-util-types'
    */
 
   /**
@@ -10841,21 +11022,11 @@
    *   Depth of nested parens (inclusive).
    * @returns {State}
    *   Start state.
-   */ // eslint-disable-next-line max-params
-  function factoryDestination(
-    effects,
-    ok,
-    nok,
-    type,
-    literalType,
-    literalMarkerType,
-    rawType,
-    stringType,
-    max
-  ) {
+   */
+  function factoryDestination(effects, ok, nok, type, literalType, literalMarkerType, rawType, stringType, max) {
     const limit = max || Number.POSITIVE_INFINITY;
     let balance = 0;
-    return start
+    return start;
 
     /**
      * Start of destination.
@@ -10876,20 +11047,20 @@
         effects.enter(literalMarkerType);
         effects.consume(code);
         effects.exit(literalMarkerType);
-        return enclosedBefore
+        return enclosedBefore;
       }
 
       // ASCII control, space, closing paren.
       if (code === null || code === 32 || code === 41 || asciiControl(code)) {
-        return nok(code)
+        return nok(code);
       }
       effects.enter(type);
       effects.enter(rawType);
       effects.enter(stringType);
-      effects.enter('chunkString', {
-        contentType: 'string'
+      effects.enter("chunkString", {
+        contentType: "string"
       });
-      return raw(code)
+      return raw(code);
     }
 
     /**
@@ -10909,13 +11080,13 @@
         effects.exit(literalMarkerType);
         effects.exit(literalType);
         effects.exit(type);
-        return ok
+        return ok;
       }
       effects.enter(stringType);
-      effects.enter('chunkString', {
-        contentType: 'string'
+      effects.enter("chunkString", {
+        contentType: "string"
       });
-      return enclosed(code)
+      return enclosed(code);
     }
 
     /**
@@ -10930,15 +11101,15 @@
      */
     function enclosed(code) {
       if (code === 62) {
-        effects.exit('chunkString');
+        effects.exit("chunkString");
         effects.exit(stringType);
-        return enclosedBefore(code)
+        return enclosedBefore(code);
       }
       if (code === null || code === 60 || markdownLineEnding(code)) {
-        return nok(code)
+        return nok(code);
       }
       effects.consume(code);
-      return code === 92 ? enclosedEscape : enclosed
+      return code === 92 ? enclosedEscape : enclosed;
     }
 
     /**
@@ -10954,9 +11125,9 @@
     function enclosedEscape(code) {
       if (code === 60 || code === 62 || code === 92) {
         effects.consume(code);
-        return enclosed
+        return enclosed;
       }
-      return enclosed(code)
+      return enclosed(code);
     }
 
     /**
@@ -10970,35 +11141,32 @@
      * @type {State}
      */
     function raw(code) {
-      if (
-        !balance &&
-        (code === null || code === 41 || markdownLineEndingOrSpace(code))
-      ) {
-        effects.exit('chunkString');
+      if (!balance && (code === null || code === 41 || markdownLineEndingOrSpace(code))) {
+        effects.exit("chunkString");
         effects.exit(stringType);
         effects.exit(rawType);
         effects.exit(type);
-        return ok(code)
+        return ok(code);
       }
       if (balance < limit && code === 40) {
         effects.consume(code);
         balance++;
-        return raw
+        return raw;
       }
       if (code === 41) {
         effects.consume(code);
         balance--;
-        return raw
+        return raw;
       }
 
       // ASCII control (but *not* `\0`) and space and `(`.
       // Note: in `markdown-rs`, `\0` exists in codes, in `micromark-js` it
       // doesn’t.
       if (code === null || code === 32 || code === 40 || asciiControl(code)) {
-        return nok(code)
+        return nok(code);
       }
       effects.consume(code);
-      return code === 92 ? rawEscape : raw
+      return code === 92 ? rawEscape : raw;
     }
 
     /**
@@ -11014,17 +11182,19 @@
     function rawEscape(code) {
       if (code === 40 || code === 41 || code === 92) {
         effects.consume(code);
-        return raw
+        return raw;
       }
-      return raw(code)
+      return raw(code);
     }
   }
 
   /**
-   * @typedef {import('micromark-util-types').Effects} Effects
-   * @typedef {import('micromark-util-types').State} State
-   * @typedef {import('micromark-util-types').TokenizeContext} TokenizeContext
-   * @typedef {import('micromark-util-types').TokenType} TokenType
+   * @import {
+   *   Effects,
+   *   State,
+   *   TokenizeContext,
+   *   TokenType
+   * } from 'micromark-util-types'
    */
 
   /**
@@ -11057,13 +11227,13 @@
    *   Type for the identifier (`a`).
    * @returns {State}
    *   Start state.
-   */ // eslint-disable-next-line max-params
+   */
   function factoryLabel(effects, ok, nok, type, markerType, stringType) {
     const self = this;
     let size = 0;
     /** @type {boolean} */
     let seen;
-    return start
+    return start;
 
     /**
      * Start of label.
@@ -11081,7 +11251,7 @@
       effects.consume(code);
       effects.exit(markerType);
       effects.enter(stringType);
-      return atBreak
+      return atBreak;
     }
 
     /**
@@ -11095,21 +11265,14 @@
      * @type {State}
      */
     function atBreak(code) {
-      if (
-        size > 999 ||
-        code === null ||
-        code === 91 ||
-        (code === 93 && !seen) ||
-        // To do: remove in the future once we’ve switched from
-        // `micromark-extension-footnote` to `micromark-extension-gfm-footnote`,
-        // which doesn’t need this.
-        // Hidden footnotes hook.
-        /* c8 ignore next 3 */
-        (code === 94 &&
-          !size &&
-          '_hiddenFootnoteSupport' in self.parser.constructs)
-      ) {
-        return nok(code)
+      if (size > 999 || code === null || code === 91 || code === 93 && !seen ||
+      // To do: remove in the future once we’ve switched from
+      // `micromark-extension-footnote` to `micromark-extension-gfm-footnote`,
+      // which doesn’t need this.
+      // Hidden footnotes hook.
+      /* c8 ignore next 3 */
+      code === 94 && !size && '_hiddenFootnoteSupport' in self.parser.constructs) {
+        return nok(code);
       }
       if (code === 93) {
         effects.exit(stringType);
@@ -11117,20 +11280,20 @@
         effects.consume(code);
         effects.exit(markerType);
         effects.exit(type);
-        return ok
+        return ok;
       }
 
       // To do: indent? Link chunks and EOLs together?
       if (markdownLineEnding(code)) {
-        effects.enter('lineEnding');
+        effects.enter("lineEnding");
         effects.consume(code);
-        effects.exit('lineEnding');
-        return atBreak
+        effects.exit("lineEnding");
+        return atBreak;
       }
-      effects.enter('chunkString', {
-        contentType: 'string'
+      effects.enter("chunkString", {
+        contentType: "string"
       });
-      return labelInside(code)
+      return labelInside(code);
     }
 
     /**
@@ -11144,19 +11307,13 @@
      * @type {State}
      */
     function labelInside(code) {
-      if (
-        code === null ||
-        code === 91 ||
-        code === 93 ||
-        markdownLineEnding(code) ||
-        size++ > 999
-      ) {
-        effects.exit('chunkString');
-        return atBreak(code)
+      if (code === null || code === 91 || code === 93 || markdownLineEnding(code) || size++ > 999) {
+        effects.exit("chunkString");
+        return atBreak(code);
       }
       effects.consume(code);
       if (!seen) seen = !markdownSpace(code);
-      return code === 92 ? labelEscape : labelInside
+      return code === 92 ? labelEscape : labelInside;
     }
 
     /**
@@ -11173,17 +11330,19 @@
       if (code === 91 || code === 92 || code === 93) {
         effects.consume(code);
         size++;
-        return labelInside
+        return labelInside;
       }
-      return labelInside(code)
+      return labelInside(code);
     }
   }
 
   /**
-   * @typedef {import('micromark-util-types').Code} Code
-   * @typedef {import('micromark-util-types').Effects} Effects
-   * @typedef {import('micromark-util-types').State} State
-   * @typedef {import('micromark-util-types').TokenType} TokenType
+   * @import {
+   *   Code,
+   *   Effects,
+   *   State,
+   *   TokenType
+   * } from 'micromark-util-types'
    */
 
   /**
@@ -11216,11 +11375,11 @@
    *   Type for the value (`a`).
    * @returns {State}
    *   Start state.
-   */ // eslint-disable-next-line max-params
+   */
   function factoryTitle(effects, ok, nok, type, markerType, stringType) {
     /** @type {NonNullable<Code>} */
     let marker;
-    return start
+    return start;
 
     /**
      * Start of title.
@@ -11239,9 +11398,9 @@
         effects.consume(code);
         effects.exit(markerType);
         marker = code === 40 ? 41 : code;
-        return begin
+        return begin;
       }
-      return nok(code)
+      return nok(code);
     }
 
     /**
@@ -11262,10 +11421,10 @@
         effects.consume(code);
         effects.exit(markerType);
         effects.exit(type);
-        return ok
+        return ok;
       }
       effects.enter(stringType);
-      return atBreak(code)
+      return atBreak(code);
     }
 
     /**
@@ -11281,24 +11440,24 @@
     function atBreak(code) {
       if (code === marker) {
         effects.exit(stringType);
-        return begin(marker)
+        return begin(marker);
       }
       if (code === null) {
-        return nok(code)
+        return nok(code);
       }
 
       // Note: blank lines can’t exist in content.
       if (markdownLineEnding(code)) {
         // To do: use `space_or_tab_eol_with_options`, connect.
-        effects.enter('lineEnding');
+        effects.enter("lineEnding");
         effects.consume(code);
-        effects.exit('lineEnding');
-        return factorySpace(effects, atBreak, 'linePrefix')
+        effects.exit("lineEnding");
+        return factorySpace(effects, atBreak, "linePrefix");
       }
-      effects.enter('chunkString', {
-        contentType: 'string'
+      effects.enter("chunkString", {
+        contentType: "string"
       });
-      return inside(code)
+      return inside(code);
     }
 
     /**
@@ -11308,11 +11467,11 @@
      */
     function inside(code) {
       if (code === marker || code === null || markdownLineEnding(code)) {
-        effects.exit('chunkString');
-        return atBreak(code)
+        effects.exit("chunkString");
+        return atBreak(code);
       }
       effects.consume(code);
-      return code === 92 ? escape : inside
+      return code === 92 ? escape : inside;
     }
 
     /**
@@ -11328,15 +11487,14 @@
     function escape(code) {
       if (code === marker || code === 92) {
         effects.consume(code);
-        return inside
+        return inside;
       }
-      return inside(code)
+      return inside(code);
     }
   }
 
   /**
-   * @typedef {import('micromark-util-types').Effects} Effects
-   * @typedef {import('micromark-util-types').State} State
+   * @import {Effects, State} from 'micromark-util-types'
    */
 
   /**
@@ -11360,33 +11518,31 @@
   function factoryWhitespace(effects, ok) {
     /** @type {boolean} */
     let seen;
-    return start
+    return start;
 
     /** @type {State} */
     function start(code) {
       if (markdownLineEnding(code)) {
-        effects.enter('lineEnding');
+        effects.enter("lineEnding");
         effects.consume(code);
-        effects.exit('lineEnding');
+        effects.exit("lineEnding");
         seen = true;
-        return start
+        return start;
       }
       if (markdownSpace(code)) {
-        return factorySpace(
-          effects,
-          start,
-          seen ? 'linePrefix' : 'lineSuffix'
-        )(code)
+        return factorySpace(effects, start, seen ? "linePrefix" : "lineSuffix")(code);
       }
-      return ok(code)
+      return ok(code);
     }
   }
 
   /**
-   * @typedef {import('micromark-util-types').Construct} Construct
-   * @typedef {import('micromark-util-types').State} State
-   * @typedef {import('micromark-util-types').TokenizeContext} TokenizeContext
-   * @typedef {import('micromark-util-types').Tokenizer} Tokenizer
+   * @import {
+   *   Construct,
+   *   State,
+   *   TokenizeContext,
+   *   Tokenizer
+   * } from 'micromark-util-types'
    */
 
   /** @type {Construct} */
@@ -11397,12 +11553,13 @@
 
   /** @type {Construct} */
   const titleBefore = {
-    tokenize: tokenizeTitleBefore,
-    partial: true
+    partial: true,
+    tokenize: tokenizeTitleBefore
   };
 
   /**
    * @this {TokenizeContext}
+   *   Context.
    * @type {Tokenizer}
    */
   function tokenizeDefinition(effects, ok, nok) {
@@ -11561,6 +11718,7 @@
 
   /**
    * @this {TokenizeContext}
+   *   Context.
    * @type {Tokenizer}
    */
   function tokenizeTitleBefore(effects, ok, nok) {
@@ -11627,10 +11785,12 @@
   }
 
   /**
-   * @typedef {import('micromark-util-types').Construct} Construct
-   * @typedef {import('micromark-util-types').State} State
-   * @typedef {import('micromark-util-types').TokenizeContext} TokenizeContext
-   * @typedef {import('micromark-util-types').Tokenizer} Tokenizer
+   * @import {
+   *   Construct,
+   *   State,
+   *   TokenizeContext,
+   *   Tokenizer
+   * } from 'micromark-util-types'
    */
 
   /** @type {Construct} */
@@ -11641,6 +11801,7 @@
 
   /**
    * @this {TokenizeContext}
+   *   Context.
    * @type {Tokenizer}
    */
   function tokenizeHardBreakEscape(effects, ok, nok) {
@@ -11684,19 +11845,21 @@
   }
 
   /**
-   * @typedef {import('micromark-util-types').Construct} Construct
-   * @typedef {import('micromark-util-types').Resolver} Resolver
-   * @typedef {import('micromark-util-types').State} State
-   * @typedef {import('micromark-util-types').Token} Token
-   * @typedef {import('micromark-util-types').TokenizeContext} TokenizeContext
-   * @typedef {import('micromark-util-types').Tokenizer} Tokenizer
+   * @import {
+   *   Construct,
+   *   Resolver,
+   *   State,
+   *   TokenizeContext,
+   *   Tokenizer,
+   *   Token
+   * } from 'micromark-util-types'
    */
 
   /** @type {Construct} */
   const headingAtx = {
     name: 'headingAtx',
-    tokenize: tokenizeHeadingAtx,
-    resolve: resolveHeadingAtx
+    resolve: resolveHeadingAtx,
+    tokenize: tokenizeHeadingAtx
   };
 
   /** @type {Resolver} */
@@ -11739,6 +11902,7 @@
 
   /**
    * @this {TokenizeContext}
+   *   Context.
    * @type {Tokenizer}
    */
   function tokenizeHeadingAtx(effects, ok, nok) {
@@ -11968,31 +12132,33 @@
   const htmlRawNames = ['pre', 'script', 'style', 'textarea'];
 
   /**
-   * @typedef {import('micromark-util-types').Code} Code
-   * @typedef {import('micromark-util-types').Construct} Construct
-   * @typedef {import('micromark-util-types').Resolver} Resolver
-   * @typedef {import('micromark-util-types').State} State
-   * @typedef {import('micromark-util-types').TokenizeContext} TokenizeContext
-   * @typedef {import('micromark-util-types').Tokenizer} Tokenizer
+   * @import {
+   *   Code,
+   *   Construct,
+   *   Resolver,
+   *   State,
+   *   TokenizeContext,
+   *   Tokenizer
+   * } from 'micromark-util-types'
    */
 
 
   /** @type {Construct} */
   const htmlFlow = {
+    concrete: true,
     name: 'htmlFlow',
-    tokenize: tokenizeHtmlFlow,
     resolveTo: resolveToHtmlFlow,
-    concrete: true
+    tokenize: tokenizeHtmlFlow
   };
 
   /** @type {Construct} */
   const blankLineBefore = {
-    tokenize: tokenizeBlankLineBefore,
-    partial: true
+    partial: true,
+    tokenize: tokenizeBlankLineBefore
   };
   const nonLazyContinuationStart = {
-    tokenize: tokenizeNonLazyContinuationStart,
-    partial: true
+    partial: true,
+    tokenize: tokenizeNonLazyContinuationStart
   };
 
   /** @type {Resolver} */
@@ -12016,6 +12182,7 @@
 
   /**
    * @this {TokenizeContext}
+   *   Context.
    * @type {Tokenizer}
    */
   function tokenizeHtmlFlow(effects, ok, nok) {
@@ -12101,8 +12268,8 @@
 
       // ASCII alphabetical.
       if (asciiAlpha(code)) {
+        // Always the case.
         effects.consume(code);
-        // @ts-expect-error: not null.
         buffer = String.fromCharCode(code);
         return tagName;
       }
@@ -12203,8 +12370,8 @@
      */
     function tagCloseStart(code) {
       if (asciiAlpha(code)) {
+        // Always the case.
         effects.consume(code);
-        // @ts-expect-error: not null.
         buffer = String.fromCharCode(code);
         return tagName;
       }
@@ -12668,8 +12835,8 @@
         return continuation(code);
       }
       if (asciiAlpha(code) && buffer.length < 8) {
+        // Always the case.
         effects.consume(code);
-        // @ts-expect-error: not null.
         buffer += String.fromCharCode(code);
         return continuationRawEndTag;
       }
@@ -12767,6 +12934,7 @@
 
   /**
    * @this {TokenizeContext}
+   *   Context.
    * @type {Tokenizer}
    */
   function tokenizeNonLazyContinuationStart(effects, ok, nok) {
@@ -12812,6 +12980,7 @@
 
   /**
    * @this {TokenizeContext}
+   *   Context.
    * @type {Tokenizer}
    */
   function tokenizeBlankLineBefore(effects, ok, nok) {
@@ -12837,11 +13006,13 @@
   }
 
   /**
-   * @typedef {import('micromark-util-types').Code} Code
-   * @typedef {import('micromark-util-types').Construct} Construct
-   * @typedef {import('micromark-util-types').State} State
-   * @typedef {import('micromark-util-types').TokenizeContext} TokenizeContext
-   * @typedef {import('micromark-util-types').Tokenizer} Tokenizer
+   * @import {
+   *   Code,
+   *   Construct,
+   *   State,
+   *   TokenizeContext,
+   *   Tokenizer
+   * } from 'micromark-util-types'
    */
 
   /** @type {Construct} */
@@ -12852,6 +13023,7 @@
 
   /**
    * @this {TokenizeContext}
+   *   Context.
    * @type {Tokenizer}
    */
   function tokenizeHtmlText(effects, ok, nok) {
@@ -13511,21 +13683,23 @@
   }
 
   /**
-   * @typedef {import('micromark-util-types').Construct} Construct
-   * @typedef {import('micromark-util-types').Event} Event
-   * @typedef {import('micromark-util-types').Resolver} Resolver
-   * @typedef {import('micromark-util-types').State} State
-   * @typedef {import('micromark-util-types').Token} Token
-   * @typedef {import('micromark-util-types').TokenizeContext} TokenizeContext
-   * @typedef {import('micromark-util-types').Tokenizer} Tokenizer
+   * @import {
+   *   Construct,
+   *   Event,
+   *   Resolver,
+   *   State,
+   *   TokenizeContext,
+   *   Tokenizer,
+   *   Token
+   * } from 'micromark-util-types'
    */
 
   /** @type {Construct} */
   const labelEnd = {
     name: 'labelEnd',
-    tokenize: tokenizeLabelEnd,
+    resolveAll: resolveAllLabelEnd,
     resolveTo: resolveToLabelEnd,
-    resolveAll: resolveAllLabelEnd
+    tokenize: tokenizeLabelEnd
   };
 
   /** @type {Construct} */
@@ -13544,14 +13718,22 @@
   /** @type {Resolver} */
   function resolveAllLabelEnd(events) {
     let index = -1;
+    /** @type {Array<Event>} */
+    const newEvents = [];
     while (++index < events.length) {
       const token = events[index][1];
+      newEvents.push(events[index]);
       if (token.type === "labelImage" || token.type === "labelLink" || token.type === "labelEnd") {
         // Remove the marker.
-        events.splice(index + 1, token.type === "labelImage" ? 4 : 2);
+        const offset = token.type === "labelImage" ? 4 : 2;
         token.type = "data";
-        index++;
+        index += offset;
       }
+    }
+
+    // If the events are equal, we don't have to copy newEvents to events
+    if (events.length !== newEvents.length) {
+      splice(events, 0, events.length, newEvents);
     }
     return events;
   }
@@ -13597,18 +13779,30 @@
     }
     const group = {
       type: events[open][1].type === "labelLink" ? "link" : "image",
-      start: Object.assign({}, events[open][1].start),
-      end: Object.assign({}, events[events.length - 1][1].end)
+      start: {
+        ...events[open][1].start
+      },
+      end: {
+        ...events[events.length - 1][1].end
+      }
     };
     const label = {
       type: "label",
-      start: Object.assign({}, events[open][1].start),
-      end: Object.assign({}, events[close][1].end)
+      start: {
+        ...events[open][1].start
+      },
+      end: {
+        ...events[close][1].end
+      }
     };
     const text = {
       type: "labelText",
-      start: Object.assign({}, events[open + offset + 2][1].end),
-      end: Object.assign({}, events[close - 2][1].start)
+      start: {
+        ...events[open + offset + 2][1].end
+      },
+      end: {
+        ...events[close - 2][1].start
+      }
     };
     media = [['enter', group, context], ['enter', label, context]];
 
@@ -13637,6 +13831,7 @@
 
   /**
    * @this {TokenizeContext}
+   *   Context.
    * @type {Tokenizer}
    */
   function tokenizeLabelEnd(effects, ok, nok) {
@@ -13798,6 +13993,7 @@
 
   /**
    * @this {TokenizeContext}
+   *   Context.
    * @type {Tokenizer}
    */
   function tokenizeResource(effects, ok, nok) {
@@ -13935,6 +14131,7 @@
 
   /**
    * @this {TokenizeContext}
+   *   Context.
    * @type {Tokenizer}
    */
   function tokenizeReferenceFull(effects, ok, nok) {
@@ -13986,6 +14183,7 @@
 
   /**
    * @this {TokenizeContext}
+   *   Context.
    * @type {Tokenizer}
    */
   function tokenizeReferenceCollapsed(effects, ok, nok) {
@@ -14038,22 +14236,25 @@
   }
 
   /**
-   * @typedef {import('micromark-util-types').Construct} Construct
-   * @typedef {import('micromark-util-types').State} State
-   * @typedef {import('micromark-util-types').TokenizeContext} TokenizeContext
-   * @typedef {import('micromark-util-types').Tokenizer} Tokenizer
+   * @import {
+   *   Construct,
+   *   State,
+   *   TokenizeContext,
+   *   Tokenizer
+   * } from 'micromark-util-types'
    */
 
 
   /** @type {Construct} */
   const labelStartImage = {
     name: 'labelStartImage',
-    tokenize: tokenizeLabelStartImage,
-    resolveAll: labelEnd.resolveAll
+    resolveAll: labelEnd.resolveAll,
+    tokenize: tokenizeLabelStartImage
   };
 
   /**
    * @this {TokenizeContext}
+   *   Context.
    * @type {Tokenizer}
    */
   function tokenizeLabelStartImage(effects, ok, nok) {
@@ -14137,22 +14338,25 @@
   }
 
   /**
-   * @typedef {import('micromark-util-types').Construct} Construct
-   * @typedef {import('micromark-util-types').State} State
-   * @typedef {import('micromark-util-types').TokenizeContext} TokenizeContext
-   * @typedef {import('micromark-util-types').Tokenizer} Tokenizer
+   * @import {
+   *   Construct,
+   *   State,
+   *   TokenizeContext,
+   *   Tokenizer
+   * } from 'micromark-util-types'
    */
 
 
   /** @type {Construct} */
   const labelStartLink = {
     name: 'labelStartLink',
-    tokenize: tokenizeLabelStartLink,
-    resolveAll: labelEnd.resolveAll
+    resolveAll: labelEnd.resolveAll,
+    tokenize: tokenizeLabelStartLink
   };
 
   /**
    * @this {TokenizeContext}
+   *   Context.
    * @type {Tokenizer}
    */
   function tokenizeLabelStartLink(effects, ok, nok) {
@@ -14189,10 +14393,12 @@
   }
 
   /**
-   * @typedef {import('micromark-util-types').Construct} Construct
-   * @typedef {import('micromark-util-types').State} State
-   * @typedef {import('micromark-util-types').TokenizeContext} TokenizeContext
-   * @typedef {import('micromark-util-types').Tokenizer} Tokenizer
+   * @import {
+   *   Construct,
+   *   State,
+   *   TokenizeContext,
+   *   Tokenizer
+   * } from 'micromark-util-types'
    */
 
   /** @type {Construct} */
@@ -14203,6 +14409,7 @@
 
   /**
    * @this {TokenizeContext}
+   *   Context.
    * @type {Tokenizer}
    */
   function tokenizeLineEnding(effects, ok) {
@@ -14218,11 +14425,13 @@
   }
 
   /**
-   * @typedef {import('micromark-util-types').Code} Code
-   * @typedef {import('micromark-util-types').Construct} Construct
-   * @typedef {import('micromark-util-types').State} State
-   * @typedef {import('micromark-util-types').TokenizeContext} TokenizeContext
-   * @typedef {import('micromark-util-types').Tokenizer} Tokenizer
+   * @import {
+   *   Code,
+   *   Construct,
+   *   State,
+   *   TokenizeContext,
+   *   Tokenizer
+   * } from 'micromark-util-types'
    */
 
   /** @type {Construct} */
@@ -14233,6 +14442,7 @@
 
   /**
    * @this {TokenizeContext}
+   *   Context.
    * @type {Tokenizer}
    */
   function tokenizeThematicBreak(effects, ok, nok) {
@@ -14316,44 +14526,46 @@
   }
 
   /**
-   * @typedef {import('micromark-util-types').Code} Code
-   * @typedef {import('micromark-util-types').Construct} Construct
-   * @typedef {import('micromark-util-types').ContainerState} ContainerState
-   * @typedef {import('micromark-util-types').Exiter} Exiter
-   * @typedef {import('micromark-util-types').State} State
-   * @typedef {import('micromark-util-types').TokenizeContext} TokenizeContext
-   * @typedef {import('micromark-util-types').Tokenizer} Tokenizer
+   * @import {
+   *   Code,
+   *   Construct,
+   *   Exiter,
+   *   State,
+   *   TokenizeContext,
+   *   Tokenizer
+   * } from 'micromark-util-types'
    */
 
 
   /** @type {Construct} */
   const list$1 = {
-    name: 'list',
-    tokenize: tokenizeListStart,
     continuation: {
       tokenize: tokenizeListContinuation
     },
-    exit: tokenizeListEnd
+    exit: tokenizeListEnd,
+    name: 'list',
+    tokenize: tokenizeListStart
   };
 
   /** @type {Construct} */
   const listItemPrefixWhitespaceConstruct = {
-    tokenize: tokenizeListItemPrefixWhitespace,
-    partial: true
+    partial: true,
+    tokenize: tokenizeListItemPrefixWhitespace
   };
 
   /** @type {Construct} */
   const indentConstruct = {
-    tokenize: tokenizeIndent$1,
-    partial: true
+    partial: true,
+    tokenize: tokenizeIndent$1
   };
 
   // To do: `markdown-rs` parses list items on their own and later stitches them
   // together.
 
   /**
-   * @type {Tokenizer}
    * @this {TokenizeContext}
+   *   Context.
+   * @type {Tokenizer}
    */
   function tokenizeListStart(effects, ok, nok) {
     const self = this;
@@ -14437,8 +14649,9 @@
   }
 
   /**
-   * @type {Tokenizer}
    * @this {TokenizeContext}
+   *   Context.
+   * @type {Tokenizer}
    */
   function tokenizeListContinuation(effects, ok, nok) {
     const self = this;
@@ -14479,8 +14692,9 @@
   }
 
   /**
-   * @type {Tokenizer}
    * @this {TokenizeContext}
+   *   Context.
+   * @type {Tokenizer}
    */
   function tokenizeIndent$1(effects, ok, nok) {
     const self = this;
@@ -14494,16 +14708,18 @@
   }
 
   /**
-   * @type {Exiter}
    * @this {TokenizeContext}
+   *   Context.
+   * @type {Exiter}
    */
   function tokenizeListEnd(effects) {
     effects.exit(this.containerState.type);
   }
 
   /**
-   * @type {Tokenizer}
    * @this {TokenizeContext}
+   *   Context.
+   * @type {Tokenizer}
    */
   function tokenizeListItemPrefixWhitespace(effects, ok, nok) {
     const self = this;
@@ -14520,19 +14736,21 @@
   }
 
   /**
-   * @typedef {import('micromark-util-types').Code} Code
-   * @typedef {import('micromark-util-types').Construct} Construct
-   * @typedef {import('micromark-util-types').Resolver} Resolver
-   * @typedef {import('micromark-util-types').State} State
-   * @typedef {import('micromark-util-types').TokenizeContext} TokenizeContext
-   * @typedef {import('micromark-util-types').Tokenizer} Tokenizer
+   * @import {
+   *   Code,
+   *   Construct,
+   *   Resolver,
+   *   State,
+   *   TokenizeContext,
+   *   Tokenizer
+   * } from 'micromark-util-types'
    */
 
   /** @type {Construct} */
   const setextUnderline = {
     name: 'setextUnderline',
-    tokenize: tokenizeSetextUnderline,
-    resolveTo: resolveToSetextUnderline
+    resolveTo: resolveToSetextUnderline,
+    tokenize: tokenizeSetextUnderline
   };
 
   /** @type {Resolver} */
@@ -14571,8 +14789,12 @@
     }
     const heading = {
       type: "setextHeading",
-      start: Object.assign({}, events[text][1].start),
-      end: Object.assign({}, events[events.length - 1][1].end)
+      start: {
+        ...events[content][1].start
+      },
+      end: {
+        ...events[events.length - 1][1].end
+      }
     };
 
     // Change the paragraph to setext heading text.
@@ -14583,7 +14805,9 @@
     if (definition) {
       events.splice(text, 0, ['enter', heading, context]);
       events.splice(definition + 1, 0, ['exit', events[content][1], context]);
-      events[content][1].end = Object.assign({}, events[definition][1].end);
+      events[content][1].end = {
+        ...events[definition][1].end
+      };
     } else {
       events[content][1] = heading;
     }
@@ -14595,6 +14819,7 @@
 
   /**
    * @this {TokenizeContext}
+   *   Context.
    * @type {Tokenizer}
    */
   function tokenizeSetextUnderline(effects, ok, nok) {
@@ -15421,11 +15646,13 @@
         // Truncate rest.
         events.length = this.map[index][0];
       }
-      vecs.push([...events]);
+      vecs.push(events.slice());
       events.length = 0;
       let slice = vecs.pop();
       while (slice) {
-        events.push(...slice);
+        for (const element of slice) {
+          events.push(element);
+        }
         slice = vecs.pop();
       }
 
@@ -16562,8 +16789,13 @@
     ])
   }
 
-  /// <reference types="remark-parse" />
-  /// <reference types="remark-stringify" />
+  /**
+   * @import {Root} from 'mdast'
+   * @import {Options} from 'remark-gfm'
+   * @import {} from 'remark-parse'
+   * @import {} from 'remark-stringify'
+   * @import {Processor} from 'unified'
+   */
 
 
   /** @type {Options} */
@@ -16581,7 +16813,7 @@
   function remarkGfm(options) {
     // @ts-expect-error: TS is wrong about `this`.
     // eslint-disable-next-line unicorn/no-this-assignment
-    const self = /** @type {Processor} */ (this);
+    const self = /** @type {Processor<Root>} */ (this);
     const settings = options || emptyOptions$4;
     const data = self.data();
 
@@ -16612,61 +16844,72 @@
       }
       return;
   };
-  const nextChild = (data = [], index, tagName, codeBlockParames) => {
+  const nextChild = (data = [], index, tagName, commentStart = "<!--", commentEnd = "-->") => {
       let i = index;
       while (i < data.length) {
           i++;
+          const element = data[i];
           if (tagName) {
-              const element = data[i];
               if (element && element.value && element.value.replace(/(\n|\s)/g, '') !== '' || data[i] && data[i].type === 'element') {
                   return element.tagName === tagName ? element : undefined;
               }
           }
           else {
-              const element = data[i];
               if (!element || element.type === 'element')
                   return;
-              if (element.type === 'text' && element.value.replace(/(\n|\s)/g, '') !== '')
-                  return;
-              if (element.type && /^(comment|raw)$/ig.test(element.type)) {
-                  if (element.value && !/^rehype:/.test(element.value.replace(/^(\s+)?<!--(.*?)-->/, '$2') || '')) {
+              if (element.type === 'text') {
+                  const nextNode = nextChild(data, i, undefined);
+                  if (nextNode)
+                      return nextNode;
+              }
+              if (element.type && /^(comment|raw|text)$/ig.test(element.type)) {
+                  const regx = new RegExp(`^(\s+)?${commentStart}(.*?)${commentEnd}`);
+                  if (element.value && !/^rehype:/.test(element.value.replace(/^(\n|\s)+/, '').replace(regx, '$2') || '')) {
                       return;
                   }
-                  if (codeBlockParames) {
-                      const nextNode = nextChild(data, i, 'pre', codeBlockParames);
-                      if (nextNode)
-                          return;
-                      element.value = (element.value || '').replace(/^(\n|\s)+/, '');
-                      return element;
-                  }
-                  else {
-                      element.value = (element.value || '').replace(/^(\n|\s)+/, '');
-                      return element;
-                  }
+                  let comment = element.value.replace(/^(\n|\s)+/, '');
+                  element.value = comment;
+                  return element;
               }
           }
       }
       return;
   };
   /**
-   * 获取代码注视的位置
-   * @param data 数据
-   * @param index 当前数据所在的位置
-   * @returns 返回 当前参数数据 Object，`{}`
+   * Get the position of the code comment
+   * @param data Comment
+   * @param start
+   * @param end
+   * @returns Returns the current parameter data Object, `{}`
    */
-  const getCommentObject = ({ value = '' }) => {
-      const param = getURLParameters(value.replace(/^<!--(.*?)-->/, '$1').replace(/^rehype:/, ''));
+  const getCommentObject = ({ value = '' }, start = "<!--", end = "-->") => {
+      let regx;
+      try {
+          // Construct a regular expression to match the comment content
+          regx = new RegExp(`^${start}(.*?)${end}`);
+      }
+      catch (error) {
+          return {};
+      }
+      const match = value.match(regx);
+      const content = (match ? match[1] : value);
+      // Extract the comment content if it matches the regular expression
+      const commentContent = content.replace(/^rehype:/, '');
+      // Extract the comment content and parse it into a parameter object
+      const param = getURLParameters(commentContent);
+      // Iterate over the key-value pairs of the parameter object and perform type conversion
       Object.keys(param).forEach((keyName) => {
           if (param[keyName] === 'true') {
               param[keyName] = true;
           }
-          if (param[keyName] === 'false') {
+          else if (param[keyName] === 'false') {
               param[keyName] = false;
           }
-          if (typeof param[keyName] === 'string' && !/^0/.test(param[keyName]) && !isNaN(+param[keyName])) {
+          else if (typeof param[keyName] === 'string' && !/^0/.test(param[keyName]) && !isNaN(+param[keyName])) {
               param[keyName] = +param[keyName];
           }
       });
+      // Return the processed parameter object
       return param;
   };
   const propertiesHandle = (defaultAttrs, attrs, type) => {
@@ -16680,7 +16923,7 @@
   };
 
   const rehypeAttrs = (options = {}) => {
-      const { properties = 'data', codeBlockParames = true } = options;
+      const { properties = 'data', codeBlockParames = true, commentStart = "<!--", commentEnd = "-->" } = options;
       return (tree) => {
           visit(tree, 'element', (node, index, parent) => {
               if (codeBlockParames && node.tagName === 'pre' && node && Array.isArray(node.children) && parent && Array.isArray(parent.children) && parent.children.length > 1) {
@@ -16688,7 +16931,7 @@
                   if (firstChild && firstChild.tagName === 'code' && typeof index === 'number') {
                       const child = prevChild(parent.children, index);
                       if (child) {
-                          const attr = getCommentObject(child);
+                          const attr = getCommentObject(child, commentStart, commentEnd);
                           if (Object.keys(attr).length > 0) {
                               node.properties = { ...node.properties, ...{ 'data-type': 'rehyp' } };
                               firstChild.properties = propertiesHandle(firstChild.properties, attr, properties);
@@ -16696,25 +16939,39 @@
                       }
                   }
               }
-              if (/^(em|strong|b|a|i|p|pre|kbd|blockquote|h(1|2|3|4|5|6)|code|table|img|del|ul|ol)$/.test(node.tagName) && parent && Array.isArray(parent.children) && typeof index === 'number') {
-                  const child = nextChild(parent.children, index, '', codeBlockParames);
-                  if (child) {
-                      const attr = getCommentObject(child);
-                      if (Object.keys(attr).length > 0) {
-                          node.properties = propertiesHandle(node.properties, attr, properties);
-                      }
+              let rootnode = parent;
+              let testTagName = /^(em|strong|b|a|i|p|pre|kbd|blockquote|h(1|2|3|4|5|6)|code|table|img|del|ul|ol|li)$/.test(node.tagName);
+              if ((testTagName || rootnode.type == "root") && parent && Array.isArray(parent.children) && typeof index === 'number') {
+                  addPropertyToNode(node, parent.children, index, properties, commentStart, commentEnd);
+                  if (node.tagName == "ul") {
+                      node.children.forEach((li, _) => {
+                          if (li.type == "element" && li.tagName == "li") {
+                              addPropertyToNode(li, li.children, 0, properties, commentStart, commentEnd);
+                          }
+                      });
                   }
               }
           });
       };
   };
+  function addPropertyToNode(node, children = [], index, properties, commentStart = "<!--", commentEnd = "-->") {
+      const child = nextChild(children, index, "", commentStart, commentEnd);
+      if (child) {
+          const attr = getCommentObject(child, commentStart, commentEnd);
+          if (Object.keys(attr).length > 0) {
+              node.properties = propertiesHandle(node.properties, attr, properties);
+          }
+      }
+  }
 
   /**
-   * @typedef {import('micromark-util-types').InitialConstruct} InitialConstruct
-   * @typedef {import('micromark-util-types').Initializer} Initializer
-   * @typedef {import('micromark-util-types').State} State
-   * @typedef {import('micromark-util-types').Token} Token
-   * @typedef {import('micromark-util-types').TokenizeContext} TokenizeContext
+   * @import {
+   *   InitialConstruct,
+   *   Initializer,
+   *   State,
+   *   TokenizeContext,
+   *   Token
+   * } from 'micromark-util-types'
    */
 
   /** @type {InitialConstruct} */
@@ -16724,79 +16981,79 @@
 
   /**
    * @this {TokenizeContext}
+   *   Context.
    * @type {Initializer}
+   *   Content.
    */
   function initializeContent(effects) {
-    const contentStart = effects.attempt(
-      this.parser.constructs.contentInitial,
-      afterContentStartConstruct,
-      paragraphInitial
-    );
+    const contentStart = effects.attempt(this.parser.constructs.contentInitial, afterContentStartConstruct, paragraphInitial);
     /** @type {Token} */
     let previous;
-    return contentStart
+    return contentStart;
 
     /** @type {State} */
     function afterContentStartConstruct(code) {
       if (code === null) {
         effects.consume(code);
-        return
+        return;
       }
-      effects.enter('lineEnding');
+      effects.enter("lineEnding");
       effects.consume(code);
-      effects.exit('lineEnding');
-      return factorySpace(effects, contentStart, 'linePrefix')
+      effects.exit("lineEnding");
+      return factorySpace(effects, contentStart, "linePrefix");
     }
 
     /** @type {State} */
     function paragraphInitial(code) {
-      effects.enter('paragraph');
-      return lineStart(code)
+      effects.enter("paragraph");
+      return lineStart(code);
     }
 
     /** @type {State} */
     function lineStart(code) {
-      const token = effects.enter('chunkText', {
-        contentType: 'text',
+      const token = effects.enter("chunkText", {
+        contentType: "text",
         previous
       });
       if (previous) {
         previous.next = token;
       }
       previous = token;
-      return data(code)
+      return data(code);
     }
 
     /** @type {State} */
     function data(code) {
       if (code === null) {
-        effects.exit('chunkText');
-        effects.exit('paragraph');
+        effects.exit("chunkText");
+        effects.exit("paragraph");
         effects.consume(code);
-        return
+        return;
       }
       if (markdownLineEnding(code)) {
         effects.consume(code);
-        effects.exit('chunkText');
-        return lineStart
+        effects.exit("chunkText");
+        return lineStart;
       }
 
       // Data.
       effects.consume(code);
-      return data
+      return data;
     }
   }
 
   /**
-   * @typedef {import('micromark-util-types').Construct} Construct
-   * @typedef {import('micromark-util-types').ContainerState} ContainerState
-   * @typedef {import('micromark-util-types').InitialConstruct} InitialConstruct
-   * @typedef {import('micromark-util-types').Initializer} Initializer
-   * @typedef {import('micromark-util-types').Point} Point
-   * @typedef {import('micromark-util-types').State} State
-   * @typedef {import('micromark-util-types').Token} Token
-   * @typedef {import('micromark-util-types').TokenizeContext} TokenizeContext
-   * @typedef {import('micromark-util-types').Tokenizer} Tokenizer
+   * @import {
+   *   Construct,
+   *   ContainerState,
+   *   InitialConstruct,
+   *   Initializer,
+   *   Point,
+   *   State,
+   *   TokenizeContext,
+   *   Tokenizer,
+   *   Token
+   * } from 'micromark-util-types'
    */
 
   /** @type {InitialConstruct} */
@@ -16811,7 +17068,9 @@
 
   /**
    * @this {TokenizeContext}
+   *   Self.
    * @type {Initializer}
+   *   Initializer.
    */
   function initializeDocument(effects) {
     const self = this;
@@ -16824,7 +17083,7 @@
     let childToken;
     /** @type {number} */
     let lineStartOffset;
-    return start
+    return start;
 
     /** @type {State} */
     function start(code) {
@@ -16841,15 +17100,11 @@
       if (continued < stack.length) {
         const item = stack[continued];
         self.containerState = item[1];
-        return effects.attempt(
-          item[0].continuation,
-          documentContinue,
-          checkNewContainers
-        )(code)
+        return effects.attempt(item[0].continuation, documentContinue, checkNewContainers)(code);
       }
 
       // Done.
-      return checkNewContainers(code)
+      return checkNewContainers(code);
     }
 
     /** @type {State} */
@@ -16874,12 +17129,9 @@
 
         // Find the flow chunk.
         while (indexBeforeFlow--) {
-          if (
-            self.events[indexBeforeFlow][0] === 'exit' &&
-            self.events[indexBeforeFlow][1].type === 'chunkFlow'
-          ) {
+          if (self.events[indexBeforeFlow][0] === 'exit' && self.events[indexBeforeFlow][1].type === "chunkFlow") {
             point = self.events[indexBeforeFlow][1].end;
-            break
+            break;
           }
         }
         exitContainers(continued);
@@ -16887,23 +17139,20 @@
         // Fix positions.
         let index = indexBeforeExits;
         while (index < self.events.length) {
-          self.events[index][1].end = Object.assign({}, point);
+          self.events[index][1].end = {
+            ...point
+          };
           index++;
         }
 
         // Inject the exits earlier (they’re still also at the end).
-        splice(
-          self.events,
-          indexBeforeFlow + 1,
-          0,
-          self.events.slice(indexBeforeExits)
-        );
+        splice(self.events, indexBeforeFlow + 1, 0, self.events.slice(indexBeforeExits));
 
         // Discard the duplicate exits.
         self.events.length = index;
-        return checkNewContainers(code)
+        return checkNewContainers(code);
       }
-      return start(code)
+      return start(code);
     }
 
     /** @type {State} */
@@ -16918,14 +17167,14 @@
         // would be moot.
         // We can instead immediately `attempt` to parse one.
         if (!childFlow) {
-          return documentContinued(code)
+          return documentContinued(code);
         }
 
         // If we have concrete content, such as block HTML or fenced code,
         // we can’t have containers “pierce” into them, so we can immediately
         // start.
         if (childFlow.currentConstruct && childFlow.currentConstruct.concrete) {
-          return flowStart(code)
+          return flowStart(code);
         }
 
         // If we do have flow, it could still be a blank line,
@@ -16933,43 +17182,33 @@
         // construct.
         // To do: next major: remove `_gfmTableDynamicInterruptHack` (no longer
         // needed in micromark-extension-gfm-table@1.0.6).
-        self.interrupt = Boolean(
-          childFlow.currentConstruct && !childFlow._gfmTableDynamicInterruptHack
-        );
+        self.interrupt = Boolean(childFlow.currentConstruct && !childFlow._gfmTableDynamicInterruptHack);
       }
 
       // Check if there is a new container.
       self.containerState = {};
-      return effects.check(
-        containerConstruct,
-        thereIsANewContainer,
-        thereIsNoNewContainer
-      )(code)
+      return effects.check(containerConstruct, thereIsANewContainer, thereIsNoNewContainer)(code);
     }
 
     /** @type {State} */
     function thereIsANewContainer(code) {
       if (childFlow) closeFlow();
       exitContainers(continued);
-      return documentContinued(code)
+      return documentContinued(code);
     }
 
     /** @type {State} */
     function thereIsNoNewContainer(code) {
       self.parser.lazy[self.now().line] = continued !== stack.length;
       lineStartOffset = self.now().offset;
-      return flowStart(code)
+      return flowStart(code);
     }
 
     /** @type {State} */
     function documentContinued(code) {
       // Try new containers.
       self.containerState = {};
-      return effects.attempt(
-        containerConstruct,
-        containerContinue,
-        flowStart
-      )(code)
+      return effects.attempt(containerConstruct, containerContinue, flowStart)(code);
     }
 
     /** @type {State} */
@@ -16977,7 +17216,7 @@
       continued++;
       stack.push([self.currentConstruct, self.containerState]);
       // Try another.
-      return documentContinued(code)
+      return documentContinued(code);
     }
 
     /** @type {State} */
@@ -16986,45 +17225,48 @@
         if (childFlow) closeFlow();
         exitContainers(0);
         effects.consume(code);
-        return
+        return;
       }
       childFlow = childFlow || self.parser.flow(self.now());
-      effects.enter('chunkFlow', {
-        contentType: 'flow',
-        previous: childToken,
-        _tokenizer: childFlow
+      effects.enter("chunkFlow", {
+        _tokenizer: childFlow,
+        contentType: "flow",
+        previous: childToken
       });
-      return flowContinue(code)
+      return flowContinue(code);
     }
 
     /** @type {State} */
     function flowContinue(code) {
       if (code === null) {
-        writeToChild(effects.exit('chunkFlow'), true);
+        writeToChild(effects.exit("chunkFlow"), true);
         exitContainers(0);
         effects.consume(code);
-        return
+        return;
       }
       if (markdownLineEnding(code)) {
         effects.consume(code);
-        writeToChild(effects.exit('chunkFlow'));
+        writeToChild(effects.exit("chunkFlow"));
         // Get ready for the next line.
         continued = 0;
         self.interrupt = undefined;
-        return start
+        return start;
       }
       effects.consume(code);
-      return flowContinue
+      return flowContinue;
     }
 
     /**
      * @param {Token} token
-     * @param {boolean | undefined} [eof]
+     *   Token.
+     * @param {boolean | undefined} [endOfFile]
+     *   Whether the token is at the end of the file (default: `false`).
      * @returns {undefined}
+     *   Nothing.
      */
-    function writeToChild(token, eof) {
+    function writeToChild(token, endOfFile) {
       const stream = self.sliceStream(token);
-      if (eof) stream.push(null);
+      if (endOfFile) stream.push(null);
       token.previous = childToken;
       if (childToken) childToken.next = token;
       childToken = token;
@@ -17068,16 +17310,15 @@
         let index = childFlow.events.length;
         while (index--) {
           if (
-            // The token starts before the line ending…
-            childFlow.events[index][1].start.offset < lineStartOffset &&
-            // …and either is not ended yet…
-            (!childFlow.events[index][1].end ||
-              // …or ends after it.
-              childFlow.events[index][1].end.offset > lineStartOffset)
-          ) {
+          // The token starts before the line ending…
+          childFlow.events[index][1].start.offset < lineStartOffset && (
+          // …and either is not ended yet…
+          !childFlow.events[index][1].end ||
+          // …or ends after it.
+          childFlow.events[index][1].end.offset > lineStartOffset)) {
             // Exit: there’s still something open, which means it’s a lazy line
             // part of something.
-            return
+            return;
           }
         }
 
@@ -17092,13 +17333,10 @@
 
         // Find the previous chunk (the one before the lazy line).
         while (indexBeforeFlow--) {
-          if (
-            self.events[indexBeforeFlow][0] === 'exit' &&
-            self.events[indexBeforeFlow][1].type === 'chunkFlow'
-          ) {
+          if (self.events[indexBeforeFlow][0] === 'exit' && self.events[indexBeforeFlow][1].type === "chunkFlow") {
             if (seen) {
               point = self.events[indexBeforeFlow][1].end;
-              break
+              break;
             }
             seen = true;
           }
@@ -17108,17 +17346,14 @@
         // Fix positions.
         index = indexBeforeExits;
         while (index < self.events.length) {
-          self.events[index][1].end = Object.assign({}, point);
+          self.events[index][1].end = {
+            ...point
+          };
           index++;
         }
 
         // Inject the exits earlier (they’re still also at the end).
-        splice(
-          self.events,
-          indexBeforeFlow + 1,
-          0,
-          self.events.slice(indexBeforeExits)
-        );
+        splice(self.events, indexBeforeFlow + 1, 0, self.events.slice(indexBeforeExits));
 
         // Discard the duplicate exits.
         self.events.length = index;
@@ -17127,7 +17362,9 @@
 
     /**
      * @param {number} size
+     *   Size.
      * @returns {undefined}
+     *   Nothing.
      */
     function exitContainers(size) {
       let index = stack.length;
@@ -17150,24 +17387,23 @@
 
   /**
    * @this {TokenizeContext}
+   *   Context.
    * @type {Tokenizer}
+   *   Tokenizer.
    */
   function tokenizeContainer(effects, ok, nok) {
     // Always populated by defaults.
 
-    return factorySpace(
-      effects,
-      effects.attempt(this.parser.constructs.document, ok, nok),
-      'linePrefix',
-      this.parser.constructs.disable.null.includes('codeIndented') ? undefined : 4
-    )
+    return factorySpace(effects, effects.attempt(this.parser.constructs.document, ok, nok), "linePrefix", this.parser.constructs.disable.null.includes('codeIndented') ? undefined : 4);
   }
 
   /**
-   * @typedef {import('micromark-util-types').InitialConstruct} InitialConstruct
-   * @typedef {import('micromark-util-types').Initializer} Initializer
-   * @typedef {import('micromark-util-types').State} State
-   * @typedef {import('micromark-util-types').TokenizeContext} TokenizeContext
+   * @import {
+   *   InitialConstruct,
+   *   Initializer,
+   *   State,
+   *   TokenizeContext
+   * } from 'micromark-util-types'
    */
 
   /** @type {InitialConstruct} */
@@ -17177,65 +17413,55 @@
 
   /**
    * @this {TokenizeContext}
+   *   Self.
    * @type {Initializer}
+   *   Initializer.
    */
   function initializeFlow(effects) {
     const self = this;
     const initial = effects.attempt(
-      // Try to parse a blank line.
-      blankLine,
-      atBlankEnding,
-      // Try to parse initial flow (essentially, only code).
-      effects.attempt(
-        this.parser.constructs.flowInitial,
-        afterConstruct,
-        factorySpace(
-          effects,
-          effects.attempt(
-            this.parser.constructs.flow,
-            afterConstruct,
-            effects.attempt(content$1, afterConstruct)
-          ),
-          'linePrefix'
-        )
-      )
-    );
-    return initial
+    // Try to parse a blank line.
+    blankLine, atBlankEnding,
+    // Try to parse initial flow (essentially, only code).
+    effects.attempt(this.parser.constructs.flowInitial, afterConstruct, factorySpace(effects, effects.attempt(this.parser.constructs.flow, afterConstruct, effects.attempt(content$1, afterConstruct)), "linePrefix")));
+    return initial;
 
     /** @type {State} */
     function atBlankEnding(code) {
       if (code === null) {
         effects.consume(code);
-        return
+        return;
       }
-      effects.enter('lineEndingBlank');
+      effects.enter("lineEndingBlank");
       effects.consume(code);
-      effects.exit('lineEndingBlank');
+      effects.exit("lineEndingBlank");
       self.currentConstruct = undefined;
-      return initial
+      return initial;
     }
 
     /** @type {State} */
     function afterConstruct(code) {
       if (code === null) {
         effects.consume(code);
-        return
+        return;
       }
-      effects.enter('lineEnding');
+      effects.enter("lineEnding");
       effects.consume(code);
-      effects.exit('lineEnding');
+      effects.exit("lineEnding");
       self.currentConstruct = undefined;
-      return initial
+      return initial;
     }
   }
 
   /**
-   * @typedef {import('micromark-util-types').Code} Code
-   * @typedef {import('micromark-util-types').InitialConstruct} InitialConstruct
-   * @typedef {import('micromark-util-types').Initializer} Initializer
-   * @typedef {import('micromark-util-types').Resolver} Resolver
-   * @typedef {import('micromark-util-types').State} State
-   * @typedef {import('micromark-util-types').TokenizeContext} TokenizeContext
+   * @import {
+   *   Code,
+   *   InitialConstruct,
+   *   Initializer,
+   *   Resolver,
+   *   State,
+   *   TokenizeContext
+   * } from 'micromark-util-types'
    */
 
   const resolver = {
@@ -17246,61 +17472,64 @@
 
   /**
    * @param {'string' | 'text'} field
+   *   Field.
    * @returns {InitialConstruct}
+   *   Construct.
    */
   function initializeFactory(field) {
     return {
-      tokenize: initializeText,
-      resolveAll: createResolver(
-        field === 'text' ? resolveAllLineSuffixes : undefined
-      )
-    }
+      resolveAll: createResolver(field === 'text' ? resolveAllLineSuffixes : undefined),
+      tokenize: initializeText
+    };
 
     /**
      * @this {TokenizeContext}
+     *   Context.
      * @type {Initializer}
      */
     function initializeText(effects) {
       const self = this;
       const constructs = this.parser.constructs[field];
       const text = effects.attempt(constructs, start, notText);
-      return start
+      return start;
 
       /** @type {State} */
       function start(code) {
-        return atBreak(code) ? text(code) : notText(code)
+        return atBreak(code) ? text(code) : notText(code);
       }
 
       /** @type {State} */
       function notText(code) {
         if (code === null) {
           effects.consume(code);
-          return
+          return;
         }
-        effects.enter('data');
+        effects.enter("data");
         effects.consume(code);
-        return data
+        return data;
       }
 
       /** @type {State} */
       function data(code) {
         if (atBreak(code)) {
-          effects.exit('data');
-          return text(code)
+          effects.exit("data");
+          return text(code);
         }
 
         // Data.
         effects.consume(code);
-        return data
+        return data;
       }
 
       /**
        * @param {Code} code
+       *   Code.
        * @returns {boolean}
+       *   Whether the code is a break.
        */
       function atBreak(code) {
         if (code === null) {
-          return true
+          return true;
         }
         const list = constructs[code];
         let index = -1;
@@ -17310,21 +17539,23 @@
           while (++index < list.length) {
             const item = list[index];
             if (!item.previous || item.previous.call(self, self.previous)) {
-              return true
+              return true;
             }
           }
         }
-        return false
+        return false;
       }
     }
   }
 
   /**
    * @param {Resolver | undefined} [extraResolver]
+   *   Resolver.
    * @returns {Resolver}
+   *   Resolver.
    */
   function createResolver(extraResolver) {
-    return resolveAllText
+    return resolveAllText;
 
     /** @type {Resolver} */
     function resolveAllText(events, context) {
@@ -17336,11 +17567,11 @@
       // improves mm performance by 29%.
       while (++index <= events.length) {
         if (enter === undefined) {
-          if (events[index] && events[index][1].type === 'data') {
+          if (events[index] && events[index][1].type === "data") {
             enter = index;
             index++;
           }
-        } else if (!events[index] || events[index][1].type !== 'data') {
+        } else if (!events[index] || events[index][1].type !== "data") {
           // Don’t do anything if there is one data token.
           if (index !== enter + 2) {
             events[enter][1].end = events[index - 1][1].end;
@@ -17350,7 +17581,7 @@
           enter = undefined;
         }
       }
-      return extraResolver ? extraResolver(events, context) : events
+      return extraResolver ? extraResolver(events, context) : events;
     }
   }
 
@@ -17369,11 +17600,7 @@
     let eventIndex = 0; // Skip first.
 
     while (++eventIndex <= events.length) {
-      if (
-        (eventIndex === events.length ||
-          events[eventIndex][1].type === 'lineEnding') &&
-        events[eventIndex - 1][1].type === 'data'
-      ) {
+      if ((eventIndex === events.length || events[eventIndex][1].type === "lineEnding") && events[eventIndex - 1][1].type === "data") {
         const data = events[eventIndex - 1][1];
         const chunks = context.sliceStream(data);
         let index = chunks.length;
@@ -17389,7 +17616,7 @@
               size++;
               bufferIndex--;
             }
-            if (bufferIndex) break
+            if (bufferIndex) break;
             bufferIndex = -1;
           }
           // Number
@@ -17399,596 +17626,46 @@
           } else if (chunk === -1) ; else {
             // Replacement character, exit.
             index++;
-            break
+            break;
           }
+        }
+
+        // Allow final trailing whitespace.
+        if (context._contentTypeTextTrailing && eventIndex === events.length) {
+          size = 0;
         }
         if (size) {
           const token = {
-            type:
-              eventIndex === events.length || tabs || size < 2
-                ? 'lineSuffix'
-                : 'hardBreakTrailing',
+            type: eventIndex === events.length || tabs || size < 2 ? "lineSuffix" : "hardBreakTrailing",
             start: {
+              _bufferIndex: index ? bufferIndex : data.start._bufferIndex + bufferIndex,
+              _index: data.start._index + index,
               line: data.end.line,
               column: data.end.column - size,
-              offset: data.end.offset - size,
-              _index: data.start._index + index,
-              _bufferIndex: index
-                ? bufferIndex
-                : data.start._bufferIndex + bufferIndex
+              offset: data.end.offset - size
             },
-            end: Object.assign({}, data.end)
+            end: {
+              ...data.end
+            }
           };
-          data.end = Object.assign({}, token.start);
+          data.end = {
+            ...token.start
+          };
           if (data.start.offset === data.end.offset) {
             Object.assign(data, token);
           } else {
-            events.splice(
-              eventIndex,
-              0,
-              ['enter', token, context],
-              ['exit', token, context]
-            );
+            events.splice(eventIndex, 0, ['enter', token, context], ['exit', token, context]);
             eventIndex += 2;
           }
         }
         eventIndex++;
       }
     }
-    return events
+    return events;
   }
 
   /**
-   * @typedef {import('micromark-util-types').Chunk} Chunk
-   * @typedef {import('micromark-util-types').Code} Code
-   * @typedef {import('micromark-util-types').Construct} Construct
-   * @typedef {import('micromark-util-types').ConstructRecord} ConstructRecord
-   * @typedef {import('micromark-util-types').Effects} Effects
-   * @typedef {import('micromark-util-types').InitialConstruct} InitialConstruct
-   * @typedef {import('micromark-util-types').ParseContext} ParseContext
-   * @typedef {import('micromark-util-types').Point} Point
-   * @typedef {import('micromark-util-types').State} State
-   * @typedef {import('micromark-util-types').Token} Token
-   * @typedef {import('micromark-util-types').TokenType} TokenType
-   * @typedef {import('micromark-util-types').TokenizeContext} TokenizeContext
-   */
-
-  /**
-   * Create a tokenizer.
-   * Tokenizers deal with one type of data (e.g., containers, flow, text).
-   * The parser is the object dealing with it all.
-   * `initialize` works like other constructs, except that only its `tokenize`
-   * function is used, in which case it doesn’t receive an `ok` or `nok`.
-   * `from` can be given to set the point before the first character, although
-   * when further lines are indented, they must be set with `defineSkip`.
-   *
-   * @param {ParseContext} parser
-   * @param {InitialConstruct} initialize
-   * @param {Omit<Point, '_bufferIndex' | '_index'> | undefined} [from]
-   * @returns {TokenizeContext}
-   */
-  function createTokenizer(parser, initialize, from) {
-    /** @type {Point} */
-    let point = Object.assign(
-      from
-        ? Object.assign({}, from)
-        : {
-            line: 1,
-            column: 1,
-            offset: 0
-          },
-      {
-        _index: 0,
-        _bufferIndex: -1
-      }
-    );
-    /** @type {Record<string, number>} */
-    const columnStart = {};
-    /** @type {Array<Construct>} */
-    const resolveAllConstructs = [];
-    /** @type {Array<Chunk>} */
-    let chunks = [];
-    /** @type {Array<Token>} */
-    let stack = [];
-
-    /**
-     * Tools used for tokenizing.
-     *
-     * @type {Effects}
-     */
-    const effects = {
-      consume,
-      enter,
-      exit,
-      attempt: constructFactory(onsuccessfulconstruct),
-      check: constructFactory(onsuccessfulcheck),
-      interrupt: constructFactory(onsuccessfulcheck, {
-        interrupt: true
-      })
-    };
-
-    /**
-     * State and tools for resolving and serializing.
-     *
-     * @type {TokenizeContext}
-     */
-    const context = {
-      previous: null,
-      code: null,
-      containerState: {},
-      events: [],
-      parser,
-      sliceStream,
-      sliceSerialize,
-      now,
-      defineSkip,
-      write
-    };
-
-    /**
-     * The state function.
-     *
-     * @type {State | undefined}
-     */
-    let state = initialize.tokenize.call(context, effects);
-    if (initialize.resolveAll) {
-      resolveAllConstructs.push(initialize);
-    }
-    return context
-
-    /** @type {TokenizeContext['write']} */
-    function write(slice) {
-      chunks = push(chunks, slice);
-      main();
-
-      // Exit if we’re not done, resolve might change stuff.
-      if (chunks[chunks.length - 1] !== null) {
-        return []
-      }
-      addResult(initialize, 0);
-
-      // Otherwise, resolve, and exit.
-      context.events = resolveAll(resolveAllConstructs, context.events, context);
-      return context.events
-    }
-
-    //
-    // Tools.
-    //
-
-    /** @type {TokenizeContext['sliceSerialize']} */
-    function sliceSerialize(token, expandTabs) {
-      return serializeChunks(sliceStream(token), expandTabs)
-    }
-
-    /** @type {TokenizeContext['sliceStream']} */
-    function sliceStream(token) {
-      return sliceChunks(chunks, token)
-    }
-
-    /** @type {TokenizeContext['now']} */
-    function now() {
-      // This is a hot path, so we clone manually instead of `Object.assign({}, point)`
-      const {line, column, offset, _index, _bufferIndex} = point;
-      return {
-        line,
-        column,
-        offset,
-        _index,
-        _bufferIndex
-      }
-    }
-
-    /** @type {TokenizeContext['defineSkip']} */
-    function defineSkip(value) {
-      columnStart[value.line] = value.column;
-      accountForPotentialSkip();
-    }
-
-    //
-    // State management.
-    //
-
-    /**
-     * Main loop (note that `_index` and `_bufferIndex` in `point` are modified by
-     * `consume`).
-     * Here is where we walk through the chunks, which either include strings of
-     * several characters, or numerical character codes.
-     * The reason to do this in a loop instead of a call is so the stack can
-     * drain.
-     *
-     * @returns {undefined}
-     */
-    function main() {
-      /** @type {number} */
-      let chunkIndex;
-      while (point._index < chunks.length) {
-        const chunk = chunks[point._index];
-
-        // If we’re in a buffer chunk, loop through it.
-        if (typeof chunk === 'string') {
-          chunkIndex = point._index;
-          if (point._bufferIndex < 0) {
-            point._bufferIndex = 0;
-          }
-          while (
-            point._index === chunkIndex &&
-            point._bufferIndex < chunk.length
-          ) {
-            go(chunk.charCodeAt(point._bufferIndex));
-          }
-        } else {
-          go(chunk);
-        }
-      }
-    }
-
-    /**
-     * Deal with one code.
-     *
-     * @param {Code} code
-     * @returns {undefined}
-     */
-    function go(code) {
-      state = state(code);
-    }
-
-    /** @type {Effects['consume']} */
-    function consume(code) {
-      if (markdownLineEnding(code)) {
-        point.line++;
-        point.column = 1;
-        point.offset += code === -3 ? 2 : 1;
-        accountForPotentialSkip();
-      } else if (code !== -1) {
-        point.column++;
-        point.offset++;
-      }
-
-      // Not in a string chunk.
-      if (point._bufferIndex < 0) {
-        point._index++;
-      } else {
-        point._bufferIndex++;
-
-        // At end of string chunk.
-        // @ts-expect-error Points w/ non-negative `_bufferIndex` reference
-        // strings.
-        if (point._bufferIndex === chunks[point._index].length) {
-          point._bufferIndex = -1;
-          point._index++;
-        }
-      }
-
-      // Expose the previous character.
-      context.previous = code;
-    }
-
-    /** @type {Effects['enter']} */
-    function enter(type, fields) {
-      /** @type {Token} */
-      // @ts-expect-error Patch instead of assign required fields to help GC.
-      const token = fields || {};
-      token.type = type;
-      token.start = now();
-      context.events.push(['enter', token, context]);
-      stack.push(token);
-      return token
-    }
-
-    /** @type {Effects['exit']} */
-    function exit(type) {
-      const token = stack.pop();
-      token.end = now();
-      context.events.push(['exit', token, context]);
-      return token
-    }
-
-    /**
-     * Use results.
-     *
-     * @type {ReturnHandle}
-     */
-    function onsuccessfulconstruct(construct, info) {
-      addResult(construct, info.from);
-    }
-
-    /**
-     * Discard results.
-     *
-     * @type {ReturnHandle}
-     */
-    function onsuccessfulcheck(_, info) {
-      info.restore();
-    }
-
-    /**
-     * Factory to attempt/check/interrupt.
-     *
-     * @param {ReturnHandle} onreturn
-     * @param {{interrupt?: boolean | undefined} | undefined} [fields]
-     */
-    function constructFactory(onreturn, fields) {
-      return hook
-
-      /**
-       * Handle either an object mapping codes to constructs, a list of
-       * constructs, or a single construct.
-       *
-       * @param {Array<Construct> | Construct | ConstructRecord} constructs
-       * @param {State} returnState
-       * @param {State | undefined} [bogusState]
-       * @returns {State}
-       */
-      function hook(constructs, returnState, bogusState) {
-        /** @type {Array<Construct>} */
-        let listOfConstructs;
-        /** @type {number} */
-        let constructIndex;
-        /** @type {Construct} */
-        let currentConstruct;
-        /** @type {Info} */
-        let info;
-        return Array.isArray(constructs) /* c8 ignore next 1 */
-          ? handleListOfConstructs(constructs)
-          : 'tokenize' in constructs
-          ? // @ts-expect-error Looks like a construct.
-            handleListOfConstructs([constructs])
-          : handleMapOfConstructs(constructs)
-
-        /**
-         * Handle a list of construct.
-         *
-         * @param {ConstructRecord} map
-         * @returns {State}
-         */
-        function handleMapOfConstructs(map) {
-          return start
-
-          /** @type {State} */
-          function start(code) {
-            const def = code !== null && map[code];
-            const all = code !== null && map.null;
-            const list = [
-              // To do: add more extension tests.
-              /* c8 ignore next 2 */
-              ...(Array.isArray(def) ? def : def ? [def] : []),
-              ...(Array.isArray(all) ? all : all ? [all] : [])
-            ];
-            return handleListOfConstructs(list)(code)
-          }
-        }
-
-        /**
-         * Handle a list of construct.
-         *
-         * @param {Array<Construct>} list
-         * @returns {State}
-         */
-        function handleListOfConstructs(list) {
-          listOfConstructs = list;
-          constructIndex = 0;
-          if (list.length === 0) {
-            return bogusState
-          }
-          return handleConstruct(list[constructIndex])
-        }
-
-        /**
-         * Handle a single construct.
-         *
-         * @param {Construct} construct
-         * @returns {State}
-         */
-        function handleConstruct(construct) {
-          return start
-
-          /** @type {State} */
-          function start(code) {
-            // To do: not needed to store if there is no bogus state, probably?
-            // Currently doesn’t work because `inspect` in document does a check
-            // w/o a bogus, which doesn’t make sense. But it does seem to help perf
-            // by not storing.
-            info = store();
-            currentConstruct = construct;
-            if (!construct.partial) {
-              context.currentConstruct = construct;
-            }
-
-            // Always populated by defaults.
-
-            if (
-              construct.name &&
-              context.parser.constructs.disable.null.includes(construct.name)
-            ) {
-              return nok()
-            }
-            return construct.tokenize.call(
-              // If we do have fields, create an object w/ `context` as its
-              // prototype.
-              // This allows a “live binding”, which is needed for `interrupt`.
-              fields ? Object.assign(Object.create(context), fields) : context,
-              effects,
-              ok,
-              nok
-            )(code)
-          }
-        }
-
-        /** @type {State} */
-        function ok(code) {
-          onreturn(currentConstruct, info);
-          return returnState
-        }
-
-        /** @type {State} */
-        function nok(code) {
-          info.restore();
-          if (++constructIndex < listOfConstructs.length) {
-            return handleConstruct(listOfConstructs[constructIndex])
-          }
-          return bogusState
-        }
-      }
-    }
-
-    /**
-     * @param {Construct} construct
-     * @param {number} from
-     * @returns {undefined}
-     */
-    function addResult(construct, from) {
-      if (construct.resolveAll && !resolveAllConstructs.includes(construct)) {
-        resolveAllConstructs.push(construct);
-      }
-      if (construct.resolve) {
-        splice(
-          context.events,
-          from,
-          context.events.length - from,
-          construct.resolve(context.events.slice(from), context)
-        );
-      }
-      if (construct.resolveTo) {
-        context.events = construct.resolveTo(context.events, context);
-      }
-    }
-
-    /**
-     * Store state.
-     *
-     * @returns {Info}
-     */
-    function store() {
-      const startPoint = now();
-      const startPrevious = context.previous;
-      const startCurrentConstruct = context.currentConstruct;
-      const startEventsIndex = context.events.length;
-      const startStack = Array.from(stack);
-      return {
-        restore,
-        from: startEventsIndex
-      }
-
-      /**
-       * Restore state.
-       *
-       * @returns {undefined}
-       */
-      function restore() {
-        point = startPoint;
-        context.previous = startPrevious;
-        context.currentConstruct = startCurrentConstruct;
-        context.events.length = startEventsIndex;
-        stack = startStack;
-        accountForPotentialSkip();
-      }
-    }
-
-    /**
-     * Move the current point a bit forward in the line when it’s on a column
-     * skip.
-     *
-     * @returns {undefined}
-     */
-    function accountForPotentialSkip() {
-      if (point.line in columnStart && point.column < 2) {
-        point.column = columnStart[point.line];
-        point.offset += columnStart[point.line] - 1;
-      }
-    }
-  }
-
-  /**
-   * Get the chunks from a slice of chunks in the range of a token.
-   *
-   * @param {Array<Chunk>} chunks
-   * @param {Pick<Token, 'end' | 'start'>} token
-   * @returns {Array<Chunk>}
-   */
-  function sliceChunks(chunks, token) {
-    const startIndex = token.start._index;
-    const startBufferIndex = token.start._bufferIndex;
-    const endIndex = token.end._index;
-    const endBufferIndex = token.end._bufferIndex;
-    /** @type {Array<Chunk>} */
-    let view;
-    if (startIndex === endIndex) {
-      // @ts-expect-error `_bufferIndex` is used on string chunks.
-      view = [chunks[startIndex].slice(startBufferIndex, endBufferIndex)];
-    } else {
-      view = chunks.slice(startIndex, endIndex);
-      if (startBufferIndex > -1) {
-        const head = view[0];
-        if (typeof head === 'string') {
-          view[0] = head.slice(startBufferIndex);
-        } else {
-          view.shift();
-        }
-      }
-      if (endBufferIndex > 0) {
-        // @ts-expect-error `_bufferIndex` is used on string chunks.
-        view.push(chunks[endIndex].slice(0, endBufferIndex));
-      }
-    }
-    return view
-  }
-
-  /**
-   * Get the string value of a slice of chunks.
-   *
-   * @param {Array<Chunk>} chunks
-   * @param {boolean | undefined} [expandTabs=false]
-   * @returns {string}
-   */
-  function serializeChunks(chunks, expandTabs) {
-    let index = -1;
-    /** @type {Array<string>} */
-    const result = [];
-    /** @type {boolean | undefined} */
-    let atTab;
-    while (++index < chunks.length) {
-      const chunk = chunks[index];
-      /** @type {string} */
-      let value;
-      if (typeof chunk === 'string') {
-        value = chunk;
-      } else
-        switch (chunk) {
-          case -5: {
-            value = '\r';
-            break
-          }
-          case -4: {
-            value = '\n';
-            break
-          }
-          case -3: {
-            value = '\r' + '\n';
-            break
-          }
-          case -2: {
-            value = expandTabs ? ' ' : '\t';
-            break
-          }
-          case -1: {
-            if (!expandTabs && atTab) continue
-            value = ' ';
-            break
-          }
-          default: {
-            // Currently only replacement character.
-            value = String.fromCharCode(chunk);
-          }
-        }
-      atTab = chunk === -2;
-      result.push(value);
-    }
-    return result.join('')
-  }
-
-  /**
-   * @typedef {import('micromark-util-types').Extension} Extension
+   * @import {Extension} from 'micromark-util-types'
    */
 
 
@@ -18085,84 +17762,665 @@
   });
 
   /**
-   * @typedef {import('micromark-util-types').Create} Create
-   * @typedef {import('micromark-util-types').FullNormalizedExtension} FullNormalizedExtension
-   * @typedef {import('micromark-util-types').InitialConstruct} InitialConstruct
-   * @typedef {import('micromark-util-types').ParseContext} ParseContext
-   * @typedef {import('micromark-util-types').ParseOptions} ParseOptions
+   * @import {
+   *   Chunk,
+   *   Code,
+   *   ConstructRecord,
+   *   Construct,
+   *   Effects,
+   *   InitialConstruct,
+   *   ParseContext,
+   *   Point,
+   *   State,
+   *   TokenizeContext,
+   *   Token
+   * } from 'micromark-util-types'
    */
-
 
   /**
-   * @param {ParseOptions | null | undefined} [options]
-   * @returns {ParseContext}
+   * Create a tokenizer.
+   * Tokenizers deal with one type of data (e.g., containers, flow, text).
+   * The parser is the object dealing with it all.
+   * `initialize` works like other constructs, except that only its `tokenize`
+   * function is used, in which case it doesn’t receive an `ok` or `nok`.
+   * `from` can be given to set the point before the first character, although
+   * when further lines are indented, they must be set with `defineSkip`.
+   *
+   * @param {ParseContext} parser
+   *   Parser.
+   * @param {InitialConstruct} initialize
+   *   Construct.
+   * @param {Omit<Point, '_bufferIndex' | '_index'> | undefined} [from]
+   *   Point (optional).
+   * @returns {TokenizeContext}
+   *   Context.
    */
-  function parse$4(options) {
-    const settings = options || {};
-    const constructs =
-      /** @type {FullNormalizedExtension} */
-      combineExtensions([defaultConstructs, ...(settings.extensions || [])]);
-
-    /** @type {ParseContext} */
-    const parser = {
-      defined: [],
-      lazy: {},
-      constructs,
-      content: create(content),
-      document: create(document$2),
-      flow: create(flow$2),
-      string: create(string$1),
-      text: create(text$7)
+  function createTokenizer(parser, initialize, from) {
+    /** @type {Point} */
+    let point = {
+      _bufferIndex: -1,
+      _index: 0,
+      line: from && from.line || 1,
+      column: from && from.column || 1,
+      offset: from && from.offset || 0
     };
-    return parser
+    /** @type {Record<string, number>} */
+    const columnStart = {};
+    /** @type {Array<Construct>} */
+    const resolveAllConstructs = [];
+    /** @type {Array<Chunk>} */
+    let chunks = [];
+    /** @type {Array<Token>} */
+    let stack = [];
 
     /**
-     * @param {InitialConstruct} initial
+     * Tools used for tokenizing.
+     *
+     * @type {Effects}
      */
-    function create(initial) {
-      return creator
-      /** @type {Create} */
-      function creator(from) {
-        return createTokenizer(parser, initial, from)
+    const effects = {
+      attempt: constructFactory(onsuccessfulconstruct),
+      check: constructFactory(onsuccessfulcheck),
+      consume,
+      enter,
+      exit,
+      interrupt: constructFactory(onsuccessfulcheck, {
+        interrupt: true
+      })
+    };
+
+    /**
+     * State and tools for resolving and serializing.
+     *
+     * @type {TokenizeContext}
+     */
+    const context = {
+      code: null,
+      containerState: {},
+      defineSkip,
+      events: [],
+      now,
+      parser,
+      previous: null,
+      sliceSerialize,
+      sliceStream,
+      write
+    };
+
+    /**
+     * The state function.
+     *
+     * @type {State | undefined}
+     */
+    let state = initialize.tokenize.call(context, effects);
+    if (initialize.resolveAll) {
+      resolveAllConstructs.push(initialize);
+    }
+    return context;
+
+    /** @type {TokenizeContext['write']} */
+    function write(slice) {
+      chunks = push(chunks, slice);
+      main();
+
+      // Exit if we’re not done, resolve might change stuff.
+      if (chunks[chunks.length - 1] !== null) {
+        return [];
+      }
+      addResult(initialize, 0);
+
+      // Otherwise, resolve, and exit.
+      context.events = resolveAll(resolveAllConstructs, context.events, context);
+      return context.events;
+    }
+
+    //
+    // Tools.
+    //
+
+    /** @type {TokenizeContext['sliceSerialize']} */
+    function sliceSerialize(token, expandTabs) {
+      return serializeChunks(sliceStream(token), expandTabs);
+    }
+
+    /** @type {TokenizeContext['sliceStream']} */
+    function sliceStream(token) {
+      return sliceChunks(chunks, token);
+    }
+
+    /** @type {TokenizeContext['now']} */
+    function now() {
+      // This is a hot path, so we clone manually instead of `Object.assign({}, point)`
+      const {
+        _bufferIndex,
+        _index,
+        line,
+        column,
+        offset
+      } = point;
+      return {
+        _bufferIndex,
+        _index,
+        line,
+        column,
+        offset
+      };
+    }
+
+    /** @type {TokenizeContext['defineSkip']} */
+    function defineSkip(value) {
+      columnStart[value.line] = value.column;
+      accountForPotentialSkip();
+    }
+
+    //
+    // State management.
+    //
+
+    /**
+     * Main loop (note that `_index` and `_bufferIndex` in `point` are modified by
+     * `consume`).
+     * Here is where we walk through the chunks, which either include strings of
+     * several characters, or numerical character codes.
+     * The reason to do this in a loop instead of a call is so the stack can
+     * drain.
+     *
+     * @returns {undefined}
+     *   Nothing.
+     */
+    function main() {
+      /** @type {number} */
+      let chunkIndex;
+      while (point._index < chunks.length) {
+        const chunk = chunks[point._index];
+
+        // If we’re in a buffer chunk, loop through it.
+        if (typeof chunk === 'string') {
+          chunkIndex = point._index;
+          if (point._bufferIndex < 0) {
+            point._bufferIndex = 0;
+          }
+          while (point._index === chunkIndex && point._bufferIndex < chunk.length) {
+            go(chunk.charCodeAt(point._bufferIndex));
+          }
+        } else {
+          go(chunk);
+        }
+      }
+    }
+
+    /**
+     * Deal with one code.
+     *
+     * @param {Code} code
+     *   Code.
+     * @returns {undefined}
+     *   Nothing.
+     */
+    function go(code) {
+      state = state(code);
+    }
+
+    /** @type {Effects['consume']} */
+    function consume(code) {
+      if (markdownLineEnding(code)) {
+        point.line++;
+        point.column = 1;
+        point.offset += code === -3 ? 2 : 1;
+        accountForPotentialSkip();
+      } else if (code !== -1) {
+        point.column++;
+        point.offset++;
+      }
+
+      // Not in a string chunk.
+      if (point._bufferIndex < 0) {
+        point._index++;
+      } else {
+        point._bufferIndex++;
+
+        // At end of string chunk.
+        if (point._bufferIndex ===
+        // Points w/ non-negative `_bufferIndex` reference
+        // strings.
+        /** @type {string} */
+        chunks[point._index].length) {
+          point._bufferIndex = -1;
+          point._index++;
+        }
+      }
+
+      // Expose the previous character.
+      context.previous = code;
+    }
+
+    /** @type {Effects['enter']} */
+    function enter(type, fields) {
+      /** @type {Token} */
+      // @ts-expect-error Patch instead of assign required fields to help GC.
+      const token = fields || {};
+      token.type = type;
+      token.start = now();
+      context.events.push(['enter', token, context]);
+      stack.push(token);
+      return token;
+    }
+
+    /** @type {Effects['exit']} */
+    function exit(type) {
+      const token = stack.pop();
+      token.end = now();
+      context.events.push(['exit', token, context]);
+      return token;
+    }
+
+    /**
+     * Use results.
+     *
+     * @type {ReturnHandle}
+     */
+    function onsuccessfulconstruct(construct, info) {
+      addResult(construct, info.from);
+    }
+
+    /**
+     * Discard results.
+     *
+     * @type {ReturnHandle}
+     */
+    function onsuccessfulcheck(_, info) {
+      info.restore();
+    }
+
+    /**
+     * Factory to attempt/check/interrupt.
+     *
+     * @param {ReturnHandle} onreturn
+     *   Callback.
+     * @param {{interrupt?: boolean | undefined} | undefined} [fields]
+     *   Fields.
+     */
+    function constructFactory(onreturn, fields) {
+      return hook;
+
+      /**
+       * Handle either an object mapping codes to constructs, a list of
+       * constructs, or a single construct.
+       *
+       * @param {Array<Construct> | ConstructRecord | Construct} constructs
+       *   Constructs.
+       * @param {State} returnState
+       *   State.
+       * @param {State | undefined} [bogusState]
+       *   State.
+       * @returns {State}
+       *   State.
+       */
+      function hook(constructs, returnState, bogusState) {
+        /** @type {ReadonlyArray<Construct>} */
+        let listOfConstructs;
+        /** @type {number} */
+        let constructIndex;
+        /** @type {Construct} */
+        let currentConstruct;
+        /** @type {Info} */
+        let info;
+        return Array.isArray(constructs) ? /* c8 ignore next 1 */
+        handleListOfConstructs(constructs) : 'tokenize' in constructs ?
+        // Looks like a construct.
+        handleListOfConstructs([(/** @type {Construct} */constructs)]) : handleMapOfConstructs(constructs);
+
+        /**
+         * Handle a list of construct.
+         *
+         * @param {ConstructRecord} map
+         *   Constructs.
+         * @returns {State}
+         *   State.
+         */
+        function handleMapOfConstructs(map) {
+          return start;
+
+          /** @type {State} */
+          function start(code) {
+            const left = code !== null && map[code];
+            const all = code !== null && map.null;
+            const list = [
+            // To do: add more extension tests.
+            /* c8 ignore next 2 */
+            ...(Array.isArray(left) ? left : left ? [left] : []), ...(Array.isArray(all) ? all : all ? [all] : [])];
+            return handleListOfConstructs(list)(code);
+          }
+        }
+
+        /**
+         * Handle a list of construct.
+         *
+         * @param {ReadonlyArray<Construct>} list
+         *   Constructs.
+         * @returns {State}
+         *   State.
+         */
+        function handleListOfConstructs(list) {
+          listOfConstructs = list;
+          constructIndex = 0;
+          if (list.length === 0) {
+            return bogusState;
+          }
+          return handleConstruct(list[constructIndex]);
+        }
+
+        /**
+         * Handle a single construct.
+         *
+         * @param {Construct} construct
+         *   Construct.
+         * @returns {State}
+         *   State.
+         */
+        function handleConstruct(construct) {
+          return start;
+
+          /** @type {State} */
+          function start(code) {
+            // To do: not needed to store if there is no bogus state, probably?
+            // Currently doesn’t work because `inspect` in document does a check
+            // w/o a bogus, which doesn’t make sense. But it does seem to help perf
+            // by not storing.
+            info = store();
+            currentConstruct = construct;
+            if (!construct.partial) {
+              context.currentConstruct = construct;
+            }
+
+            // Always populated by defaults.
+
+            if (construct.name && context.parser.constructs.disable.null.includes(construct.name)) {
+              return nok();
+            }
+            return construct.tokenize.call(
+            // If we do have fields, create an object w/ `context` as its
+            // prototype.
+            // This allows a “live binding”, which is needed for `interrupt`.
+            fields ? Object.assign(Object.create(context), fields) : context, effects, ok, nok)(code);
+          }
+        }
+
+        /** @type {State} */
+        function ok(code) {
+          onreturn(currentConstruct, info);
+          return returnState;
+        }
+
+        /** @type {State} */
+        function nok(code) {
+          info.restore();
+          if (++constructIndex < listOfConstructs.length) {
+            return handleConstruct(listOfConstructs[constructIndex]);
+          }
+          return bogusState;
+        }
+      }
+    }
+
+    /**
+     * @param {Construct} construct
+     *   Construct.
+     * @param {number} from
+     *   From.
+     * @returns {undefined}
+     *   Nothing.
+     */
+    function addResult(construct, from) {
+      if (construct.resolveAll && !resolveAllConstructs.includes(construct)) {
+        resolveAllConstructs.push(construct);
+      }
+      if (construct.resolve) {
+        splice(context.events, from, context.events.length - from, construct.resolve(context.events.slice(from), context));
+      }
+      if (construct.resolveTo) {
+        context.events = construct.resolveTo(context.events, context);
+      }
+    }
+
+    /**
+     * Store state.
+     *
+     * @returns {Info}
+     *   Info.
+     */
+    function store() {
+      const startPoint = now();
+      const startPrevious = context.previous;
+      const startCurrentConstruct = context.currentConstruct;
+      const startEventsIndex = context.events.length;
+      const startStack = Array.from(stack);
+      return {
+        from: startEventsIndex,
+        restore
+      };
+
+      /**
+       * Restore state.
+       *
+       * @returns {undefined}
+       *   Nothing.
+       */
+      function restore() {
+        point = startPoint;
+        context.previous = startPrevious;
+        context.currentConstruct = startCurrentConstruct;
+        context.events.length = startEventsIndex;
+        stack = startStack;
+        accountForPotentialSkip();
+      }
+    }
+
+    /**
+     * Move the current point a bit forward in the line when it’s on a column
+     * skip.
+     *
+     * @returns {undefined}
+     *   Nothing.
+     */
+    function accountForPotentialSkip() {
+      if (point.line in columnStart && point.column < 2) {
+        point.column = columnStart[point.line];
+        point.offset += columnStart[point.line] - 1;
       }
     }
   }
 
   /**
-   * @typedef {import('micromark-util-types').Event} Event
+   * Get the chunks from a slice of chunks in the range of a token.
+   *
+   * @param {ReadonlyArray<Chunk>} chunks
+   *   Chunks.
+   * @param {Pick<Token, 'end' | 'start'>} token
+   *   Token.
+   * @returns {Array<Chunk>}
+   *   Chunks.
+   */
+  function sliceChunks(chunks, token) {
+    const startIndex = token.start._index;
+    const startBufferIndex = token.start._bufferIndex;
+    const endIndex = token.end._index;
+    const endBufferIndex = token.end._bufferIndex;
+    /** @type {Array<Chunk>} */
+    let view;
+    if (startIndex === endIndex) {
+      // @ts-expect-error `_bufferIndex` is used on string chunks.
+      view = [chunks[startIndex].slice(startBufferIndex, endBufferIndex)];
+    } else {
+      view = chunks.slice(startIndex, endIndex);
+      if (startBufferIndex > -1) {
+        const head = view[0];
+        if (typeof head === 'string') {
+          view[0] = head.slice(startBufferIndex);
+          /* c8 ignore next 4 -- used to be used, no longer */
+        } else {
+          view.shift();
+        }
+      }
+      if (endBufferIndex > 0) {
+        // @ts-expect-error `_bufferIndex` is used on string chunks.
+        view.push(chunks[endIndex].slice(0, endBufferIndex));
+      }
+    }
+    return view;
+  }
+
+  /**
+   * Get the string value of a slice of chunks.
+   *
+   * @param {ReadonlyArray<Chunk>} chunks
+   *   Chunks.
+   * @param {boolean | undefined} [expandTabs=false]
+   *   Whether to expand tabs (default: `false`).
+   * @returns {string}
+   *   Result.
+   */
+  function serializeChunks(chunks, expandTabs) {
+    let index = -1;
+    /** @type {Array<string>} */
+    const result = [];
+    /** @type {boolean | undefined} */
+    let atTab;
+    while (++index < chunks.length) {
+      const chunk = chunks[index];
+      /** @type {string} */
+      let value;
+      if (typeof chunk === 'string') {
+        value = chunk;
+      } else switch (chunk) {
+        case -5:
+          {
+            value = "\r";
+            break;
+          }
+        case -4:
+          {
+            value = "\n";
+            break;
+          }
+        case -3:
+          {
+            value = "\r" + "\n";
+            break;
+          }
+        case -2:
+          {
+            value = expandTabs ? " " : "\t";
+            break;
+          }
+        case -1:
+          {
+            if (!expandTabs && atTab) continue;
+            value = " ";
+            break;
+          }
+        default:
+          {
+            // Currently only replacement character.
+            value = String.fromCharCode(chunk);
+          }
+      }
+      atTab = chunk === -2;
+      result.push(value);
+    }
+    return result.join('');
+  }
+
+  /**
+   * @import {
+   *   Create,
+   *   FullNormalizedExtension,
+   *   InitialConstruct,
+   *   ParseContext,
+   *   ParseOptions
+   * } from 'micromark-util-types'
+   */
+
+
+  /**
+   * @param {ParseOptions | null | undefined} [options]
+   *   Configuration (optional).
+   * @returns {ParseContext}
+   *   Parser.
+   */
+  function parse$4(options) {
+    const settings = options || {};
+    const constructs = /** @type {FullNormalizedExtension} */
+    combineExtensions([defaultConstructs, ...(settings.extensions || [])]);
+
+    /** @type {ParseContext} */
+    const parser = {
+      constructs,
+      content: create(content),
+      defined: [],
+      document: create(document$2),
+      flow: create(flow$2),
+      lazy: {},
+      string: create(string$1),
+      text: create(text$7)
+    };
+    return parser;
+
+    /**
+     * @param {InitialConstruct} initial
+     *   Construct to start with.
+     * @returns {Create}
+     *   Create a tokenizer.
+     */
+    function create(initial) {
+      return creator;
+      /** @type {Create} */
+      function creator(from) {
+        return createTokenizer(parser, initial, from);
+      }
+    }
+  }
+
+  /**
+   * @import {Event} from 'micromark-util-types'
    */
 
 
   /**
    * @param {Array<Event>} events
+   *   Events.
    * @returns {Array<Event>}
+   *   Events.
    */
   function postprocess(events) {
     while (!subtokenize(events)) {
       // Empty
     }
-    return events
+    return events;
   }
 
   /**
-   * @typedef {import('micromark-util-types').Chunk} Chunk
-   * @typedef {import('micromark-util-types').Code} Code
-   * @typedef {import('micromark-util-types').Encoding} Encoding
-   * @typedef {import('micromark-util-types').Value} Value
+   * @import {Chunk, Code, Encoding, Value} from 'micromark-util-types'
    */
 
   /**
    * @callback Preprocessor
+   *   Preprocess a value.
    * @param {Value} value
+   *   Value.
    * @param {Encoding | null | undefined} [encoding]
+   *   Encoding when `value` is a typed array (optional).
    * @param {boolean | null | undefined} [end=false]
+   *   Whether this is the last chunk (default: `false`).
    * @returns {Array<Chunk>}
+   *   Chunks.
    */
 
   const search$2 = /[\0\t\n\r]/g;
 
   /**
    * @returns {Preprocessor}
+   *   Preprocess a value.
    */
   function preprocess() {
     let column = 1;
@@ -18171,7 +18429,7 @@
     let start = true;
     /** @type {boolean | undefined} */
     let atCarriageReturn;
-    return preprocessor
+    return preprocessor;
 
     /** @type {Preprocessor} */
     // eslint-disable-next-line complexity
@@ -18188,11 +18446,7 @@
       let endPosition;
       /** @type {Code} */
       let code;
-      value =
-        buffer +
-        (typeof value === 'string'
-          ? value.toString()
-          : new TextDecoder(encoding || undefined).decode(value));
+      value = buffer + (typeof value === 'string' ? value.toString() : new TextDecoder(encoding || undefined).decode(value));
       startPosition = 0;
       buffer = '';
       if (start) {
@@ -18205,12 +18459,11 @@
       while (startPosition < value.length) {
         search$2.lastIndex = startPosition;
         match = search$2.exec(value);
-        endPosition =
-          match && match.index !== undefined ? match.index : value.length;
+        endPosition = match && match.index !== undefined ? match.index : value.length;
         code = value.charCodeAt(endPosition);
         if (!match) {
           buffer = value.slice(startPosition);
-          break
+          break;
         }
         if (code === 10 && startPosition === endPosition && atCarriageReturn) {
           chunks.push(-3);
@@ -18225,26 +18478,30 @@
             column += endPosition - startPosition;
           }
           switch (code) {
-            case 0: {
-              chunks.push(65533);
-              column++;
-              break
-            }
-            case 9: {
-              next = Math.ceil(column / 4) * 4;
-              chunks.push(-2);
-              while (column++ < next) chunks.push(-1);
-              break
-            }
-            case 10: {
-              chunks.push(-4);
-              column = 1;
-              break
-            }
-            default: {
-              atCarriageReturn = true;
-              column = 1;
-            }
+            case 0:
+              {
+                chunks.push(65533);
+                column++;
+                break;
+              }
+            case 9:
+              {
+                next = Math.ceil(column / 4) * 4;
+                chunks.push(-2);
+                while (column++ < next) chunks.push(-1);
+                break;
+              }
+            case 10:
+              {
+                chunks.push(-4);
+                column = 1;
+                break;
+              }
+            default:
+              {
+                atCarriageReturn = true;
+                column = 1;
+              }
           }
         }
         startPosition = endPosition + 1;
@@ -18254,43 +18511,49 @@
         if (buffer) chunks.push(buffer);
         chunks.push(null);
       }
-      return chunks
+      return chunks;
     }
   }
 
   /**
-   * @typedef {import('mdast').Break} Break
-   * @typedef {import('mdast').Blockquote} Blockquote
-   * @typedef {import('mdast').Code} Code
-   * @typedef {import('mdast').Definition} Definition
-   * @typedef {import('mdast').Emphasis} Emphasis
-   * @typedef {import('mdast').Heading} Heading
-   * @typedef {import('mdast').Html} Html
-   * @typedef {import('mdast').Image} Image
-   * @typedef {import('mdast').InlineCode} InlineCode
-   * @typedef {import('mdast').Link} Link
-   * @typedef {import('mdast').List} List
-   * @typedef {import('mdast').ListItem} ListItem
-   * @typedef {import('mdast').Nodes} Nodes
-   * @typedef {import('mdast').Paragraph} Paragraph
-   * @typedef {import('mdast').Parent} Parent
-   * @typedef {import('mdast').PhrasingContent} PhrasingContent
-   * @typedef {import('mdast').ReferenceType} ReferenceType
-   * @typedef {import('mdast').Root} Root
-   * @typedef {import('mdast').Strong} Strong
-   * @typedef {import('mdast').Text} Text
-   * @typedef {import('mdast').ThematicBreak} ThematicBreak
-   *
-   * @typedef {import('micromark-util-types').Encoding} Encoding
-   * @typedef {import('micromark-util-types').Event} Event
-   * @typedef {import('micromark-util-types').ParseOptions} ParseOptions
-   * @typedef {import('micromark-util-types').Token} Token
-   * @typedef {import('micromark-util-types').TokenizeContext} TokenizeContext
-   * @typedef {import('micromark-util-types').Value} Value
-   *
-   * @typedef {import('unist').Point} Point
-   *
-   * @typedef {import('../index.js').CompileData} CompileData
+   * @import {
+   *   Break,
+   *   Blockquote,
+   *   Code,
+   *   Definition,
+   *   Emphasis,
+   *   Heading,
+   *   Html,
+   *   Image,
+   *   InlineCode,
+   *   Link,
+   *   ListItem,
+   *   List,
+   *   Nodes,
+   *   Paragraph,
+   *   PhrasingContent,
+   *   ReferenceType,
+   *   Root,
+   *   Strong,
+   *   Text,
+   *   ThematicBreak
+   * } from 'mdast'
+   * @import {
+   *   Encoding,
+   *   Event,
+   *   Token,
+   *   Value
+   * } from 'micromark-util-types'
+   * @import {Point} from 'unist'
+   * @import {
+   *   CompileContext,
+   *   CompileData,
+   *   Config,
+   *   Extension,
+   *   Handle,
+   *   OnEnterError,
+   *   Options
+   * } from './types.js'
    */
 
   const own$b = {}.hasOwnProperty;
@@ -18651,8 +18914,7 @@
     }
 
     /**
-     * @this {CompileContext}
-     * @returns {undefined}
+     * @type {CompileContext['buffer']}
      */
     function buffer() {
       this.stack.push({
@@ -18662,16 +18924,7 @@
     }
 
     /**
-     * @this {CompileContext}
-     *   Context.
-     * @param {Nodes} node
-     *   Node to enter.
-     * @param {Token} token
-     *   Corresponding token.
-     * @param {OnEnterError | undefined} [errorHandler]
-     *   Handle the case where this token is open, but it is closed by something else.
-     * @returns {undefined}
-     *   Nothing.
+     * @type {CompileContext['enter']}
      */
     function enter(node, token, errorHandler) {
       const parent = this.stack[this.stack.length - 1];
@@ -18679,7 +18932,7 @@
       const siblings = parent.children;
       siblings.push(node);
       this.stack.push(node);
-      this.tokenStack.push([token, errorHandler]);
+      this.tokenStack.push([token, errorHandler || undefined]);
       node.position = {
         start: point$2(token.start),
         // @ts-expect-error: `end` will be patched later.
@@ -18710,14 +18963,7 @@
     }
 
     /**
-     * @this {CompileContext}
-     *   Context.
-     * @param {Token} token
-     *   Corresponding token.
-     * @param {OnExitError | undefined} [onExitError]
-     *   Handle the case where another token is open.
-     * @returns {undefined}
-     *   Nothing.
+     * @type {CompileContext['exit']}
      */
     function exit(token, onExitError) {
       const node = this.stack.pop();
@@ -18739,8 +18985,7 @@
     }
 
     /**
-     * @this {CompileContext}
-     * @returns {string}
+     * @type {CompileContext['resume']}
      */
     function resume() {
       return toString$2(this.stack.pop());
@@ -19757,7 +20002,7 @@
    * @returns {Element | Raw | undefined}
    *   hast node.
    */
-  function html$4(state, node) {
+  function html$8(state, node) {
     if (state.options.allowDangerousHtml) {
       /** @type {Raw} */
       const result = {type: 'raw', value: node.value};
@@ -20669,7 +20914,7 @@
     emphasis,
     footnoteReference,
     heading,
-    html: html$4,
+    html: html$8,
     imageReference,
     image,
     inlineCode,
@@ -20764,6 +21009,12 @@
           return as(BigInt(value), index);
         case 'BigInt':
           return as(Object(BigInt(value)), index);
+        case 'ArrayBuffer':
+          return as(new Uint8Array(value).buffer, value);
+        case 'DataView': {
+          const { buffer } = new Uint8Array(value);
+          return as(new DataView(buffer), value);
+        }
       }
       return as(new env[type](value), index);
     };
@@ -20806,6 +21057,8 @@
         return [MAP, EMPTY];
       case 'Set':
         return [SET, EMPTY];
+      case 'DataView':
+        return [ARRAY, asString];
     }
 
     if (asString.includes('Array'))
@@ -20855,9 +21108,17 @@
           return as([TYPE, entry], value);
         }
         case ARRAY: {
-          if (type)
-            return as([type, [...value]], value);
-    
+          if (type) {
+            let spread = value;
+            if (type === 'DataView') {
+              spread = new Uint8Array(value.buffer);
+            }
+            else if (type === 'ArrayBuffer') {
+              spread = new Uint8Array(value);
+            }
+            return as([type, [...spread]], value);
+          }
+
           const arr = [];
           const index = as([TYPE, arr], value);
           for (const entry of value)
@@ -21564,8 +21825,13 @@
     return result
   }
 
-  // Include `data` fields in mdast and `raw` nodes in hast.
-  /// <reference types="mdast-util-to-hast" />
+  /**
+   * @import {Root as HastRoot} from 'hast'
+   * @import {Root as MdastRoot} from 'mdast'
+   * @import {Options as ToHastOptions} from 'mdast-util-to-hast'
+   * @import {Processor} from 'unified'
+   * @import {VFile} from 'vfile'
+   */
 
 
   /**
@@ -21575,12 +21841,15 @@
    *
    * ###### Signature
    *
-   * *   if a processor is given, runs the (rehype) plugins used on it with a
-   *     hast tree, then discards the result (*bridge mode*)
-   * *   otherwise, returns a hast tree, the plugins used after `remarkRehype`
-   *     are rehype plugins (*mutate mode*)
+   * * if a processor is given,
+   *   runs the (rehype) plugins used on it with a hast tree,
+   *   then discards the result (*bridge mode*)
+   * * otherwise,
+   *   returns a hast tree,
+   *   the plugins used after `remarkRehype` are rehype plugins (*mutate mode*)
    *
-   * > 👉 **Note**: It’s highly unlikely that you want to pass a `processor`.
+   * > 👉 **Note**:
+   * > It’s highly unlikely that you want to pass a `processor`.
    *
    * ###### HTML
    *
@@ -21588,36 +21857,40 @@
    * as semistandard `raw` nodes.
    * Most plugins ignore `raw` nodes but two notable ones don’t:
    *
-   * *   `rehype-stringify` also has an option `allowDangerousHtml` which will
-   *     output the raw HTML.
-   *     This is typically discouraged as noted by the option name but is useful if
-   *     you completely trust authors
-   * *   `rehype-raw` can handle the raw embedded HTML strings by parsing them
-   *     into standard hast nodes (`element`, `text`, etc).
-   *     This is a heavy task as it needs a full HTML parser, but it is the only way
-   *     to support untrusted content
+   * * `rehype-stringify` also has an option `allowDangerousHtml` which will
+   *   output the raw HTML.
+   *   This is typically discouraged as noted by the option name but is useful if
+   *   you completely trust authors
+   * * `rehype-raw` can handle the raw embedded HTML strings by parsing them
+   *   into standard hast nodes (`element`, `text`, etc);
+   *   this is a heavy task as it needs a full HTML parser,
+   *   but it is the only way to support untrusted content
    *
    * ###### Footnotes
    *
    * Many options supported here relate to footnotes.
-   * Footnotes are not specified by CommonMark, which we follow by default.
-   * They are supported by GitHub, so footnotes can be enabled in markdown with
-   * `remark-gfm`.
+   * Footnotes are not specified by CommonMark,
+   * which we follow by default.
+   * They are supported by GitHub,
+   * so footnotes can be enabled in markdown with `remark-gfm`.
    *
    * The options `footnoteBackLabel` and `footnoteLabel` define natural language
-   * that explains footnotes, which is hidden for sighted users but shown to
-   * assistive technology.
-   * When your page is not in English, you must define translated values.
+   * that explains footnotes,
+   * which is hidden for sighted users but shown to assistive technology.
+   * When your page is not in English,
+   * you must define translated values.
    *
-   * Back references use ARIA attributes, but the section label itself uses a
-   * heading that is hidden with an `sr-only` class.
-   * To show it to sighted users, define different attributes in
-   * `footnoteLabelProperties`.
+   * Back references use ARIA attributes,
+   * but the section label itself uses a heading that is hidden with an
+   * `sr-only` class.
+   * To show it to sighted users,
+   * define different attributes in `footnoteLabelProperties`.
    *
    * ###### Clobbering
    *
-   * Footnotes introduces a problem, as it links footnote calls to footnote
-   * definitions on the page through `id` attributes generated from user content,
+   * Footnotes introduces a problem,
+   * as it links footnote calls to footnote definitions on the page through `id`
+   * attributes generated from user content,
    * which results in DOM clobbering.
    *
    * DOM clobbering is this:
@@ -21639,11 +21912,13 @@
    * Unknown nodes are nodes with a type that isn’t in `handlers` or `passThrough`.
    * The default behavior for unknown nodes is:
    *
-   * *   when the node has a `value` (and doesn’t have `data.hName`,
-   *     `data.hProperties`, or `data.hChildren`, see later), create a hast `text`
-   *     node
-   * *   otherwise, create a `<div>` element (which could be changed with
-   *     `data.hName`), with its children mapped from mdast to hast as well
+   * * when the node has a `value`
+   *   (and doesn’t have `data.hName`, `data.hProperties`, or `data.hChildren`,
+   *   see later),
+   *   create a hast `text` node
+   * * otherwise,
+   *   create a `<div>` element (which could be changed with `data.hName`),
+   *   with its children mapped from mdast to hast as well
    *
    * This behavior can be changed by passing an `unknownHandler`.
    *
@@ -21656,10 +21931,16 @@
    * @param {Readonly<Options> | null | undefined} [options]
    * @returns {TransformMutate}
    *
+   * @overload
+   * @param {Readonly<Options> | Processor | null | undefined} [destination]
+   * @param {Readonly<Options> | null | undefined} [options]
+   * @returns {TransformBridge | TransformMutate}
+   *
    * @param {Readonly<Options> | Processor | null | undefined} [destination]
    *   Processor or configuration (optional).
    * @param {Readonly<Options> | null | undefined} [options]
-   *   When a processor was given, configuration (optional).
+   *   When a processor was given,
+   *   configuration (optional).
    * @returns {TransformBridge | TransformMutate}
    *   Transform.
    */
@@ -21846,375 +22127,366 @@
   };
 
   /**
-   * @typedef {import('./info.js').Info} Info
-   * @typedef {Record<string, Info>} Properties
-   * @typedef {Record<string, string>} Normal
+   * @import {Schema as SchemaType, Space} from 'property-information'
    */
 
-  class Schema {
+  /** @type {SchemaType} */
+  let Schema$2 = class Schema {
     /**
-     * @constructor
-     * @param {Properties} property
-     * @param {Normal} normal
-     * @param {string} [space]
+     * @param {SchemaType['property']} property
+     *   Property.
+     * @param {SchemaType['normal']} normal
+     *   Normal.
+     * @param {Space | undefined} [space]
+     *   Space.
+     * @returns
+     *   Schema.
      */
     constructor(property, normal, space) {
-      this.property = property;
       this.normal = normal;
+      this.property = property;
+
       if (space) {
         this.space = space;
       }
     }
-  }
+  };
 
-  /** @type {Properties} */
-  Schema.prototype.property = {};
-  /** @type {Normal} */
-  Schema.prototype.normal = {};
-  /** @type {string|null} */
-  Schema.prototype.space = null;
+  Schema$2.prototype.normal = {};
+  Schema$2.prototype.property = {};
+  Schema$2.prototype.space = undefined;
 
   /**
-   * @typedef {import('./schema.js').Properties} Properties
-   * @typedef {import('./schema.js').Normal} Normal
+   * @import {Info, Space} from 'property-information'
    */
 
 
   /**
-   * @param {Schema[]} definitions
-   * @param {string} [space]
+   * @param {ReadonlyArray<Schema>} definitions
+   *   Definitions.
+   * @param {Space | undefined} [space]
+   *   Space.
    * @returns {Schema}
+   *   Schema.
    */
-  function merge(definitions, space) {
-    /** @type {Properties} */
+  function merge$2(definitions, space) {
+    /** @type {Record<string, Info>} */
     const property = {};
-    /** @type {Normal} */
+    /** @type {Record<string, string>} */
     const normal = {};
-    let index = -1;
 
-    while (++index < definitions.length) {
-      Object.assign(property, definitions[index].property);
-      Object.assign(normal, definitions[index].normal);
+    for (const definition of definitions) {
+      Object.assign(property, definition.property);
+      Object.assign(normal, definition.normal);
     }
 
-    return new Schema(property, normal, space)
+    return new Schema$2(property, normal, space)
   }
 
   /**
+   * Get the cleaned case insensitive form of an attribute or property.
+   *
    * @param {string} value
+   *   An attribute-like or property-like name.
    * @returns {string}
+   *   Value that can be used to look up the properly cased property on a
+   *   `Schema`.
    */
-  function normalize(value) {
+  function normalize$2(value) {
     return value.toLowerCase()
   }
 
-  class Info {
+  /**
+   * @import {Info as InfoType} from 'property-information'
+   */
+
+  /** @type {InfoType} */
+  let Info$2 = class Info {
     /**
-     * @constructor
      * @param {string} property
+     *   Property.
      * @param {string} attribute
+     *   Attribute.
+     * @returns
+     *   Info.
      */
     constructor(property, attribute) {
-      /** @type {string} */
-      this.property = property;
-      /** @type {string} */
       this.attribute = attribute;
+      this.property = property;
     }
+  };
+
+  Info$2.prototype.attribute = '';
+  Info$2.prototype.booleanish = false;
+  Info$2.prototype.boolean = false;
+  Info$2.prototype.commaOrSpaceSeparated = false;
+  Info$2.prototype.commaSeparated = false;
+  Info$2.prototype.defined = false;
+  Info$2.prototype.mustUseProperty = false;
+  Info$2.prototype.number = false;
+  Info$2.prototype.overloadedBoolean = false;
+  Info$2.prototype.property = '';
+  Info$2.prototype.spaceSeparated = false;
+  Info$2.prototype.space = undefined;
+
+  let powers$2 = 0;
+
+  const boolean$2 = increment$2();
+  const booleanish$2 = increment$2();
+  const overloadedBoolean$2 = increment$2();
+  const number$2 = increment$2();
+  const spaceSeparated$2 = increment$2();
+  const commaSeparated$2 = increment$2();
+  const commaOrSpaceSeparated$2 = increment$2();
+
+  function increment$2() {
+    return 2 ** ++powers$2
   }
 
-  /** @type {string|null} */
-  Info.prototype.space = null;
-  Info.prototype.boolean = false;
-  Info.prototype.booleanish = false;
-  Info.prototype.overloadedBoolean = false;
-  Info.prototype.number = false;
-  Info.prototype.commaSeparated = false;
-  Info.prototype.spaceSeparated = false;
-  Info.prototype.commaOrSpaceSeparated = false;
-  Info.prototype.mustUseProperty = false;
-  Info.prototype.defined = false;
-
-  let powers = 0;
-
-  const boolean = increment();
-  const booleanish = increment();
-  const overloadedBoolean = increment();
-  const number = increment();
-  const spaceSeparated = increment();
-  const commaSeparated = increment();
-  const commaOrSpaceSeparated = increment();
-
-  function increment() {
-    return 2 ** ++powers
-  }
-
-  var types = /*#__PURE__*/Object.freeze({
+  var types$2 = /*#__PURE__*/Object.freeze({
     __proto__: null,
-    boolean: boolean,
-    booleanish: booleanish,
-    commaOrSpaceSeparated: commaOrSpaceSeparated,
-    commaSeparated: commaSeparated,
-    number: number,
-    overloadedBoolean: overloadedBoolean,
-    spaceSeparated: spaceSeparated
+    boolean: boolean$2,
+    booleanish: booleanish$2,
+    commaOrSpaceSeparated: commaOrSpaceSeparated$2,
+    commaSeparated: commaSeparated$2,
+    number: number$2,
+    overloadedBoolean: overloadedBoolean$2,
+    spaceSeparated: spaceSeparated$2
   });
 
-  /** @type {Array<keyof types>} */
-  // @ts-expect-error: hush.
-  const checks = Object.keys(types);
+  /**
+   * @import {Space} from 'property-information'
+   */
 
-  class DefinedInfo extends Info {
+
+  const checks$2 = /** @type {ReadonlyArray<keyof typeof types>} */ (
+    Object.keys(types$2)
+  );
+
+  let DefinedInfo$2 = class DefinedInfo extends Info$2 {
     /**
      * @constructor
      * @param {string} property
+     *   Property.
      * @param {string} attribute
-     * @param {number|null} [mask]
-     * @param {string} [space]
+     *   Attribute.
+     * @param {number | null | undefined} [mask]
+     *   Mask.
+     * @param {Space | undefined} [space]
+     *   Space.
+     * @returns
+     *   Info.
      */
     constructor(property, attribute, mask, space) {
       let index = -1;
 
       super(property, attribute);
 
-      mark(this, 'space', space);
+      mark$2(this, 'space', space);
 
       if (typeof mask === 'number') {
-        while (++index < checks.length) {
-          const check = checks[index];
-          mark(this, checks[index], (mask & types[check]) === types[check]);
+        while (++index < checks$2.length) {
+          const check = checks$2[index];
+          mark$2(this, checks$2[index], (mask & types$2[check]) === types$2[check]);
         }
       }
     }
-  }
+  };
 
-  DefinedInfo.prototype.defined = true;
+  DefinedInfo$2.prototype.defined = true;
 
   /**
+   * @template {keyof DefinedInfo} Key
+   *   Key type.
    * @param {DefinedInfo} values
-   * @param {string} key
-   * @param {unknown} value
+   *   Info.
+   * @param {Key} key
+   *   Key.
+   * @param {DefinedInfo[Key]} value
+   *   Value.
+   * @returns {undefined}
+   *   Nothing.
    */
-  function mark(values, key, value) {
+  function mark$2(values, key, value) {
     if (value) {
-      // @ts-expect-error: assume `value` matches the expected value of `key`.
       values[key] = value;
     }
   }
 
   /**
-   * @typedef {import('./schema.js').Properties} Properties
-   * @typedef {import('./schema.js').Normal} Normal
-   *
-   * @typedef {Record<string, string>} Attributes
-   *
-   * @typedef {Object} Definition
-   * @property {Record<string, number|null>} properties
-   * @property {(attributes: Attributes, property: string) => string} transform
-   * @property {string} [space]
-   * @property {Attributes} [attributes]
-   * @property {Array<string>} [mustUseProperty]
+   * @import {Info, Space} from 'property-information'
    */
 
-
-  const own$9 = {}.hasOwnProperty;
 
   /**
    * @param {Definition} definition
+   *   Definition.
    * @returns {Schema}
+   *   Schema.
    */
-  function create(definition) {
-    /** @type {Properties} */
-    const property = {};
-    /** @type {Normal} */
-    const normal = {};
-    /** @type {string} */
-    let prop;
+  function create$2(definition) {
+    /** @type {Record<string, Info>} */
+    const properties = {};
+    /** @type {Record<string, string>} */
+    const normals = {};
 
-    for (prop in definition.properties) {
-      if (own$9.call(definition.properties, prop)) {
-        const value = definition.properties[prop];
-        const info = new DefinedInfo(
-          prop,
-          definition.transform(definition.attributes || {}, prop),
-          value,
-          definition.space
-        );
+    for (const [property, value] of Object.entries(definition.properties)) {
+      const info = new DefinedInfo$2(
+        property,
+        definition.transform(definition.attributes || {}, property),
+        value,
+        definition.space
+      );
 
-        if (
-          definition.mustUseProperty &&
-          definition.mustUseProperty.includes(prop)
-        ) {
-          info.mustUseProperty = true;
-        }
-
-        property[prop] = info;
-
-        normal[normalize(prop)] = prop;
-        normal[normalize(info.attribute)] = prop;
+      if (
+        definition.mustUseProperty &&
+        definition.mustUseProperty.includes(property)
+      ) {
+        info.mustUseProperty = true;
       }
+
+      properties[property] = info;
+
+      normals[normalize$2(property)] = property;
+      normals[normalize$2(info.attribute)] = property;
     }
 
-    return new Schema(property, normal, definition.space)
+    return new Schema$2(properties, normals, definition.space)
   }
 
-  const xlink = create({
-    space: 'xlink',
-    transform(_, prop) {
-      return 'xlink:' + prop.slice(5).toLowerCase()
-    },
+  const aria$2 = create$2({
     properties: {
-      xLinkActuate: null,
-      xLinkArcRole: null,
-      xLinkHref: null,
-      xLinkRole: null,
-      xLinkShow: null,
-      xLinkTitle: null,
-      xLinkType: null
-    }
-  });
-
-  const xml = create({
-    space: 'xml',
-    transform(_, prop) {
-      return 'xml:' + prop.slice(3).toLowerCase()
+      ariaActiveDescendant: null,
+      ariaAtomic: booleanish$2,
+      ariaAutoComplete: null,
+      ariaBusy: booleanish$2,
+      ariaChecked: booleanish$2,
+      ariaColCount: number$2,
+      ariaColIndex: number$2,
+      ariaColSpan: number$2,
+      ariaControls: spaceSeparated$2,
+      ariaCurrent: null,
+      ariaDescribedBy: spaceSeparated$2,
+      ariaDetails: null,
+      ariaDisabled: booleanish$2,
+      ariaDropEffect: spaceSeparated$2,
+      ariaErrorMessage: null,
+      ariaExpanded: booleanish$2,
+      ariaFlowTo: spaceSeparated$2,
+      ariaGrabbed: booleanish$2,
+      ariaHasPopup: null,
+      ariaHidden: booleanish$2,
+      ariaInvalid: null,
+      ariaKeyShortcuts: null,
+      ariaLabel: null,
+      ariaLabelledBy: spaceSeparated$2,
+      ariaLevel: number$2,
+      ariaLive: null,
+      ariaModal: booleanish$2,
+      ariaMultiLine: booleanish$2,
+      ariaMultiSelectable: booleanish$2,
+      ariaOrientation: null,
+      ariaOwns: spaceSeparated$2,
+      ariaPlaceholder: null,
+      ariaPosInSet: number$2,
+      ariaPressed: booleanish$2,
+      ariaReadOnly: booleanish$2,
+      ariaRelevant: null,
+      ariaRequired: booleanish$2,
+      ariaRoleDescription: spaceSeparated$2,
+      ariaRowCount: number$2,
+      ariaRowIndex: number$2,
+      ariaRowSpan: number$2,
+      ariaSelected: booleanish$2,
+      ariaSetSize: number$2,
+      ariaSort: null,
+      ariaValueMax: number$2,
+      ariaValueMin: number$2,
+      ariaValueNow: number$2,
+      ariaValueText: null,
+      role: null
     },
-    properties: {xmlLang: null, xmlBase: null, xmlSpace: null}
+    transform(_, property) {
+      return property === 'role'
+        ? property
+        : 'aria-' + property.slice(4).toLowerCase()
+    }
   });
 
   /**
    * @param {Record<string, string>} attributes
+   *   Attributes.
    * @param {string} attribute
+   *   Attribute.
    * @returns {string}
+   *   Transformed attribute.
    */
-  function caseSensitiveTransform(attributes, attribute) {
+  function caseSensitiveTransform$2(attributes, attribute) {
     return attribute in attributes ? attributes[attribute] : attribute
   }
 
   /**
    * @param {Record<string, string>} attributes
+   *   Attributes.
    * @param {string} property
+   *   Property.
    * @returns {string}
+   *   Transformed property.
    */
-  function caseInsensitiveTransform(attributes, property) {
-    return caseSensitiveTransform(attributes, property.toLowerCase())
+  function caseInsensitiveTransform$2(attributes, property) {
+    return caseSensitiveTransform$2(attributes, property.toLowerCase())
   }
 
-  const xmlns = create({
-    space: 'xmlns',
-    attributes: {xmlnsxlink: 'xmlns:xlink'},
-    transform: caseInsensitiveTransform,
-    properties: {xmlns: null, xmlnsXLink: null}
-  });
-
-  const aria = create({
-    transform(_, prop) {
-      return prop === 'role' ? prop : 'aria-' + prop.slice(4).toLowerCase()
-    },
-    properties: {
-      ariaActiveDescendant: null,
-      ariaAtomic: booleanish,
-      ariaAutoComplete: null,
-      ariaBusy: booleanish,
-      ariaChecked: booleanish,
-      ariaColCount: number,
-      ariaColIndex: number,
-      ariaColSpan: number,
-      ariaControls: spaceSeparated,
-      ariaCurrent: null,
-      ariaDescribedBy: spaceSeparated,
-      ariaDetails: null,
-      ariaDisabled: booleanish,
-      ariaDropEffect: spaceSeparated,
-      ariaErrorMessage: null,
-      ariaExpanded: booleanish,
-      ariaFlowTo: spaceSeparated,
-      ariaGrabbed: booleanish,
-      ariaHasPopup: null,
-      ariaHidden: booleanish,
-      ariaInvalid: null,
-      ariaKeyShortcuts: null,
-      ariaLabel: null,
-      ariaLabelledBy: spaceSeparated,
-      ariaLevel: number,
-      ariaLive: null,
-      ariaModal: booleanish,
-      ariaMultiLine: booleanish,
-      ariaMultiSelectable: booleanish,
-      ariaOrientation: null,
-      ariaOwns: spaceSeparated,
-      ariaPlaceholder: null,
-      ariaPosInSet: number,
-      ariaPressed: booleanish,
-      ariaReadOnly: booleanish,
-      ariaRelevant: null,
-      ariaRequired: booleanish,
-      ariaRoleDescription: spaceSeparated,
-      ariaRowCount: number,
-      ariaRowIndex: number,
-      ariaRowSpan: number,
-      ariaSelected: booleanish,
-      ariaSetSize: number,
-      ariaSort: null,
-      ariaValueMax: number,
-      ariaValueMin: number,
-      ariaValueNow: number,
-      ariaValueText: null,
-      role: null
-    }
-  });
-
-  const html$3 = create({
-    space: 'html',
+  const html$7 = create$2({
     attributes: {
       acceptcharset: 'accept-charset',
       classname: 'class',
       htmlfor: 'for',
       httpequiv: 'http-equiv'
     },
-    transform: caseInsensitiveTransform,
     mustUseProperty: ['checked', 'multiple', 'muted', 'selected'],
     properties: {
       // Standard Properties.
       abbr: null,
-      accept: commaSeparated,
-      acceptCharset: spaceSeparated,
-      accessKey: spaceSeparated,
+      accept: commaSeparated$2,
+      acceptCharset: spaceSeparated$2,
+      accessKey: spaceSeparated$2,
       action: null,
       allow: null,
-      allowFullScreen: boolean,
-      allowPaymentRequest: boolean,
-      allowUserMedia: boolean,
+      allowFullScreen: boolean$2,
+      allowPaymentRequest: boolean$2,
+      allowUserMedia: boolean$2,
       alt: null,
       as: null,
-      async: boolean,
+      async: boolean$2,
       autoCapitalize: null,
-      autoComplete: spaceSeparated,
-      autoFocus: boolean,
-      autoPlay: boolean,
-      blocking: spaceSeparated,
+      autoComplete: spaceSeparated$2,
+      autoFocus: boolean$2,
+      autoPlay: boolean$2,
+      blocking: spaceSeparated$2,
       capture: null,
       charSet: null,
-      checked: boolean,
+      checked: boolean$2,
       cite: null,
-      className: spaceSeparated,
-      cols: number,
+      className: spaceSeparated$2,
+      cols: number$2,
       colSpan: null,
       content: null,
-      contentEditable: booleanish,
-      controls: boolean,
-      controlsList: spaceSeparated,
-      coords: number | commaSeparated,
+      contentEditable: booleanish$2,
+      controls: boolean$2,
+      controlsList: spaceSeparated$2,
+      coords: number$2 | commaSeparated$2,
       crossOrigin: null,
       data: null,
       dateTime: null,
       decoding: null,
-      default: boolean,
-      defer: boolean,
+      default: boolean$2,
+      defer: boolean$2,
       dir: null,
       dirName: null,
-      disabled: boolean,
-      download: overloadedBoolean,
-      draggable: booleanish,
+      disabled: boolean$2,
+      download: overloadedBoolean$2,
+      draggable: booleanish$2,
       encType: null,
       enterKeyHint: null,
       fetchPriority: null,
@@ -22222,50 +22494,50 @@
       formAction: null,
       formEncType: null,
       formMethod: null,
-      formNoValidate: boolean,
+      formNoValidate: boolean$2,
       formTarget: null,
-      headers: spaceSeparated,
-      height: number,
-      hidden: boolean,
-      high: number,
+      headers: spaceSeparated$2,
+      height: number$2,
+      hidden: overloadedBoolean$2,
+      high: number$2,
       href: null,
       hrefLang: null,
-      htmlFor: spaceSeparated,
-      httpEquiv: spaceSeparated,
+      htmlFor: spaceSeparated$2,
+      httpEquiv: spaceSeparated$2,
       id: null,
       imageSizes: null,
       imageSrcSet: null,
-      inert: boolean,
+      inert: boolean$2,
       inputMode: null,
       integrity: null,
       is: null,
-      isMap: boolean,
+      isMap: boolean$2,
       itemId: null,
-      itemProp: spaceSeparated,
-      itemRef: spaceSeparated,
-      itemScope: boolean,
-      itemType: spaceSeparated,
+      itemProp: spaceSeparated$2,
+      itemRef: spaceSeparated$2,
+      itemScope: boolean$2,
+      itemType: spaceSeparated$2,
       kind: null,
       label: null,
       lang: null,
       language: null,
       list: null,
       loading: null,
-      loop: boolean,
-      low: number,
+      loop: boolean$2,
+      low: number$2,
       manifest: null,
       max: null,
-      maxLength: number,
+      maxLength: number$2,
       media: null,
       method: null,
       min: null,
-      minLength: number,
-      multiple: boolean,
-      muted: boolean,
+      minLength: number$2,
+      multiple: boolean$2,
+      muted: boolean$2,
       name: null,
       nonce: null,
-      noModule: boolean,
-      noValidate: boolean,
+      noModule: boolean$2,
+      noValidate: boolean$2,
       onAbort: null,
       onAfterPrint: null,
       onAuxClick: null,
@@ -22354,54 +22626,54 @@
       onVolumeChange: null,
       onWaiting: null,
       onWheel: null,
-      open: boolean,
-      optimum: number,
+      open: boolean$2,
+      optimum: number$2,
       pattern: null,
-      ping: spaceSeparated,
+      ping: spaceSeparated$2,
       placeholder: null,
-      playsInline: boolean,
+      playsInline: boolean$2,
       popover: null,
       popoverTarget: null,
       popoverTargetAction: null,
       poster: null,
       preload: null,
-      readOnly: boolean,
+      readOnly: boolean$2,
       referrerPolicy: null,
-      rel: spaceSeparated,
-      required: boolean,
-      reversed: boolean,
-      rows: number,
-      rowSpan: number,
-      sandbox: spaceSeparated,
+      rel: spaceSeparated$2,
+      required: boolean$2,
+      reversed: boolean$2,
+      rows: number$2,
+      rowSpan: number$2,
+      sandbox: spaceSeparated$2,
       scope: null,
-      scoped: boolean,
-      seamless: boolean,
-      selected: boolean,
-      shadowRootClonable: boolean,
-      shadowRootDelegatesFocus: boolean,
+      scoped: boolean$2,
+      seamless: boolean$2,
+      selected: boolean$2,
+      shadowRootClonable: boolean$2,
+      shadowRootDelegatesFocus: boolean$2,
       shadowRootMode: null,
       shape: null,
-      size: number,
+      size: number$2,
       sizes: null,
       slot: null,
-      span: number,
-      spellCheck: booleanish,
+      span: number$2,
+      spellCheck: booleanish$2,
       src: null,
       srcDoc: null,
       srcLang: null,
       srcSet: null,
-      start: number,
+      start: number$2,
       step: null,
       style: null,
-      tabIndex: number,
+      tabIndex: number$2,
       target: null,
       title: null,
       translate: null,
       type: null,
-      typeMustMatch: boolean,
+      typeMustMatch: boolean$2,
       useMap: null,
-      value: booleanish,
-      width: number,
+      value: booleanish$2,
+      width: number$2,
       wrap: null,
       writingSuggestions: null,
 
@@ -22409,13 +22681,13 @@
       // See: https://html.spec.whatwg.org/#other-elements,-attributes-and-apis
       align: null, // Several. Use CSS `text-align` instead,
       aLink: null, // `<body>`. Use CSS `a:active {color}` instead
-      archive: spaceSeparated, // `<object>`. List of URIs to archives
+      archive: spaceSeparated$2, // `<object>`. List of URIs to archives
       axis: null, // `<td>` and `<th>`. Use `scope` on `<th>`
       background: null, // `<body>`. Use CSS `background-image` instead
       bgColor: null, // `<body>` and table elements. Use CSS `background-color` instead
-      border: number, // `<table>`. Use CSS `border-width` instead,
+      border: number$2, // `<table>`. Use CSS `border-width` instead,
       borderColor: null, // `<table>`. Use CSS `border-color` instead,
-      bottomMargin: number, // `<body>`
+      bottomMargin: number$2, // `<body>`
       cellPadding: null, // `<table>`
       cellSpacing: null, // `<table>`
       char: null, // Several table elements. When `align=char`, sets the character to align on
@@ -22426,57 +22698,58 @@
       codeBase: null, // `<object>`
       codeType: null, // `<object>`
       color: null, // `<font>` and `<hr>`. Use CSS instead
-      compact: boolean, // Lists. Use CSS to reduce space between items instead
-      declare: boolean, // `<object>`
+      compact: boolean$2, // Lists. Use CSS to reduce space between items instead
+      declare: boolean$2, // `<object>`
       event: null, // `<script>`
       face: null, // `<font>`. Use CSS instead
       frame: null, // `<table>`
       frameBorder: null, // `<iframe>`. Use CSS `border` instead
-      hSpace: number, // `<img>` and `<object>`
-      leftMargin: number, // `<body>`
+      hSpace: number$2, // `<img>` and `<object>`
+      leftMargin: number$2, // `<body>`
       link: null, // `<body>`. Use CSS `a:link {color: *}` instead
       longDesc: null, // `<frame>`, `<iframe>`, and `<img>`. Use an `<a>`
       lowSrc: null, // `<img>`. Use a `<picture>`
-      marginHeight: number, // `<body>`
-      marginWidth: number, // `<body>`
-      noResize: boolean, // `<frame>`
-      noHref: boolean, // `<area>`. Use no href instead of an explicit `nohref`
-      noShade: boolean, // `<hr>`. Use background-color and height instead of borders
-      noWrap: boolean, // `<td>` and `<th>`
+      marginHeight: number$2, // `<body>`
+      marginWidth: number$2, // `<body>`
+      noResize: boolean$2, // `<frame>`
+      noHref: boolean$2, // `<area>`. Use no href instead of an explicit `nohref`
+      noShade: boolean$2, // `<hr>`. Use background-color and height instead of borders
+      noWrap: boolean$2, // `<td>` and `<th>`
       object: null, // `<applet>`
       profile: null, // `<head>`
       prompt: null, // `<isindex>`
       rev: null, // `<link>`
-      rightMargin: number, // `<body>`
+      rightMargin: number$2, // `<body>`
       rules: null, // `<table>`
       scheme: null, // `<meta>`
-      scrolling: booleanish, // `<frame>`. Use overflow in the child context
+      scrolling: booleanish$2, // `<frame>`. Use overflow in the child context
       standby: null, // `<object>`
       summary: null, // `<table>`
       text: null, // `<body>`. Use CSS `color` instead
-      topMargin: number, // `<body>`
+      topMargin: number$2, // `<body>`
       valueType: null, // `<param>`
       version: null, // `<html>`. Use a doctype.
       vAlign: null, // Several. Use CSS `vertical-align` instead
       vLink: null, // `<body>`. Use CSS `a:visited {color}` instead
-      vSpace: number, // `<img>` and `<object>`
+      vSpace: number$2, // `<img>` and `<object>`
 
       // Non-standard Properties.
       allowTransparency: null,
       autoCorrect: null,
       autoSave: null,
-      disablePictureInPicture: boolean,
-      disableRemotePlayback: boolean,
+      disablePictureInPicture: boolean$2,
+      disableRemotePlayback: boolean$2,
       prefix: null,
       property: null,
-      results: number,
+      results: number$2,
       security: null,
       unselectable: null
-    }
+    },
+    space: 'html',
+    transform: caseInsensitiveTransform$2
   });
 
-  const svg$1 = create({
-    space: 'svg',
+  const svg$4 = create$2({
     attributes: {
       accentHeight: 'accent-height',
       alignmentBaseline: 'alignment-baseline',
@@ -22652,31 +22925,30 @@
       playbackOrder: 'playbackorder',
       timelineBegin: 'timelinebegin'
     },
-    transform: caseSensitiveTransform,
     properties: {
-      about: commaOrSpaceSeparated,
-      accentHeight: number,
+      about: commaOrSpaceSeparated$2,
+      accentHeight: number$2,
       accumulate: null,
       additive: null,
       alignmentBaseline: null,
-      alphabetic: number,
-      amplitude: number,
+      alphabetic: number$2,
+      amplitude: number$2,
       arabicForm: null,
-      ascent: number,
+      ascent: number$2,
       attributeName: null,
       attributeType: null,
-      azimuth: number,
+      azimuth: number$2,
       bandwidth: null,
       baselineShift: null,
       baseFrequency: null,
       baseProfile: null,
       bbox: null,
       begin: null,
-      bias: number,
+      bias: number$2,
       by: null,
       calcMode: null,
-      capHeight: number,
-      className: spaceSeparated,
+      capHeight: number$2,
+      className: spaceSeparated$2,
       clip: null,
       clipPath: null,
       clipPathUnits: null,
@@ -22696,26 +22968,26 @@
       d: null,
       dataType: null,
       defaultAction: null,
-      descent: number,
-      diffuseConstant: number,
+      descent: number$2,
+      diffuseConstant: number$2,
       direction: null,
       display: null,
       dur: null,
-      divisor: number,
+      divisor: number$2,
       dominantBaseline: null,
-      download: boolean,
+      download: boolean$2,
       dx: null,
       dy: null,
       edgeMode: null,
       editable: null,
-      elevation: number,
+      elevation: number$2,
       enableBackground: null,
       end: null,
       event: null,
-      exponent: number,
+      exponent: number$2,
       externalResourcesRequired: null,
       fill: null,
-      fillOpacity: number,
+      fillOpacity: number$2,
       fillRule: null,
       filter: null,
       filterRes: null,
@@ -22736,37 +23008,37 @@
       from: null,
       fx: null,
       fy: null,
-      g1: commaSeparated,
-      g2: commaSeparated,
-      glyphName: commaSeparated,
+      g1: commaSeparated$2,
+      g2: commaSeparated$2,
+      glyphName: commaSeparated$2,
       glyphOrientationHorizontal: null,
       glyphOrientationVertical: null,
       glyphRef: null,
       gradientTransform: null,
       gradientUnits: null,
       handler: null,
-      hanging: number,
+      hanging: number$2,
       hatchContentUnits: null,
       hatchUnits: null,
       height: null,
       href: null,
       hrefLang: null,
-      horizAdvX: number,
-      horizOriginX: number,
-      horizOriginY: number,
+      horizAdvX: number$2,
+      horizOriginX: number$2,
+      horizOriginY: number$2,
       id: null,
-      ideographic: number,
+      ideographic: number$2,
       imageRendering: null,
       initialVisibility: null,
       in: null,
       in2: null,
-      intercept: number,
-      k: number,
-      k1: number,
-      k2: number,
-      k3: number,
-      k4: number,
-      kernelMatrix: commaOrSpaceSeparated,
+      intercept: number$2,
+      k: number$2,
+      k1: number$2,
+      k2: number$2,
+      k3: number$2,
+      k4: number$2,
+      kernelMatrix: commaOrSpaceSeparated$2,
       kernelUnitLength: null,
       keyPoints: null, // SEMI_COLON_SEPARATED
       keySplines: null, // SEMI_COLON_SEPARATED
@@ -22776,7 +23048,7 @@
       lengthAdjust: null,
       letterSpacing: null,
       lightingColor: null,
-      limitingConeAngle: number,
+      limitingConeAngle: number$2,
       local: null,
       markerEnd: null,
       markerMid: null,
@@ -22792,7 +23064,7 @@
       media: null,
       mediaCharacterEncoding: null,
       mediaContentEncodings: null,
-      mediaSize: number,
+      mediaSize: number$2,
       mediaTime: null,
       method: null,
       min: null,
@@ -22898,43 +23170,43 @@
       origin: null,
       overflow: null,
       overlay: null,
-      overlinePosition: number,
-      overlineThickness: number,
+      overlinePosition: number$2,
+      overlineThickness: number$2,
       paintOrder: null,
       panose1: null,
       path: null,
-      pathLength: number,
+      pathLength: number$2,
       patternContentUnits: null,
       patternTransform: null,
       patternUnits: null,
       phase: null,
-      ping: spaceSeparated,
+      ping: spaceSeparated$2,
       pitch: null,
       playbackOrder: null,
       pointerEvents: null,
       points: null,
-      pointsAtX: number,
-      pointsAtY: number,
-      pointsAtZ: number,
+      pointsAtX: number$2,
+      pointsAtY: number$2,
+      pointsAtZ: number$2,
       preserveAlpha: null,
       preserveAspectRatio: null,
       primitiveUnits: null,
       propagate: null,
-      property: commaOrSpaceSeparated,
+      property: commaOrSpaceSeparated$2,
       r: null,
       radius: null,
       referrerPolicy: null,
       refX: null,
       refY: null,
-      rel: commaOrSpaceSeparated,
-      rev: commaOrSpaceSeparated,
+      rel: commaOrSpaceSeparated$2,
+      rev: commaOrSpaceSeparated$2,
       renderingIntent: null,
       repeatCount: null,
       repeatDur: null,
-      requiredExtensions: commaOrSpaceSeparated,
-      requiredFeatures: commaOrSpaceSeparated,
-      requiredFonts: commaOrSpaceSeparated,
-      requiredFormats: commaOrSpaceSeparated,
+      requiredExtensions: commaOrSpaceSeparated$2,
+      requiredFeatures: commaOrSpaceSeparated$2,
+      requiredFonts: commaOrSpaceSeparated$2,
+      requiredFormats: commaOrSpaceSeparated$2,
       resource: null,
       restart: null,
       result: null,
@@ -22947,8 +23219,8 @@
       side: null,
       slope: null,
       snapshotTime: null,
-      specularConstant: number,
-      specularExponent: number,
+      specularConstant: number$2,
+      specularExponent: number$2,
       spreadMethod: null,
       spacing: null,
       startOffset: null,
@@ -22958,30 +23230,30 @@
       stitchTiles: null,
       stopColor: null,
       stopOpacity: null,
-      strikethroughPosition: number,
-      strikethroughThickness: number,
+      strikethroughPosition: number$2,
+      strikethroughThickness: number$2,
       string: null,
       stroke: null,
-      strokeDashArray: commaOrSpaceSeparated,
+      strokeDashArray: commaOrSpaceSeparated$2,
       strokeDashOffset: null,
       strokeLineCap: null,
       strokeLineJoin: null,
-      strokeMiterLimit: number,
-      strokeOpacity: number,
+      strokeMiterLimit: number$2,
+      strokeOpacity: number$2,
       strokeWidth: null,
       style: null,
-      surfaceScale: number,
+      surfaceScale: number$2,
       syncBehavior: null,
       syncBehaviorDefault: null,
       syncMaster: null,
       syncTolerance: null,
       syncToleranceDefault: null,
-      systemLanguage: commaOrSpaceSeparated,
-      tabIndex: number,
+      systemLanguage: commaOrSpaceSeparated$2,
+      tabIndex: number$2,
       tableValues: null,
       target: null,
-      targetX: number,
-      targetY: number,
+      targetX: number$2,
+      targetY: number$2,
       textAnchor: null,
       textDecoration: null,
       textRendering: null,
@@ -22990,28 +23262,28 @@
       title: null,
       transformBehavior: null,
       type: null,
-      typeOf: commaOrSpaceSeparated,
+      typeOf: commaOrSpaceSeparated$2,
       to: null,
       transform: null,
       transformOrigin: null,
       u1: null,
       u2: null,
-      underlinePosition: number,
-      underlineThickness: number,
+      underlinePosition: number$2,
+      underlineThickness: number$2,
       unicode: null,
       unicodeBidi: null,
       unicodeRange: null,
-      unitsPerEm: number,
+      unitsPerEm: number$2,
       values: null,
-      vAlphabetic: number,
-      vMathematical: number,
+      vAlphabetic: number$2,
+      vMathematical: number$2,
       vectorEffect: null,
-      vHanging: number,
-      vIdeographic: number,
+      vHanging: number$2,
+      vIdeographic: number$2,
       version: null,
-      vertAdvY: number,
-      vertOriginX: number,
-      vertOriginY: number,
+      vertAdvY: number$2,
+      vertOriginX: number$2,
+      vertOriginY: number$2,
       viewBox: null,
       viewTarget: null,
       visibility: null,
@@ -23023,51 +23295,109 @@
       x1: null,
       x2: null,
       xChannelSelector: null,
-      xHeight: number,
+      xHeight: number$2,
       y: null,
       y1: null,
       y2: null,
       yChannelSelector: null,
       z: null,
       zoomAndPan: null
+    },
+    space: 'svg',
+    transform: caseSensitiveTransform$2
+  });
+
+  const xlink$2 = create$2({
+    properties: {
+      xLinkActuate: null,
+      xLinkArcRole: null,
+      xLinkHref: null,
+      xLinkRole: null,
+      xLinkShow: null,
+      xLinkTitle: null,
+      xLinkType: null
+    },
+    space: 'xlink',
+    transform(_, property) {
+      return 'xlink:' + property.slice(5).toLowerCase()
+    }
+  });
+
+  const xmlns$2 = create$2({
+    attributes: {xmlnsxlink: 'xmlns:xlink'},
+    properties: {xmlnsXLink: null, xmlns: null},
+    space: 'xmlns',
+    transform: caseInsensitiveTransform$2
+  });
+
+  const xml$2 = create$2({
+    properties: {xmlBase: null, xmlLang: null, xmlSpace: null},
+    space: 'xml',
+    transform(_, property) {
+      return 'xml:' + property.slice(3).toLowerCase()
     }
   });
 
   /**
-   * @typedef {import('./util/schema.js').Schema} Schema
+   * @import {Schema} from 'property-information'
    */
 
 
-  const valid = /^data[-\w.:]+$/i;
-  const dash = /-[a-z]/g;
-  const cap = /[A-Z]/g;
+  const cap$2 = /[A-Z]/g;
+  const dash$2 = /-[a-z]/g;
+  const valid$2 = /^data[-\w.:]+$/i;
 
   /**
+   * Look up info on a property.
+   *
+   * In most cases the given `schema` contains info on the property.
+   * All standard,
+   * most legacy,
+   * and some non-standard properties are supported.
+   * For these cases,
+   * the returned `Info` has hints about the value of the property.
+   *
+   * `name` can also be a valid data attribute or property,
+   * in which case an `Info` object with the correctly cased `attribute` and
+   * `property` is returned.
+   *
+   * `name` can be an unknown attribute,
+   * in which case an `Info` object with `attribute` and `property` set to the
+   * given name is returned.
+   * It is not recommended to provide unsupported legacy or recently specced
+   * properties.
+   *
+   *
    * @param {Schema} schema
+   *   Schema;
+   *   either the `html` or `svg` export.
    * @param {string} value
+   *   An attribute-like or property-like name;
+   *   it will be passed through `normalize` to hopefully find the correct info.
    * @returns {Info}
+   *   Info.
    */
-  function find(schema, value) {
-    const normal = normalize(value);
-    let prop = value;
-    let Type = Info;
+  function find$2(schema, value) {
+    const normal = normalize$2(value);
+    let property = value;
+    let Type = Info$2;
 
     if (normal in schema.normal) {
       return schema.property[schema.normal[normal]]
     }
 
-    if (normal.length > 4 && normal.slice(0, 4) === 'data' && valid.test(value)) {
+    if (normal.length > 4 && normal.slice(0, 4) === 'data' && valid$2.test(value)) {
       // Attribute or property.
       if (value.charAt(4) === '-') {
         // Turn it into a property.
-        const rest = value.slice(5).replace(dash, camelcase);
-        prop = 'data' + rest.charAt(0).toUpperCase() + rest.slice(1);
+        const rest = value.slice(5).replace(dash$2, camelcase$2);
+        property = 'data' + rest.charAt(0).toUpperCase() + rest.slice(1);
       } else {
         // Turn it into an attribute.
         const rest = value.slice(4);
 
-        if (!dash.test(rest)) {
-          let dashes = rest.replace(cap, kebab);
+        if (!dash$2.test(rest)) {
+          let dashes = rest.replace(cap$2, kebab$2);
 
           if (dashes.charAt(0) !== '-') {
             dashes = '-' + dashes;
@@ -23077,35 +23407,37 @@
         }
       }
 
-      Type = DefinedInfo;
+      Type = DefinedInfo$2;
     }
 
-    return new Type(prop, value)
+    return new Type(property, value)
   }
 
   /**
    * @param {string} $0
+   *   Value.
    * @returns {string}
+   *   Kebab.
    */
-  function kebab($0) {
+  function kebab$2($0) {
     return '-' + $0.toLowerCase()
   }
 
   /**
    * @param {string} $0
+   *   Value.
    * @returns {string}
+   *   Camel.
    */
-  function camelcase($0) {
+  function camelcase$2($0) {
     return $0.charAt(1).toUpperCase()
   }
 
-  /**
-   * @typedef {import('./lib/util/info.js').Info} Info
-   * @typedef {import('./lib/util/schema.js').Schema} Schema
-   */
+  // Note: types exposed from `index.d.ts`.
 
-  const html$2 = merge([xml, xlink, xmlns, aria, html$3], 'html');
-  const svg = merge([xml, xlink, xmlns, aria, svg$1], 'svg');
+  const html$6 = merge$2([aria$2, html$7, xlink$2, xmlns$2, xml$2], 'html');
+
+  const svg$3 = merge$2([aria$2, svg$4, xlink$2, xmlns$2, xml$2], 'svg');
 
   /**
    * @typedef Options
@@ -23296,32 +23628,23 @@
   }
 
   /**
-   * @typedef {import('hast').Element} Element
-   * @typedef {import('hast').Nodes} Nodes
-   * @typedef {import('hast').Root} Root
-   * @typedef {import('hast').RootContent} RootContent
-   *
-   * @typedef {import('property-information').Info} Info
-   * @typedef {import('property-information').Schema} Schema
+   * @import {Element, Nodes, RootContent, Root} from 'hast'
+   * @import {Info, Schema} from 'property-information'
    */
 
-
-  const buttonTypes$1 = new Set(['button', 'menu', 'reset', 'submit']);
-
-  const own$8 = {}.hasOwnProperty;
 
   /**
    * @param {Schema} schema
    *   Schema to use.
    * @param {string} defaultTagName
    *   Default tag name.
-   * @param {Array<string> | undefined} [caseSensitive]
+   * @param {ReadonlyArray<string> | undefined} [caseSensitive]
    *   Case-sensitive tag names (default: `undefined`).
    * @returns
    *   `h`.
    */
   function createH(schema, defaultTagName, caseSensitive) {
-    const adjust = caseSensitive && createAdjustMap(caseSensitive);
+    const adjust = caseSensitive ? createAdjustMap(caseSensitive) : undefined;
 
     /**
      * Hyperscript compatible DSL for creating virtual hast trees.
@@ -23352,11 +23675,10 @@
      *   Result.
      */
     function h(selector, properties, ...children) {
-      let index = -1;
       /** @type {Result} */
       let node;
 
-      if (selector === undefined || selector === null) {
+      if (selector === null || selector === undefined) {
         node = {type: 'root', children: []};
         // Properties are not supported for roots.
         const child = /** @type {Child} */ (properties);
@@ -23364,29 +23686,23 @@
       } else {
         node = parseSelector$1(selector, defaultTagName);
         // Normalize the name.
-        node.tagName = node.tagName.toLowerCase();
-        if (adjust && own$8.call(adjust, node.tagName)) {
-          node.tagName = adjust[node.tagName];
-        }
+        const lower = node.tagName.toLowerCase();
+        const adjusted = adjust ? adjust.get(lower) : undefined;
+        node.tagName = adjusted || lower;
 
-        // Handle props.
-        if (isProperties$1(properties, node.tagName)) {
-          /** @type {string} */
-          let key;
-
-          for (key in properties) {
-            if (own$8.call(properties, key)) {
-              addProperty$1(schema, node.properties, key, properties[key]);
-            }
-          }
-        } else {
+        // Handle properties.
+        if (isChild(properties)) {
           children.unshift(properties);
+        } else {
+          for (const [key, value] of Object.entries(properties)) {
+            addProperty$1(schema, node.properties, key, value);
+          }
         }
       }
 
       // Handle children.
-      while (++index < children.length) {
-        addChild$1(node.children, children[index]);
+      for (const child of children) {
+        addChild$1(node.children, child);
       }
 
       if (node.type === 'element' && node.tagName === 'template') {
@@ -23405,34 +23721,48 @@
    *
    * @param {Child | Properties} value
    *   Value to check.
-   * @param {string} name
-   *   Tag name.
-   * @returns {value is Properties}
-   *   Whether `value` is a properties object.
+   * @returns {value is Child}
+   *   Whether `value` is definitely a child.
    */
-  function isProperties$1(value, name) {
-    if (
-      value === null ||
-      value === undefined ||
-      typeof value !== 'object' ||
-      Array.isArray(value)
-    ) {
-      return false
-    }
-
-    if (name === 'input' || !value.type || typeof value.type !== 'string') {
+  function isChild(value) {
+    // Never properties if not an object.
+    if (value === null || typeof value !== 'object' || Array.isArray(value)) {
       return true
     }
 
+    // Never node without `type`; that’s the main discriminator.
+    if (typeof value.type !== 'string') return false
+
+    // Slower check: never property value if object or array with
+    // non-number/strings.
+    const record = /** @type {Record<string, unknown>} */ (value);
+    const keys = Object.keys(value);
+
+    for (const key of keys) {
+      const value = record[key];
+
+      if (value && typeof value === 'object') {
+        if (!Array.isArray(value)) return true
+
+        const list = /** @type {ReadonlyArray<unknown>} */ (value);
+
+        for (const item of list) {
+          if (typeof item !== 'number' && typeof item !== 'string') {
+            return true
+          }
+        }
+      }
+    }
+
+    // Also see empty `children` as a node.
     if ('children' in value && Array.isArray(value.children)) {
-      return false
+      return true
     }
 
-    if (name === 'button') {
-      return buttonTypes$1.has(value.type.toLowerCase())
-    }
-
-    return !('value' in value)
+    // Default to properties, someone can always pass an empty object,
+    // put `data: {}` in a node,
+    // or wrap it in an array.
+    return false
   }
 
   /**
@@ -23448,13 +23778,12 @@
    *   Nothing.
    */
   function addProperty$1(schema, properties, key, value) {
-    const info = find(schema, key);
-    let index = -1;
+    const info = find$2(schema, key);
     /** @type {PropertyValue} */
     let result;
 
     // Ignore nullish and NaN values.
-    if (value === undefined || value === null) return
+    if (value === null || value === undefined) return
 
     if (typeof value === 'number') {
       // Ignore NaN.
@@ -23478,7 +23807,7 @@
         result = parsePrimitive$1(info, info.property, value);
       }
     } else if (Array.isArray(value)) {
-      result = value.concat();
+      result = [...value];
     } else {
       result = info.property === 'style' ? style$1(value) : String(value);
     }
@@ -23487,12 +23816,13 @@
       /** @type {Array<number | string>} */
       const finalResult = [];
 
-      while (++index < result.length) {
+      for (const item of result) {
         // Assume no booleans in array.
-        const value = /** @type {number | string} */ (
-          parsePrimitive$1(info, info.property, result[index])
+        finalResult.push(
+          /** @type {number | string} */ (
+            parsePrimitive$1(info, info.property, item)
+          )
         );
-        finalResult[index] = value;
       }
 
       result = finalResult;
@@ -23501,8 +23831,9 @@
     // Class names (which can be added both on the `selector` and here).
     if (info.property === 'className' && Array.isArray(properties.className)) {
       // Assume no booleans in `className`.
-      const value = /** @type {number | string} */ (result);
-      result = properties.className.concat(value);
+      result = properties.className.concat(
+        /** @type {Array<number | string> | number | string} */ (result)
+      );
     }
 
     properties[info.property] = result;
@@ -23517,13 +23848,11 @@
    *   Nothing.
    */
   function addChild$1(nodes, value) {
-    let index = -1;
-
-    if (value === undefined || value === null) ; else if (typeof value === 'string' || typeof value === 'number') {
+    if (value === null || value === undefined) ; else if (typeof value === 'number' || typeof value === 'string') {
       nodes.push({type: 'text', value: String(value)});
     } else if (Array.isArray(value)) {
-      while (++index < value.length) {
-        addChild$1(nodes, value[index]);
+      for (const child of value) {
+        addChild$1(nodes, child);
       }
     } else if (typeof value === 'object' && 'type' in value) {
       if (value.type === 'root') {
@@ -23556,7 +23885,7 @@
 
       if (
         (info.boolean || info.overloadedBoolean) &&
-        (value === '' || normalize(value) === normalize(name))
+        (value === '' || normalize$2(value) === normalize$2(name))
       ) {
         return true
       }
@@ -23568,21 +23897,17 @@
   /**
    * Serialize a `style` object as a string.
    *
-   * @param {Style} value
+   * @param {Style} styles
    *   Style object.
    * @returns {string}
    *   CSS string.
    */
-  function style$1(value) {
+  function style$1(styles) {
     /** @type {Array<string>} */
     const result = [];
-    /** @type {string} */
-    let key;
 
-    for (key in value) {
-      if (own$8.call(value, key)) {
-        result.push([key, value[key]].join(': '));
-      }
+    for (const [key, value] of Object.entries(styles)) {
+      result.push([key, value].join(': '));
     }
 
     return result.join('; ')
@@ -23591,23 +23916,27 @@
   /**
    * Create a map to adjust casing.
    *
-   * @param {Array<string>} values
+   * @param {ReadonlyArray<string>} values
    *   List of properly cased keys.
-   * @returns {Record<string, string>}
+   * @returns {Map<string, string>}
    *   Map of lowercase keys to uppercase keys.
    */
   function createAdjustMap(values) {
-    /** @type {Record<string, string>} */
-    const result = {};
-    let index = -1;
+    /** @type {Map<string, string>} */
+    const result = new Map();
 
-    while (++index < values.length) {
-      result[values[index].toLowerCase()] = values[index];
+    for (const value of values) {
+      result.set(value.toLowerCase(), value);
     }
 
     return result
   }
 
+  /**
+   * List of case-sensitive SVG tag names.
+   *
+   * @type {ReadonlyArray<string>}
+   */
   const svgCaseSensitiveTagNames = [
     'altGlyph',
     'altGlyphDef',
@@ -23650,23 +23979,22 @@
     'textPath'
   ];
 
+  // Register the JSX namespace on `h`.
   /**
-   * @typedef {import('./create-h.js').Child} Child
-   *   Acceptable child value.
-   * @typedef {import('./create-h.js').Properties} Properties
-   *   Acceptable value for element properties.
-   * @typedef {import('./create-h.js').Result} Result
-   *   Result from a `h` (or `s`) call.
+   * @typedef {import('./jsx-classic.js').Element} h.JSX.Element
+   * @typedef {import('./jsx-classic.js').ElementChildrenAttribute} h.JSX.ElementChildrenAttribute
+   * @typedef {import('./jsx-classic.js').IntrinsicAttributes} h.JSX.IntrinsicAttributes
+   * @typedef {import('./jsx-classic.js').IntrinsicElements} h.JSX.IntrinsicElements
    */
 
 
   // Note: this explicit type is needed, otherwise TS creates broken types.
   /** @type {ReturnType<createH>} */
-  const h$1 = createH(html$2, 'div');
+  const h$1 = createH(html$6, 'div');
 
   // Note: this explicit type is needed, otherwise TS creates broken types.
   /** @type {ReturnType<createH>} */
-  const s$1 = createH(svg, 'g', svgCaseSensitiveTagNames);
+  const s$1 = createH(svg$3, 'g', svgCaseSensitiveTagNames);
 
   /**
    * Map of web namespaces.
@@ -23683,13 +24011,15 @@
   };
 
   /**
-   * @typedef {import('hast').Comment} HastComment
-   * @typedef {import('hast').Doctype} HastDoctype
-   * @typedef {import('hast').Element} HastElement
-   * @typedef {import('hast').Nodes} HastNodes
-   * @typedef {import('hast').Root} HastRoot
-   * @typedef {import('hast').RootContent} HastRootContent
-   * @typedef {import('hast').Text} HastText
+   * @import {
+   *   Comment as HastComment,
+   *   Doctype as HastDoctype,
+   *   Element as HastElement,
+   *   Nodes as HastNodes,
+   *   RootContent as HastRootContent,
+   *   Root as HastRoot,
+   *   Text as HastText,
+   * } from 'hast'
    */
 
 
@@ -23836,7 +24166,7 @@
    */
   function element$5(node, options) {
     const space = node.namespaceURI;
-    const fn = space === webNamespaces.svg ? s$1 : h$1;
+    const x = space === webNamespaces.svg ? s$1 : h$1;
     const tagName =
       space === webNamespaces.html ? node.tagName.toLowerCase() : node.tagName;
     /** @type {DocumentFragment | Element} */
@@ -23845,14 +24175,14 @@
       space === webNamespaces.html && tagName === 'template' ? node.content : node;
     const attributes = node.getAttributeNames();
     /** @type {Record<string, string>} */
-    const props = {};
+    const properties = {};
     let index = -1;
 
     while (++index < attributes.length) {
-      props[attributes[index]] = node.getAttribute(attributes[index]) || '';
+      properties[attributes[index]] = node.getAttribute(attributes[index]) || '';
     }
 
-    return fn(tagName, props, all$6(content, options))
+    return x(tagName, properties, all$6(content, options))
   }
 
   /**
@@ -24258,10 +24588,7 @@
     const children = 'children' in tree ? tree.children : [];
     const block = blockOrCaption(tree);
     const whitespace = inferWhitespace(tree, {
-      whitespace: options_.whitespace || 'normal',
-      breakBefore: false,
-      breakAfter: false
-    });
+      whitespace: options_.whitespace || 'normal'});
 
     /** @type {Array<BreakNumber | string>} */
     const results = [];
@@ -24277,7 +24604,6 @@
     if (tree.type === 'text' || tree.type === 'comment') {
       results.push(
         ...collectText(tree, {
-          whitespace,
           breakBefore: true,
           breakAfter: true
         })
@@ -24901,17 +25227,9 @@
    */
 
   /**
-   * Return whether an element is contained in a list
-   */
-  var contains = function contains(list, elem) {
-    return list.indexOf(elem) !== -1;
-  };
-  /**
    * Provide a default value if a setting is undefined
    * NOTE: Couldn't use `T` as the output type due to facebook/flow#5022.
    */
-
-
   var deflt = function deflt(setting, defaultIfUndefined) {
     return setting === undefined ? defaultIfUndefined : setting;
   }; // hyphenate and escape adapted from Facebook's React under Apache 2 license
@@ -25016,7 +25334,6 @@
     return protocol[1].toLowerCase();
   };
   var utils = {
-    contains,
     deflt,
     escape,
     hyphenate,
@@ -25751,13 +26068,14 @@
     }
   };
 
+  // To ensure that all nodes have compatible signatures for these methods.
+
   /**
    * This node represents a document fragment, which contains elements, but when
    * placed into the DOM doesn't have any representation itself. It only contains
    * children and doesn't have any DOM node properties.
    */
   class DocumentFragment {
-    // HtmlDomNode
     // Never used; needed for satisfying interface.
     constructor(children) {
       this.children = void 0;
@@ -25775,7 +26093,7 @@
     }
 
     hasClass(className) {
-      return utils.contains(this.classes, className);
+      return this.classes.includes(className);
     }
     /** Convert the fragment into a node. */
 
@@ -27624,7 +27942,7 @@
       "732": [0, 0.72222, 0, 0, 0.55556],
       "770": [0, 0.72222, 0, 0, 0.55556],
       "771": [0, 0.72222, 0, 0, 0.55556],
-      "8214": [-0.00099, 0.601, 0, 0, 0.77778],
+      "8214": [-99e-5, 0.601, 0, 0, 0.77778],
       "8593": [1e-05, 0.6, 0, 0, 0.66667],
       "8595": [1e-05, 0.6, 0, 0, 0.66667],
       "8657": [1e-05, 0.6, 0, 0, 0.77778],
@@ -27633,8 +27951,8 @@
       "8720": [0.25001, 0.75, 0, 0, 0.94445],
       "8721": [0.25001, 0.75, 0, 0, 1.05556],
       "8730": [0.35001, 0.85, 0, 0, 1.0],
-      "8739": [-0.00599, 0.606, 0, 0, 0.33333],
-      "8741": [-0.00599, 0.606, 0, 0, 0.55556],
+      "8739": [-599e-5, 0.606, 0, 0, 0.33333],
+      "8741": [-599e-5, 0.606, 0, 0, 0.55556],
       "8747": [0.30612, 0.805, 0.19445, 0, 0.47222],
       "8748": [0.306, 0.805, 0.19445, 0, 0.47222],
       "8749": [0.306, 0.805, 0.19445, 0, 0.47222],
@@ -27647,7 +27965,7 @@
       "8969": [0.35001, 0.85, 0, 0, 0.47222],
       "8970": [0.35001, 0.85, 0, 0, 0.47222],
       "8971": [0.35001, 0.85, 0, 0, 0.47222],
-      "9168": [-0.00099, 0.601, 0, 0, 0.66667],
+      "9168": [-99e-5, 0.601, 0, 0, 0.66667],
       "10216": [0.35001, 0.85, 0, 0, 0.47222],
       "10217": [0.35001, 0.85, 0, 0, 0.47222],
       "10752": [0.25001, 0.75, 0, 0, 1.11111],
@@ -27745,10 +28063,10 @@
       "9119": [1e-05, 0.6, 0, 0, 0.875],
       "9120": [0.64502, 1.155, 0, 0, 0.875],
       "9121": [0.64502, 1.155, 0, 0, 0.66667],
-      "9122": [-0.00099, 0.601, 0, 0, 0.66667],
+      "9122": [-99e-5, 0.601, 0, 0, 0.66667],
       "9123": [0.64502, 1.155, 0, 0, 0.66667],
       "9124": [0.64502, 1.155, 0, 0, 0.66667],
-      "9125": [-0.00099, 0.601, 0, 0, 0.66667],
+      "9125": [-99e-5, 0.601, 0, 0, 0.66667],
       "9126": [0.64502, 1.155, 0, 0, 0.66667],
       "9127": [1e-05, 0.9, 0, 0, 0.88889],
       "9128": [0.65002, 1.15, 0, 0, 0.88889],
@@ -27760,8 +28078,8 @@
       "9143": [0.88502, 0.915, 0, 0, 1.05556],
       "10216": [1.25003, 1.75, 0, 0, 0.80556],
       "10217": [1.25003, 1.75, 0, 0, 0.80556],
-      "57344": [-0.00499, 0.605, 0, 0, 1.05556],
-      "57345": [-0.00499, 0.605, 0, 0, 1.05556],
+      "57344": [-499e-5, 0.605, 0, 0, 1.05556],
+      "57345": [-499e-5, 0.605, 0, 0, 1.05556],
       "57680": [0, 0.12, 0, 0, 0.45],
       "57681": [0, 0.12, 0, 0, 0.45],
       "57682": [0, 0.12, 0, 0, 0.45],
@@ -28674,9 +28992,19 @@
     return node;
   };
   /**
-   * Convert into an HTML markup string
+   * https://w3c.github.io/html-reference/syntax.html#syntax-attributes
+   *
+   * > Attribute Names must consist of one or more characters
+   * other than the space characters, U+0000 NULL,
+   * '"', "'", ">", "/", "=", the control characters,
+   * and any characters that are not defined by Unicode.
    */
 
+
+  var invalidAttributeNameRegex = /[\s"'>/=\x00-\x1f]/;
+  /**
+   * Convert into an HTML markup string
+   */
 
   var toMarkup = function toMarkup(tagName) {
     var markup = "<" + tagName; // Add the class
@@ -28700,6 +29028,10 @@
 
     for (var attr in this.attributes) {
       if (this.attributes.hasOwnProperty(attr)) {
+        if (invalidAttributeNameRegex.test(attr)) {
+          throw new ParseError("Invalid attribute name '" + attr + "'");
+        }
+
         markup += " " + attr + "=\"" + utils.escape(this.attributes[attr]) + "\"";
       }
     }
@@ -28755,7 +29087,7 @@
     }
 
     hasClass(className) {
-      return utils.contains(this.classes, className);
+      return this.classes.includes(className);
     }
 
     toNode() {
@@ -28791,7 +29123,7 @@
     }
 
     hasClass(className) {
-      return utils.contains(this.classes, className);
+      return this.classes.includes(className);
     }
 
     toNode() {
@@ -28823,7 +29155,7 @@
     }
 
     hasClass(className) {
-      return utils.contains(this.classes, className);
+      return this.classes.includes(className);
     }
 
     toNode() {
@@ -28915,7 +29247,7 @@
     }
 
     hasClass(className) {
-      return utils.contains(this.classes, className);
+      return this.classes.includes(className);
     }
     /**
      * Creates a text node or span from a symbol node. Note that a span is only
@@ -29770,9 +30102,10 @@
   defineSymbol(text$3, main, inner, "\u2026", "\\ldots", true);
   defineSymbol(math, main, inner, "\u2026", "\\ldots", true);
   defineSymbol(math, main, inner, "\u22ef", "\\@cdots", true);
-  defineSymbol(math, main, inner, "\u22f1", "\\ddots", true);
-  defineSymbol(math, main, textord, "\u22ee", "\\varvdots"); // \vdots is a macro
+  defineSymbol(math, main, inner, "\u22f1", "\\ddots", true); // \vdots is a macro that uses one of these two symbols (with made-up names):
 
+  defineSymbol(math, main, textord, "\u22ee", "\\varvdots");
+  defineSymbol(text$3, main, textord, "\u22ee", "\\varvdots");
   defineSymbol(math, main, accent, "\u02ca", "\\acute");
   defineSymbol(math, main, accent, "\u02cb", "\\grave");
   defineSymbol(math, main, accent, "\u00a8", "\\ddot");
@@ -29818,7 +30151,7 @@
 
   defineSymbol(text$3, main, accent, "\u02c7", "\\v"); // caron
 
-  defineSymbol(text$3, main, accent, "\u00a8", '\\"'); // diaresis
+  defineSymbol(text$3, main, accent, "\u00a8", '\\"'); // diaeresis
 
   defineSymbol(text$3, main, accent, "\u02dd", "\\H"); // double acute
 
@@ -30691,6 +31024,10 @@
       variant: "italic",
       fontName: "Math-Italic"
     },
+    "mathsfit": {
+      variant: "sans-serif-italic",
+      fontName: "SansSerif-Italic"
+    },
     // "boldsymbol" is missing because they require the use of multiple fonts:
     // Math-BoldItalic and Main-Bold.  This is handled by a special case in
     // makeOrd which ends up calling boldsymbol.
@@ -31058,9 +31395,9 @@
       var prevType = prev.classes[0];
       var type = node.classes[0];
 
-      if (prevType === "mbin" && utils.contains(binRightCanceller, type)) {
+      if (prevType === "mbin" && binRightCanceller.includes(type)) {
         prev.classes[0] = "mord";
-      } else if (type === "mbin" && utils.contains(binLeftCanceller, prevType)) {
+      } else if (type === "mbin" && binLeftCanceller.includes(prevType)) {
         node.classes[0] = "mord";
       }
     }, {
@@ -31404,7 +31741,19 @@
       }
 
       for (var i = 0; i < this.children.length; i++) {
-        node.appendChild(this.children[i].toNode());
+        // Combine multiple TextNodes into one TextNode, to prevent
+        // screen readers from reading each as a separate word [#3995]
+        if (this.children[i] instanceof TextNode && this.children[i + 1] instanceof TextNode) {
+          var text = this.children[i].toText() + this.children[++i].toText();
+
+          while (this.children[i + 1] instanceof TextNode) {
+            text += this.children[++i].toText();
+          }
+
+          node.appendChild(new TextNode(text).toNode());
+        } else {
+          node.appendChild(this.children[i].toNode());
+        }
       }
 
       return node;
@@ -31643,6 +31992,8 @@
       return "bold";
     } else if (font === "mathbb") {
       return "double-struck";
+    } else if (font === "mathsfit") {
+      return "sans-serif-italic";
     } else if (font === "mathfrak") {
       return "fraktur";
     } else if (font === "mathscr" || font === "mathcal") {
@@ -31656,7 +32007,7 @@
 
     var text = group.text;
 
-    if (utils.contains(["\\imath", "\\jmath"], text)) {
+    if (["\\imath", "\\jmath"].includes(text)) {
       return null;
     }
 
@@ -31673,10 +32024,32 @@
     return null;
   };
   /**
+   * Check for <mi>.</mi> which is how a dot renders in MathML,
+   * or <mo separator="true" lspace="0em" rspace="0em">,</mo>
+   * which is how a braced comma {,} renders in MathML
+   */
+
+  function isNumberPunctuation(group) {
+    if (!group) {
+      return false;
+    }
+
+    if (group.type === 'mi' && group.children.length === 1) {
+      var child = group.children[0];
+      return child instanceof TextNode && child.text === '.';
+    } else if (group.type === 'mo' && group.children.length === 1 && group.getAttribute('separator') === 'true' && group.getAttribute('lspace') === '0em' && group.getAttribute('rspace') === '0em') {
+      var _child = group.children[0];
+      return _child instanceof TextNode && _child.text === ',';
+    } else {
+      return false;
+    }
+  }
+  /**
    * Takes a list of nodes, builds them, and returns a list of the generated
    * MathML nodes.  Also combine consecutive <mtext> outputs into a single
    * <mtext> tag.
    */
+
 
   var buildExpression = function buildExpression(expression, options, isOrdgroup) {
     if (expression.length === 1) {
@@ -31706,22 +32079,30 @@
         } else if (_group.type === 'mn' && lastGroup.type === 'mn') {
           lastGroup.children.push(..._group.children);
           continue; // Concatenate <mn>...</mn> followed by <mi>.</mi>
-        } else if (_group.type === 'mi' && _group.children.length === 1 && lastGroup.type === 'mn') {
-          var child = _group.children[0];
+        } else if (isNumberPunctuation(_group) && lastGroup.type === 'mn') {
+          lastGroup.children.push(..._group.children);
+          continue; // Concatenate <mi>.</mi> followed by <mn>...</mn>
+        } else if (_group.type === 'mn' && isNumberPunctuation(lastGroup)) {
+          _group.children = [...lastGroup.children, ..._group.children];
+          groups.pop(); // Put preceding <mn>...</mn> or <mi>.</mi> inside base of
+          // <msup><mn>...base...</mn>...exponent...</msup> (or <msub>)
+        } else if ((_group.type === 'msup' || _group.type === 'msub') && _group.children.length >= 1 && (lastGroup.type === 'mn' || isNumberPunctuation(lastGroup))) {
+          var base = _group.children[0];
 
-          if (child instanceof TextNode && child.text === '.') {
-            lastGroup.children.push(..._group.children);
-            continue;
-          }
+          if (base instanceof MathNode && base.type === 'mn') {
+            base.children = [...lastGroup.children, ...base.children];
+            groups.pop();
+          } // \not
+
         } else if (lastGroup.type === 'mi' && lastGroup.children.length === 1) {
           var lastChild = lastGroup.children[0];
 
           if (lastChild instanceof TextNode && lastChild.text === '\u0338' && (_group.type === 'mo' || _group.type === 'mi' || _group.type === 'mn')) {
-            var _child = _group.children[0];
+            var child = _group.children[0];
 
-            if (_child instanceof TextNode && _child.text.length > 0) {
+            if (child instanceof TextNode && child.text.length > 0) {
               // Overlay with combining character long solidus
-              _child.text = _child.text.slice(0, 1) + "\u0338" + _child.text.slice(1);
+              child.text = child.text.slice(0, 1) + "\u0338" + child.text.slice(1);
               groups.pop();
             }
           }
@@ -31781,7 +32162,7 @@
 
     var wrapper;
 
-    if (expression.length === 1 && expression[0] instanceof MathNode && utils.contains(["mrow", "mtable"], expression[0].type)) {
+    if (expression.length === 1 && expression[0] instanceof MathNode && ["mrow", "mtable"].includes(expression[0].type)) {
       wrapper = expression[0];
     } else {
       wrapper = new mathMLTree.MathNode("mrow", expression);
@@ -32017,7 +32398,7 @@
 
       var label = group.label.slice(1);
 
-      if (utils.contains(["widehat", "widecheck", "widetilde", "utilde"], label)) {
+      if (["widehat", "widecheck", "widetilde", "utilde"].includes(label)) {
         // Each type in the `if` statement corresponds to one of the ParseNode
         // types below. This narrowing is required to access `grp.base`.
         // $FlowFixMe
@@ -33816,11 +34197,11 @@
       top = "\\Uparrow";
       repeat = "\u2016";
       bottom = "\\Downarrow";
-    } else if (utils.contains(verts, delim)) {
+    } else if (verts.includes(delim)) {
       repeat = "\u2223";
       svgLabel = "vert";
       viewBoxWidth = 333;
-    } else if (utils.contains(doubleVerts, delim)) {
+    } else if (doubleVerts.includes(delim)) {
       repeat = "\u2225";
       svgLabel = "doublevert";
       viewBoxWidth = 556;
@@ -34127,9 +34508,9 @@
     } // Sized delimiters are never centered.
 
 
-    if (utils.contains(stackLargeDelimiters, delim) || utils.contains(stackNeverDelimiters, delim)) {
+    if (stackLargeDelimiters.includes(delim) || stackNeverDelimiters.includes(delim)) {
       return makeLargeDelim(delim, size, false, options, mode, classes);
-    } else if (utils.contains(stackAlwaysDelimiters, delim)) {
+    } else if (stackAlwaysDelimiters.includes(delim)) {
       return makeStackedDelim(delim, sizeToMaxHeight[size], false, options, mode, classes);
     } else {
       throw new ParseError("Illegal delimiter: '" + delim + "'");
@@ -34279,9 +34660,9 @@
 
     var sequence;
 
-    if (utils.contains(stackNeverDelimiters, delim)) {
+    if (stackNeverDelimiters.includes(delim)) {
       sequence = stackNeverDelimiterSequence;
-    } else if (utils.contains(stackLargeDelimiters, delim)) {
+    } else if (stackLargeDelimiters.includes(delim)) {
       sequence = stackLargeDelimiterSequence;
     } else {
       sequence = stackAlwaysDelimiterSequence;
@@ -34411,7 +34792,7 @@
   function checkDelimiter(delim, context) {
     var symDelim = checkSymbolNodeType(delim);
 
-    if (symDelim && utils.contains(delimiters, symDelim.text)) {
+    if (symDelim && delimiters.includes(symDelim.text)) {
       return symDelim;
     } else if (symDelim) {
       throw new ParseError("Invalid delimiter '" + symDelim.text + "' after '" + context.funcName + "'", delim);
@@ -36104,7 +36485,7 @@
     },
 
     handler(context) {
-      if (utils.contains(["gather", "gather*"], context.envName)) {
+      if (["gather", "gather*"].includes(context.envName)) {
         validateAmsEnvironmentContext(context);
       }
 
@@ -36287,7 +36668,7 @@
   defineFunction({
     type: "font",
     names: [// styles, except \boldsymbol defined below
-    "\\mathrm", "\\mathit", "\\mathbf", "\\mathnormal", // families
+    "\\mathrm", "\\mathit", "\\mathbf", "\\mathnormal", "\\mathsfit", // families
     "\\mathbb", "\\mathcal", "\\mathfrak", "\\mathscr", "\\mathsf", "\\mathtt", // aliases, except \bm defined below
     "\\Bbb", "\\bold", "\\frak"],
     props: {
@@ -37846,7 +38227,7 @@
     var style = options.style;
     var large = false;
 
-    if (style.size === Style$1.DISPLAY.size && group.symbol && !utils.contains(noSuccessor, group.name)) {
+    if (style.size === Style$1.DISPLAY.size && group.symbol && !noSuccessor.includes(group.name)) {
       // Most symbol operators get larger in displaystyle (rule 13)
       large = true;
     }
@@ -37947,7 +38328,7 @@
       // This is a symbol. Just add the symbol.
       node = new MathNode("mo", [makeText(group.name, group.mode)]);
 
-      if (utils.contains(noSuccessor, group.name)) {
+      if (noSuccessor.includes(group.name)) {
         node.setAttribute("largeop", "false");
       }
     } else if (group.body) {
@@ -38521,7 +38902,8 @@
     names: ["\\relax"],
     props: {
       numArgs: 0,
-      allowedInText: true
+      allowedInText: true,
+      allowedInArgument: true
     },
 
     handler(_ref) {
@@ -38542,6 +38924,8 @@
     props: {
       numArgs: 2,
       numOptionalArgs: 1,
+      allowedInText: true,
+      allowedInMath: true,
       argTypes: ["size", "size", "size"]
     },
 
@@ -39145,7 +39529,7 @@
     },
 
     mathmlBuilder(group, options) {
-      // Is the inner group a relevant horizonal brace?
+      // Is the inner group a relevant horizontal brace?
       var isBrace = false;
       var isOver;
       var isSup;
@@ -40056,7 +40440,7 @@
   // \renewcommand{\macro}[args]{definition}
   // TODO: Optional arguments: \newcommand{\macro}[args][default]{definition}
 
-  var newcommand = (context, existsOK, nonexistsOK) => {
+  var newcommand = (context, existsOK, nonexistsOK, skipIfExists) => {
     var arg = context.consumeArg().tokens;
 
     if (arg.length !== 1) {
@@ -40093,19 +40477,22 @@
 
       numArgs = parseInt(argText);
       arg = context.consumeArg().tokens;
-    } // Final arg is the expansion of the macro
+    }
 
+    if (!(exists && skipIfExists)) {
+      // Final arg is the expansion of the macro
+      context.macros.set(name, {
+        tokens: arg,
+        numArgs
+      });
+    }
 
-    context.macros.set(name, {
-      tokens: arg,
-      numArgs
-    });
     return '';
   };
 
-  defineMacro("\\newcommand", context => newcommand(context, false, true));
-  defineMacro("\\renewcommand", context => newcommand(context, true, false));
-  defineMacro("\\providecommand", context => newcommand(context, true, true)); // terminal (console) tools
+  defineMacro("\\newcommand", context => newcommand(context, false, true, false));
+  defineMacro("\\renewcommand", context => newcommand(context, true, false, false));
+  defineMacro("\\providecommand", context => newcommand(context, true, true, true)); // terminal (console) tools
 
   defineMacro("\\message", context => {
     var arg = context.consumeArgs(1)[0]; // eslint-disable-next-line no-console
@@ -40226,7 +40613,7 @@
   // We'll call \varvdots, which gets a glyph from symbols.js.
   // The zero-width rule gets us an equivalent to the vertical 6pt kern.
 
-  defineMacro("\\vdots", "\\mathord{\\varvdots\\rule{0pt}{15pt}}");
+  defineMacro("\\vdots", "{\\varvdots\\rule{0pt}{15pt}}");
   defineMacro("\u22ee", "\\vdots"); //////////////////////////////////////////////////////////////////////
   // amsmath.sty
   // http://mirrors.concertpass.com/tex-archive/macros/latex/required/amsmath/amsmath.pdf
@@ -40256,7 +40643,12 @@
 
   defineMacro("\\iff", "\\DOTSB\\;\\Longleftrightarrow\\;");
   defineMacro("\\implies", "\\DOTSB\\;\\Longrightarrow\\;");
-  defineMacro("\\impliedby", "\\DOTSB\\;\\Longleftarrow\\;"); // AMSMath's automatic \dots, based on \mdots@@ macro.
+  defineMacro("\\impliedby", "\\DOTSB\\;\\Longleftarrow\\;"); // \def\dddot#1{{\mathop{#1}\limits^{\vbox to-1.4\ex@{\kern-\tw@\ex@
+  //  \hbox{\normalfont ...}\vss}}}}
+  // We use \overset which avoids the vertical shift of \mathop.
+
+  defineMacro("\\dddot", "{\\overset{\\raisebox{-0.1ex}{\\normalsize ...}}{#1}}");
+  defineMacro("\\ddddot", "{\\overset{\\raisebox{-0.1ex}{\\normalsize ....}}{#1}}"); // AMSMath's automatic \dots, based on \mdots@@ macro.
 
   var dotsByToken = {
     ',': '\\dotsc',
@@ -40327,7 +40719,7 @@
     } else if (next.slice(0, 4) === '\\not') {
       thedots = '\\dotsb';
     } else if (next in symbols.math) {
-      if (utils.contains(['bin', 'rel'], symbols.math[next].group)) {
+      if (['bin', 'rel'].includes(symbols.math[next].group)) {
         thedots = '\\dotsb';
       }
     }
@@ -40972,7 +41364,7 @@
 
       this.pushToken(new Token$1("EOF", end.loc));
       this.pushTokens(tokens);
-      return start.range(end, "");
+      return new Token$1("", SourceLocation.range(start, end));
     }
     /**
      * Consume all following space tokens, without expansion.
@@ -42046,6 +42438,7 @@
         if (!atom) {
           break;
         } else if (atom.type === "internal") {
+          // Internal nodes do not appear in parse tree
           continue;
         }
 
@@ -42132,8 +42525,15 @@
       var symbol = symbolToken.text;
       this.consume();
       this.consumeSpaces(); // ignore spaces before sup/subscript argument
+      // Skip over allowed internal nodes such as \relax
 
-      var group = this.parseGroup(name);
+      var group;
+
+      do {
+        var _group;
+
+        group = this.parseGroup(name);
+      } while (((_group = group) == null ? void 0 : _group.type) === "internal");
 
       if (!group) {
         throw new ParseError("Expected group after '" + symbol + "'", symbolToken);
@@ -42179,7 +42579,13 @@
     parseAtom(breakOnTokenText) {
       // The body of an atom is an implicit group, so that things like
       // \left(x\right)^2 work correctly.
-      var base = this.parseGroup("atom", breakOnTokenText); // In text mode, we don't have superscripts or subscripts
+      var base = this.parseGroup("atom", breakOnTokenText); // Internal nodes (e.g. \relax) cannot support super/subscripts.
+      // Instead we will pick up super/subscripts with blank base next round.
+
+      if ((base == null ? void 0 : base.type) === "internal") {
+        return base;
+      } // In text mode, we don't have superscripts or subscripts
+
 
       if (this.mode === "text") {
         return base;
@@ -42466,13 +42872,13 @@
               throw new ParseError("A primitive argument cannot be optional");
             }
 
-            var _group = this.parseGroup(name);
+            var _group2 = this.parseGroup(name);
 
-            if (_group == null) {
+            if (_group2 == null) {
               throw new ParseError("Expected group as " + name, this.fetch());
             }
 
-            return _group;
+            return _group2;
           }
 
         case "original":
@@ -42559,7 +42965,7 @@
         return null;
       }
 
-      var match = /^(#[a-f0-9]{3}|#?[a-f0-9]{6}|[a-z]+)$/i.exec(res.text);
+      var match = /^(#[a-f0-9]{3,4}|#[a-f0-9]{6}|#[a-f0-9]{8}|[a-f0-9]{6}|[a-z]+)$/i.exec(res.text);
 
       if (!match) {
         throw new ParseError("Invalid color: '" + res.text + "'", res);
@@ -43089,11 +43495,21 @@
     }
   };
 
+  var version = "0.16.25";
+  var __domTree = {
+    Span,
+    Anchor,
+    SymbolNode,
+    SvgNode,
+    PathNode,
+    LineNode
+  }; // ESM exports
+
   var katex = {
     /**
      * Current KaTeX version
      */
-    version: "0.16.11",
+    version,
 
     /**
      * Renders the given LaTeX into an HTML+MathML combination, and adds
@@ -43113,7 +43529,7 @@
     ParseError,
 
     /**
-     * The shema of Settings
+     * The schema of Settings
      */
     SETTINGS_SCHEMA,
 
@@ -43173,18 +43589,11 @@
     /**
      * Expose the dom tree node types, which can be useful for type checking nodes.
      *
-     * NOTE: This method is not currently recommended for public use.
+     * NOTE: These methods are not currently recommended for public use.
      * The internal tree representation is unstable and is very likely
      * to change. Use at your own risk.
      */
-    __domTree: {
-      Span,
-      Anchor,
-      SymbolNode,
-      SvgNode,
-      PathNode,
-      LineNode
-    }
+    __domTree
   };
 
   /**
@@ -43449,26 +43858,16 @@
   }
 
   /**
-   * @typedef {import('hast').Element} Element
-   * @typedef {import('hast').ElementData} ElementData
-   * @typedef {import('hast').Nodes} Nodes
-   * @typedef {import('hast').Root} Root
-   * @typedef {import('hast').RootContent} RootContent
-   *
-   * @typedef {import('parse5').DefaultTreeAdapterMap} DefaultTreeAdapterMap
-   * @typedef {import('parse5').Token.ElementLocation} P5ElementLocation
-   * @typedef {import('parse5').Token.Location} P5Location
-   *
-   * @typedef {import('property-information').Schema} Schema
-   *
-   * @typedef {import('unist').Point} Point
-   * @typedef {import('unist').Position} Position
-   *
-   * @typedef {import('vfile').VFile} VFile
+   * @import {ElementData, Element, Nodes, RootContent, Root} from 'hast'
+   * @import {DefaultTreeAdapterMap, Token} from 'parse5'
+   * @import {Schema} from 'property-information'
+   * @import {Point, Position} from 'unist'
+   * @import {VFile} from 'vfile'
+   * @import {Options} from 'hast-util-from-parse5'
    */
 
 
-  const own$7 = {}.hasOwnProperty;
+  const own$9 = {}.hasOwnProperty;
   /** @type {unknown} */
   // type-coverage:ignore-next-line
   const proto = Object.prototype;
@@ -43476,7 +43875,7 @@
   /**
    * Transform a `parse5` AST to hast.
    *
-   * @param {P5Node} tree
+   * @param {DefaultTreeAdapterMap['node']} tree
    *   `parse5` tree to transform.
    * @param {Options | null | undefined} [options]
    *   Configuration (optional).
@@ -43490,7 +43889,7 @@
       {
         file: settings.file || undefined,
         location: false,
-        schema: settings.space === 'svg' ? svg : html$2,
+        schema: settings.space === 'svg' ? svg$3 : html$6,
         verbose: settings.verbose || false
       },
       tree
@@ -43502,7 +43901,7 @@
    *
    * @param {State} state
    *   Info passed around about the current state.
-   * @param {P5Node} node
+   * @param {DefaultTreeAdapterMap['node']} node
    *   p5 node.
    * @returns {Nodes}
    *   hast node.
@@ -43513,7 +43912,9 @@
 
     switch (node.nodeName) {
       case '#comment': {
-        const reference = /** @type {P5Comment} */ (node);
+        const reference = /** @type {DefaultTreeAdapterMap['commentNode']} */ (
+          node
+        );
         result = {type: 'comment', value: reference.data};
         patch$1(state, reference, result);
         return result
@@ -43521,7 +43922,10 @@
 
       case '#document':
       case '#document-fragment': {
-        const reference = /** @type {P5Document | P5DocumentFragment} */ (node);
+        const reference =
+          /** @type {DefaultTreeAdapterMap['document'] | DefaultTreeAdapterMap['documentFragment']} */ (
+            node
+          );
         const quirksMode =
           'mode' in reference
             ? reference.mode === 'quirks' || reference.mode === 'limited-quirks'
@@ -43534,10 +43938,10 @@
         };
 
         if (state.file && state.location) {
-          const doc = String(state.file);
-          const loc = location(doc);
+          const document = String(state.file);
+          const loc = location(document);
           const start = loc.toPoint(0);
-          const end = loc.toPoint(doc.length);
+          const end = loc.toPoint(document.length);
           result.position = {start, end};
         }
 
@@ -43545,14 +43949,16 @@
       }
 
       case '#documentType': {
-        const reference = /** @type {P5DocumentType} */ (node);
+        const reference = /** @type {DefaultTreeAdapterMap['documentType']} */ (
+          node
+        );
         result = {type: 'doctype'};
         patch$1(state, reference, result);
         return result
       }
 
       case '#text': {
-        const reference = /** @type {P5Text} */ (node);
+        const reference = /** @type {DefaultTreeAdapterMap['textNode']} */ (node);
         result = {type: 'text', value: reference.value};
         patch$1(state, reference, result);
         return result
@@ -43560,7 +43966,7 @@
 
       // Element.
       default: {
-        const reference = /** @type {P5Element} */ (node);
+        const reference = /** @type {DefaultTreeAdapterMap['element']} */ (node);
         result = element$3(state, reference);
         return result
       }
@@ -43572,7 +43978,7 @@
    *
    * @param {State} state
    *   Info passed around about the current state.
-   * @param {Array<P5Node>} nodes
+   * @param {Array<DefaultTreeAdapterMap['node']>} nodes
    *   Nodes.
    * @returns {Array<RootContent>}
    *   hast nodes.
@@ -43596,7 +44002,7 @@
    *
    * @param {State} state
    *   Info passed around about the current state.
-   * @param {P5Element} node
+   * @param {DefaultTreeAdapterMap['element']} node
    *   `parse5` node to transform.
    * @returns {Element}
    *   hast node.
@@ -43604,30 +44010,30 @@
   function element$3(state, node) {
     const schema = state.schema;
 
-    state.schema = node.namespaceURI === webNamespaces.svg ? svg : html$2;
+    state.schema = node.namespaceURI === webNamespaces.svg ? svg$3 : html$6;
 
     // Props.
     let index = -1;
     /** @type {Record<string, string>} */
-    const props = {};
+    const properties = {};
 
     while (++index < node.attrs.length) {
       const attribute = node.attrs[index];
       const name =
         (attribute.prefix ? attribute.prefix + ':' : '') + attribute.name;
-      if (!own$7.call(proto, name)) {
-        props[name] = attribute.value;
+      if (!own$9.call(proto, name)) {
+        properties[name] = attribute.value;
       }
     }
 
     // Build.
-    const fn = state.schema.space === 'svg' ? s$1 : h$1;
-    const result = fn(node.tagName, props, all$5(state, node.childNodes));
+    const x = state.schema.space === 'svg' ? s$1 : h$1;
+    const result = x(node.tagName, properties, all$5(state, node.childNodes));
     patch$1(state, node, result);
 
     // Switch content.
     if (result.tagName === 'template') {
-      const reference = /** @type {P5Template} */ (node);
+      const reference = /** @type {DefaultTreeAdapterMap['template']} */ (node);
       const pos = reference.sourceCodeLocation;
       const startTag = pos && pos.startTag && position(pos.startTag);
       const endTag = pos && pos.endTag && position(pos.endTag);
@@ -43652,7 +44058,7 @@
    *
    * @param {State} state
    *   Info passed around about the current state.
-   * @param {P5Node} from
+   * @param {DefaultTreeAdapterMap['node']} from
    *   p5 node.
    * @param {Nodes} to
    *   hast node.
@@ -43677,7 +44083,7 @@
    *   Info passed around about the current state.
    * @param {Nodes} node
    *   hast node.
-   * @param {P5ElementLocation} location
+   * @param {Token.ElementLocation} location
    *   p5 location info.
    * @returns {Position | undefined}
    *   Position, or nothing.
@@ -43702,14 +44108,14 @@
 
       if (state.verbose) {
         /** @type {Record<string, Position | undefined>} */
-        const props = {};
+        const properties = {};
         /** @type {string} */
         let key;
 
         if (location.attrs) {
           for (key in location.attrs) {
-            if (own$7.call(location.attrs, key)) {
-              props[find(state.schema, key).property] = position(
+            if (own$9.call(location.attrs, key)) {
+              properties[find$2(state.schema, key).property] = position(
                 location.attrs[key]
               );
             }
@@ -43722,7 +44128,7 @@
         /** @type {ElementData['position']} */
         const data = {opening};
         if (closing) data.closing = closing;
-        data.properties = props;
+        data.properties = properties;
 
         node.data = {position: data};
       }
@@ -43734,7 +44140,7 @@
   /**
    * Turn a p5 location into a position.
    *
-   * @param {P5Location} loc
+   * @param {Token.Location} loc
    *   Location.
    * @returns {Position | undefined}
    *   Position or nothing.
@@ -43769,6 +44175,1268 @@
   }
 
   /**
+   * @typedef {import('./info.js').Info} Info
+   * @typedef {Record<string, Info>} Properties
+   * @typedef {Record<string, string>} Normal
+   */
+
+  let Schema$1 = class Schema {
+    /**
+     * @constructor
+     * @param {Properties} property
+     * @param {Normal} normal
+     * @param {string} [space]
+     */
+    constructor(property, normal, space) {
+      this.property = property;
+      this.normal = normal;
+      if (space) {
+        this.space = space;
+      }
+    }
+  };
+
+  /** @type {Properties} */
+  Schema$1.prototype.property = {};
+  /** @type {Normal} */
+  Schema$1.prototype.normal = {};
+  /** @type {string|null} */
+  Schema$1.prototype.space = null;
+
+  /**
+   * @typedef {import('./schema.js').Properties} Properties
+   * @typedef {import('./schema.js').Normal} Normal
+   */
+
+
+  /**
+   * @param {Schema[]} definitions
+   * @param {string} [space]
+   * @returns {Schema}
+   */
+  function merge$1(definitions, space) {
+    /** @type {Properties} */
+    const property = {};
+    /** @type {Normal} */
+    const normal = {};
+    let index = -1;
+
+    while (++index < definitions.length) {
+      Object.assign(property, definitions[index].property);
+      Object.assign(normal, definitions[index].normal);
+    }
+
+    return new Schema$1(property, normal, space)
+  }
+
+  /**
+   * @param {string} value
+   * @returns {string}
+   */
+  function normalize$1(value) {
+    return value.toLowerCase()
+  }
+
+  let Info$1 = class Info {
+    /**
+     * @constructor
+     * @param {string} property
+     * @param {string} attribute
+     */
+    constructor(property, attribute) {
+      /** @type {string} */
+      this.property = property;
+      /** @type {string} */
+      this.attribute = attribute;
+    }
+  };
+
+  /** @type {string|null} */
+  Info$1.prototype.space = null;
+  Info$1.prototype.boolean = false;
+  Info$1.prototype.booleanish = false;
+  Info$1.prototype.overloadedBoolean = false;
+  Info$1.prototype.number = false;
+  Info$1.prototype.commaSeparated = false;
+  Info$1.prototype.spaceSeparated = false;
+  Info$1.prototype.commaOrSpaceSeparated = false;
+  Info$1.prototype.mustUseProperty = false;
+  Info$1.prototype.defined = false;
+
+  let powers$1 = 0;
+
+  const boolean$1 = increment$1();
+  const booleanish$1 = increment$1();
+  const overloadedBoolean$1 = increment$1();
+  const number$1 = increment$1();
+  const spaceSeparated$1 = increment$1();
+  const commaSeparated$1 = increment$1();
+  const commaOrSpaceSeparated$1 = increment$1();
+
+  function increment$1() {
+    return 2 ** ++powers$1
+  }
+
+  var types$1 = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    boolean: boolean$1,
+    booleanish: booleanish$1,
+    commaOrSpaceSeparated: commaOrSpaceSeparated$1,
+    commaSeparated: commaSeparated$1,
+    number: number$1,
+    overloadedBoolean: overloadedBoolean$1,
+    spaceSeparated: spaceSeparated$1
+  });
+
+  /** @type {Array<keyof types>} */
+  // @ts-expect-error: hush.
+  const checks$1 = Object.keys(types$1);
+
+  let DefinedInfo$1 = class DefinedInfo extends Info$1 {
+    /**
+     * @constructor
+     * @param {string} property
+     * @param {string} attribute
+     * @param {number|null} [mask]
+     * @param {string} [space]
+     */
+    constructor(property, attribute, mask, space) {
+      let index = -1;
+
+      super(property, attribute);
+
+      mark$1(this, 'space', space);
+
+      if (typeof mask === 'number') {
+        while (++index < checks$1.length) {
+          const check = checks$1[index];
+          mark$1(this, checks$1[index], (mask & types$1[check]) === types$1[check]);
+        }
+      }
+    }
+  };
+
+  DefinedInfo$1.prototype.defined = true;
+
+  /**
+   * @param {DefinedInfo} values
+   * @param {string} key
+   * @param {unknown} value
+   */
+  function mark$1(values, key, value) {
+    if (value) {
+      // @ts-expect-error: assume `value` matches the expected value of `key`.
+      values[key] = value;
+    }
+  }
+
+  /**
+   * @typedef {import('./schema.js').Properties} Properties
+   * @typedef {import('./schema.js').Normal} Normal
+   *
+   * @typedef {Record<string, string>} Attributes
+   *
+   * @typedef {Object} Definition
+   * @property {Record<string, number|null>} properties
+   * @property {(attributes: Attributes, property: string) => string} transform
+   * @property {string} [space]
+   * @property {Attributes} [attributes]
+   * @property {Array<string>} [mustUseProperty]
+   */
+
+
+  const own$8 = {}.hasOwnProperty;
+
+  /**
+   * @param {Definition} definition
+   * @returns {Schema}
+   */
+  function create$1(definition) {
+    /** @type {Properties} */
+    const property = {};
+    /** @type {Normal} */
+    const normal = {};
+    /** @type {string} */
+    let prop;
+
+    for (prop in definition.properties) {
+      if (own$8.call(definition.properties, prop)) {
+        const value = definition.properties[prop];
+        const info = new DefinedInfo$1(
+          prop,
+          definition.transform(definition.attributes || {}, prop),
+          value,
+          definition.space
+        );
+
+        if (
+          definition.mustUseProperty &&
+          definition.mustUseProperty.includes(prop)
+        ) {
+          info.mustUseProperty = true;
+        }
+
+        property[prop] = info;
+
+        normal[normalize$1(prop)] = prop;
+        normal[normalize$1(info.attribute)] = prop;
+      }
+    }
+
+    return new Schema$1(property, normal, definition.space)
+  }
+
+  const xlink$1 = create$1({
+    space: 'xlink',
+    transform(_, prop) {
+      return 'xlink:' + prop.slice(5).toLowerCase()
+    },
+    properties: {
+      xLinkActuate: null,
+      xLinkArcRole: null,
+      xLinkHref: null,
+      xLinkRole: null,
+      xLinkShow: null,
+      xLinkTitle: null,
+      xLinkType: null
+    }
+  });
+
+  const xml$1 = create$1({
+    space: 'xml',
+    transform(_, prop) {
+      return 'xml:' + prop.slice(3).toLowerCase()
+    },
+    properties: {xmlLang: null, xmlBase: null, xmlSpace: null}
+  });
+
+  /**
+   * @param {Record<string, string>} attributes
+   * @param {string} attribute
+   * @returns {string}
+   */
+  function caseSensitiveTransform$1(attributes, attribute) {
+    return attribute in attributes ? attributes[attribute] : attribute
+  }
+
+  /**
+   * @param {Record<string, string>} attributes
+   * @param {string} property
+   * @returns {string}
+   */
+  function caseInsensitiveTransform$1(attributes, property) {
+    return caseSensitiveTransform$1(attributes, property.toLowerCase())
+  }
+
+  const xmlns$1 = create$1({
+    space: 'xmlns',
+    attributes: {xmlnsxlink: 'xmlns:xlink'},
+    transform: caseInsensitiveTransform$1,
+    properties: {xmlns: null, xmlnsXLink: null}
+  });
+
+  const aria$1 = create$1({
+    transform(_, prop) {
+      return prop === 'role' ? prop : 'aria-' + prop.slice(4).toLowerCase()
+    },
+    properties: {
+      ariaActiveDescendant: null,
+      ariaAtomic: booleanish$1,
+      ariaAutoComplete: null,
+      ariaBusy: booleanish$1,
+      ariaChecked: booleanish$1,
+      ariaColCount: number$1,
+      ariaColIndex: number$1,
+      ariaColSpan: number$1,
+      ariaControls: spaceSeparated$1,
+      ariaCurrent: null,
+      ariaDescribedBy: spaceSeparated$1,
+      ariaDetails: null,
+      ariaDisabled: booleanish$1,
+      ariaDropEffect: spaceSeparated$1,
+      ariaErrorMessage: null,
+      ariaExpanded: booleanish$1,
+      ariaFlowTo: spaceSeparated$1,
+      ariaGrabbed: booleanish$1,
+      ariaHasPopup: null,
+      ariaHidden: booleanish$1,
+      ariaInvalid: null,
+      ariaKeyShortcuts: null,
+      ariaLabel: null,
+      ariaLabelledBy: spaceSeparated$1,
+      ariaLevel: number$1,
+      ariaLive: null,
+      ariaModal: booleanish$1,
+      ariaMultiLine: booleanish$1,
+      ariaMultiSelectable: booleanish$1,
+      ariaOrientation: null,
+      ariaOwns: spaceSeparated$1,
+      ariaPlaceholder: null,
+      ariaPosInSet: number$1,
+      ariaPressed: booleanish$1,
+      ariaReadOnly: booleanish$1,
+      ariaRelevant: null,
+      ariaRequired: booleanish$1,
+      ariaRoleDescription: spaceSeparated$1,
+      ariaRowCount: number$1,
+      ariaRowIndex: number$1,
+      ariaRowSpan: number$1,
+      ariaSelected: booleanish$1,
+      ariaSetSize: number$1,
+      ariaSort: null,
+      ariaValueMax: number$1,
+      ariaValueMin: number$1,
+      ariaValueNow: number$1,
+      ariaValueText: null,
+      role: null
+    }
+  });
+
+  const html$5 = create$1({
+    space: 'html',
+    attributes: {
+      acceptcharset: 'accept-charset',
+      classname: 'class',
+      htmlfor: 'for',
+      httpequiv: 'http-equiv'
+    },
+    transform: caseInsensitiveTransform$1,
+    mustUseProperty: ['checked', 'multiple', 'muted', 'selected'],
+    properties: {
+      // Standard Properties.
+      abbr: null,
+      accept: commaSeparated$1,
+      acceptCharset: spaceSeparated$1,
+      accessKey: spaceSeparated$1,
+      action: null,
+      allow: null,
+      allowFullScreen: boolean$1,
+      allowPaymentRequest: boolean$1,
+      allowUserMedia: boolean$1,
+      alt: null,
+      as: null,
+      async: boolean$1,
+      autoCapitalize: null,
+      autoComplete: spaceSeparated$1,
+      autoFocus: boolean$1,
+      autoPlay: boolean$1,
+      blocking: spaceSeparated$1,
+      capture: null,
+      charSet: null,
+      checked: boolean$1,
+      cite: null,
+      className: spaceSeparated$1,
+      cols: number$1,
+      colSpan: null,
+      content: null,
+      contentEditable: booleanish$1,
+      controls: boolean$1,
+      controlsList: spaceSeparated$1,
+      coords: number$1 | commaSeparated$1,
+      crossOrigin: null,
+      data: null,
+      dateTime: null,
+      decoding: null,
+      default: boolean$1,
+      defer: boolean$1,
+      dir: null,
+      dirName: null,
+      disabled: boolean$1,
+      download: overloadedBoolean$1,
+      draggable: booleanish$1,
+      encType: null,
+      enterKeyHint: null,
+      fetchPriority: null,
+      form: null,
+      formAction: null,
+      formEncType: null,
+      formMethod: null,
+      formNoValidate: boolean$1,
+      formTarget: null,
+      headers: spaceSeparated$1,
+      height: number$1,
+      hidden: boolean$1,
+      high: number$1,
+      href: null,
+      hrefLang: null,
+      htmlFor: spaceSeparated$1,
+      httpEquiv: spaceSeparated$1,
+      id: null,
+      imageSizes: null,
+      imageSrcSet: null,
+      inert: boolean$1,
+      inputMode: null,
+      integrity: null,
+      is: null,
+      isMap: boolean$1,
+      itemId: null,
+      itemProp: spaceSeparated$1,
+      itemRef: spaceSeparated$1,
+      itemScope: boolean$1,
+      itemType: spaceSeparated$1,
+      kind: null,
+      label: null,
+      lang: null,
+      language: null,
+      list: null,
+      loading: null,
+      loop: boolean$1,
+      low: number$1,
+      manifest: null,
+      max: null,
+      maxLength: number$1,
+      media: null,
+      method: null,
+      min: null,
+      minLength: number$1,
+      multiple: boolean$1,
+      muted: boolean$1,
+      name: null,
+      nonce: null,
+      noModule: boolean$1,
+      noValidate: boolean$1,
+      onAbort: null,
+      onAfterPrint: null,
+      onAuxClick: null,
+      onBeforeMatch: null,
+      onBeforePrint: null,
+      onBeforeToggle: null,
+      onBeforeUnload: null,
+      onBlur: null,
+      onCancel: null,
+      onCanPlay: null,
+      onCanPlayThrough: null,
+      onChange: null,
+      onClick: null,
+      onClose: null,
+      onContextLost: null,
+      onContextMenu: null,
+      onContextRestored: null,
+      onCopy: null,
+      onCueChange: null,
+      onCut: null,
+      onDblClick: null,
+      onDrag: null,
+      onDragEnd: null,
+      onDragEnter: null,
+      onDragExit: null,
+      onDragLeave: null,
+      onDragOver: null,
+      onDragStart: null,
+      onDrop: null,
+      onDurationChange: null,
+      onEmptied: null,
+      onEnded: null,
+      onError: null,
+      onFocus: null,
+      onFormData: null,
+      onHashChange: null,
+      onInput: null,
+      onInvalid: null,
+      onKeyDown: null,
+      onKeyPress: null,
+      onKeyUp: null,
+      onLanguageChange: null,
+      onLoad: null,
+      onLoadedData: null,
+      onLoadedMetadata: null,
+      onLoadEnd: null,
+      onLoadStart: null,
+      onMessage: null,
+      onMessageError: null,
+      onMouseDown: null,
+      onMouseEnter: null,
+      onMouseLeave: null,
+      onMouseMove: null,
+      onMouseOut: null,
+      onMouseOver: null,
+      onMouseUp: null,
+      onOffline: null,
+      onOnline: null,
+      onPageHide: null,
+      onPageShow: null,
+      onPaste: null,
+      onPause: null,
+      onPlay: null,
+      onPlaying: null,
+      onPopState: null,
+      onProgress: null,
+      onRateChange: null,
+      onRejectionHandled: null,
+      onReset: null,
+      onResize: null,
+      onScroll: null,
+      onScrollEnd: null,
+      onSecurityPolicyViolation: null,
+      onSeeked: null,
+      onSeeking: null,
+      onSelect: null,
+      onSlotChange: null,
+      onStalled: null,
+      onStorage: null,
+      onSubmit: null,
+      onSuspend: null,
+      onTimeUpdate: null,
+      onToggle: null,
+      onUnhandledRejection: null,
+      onUnload: null,
+      onVolumeChange: null,
+      onWaiting: null,
+      onWheel: null,
+      open: boolean$1,
+      optimum: number$1,
+      pattern: null,
+      ping: spaceSeparated$1,
+      placeholder: null,
+      playsInline: boolean$1,
+      popover: null,
+      popoverTarget: null,
+      popoverTargetAction: null,
+      poster: null,
+      preload: null,
+      readOnly: boolean$1,
+      referrerPolicy: null,
+      rel: spaceSeparated$1,
+      required: boolean$1,
+      reversed: boolean$1,
+      rows: number$1,
+      rowSpan: number$1,
+      sandbox: spaceSeparated$1,
+      scope: null,
+      scoped: boolean$1,
+      seamless: boolean$1,
+      selected: boolean$1,
+      shadowRootClonable: boolean$1,
+      shadowRootDelegatesFocus: boolean$1,
+      shadowRootMode: null,
+      shape: null,
+      size: number$1,
+      sizes: null,
+      slot: null,
+      span: number$1,
+      spellCheck: booleanish$1,
+      src: null,
+      srcDoc: null,
+      srcLang: null,
+      srcSet: null,
+      start: number$1,
+      step: null,
+      style: null,
+      tabIndex: number$1,
+      target: null,
+      title: null,
+      translate: null,
+      type: null,
+      typeMustMatch: boolean$1,
+      useMap: null,
+      value: booleanish$1,
+      width: number$1,
+      wrap: null,
+      writingSuggestions: null,
+
+      // Legacy.
+      // See: https://html.spec.whatwg.org/#other-elements,-attributes-and-apis
+      align: null, // Several. Use CSS `text-align` instead,
+      aLink: null, // `<body>`. Use CSS `a:active {color}` instead
+      archive: spaceSeparated$1, // `<object>`. List of URIs to archives
+      axis: null, // `<td>` and `<th>`. Use `scope` on `<th>`
+      background: null, // `<body>`. Use CSS `background-image` instead
+      bgColor: null, // `<body>` and table elements. Use CSS `background-color` instead
+      border: number$1, // `<table>`. Use CSS `border-width` instead,
+      borderColor: null, // `<table>`. Use CSS `border-color` instead,
+      bottomMargin: number$1, // `<body>`
+      cellPadding: null, // `<table>`
+      cellSpacing: null, // `<table>`
+      char: null, // Several table elements. When `align=char`, sets the character to align on
+      charOff: null, // Several table elements. When `char`, offsets the alignment
+      classId: null, // `<object>`
+      clear: null, // `<br>`. Use CSS `clear` instead
+      code: null, // `<object>`
+      codeBase: null, // `<object>`
+      codeType: null, // `<object>`
+      color: null, // `<font>` and `<hr>`. Use CSS instead
+      compact: boolean$1, // Lists. Use CSS to reduce space between items instead
+      declare: boolean$1, // `<object>`
+      event: null, // `<script>`
+      face: null, // `<font>`. Use CSS instead
+      frame: null, // `<table>`
+      frameBorder: null, // `<iframe>`. Use CSS `border` instead
+      hSpace: number$1, // `<img>` and `<object>`
+      leftMargin: number$1, // `<body>`
+      link: null, // `<body>`. Use CSS `a:link {color: *}` instead
+      longDesc: null, // `<frame>`, `<iframe>`, and `<img>`. Use an `<a>`
+      lowSrc: null, // `<img>`. Use a `<picture>`
+      marginHeight: number$1, // `<body>`
+      marginWidth: number$1, // `<body>`
+      noResize: boolean$1, // `<frame>`
+      noHref: boolean$1, // `<area>`. Use no href instead of an explicit `nohref`
+      noShade: boolean$1, // `<hr>`. Use background-color and height instead of borders
+      noWrap: boolean$1, // `<td>` and `<th>`
+      object: null, // `<applet>`
+      profile: null, // `<head>`
+      prompt: null, // `<isindex>`
+      rev: null, // `<link>`
+      rightMargin: number$1, // `<body>`
+      rules: null, // `<table>`
+      scheme: null, // `<meta>`
+      scrolling: booleanish$1, // `<frame>`. Use overflow in the child context
+      standby: null, // `<object>`
+      summary: null, // `<table>`
+      text: null, // `<body>`. Use CSS `color` instead
+      topMargin: number$1, // `<body>`
+      valueType: null, // `<param>`
+      version: null, // `<html>`. Use a doctype.
+      vAlign: null, // Several. Use CSS `vertical-align` instead
+      vLink: null, // `<body>`. Use CSS `a:visited {color}` instead
+      vSpace: number$1, // `<img>` and `<object>`
+
+      // Non-standard Properties.
+      allowTransparency: null,
+      autoCorrect: null,
+      autoSave: null,
+      disablePictureInPicture: boolean$1,
+      disableRemotePlayback: boolean$1,
+      prefix: null,
+      property: null,
+      results: number$1,
+      security: null,
+      unselectable: null
+    }
+  });
+
+  const svg$2 = create$1({
+    space: 'svg',
+    attributes: {
+      accentHeight: 'accent-height',
+      alignmentBaseline: 'alignment-baseline',
+      arabicForm: 'arabic-form',
+      baselineShift: 'baseline-shift',
+      capHeight: 'cap-height',
+      className: 'class',
+      clipPath: 'clip-path',
+      clipRule: 'clip-rule',
+      colorInterpolation: 'color-interpolation',
+      colorInterpolationFilters: 'color-interpolation-filters',
+      colorProfile: 'color-profile',
+      colorRendering: 'color-rendering',
+      crossOrigin: 'crossorigin',
+      dataType: 'datatype',
+      dominantBaseline: 'dominant-baseline',
+      enableBackground: 'enable-background',
+      fillOpacity: 'fill-opacity',
+      fillRule: 'fill-rule',
+      floodColor: 'flood-color',
+      floodOpacity: 'flood-opacity',
+      fontFamily: 'font-family',
+      fontSize: 'font-size',
+      fontSizeAdjust: 'font-size-adjust',
+      fontStretch: 'font-stretch',
+      fontStyle: 'font-style',
+      fontVariant: 'font-variant',
+      fontWeight: 'font-weight',
+      glyphName: 'glyph-name',
+      glyphOrientationHorizontal: 'glyph-orientation-horizontal',
+      glyphOrientationVertical: 'glyph-orientation-vertical',
+      hrefLang: 'hreflang',
+      horizAdvX: 'horiz-adv-x',
+      horizOriginX: 'horiz-origin-x',
+      horizOriginY: 'horiz-origin-y',
+      imageRendering: 'image-rendering',
+      letterSpacing: 'letter-spacing',
+      lightingColor: 'lighting-color',
+      markerEnd: 'marker-end',
+      markerMid: 'marker-mid',
+      markerStart: 'marker-start',
+      navDown: 'nav-down',
+      navDownLeft: 'nav-down-left',
+      navDownRight: 'nav-down-right',
+      navLeft: 'nav-left',
+      navNext: 'nav-next',
+      navPrev: 'nav-prev',
+      navRight: 'nav-right',
+      navUp: 'nav-up',
+      navUpLeft: 'nav-up-left',
+      navUpRight: 'nav-up-right',
+      onAbort: 'onabort',
+      onActivate: 'onactivate',
+      onAfterPrint: 'onafterprint',
+      onBeforePrint: 'onbeforeprint',
+      onBegin: 'onbegin',
+      onCancel: 'oncancel',
+      onCanPlay: 'oncanplay',
+      onCanPlayThrough: 'oncanplaythrough',
+      onChange: 'onchange',
+      onClick: 'onclick',
+      onClose: 'onclose',
+      onCopy: 'oncopy',
+      onCueChange: 'oncuechange',
+      onCut: 'oncut',
+      onDblClick: 'ondblclick',
+      onDrag: 'ondrag',
+      onDragEnd: 'ondragend',
+      onDragEnter: 'ondragenter',
+      onDragExit: 'ondragexit',
+      onDragLeave: 'ondragleave',
+      onDragOver: 'ondragover',
+      onDragStart: 'ondragstart',
+      onDrop: 'ondrop',
+      onDurationChange: 'ondurationchange',
+      onEmptied: 'onemptied',
+      onEnd: 'onend',
+      onEnded: 'onended',
+      onError: 'onerror',
+      onFocus: 'onfocus',
+      onFocusIn: 'onfocusin',
+      onFocusOut: 'onfocusout',
+      onHashChange: 'onhashchange',
+      onInput: 'oninput',
+      onInvalid: 'oninvalid',
+      onKeyDown: 'onkeydown',
+      onKeyPress: 'onkeypress',
+      onKeyUp: 'onkeyup',
+      onLoad: 'onload',
+      onLoadedData: 'onloadeddata',
+      onLoadedMetadata: 'onloadedmetadata',
+      onLoadStart: 'onloadstart',
+      onMessage: 'onmessage',
+      onMouseDown: 'onmousedown',
+      onMouseEnter: 'onmouseenter',
+      onMouseLeave: 'onmouseleave',
+      onMouseMove: 'onmousemove',
+      onMouseOut: 'onmouseout',
+      onMouseOver: 'onmouseover',
+      onMouseUp: 'onmouseup',
+      onMouseWheel: 'onmousewheel',
+      onOffline: 'onoffline',
+      onOnline: 'ononline',
+      onPageHide: 'onpagehide',
+      onPageShow: 'onpageshow',
+      onPaste: 'onpaste',
+      onPause: 'onpause',
+      onPlay: 'onplay',
+      onPlaying: 'onplaying',
+      onPopState: 'onpopstate',
+      onProgress: 'onprogress',
+      onRateChange: 'onratechange',
+      onRepeat: 'onrepeat',
+      onReset: 'onreset',
+      onResize: 'onresize',
+      onScroll: 'onscroll',
+      onSeeked: 'onseeked',
+      onSeeking: 'onseeking',
+      onSelect: 'onselect',
+      onShow: 'onshow',
+      onStalled: 'onstalled',
+      onStorage: 'onstorage',
+      onSubmit: 'onsubmit',
+      onSuspend: 'onsuspend',
+      onTimeUpdate: 'ontimeupdate',
+      onToggle: 'ontoggle',
+      onUnload: 'onunload',
+      onVolumeChange: 'onvolumechange',
+      onWaiting: 'onwaiting',
+      onZoom: 'onzoom',
+      overlinePosition: 'overline-position',
+      overlineThickness: 'overline-thickness',
+      paintOrder: 'paint-order',
+      panose1: 'panose-1',
+      pointerEvents: 'pointer-events',
+      referrerPolicy: 'referrerpolicy',
+      renderingIntent: 'rendering-intent',
+      shapeRendering: 'shape-rendering',
+      stopColor: 'stop-color',
+      stopOpacity: 'stop-opacity',
+      strikethroughPosition: 'strikethrough-position',
+      strikethroughThickness: 'strikethrough-thickness',
+      strokeDashArray: 'stroke-dasharray',
+      strokeDashOffset: 'stroke-dashoffset',
+      strokeLineCap: 'stroke-linecap',
+      strokeLineJoin: 'stroke-linejoin',
+      strokeMiterLimit: 'stroke-miterlimit',
+      strokeOpacity: 'stroke-opacity',
+      strokeWidth: 'stroke-width',
+      tabIndex: 'tabindex',
+      textAnchor: 'text-anchor',
+      textDecoration: 'text-decoration',
+      textRendering: 'text-rendering',
+      transformOrigin: 'transform-origin',
+      typeOf: 'typeof',
+      underlinePosition: 'underline-position',
+      underlineThickness: 'underline-thickness',
+      unicodeBidi: 'unicode-bidi',
+      unicodeRange: 'unicode-range',
+      unitsPerEm: 'units-per-em',
+      vAlphabetic: 'v-alphabetic',
+      vHanging: 'v-hanging',
+      vIdeographic: 'v-ideographic',
+      vMathematical: 'v-mathematical',
+      vectorEffect: 'vector-effect',
+      vertAdvY: 'vert-adv-y',
+      vertOriginX: 'vert-origin-x',
+      vertOriginY: 'vert-origin-y',
+      wordSpacing: 'word-spacing',
+      writingMode: 'writing-mode',
+      xHeight: 'x-height',
+      // These were camelcased in Tiny. Now lowercased in SVG 2
+      playbackOrder: 'playbackorder',
+      timelineBegin: 'timelinebegin'
+    },
+    transform: caseSensitiveTransform$1,
+    properties: {
+      about: commaOrSpaceSeparated$1,
+      accentHeight: number$1,
+      accumulate: null,
+      additive: null,
+      alignmentBaseline: null,
+      alphabetic: number$1,
+      amplitude: number$1,
+      arabicForm: null,
+      ascent: number$1,
+      attributeName: null,
+      attributeType: null,
+      azimuth: number$1,
+      bandwidth: null,
+      baselineShift: null,
+      baseFrequency: null,
+      baseProfile: null,
+      bbox: null,
+      begin: null,
+      bias: number$1,
+      by: null,
+      calcMode: null,
+      capHeight: number$1,
+      className: spaceSeparated$1,
+      clip: null,
+      clipPath: null,
+      clipPathUnits: null,
+      clipRule: null,
+      color: null,
+      colorInterpolation: null,
+      colorInterpolationFilters: null,
+      colorProfile: null,
+      colorRendering: null,
+      content: null,
+      contentScriptType: null,
+      contentStyleType: null,
+      crossOrigin: null,
+      cursor: null,
+      cx: null,
+      cy: null,
+      d: null,
+      dataType: null,
+      defaultAction: null,
+      descent: number$1,
+      diffuseConstant: number$1,
+      direction: null,
+      display: null,
+      dur: null,
+      divisor: number$1,
+      dominantBaseline: null,
+      download: boolean$1,
+      dx: null,
+      dy: null,
+      edgeMode: null,
+      editable: null,
+      elevation: number$1,
+      enableBackground: null,
+      end: null,
+      event: null,
+      exponent: number$1,
+      externalResourcesRequired: null,
+      fill: null,
+      fillOpacity: number$1,
+      fillRule: null,
+      filter: null,
+      filterRes: null,
+      filterUnits: null,
+      floodColor: null,
+      floodOpacity: null,
+      focusable: null,
+      focusHighlight: null,
+      fontFamily: null,
+      fontSize: null,
+      fontSizeAdjust: null,
+      fontStretch: null,
+      fontStyle: null,
+      fontVariant: null,
+      fontWeight: null,
+      format: null,
+      fr: null,
+      from: null,
+      fx: null,
+      fy: null,
+      g1: commaSeparated$1,
+      g2: commaSeparated$1,
+      glyphName: commaSeparated$1,
+      glyphOrientationHorizontal: null,
+      glyphOrientationVertical: null,
+      glyphRef: null,
+      gradientTransform: null,
+      gradientUnits: null,
+      handler: null,
+      hanging: number$1,
+      hatchContentUnits: null,
+      hatchUnits: null,
+      height: null,
+      href: null,
+      hrefLang: null,
+      horizAdvX: number$1,
+      horizOriginX: number$1,
+      horizOriginY: number$1,
+      id: null,
+      ideographic: number$1,
+      imageRendering: null,
+      initialVisibility: null,
+      in: null,
+      in2: null,
+      intercept: number$1,
+      k: number$1,
+      k1: number$1,
+      k2: number$1,
+      k3: number$1,
+      k4: number$1,
+      kernelMatrix: commaOrSpaceSeparated$1,
+      kernelUnitLength: null,
+      keyPoints: null, // SEMI_COLON_SEPARATED
+      keySplines: null, // SEMI_COLON_SEPARATED
+      keyTimes: null, // SEMI_COLON_SEPARATED
+      kerning: null,
+      lang: null,
+      lengthAdjust: null,
+      letterSpacing: null,
+      lightingColor: null,
+      limitingConeAngle: number$1,
+      local: null,
+      markerEnd: null,
+      markerMid: null,
+      markerStart: null,
+      markerHeight: null,
+      markerUnits: null,
+      markerWidth: null,
+      mask: null,
+      maskContentUnits: null,
+      maskUnits: null,
+      mathematical: null,
+      max: null,
+      media: null,
+      mediaCharacterEncoding: null,
+      mediaContentEncodings: null,
+      mediaSize: number$1,
+      mediaTime: null,
+      method: null,
+      min: null,
+      mode: null,
+      name: null,
+      navDown: null,
+      navDownLeft: null,
+      navDownRight: null,
+      navLeft: null,
+      navNext: null,
+      navPrev: null,
+      navRight: null,
+      navUp: null,
+      navUpLeft: null,
+      navUpRight: null,
+      numOctaves: null,
+      observer: null,
+      offset: null,
+      onAbort: null,
+      onActivate: null,
+      onAfterPrint: null,
+      onBeforePrint: null,
+      onBegin: null,
+      onCancel: null,
+      onCanPlay: null,
+      onCanPlayThrough: null,
+      onChange: null,
+      onClick: null,
+      onClose: null,
+      onCopy: null,
+      onCueChange: null,
+      onCut: null,
+      onDblClick: null,
+      onDrag: null,
+      onDragEnd: null,
+      onDragEnter: null,
+      onDragExit: null,
+      onDragLeave: null,
+      onDragOver: null,
+      onDragStart: null,
+      onDrop: null,
+      onDurationChange: null,
+      onEmptied: null,
+      onEnd: null,
+      onEnded: null,
+      onError: null,
+      onFocus: null,
+      onFocusIn: null,
+      onFocusOut: null,
+      onHashChange: null,
+      onInput: null,
+      onInvalid: null,
+      onKeyDown: null,
+      onKeyPress: null,
+      onKeyUp: null,
+      onLoad: null,
+      onLoadedData: null,
+      onLoadedMetadata: null,
+      onLoadStart: null,
+      onMessage: null,
+      onMouseDown: null,
+      onMouseEnter: null,
+      onMouseLeave: null,
+      onMouseMove: null,
+      onMouseOut: null,
+      onMouseOver: null,
+      onMouseUp: null,
+      onMouseWheel: null,
+      onOffline: null,
+      onOnline: null,
+      onPageHide: null,
+      onPageShow: null,
+      onPaste: null,
+      onPause: null,
+      onPlay: null,
+      onPlaying: null,
+      onPopState: null,
+      onProgress: null,
+      onRateChange: null,
+      onRepeat: null,
+      onReset: null,
+      onResize: null,
+      onScroll: null,
+      onSeeked: null,
+      onSeeking: null,
+      onSelect: null,
+      onShow: null,
+      onStalled: null,
+      onStorage: null,
+      onSubmit: null,
+      onSuspend: null,
+      onTimeUpdate: null,
+      onToggle: null,
+      onUnload: null,
+      onVolumeChange: null,
+      onWaiting: null,
+      onZoom: null,
+      opacity: null,
+      operator: null,
+      order: null,
+      orient: null,
+      orientation: null,
+      origin: null,
+      overflow: null,
+      overlay: null,
+      overlinePosition: number$1,
+      overlineThickness: number$1,
+      paintOrder: null,
+      panose1: null,
+      path: null,
+      pathLength: number$1,
+      patternContentUnits: null,
+      patternTransform: null,
+      patternUnits: null,
+      phase: null,
+      ping: spaceSeparated$1,
+      pitch: null,
+      playbackOrder: null,
+      pointerEvents: null,
+      points: null,
+      pointsAtX: number$1,
+      pointsAtY: number$1,
+      pointsAtZ: number$1,
+      preserveAlpha: null,
+      preserveAspectRatio: null,
+      primitiveUnits: null,
+      propagate: null,
+      property: commaOrSpaceSeparated$1,
+      r: null,
+      radius: null,
+      referrerPolicy: null,
+      refX: null,
+      refY: null,
+      rel: commaOrSpaceSeparated$1,
+      rev: commaOrSpaceSeparated$1,
+      renderingIntent: null,
+      repeatCount: null,
+      repeatDur: null,
+      requiredExtensions: commaOrSpaceSeparated$1,
+      requiredFeatures: commaOrSpaceSeparated$1,
+      requiredFonts: commaOrSpaceSeparated$1,
+      requiredFormats: commaOrSpaceSeparated$1,
+      resource: null,
+      restart: null,
+      result: null,
+      rotate: null,
+      rx: null,
+      ry: null,
+      scale: null,
+      seed: null,
+      shapeRendering: null,
+      side: null,
+      slope: null,
+      snapshotTime: null,
+      specularConstant: number$1,
+      specularExponent: number$1,
+      spreadMethod: null,
+      spacing: null,
+      startOffset: null,
+      stdDeviation: null,
+      stemh: null,
+      stemv: null,
+      stitchTiles: null,
+      stopColor: null,
+      stopOpacity: null,
+      strikethroughPosition: number$1,
+      strikethroughThickness: number$1,
+      string: null,
+      stroke: null,
+      strokeDashArray: commaOrSpaceSeparated$1,
+      strokeDashOffset: null,
+      strokeLineCap: null,
+      strokeLineJoin: null,
+      strokeMiterLimit: number$1,
+      strokeOpacity: number$1,
+      strokeWidth: null,
+      style: null,
+      surfaceScale: number$1,
+      syncBehavior: null,
+      syncBehaviorDefault: null,
+      syncMaster: null,
+      syncTolerance: null,
+      syncToleranceDefault: null,
+      systemLanguage: commaOrSpaceSeparated$1,
+      tabIndex: number$1,
+      tableValues: null,
+      target: null,
+      targetX: number$1,
+      targetY: number$1,
+      textAnchor: null,
+      textDecoration: null,
+      textRendering: null,
+      textLength: null,
+      timelineBegin: null,
+      title: null,
+      transformBehavior: null,
+      type: null,
+      typeOf: commaOrSpaceSeparated$1,
+      to: null,
+      transform: null,
+      transformOrigin: null,
+      u1: null,
+      u2: null,
+      underlinePosition: number$1,
+      underlineThickness: number$1,
+      unicode: null,
+      unicodeBidi: null,
+      unicodeRange: null,
+      unitsPerEm: number$1,
+      values: null,
+      vAlphabetic: number$1,
+      vMathematical: number$1,
+      vectorEffect: null,
+      vHanging: number$1,
+      vIdeographic: number$1,
+      version: null,
+      vertAdvY: number$1,
+      vertOriginX: number$1,
+      vertOriginY: number$1,
+      viewBox: null,
+      viewTarget: null,
+      visibility: null,
+      width: null,
+      widths: null,
+      wordSpacing: null,
+      writingMode: null,
+      x: null,
+      x1: null,
+      x2: null,
+      xChannelSelector: null,
+      xHeight: number$1,
+      y: null,
+      y1: null,
+      y2: null,
+      yChannelSelector: null,
+      z: null,
+      zoomAndPan: null
+    }
+  });
+
+  /**
+   * @typedef {import('./util/schema.js').Schema} Schema
+   */
+
+
+  const valid$1 = /^data[-\w.:]+$/i;
+  const dash$1 = /-[a-z]/g;
+  const cap$1 = /[A-Z]/g;
+
+  /**
+   * @param {Schema} schema
+   * @param {string} value
+   * @returns {Info}
+   */
+  function find$1(schema, value) {
+    const normal = normalize$1(value);
+    let prop = value;
+    let Type = Info$1;
+
+    if (normal in schema.normal) {
+      return schema.property[schema.normal[normal]]
+    }
+
+    if (normal.length > 4 && normal.slice(0, 4) === 'data' && valid$1.test(value)) {
+      // Attribute or property.
+      if (value.charAt(4) === '-') {
+        // Turn it into a property.
+        const rest = value.slice(5).replace(dash$1, camelcase$1);
+        prop = 'data' + rest.charAt(0).toUpperCase() + rest.slice(1);
+      } else {
+        // Turn it into an attribute.
+        const rest = value.slice(4);
+
+        if (!dash$1.test(rest)) {
+          let dashes = rest.replace(cap$1, kebab$1);
+
+          if (dashes.charAt(0) !== '-') {
+            dashes = '-' + dashes;
+          }
+
+          value = 'data' + dashes;
+        }
+      }
+
+      Type = DefinedInfo$1;
+    }
+
+    return new Type(prop, value)
+  }
+
+  /**
+   * @param {string} $0
+   * @returns {string}
+   */
+  function kebab$1($0) {
+    return '-' + $0.toLowerCase()
+  }
+
+  /**
+   * @param {string} $0
+   * @returns {string}
+   */
+  function camelcase$1($0) {
+    return $0.charAt(1).toUpperCase()
+  }
+
+  /**
+   * @typedef {import('./lib/util/info.js').Info} Info
+   * @typedef {import('./lib/util/schema.js').Schema} Schema
+   */
+
+  const html$4 = merge$1([xml$1, xlink$1, xmlns$1, aria$1, html$5], 'html');
+  const svg$1 = merge$1([xml$1, xlink$1, xmlns$1, aria$1, svg$2], 'svg');
+
+  /**
    * @typedef {import('hast').Comment} Comment
    * @typedef {import('hast').Doctype} Doctype
    * @typedef {import('hast').Element} Element
@@ -43794,7 +45462,7 @@
   /** @type {Options} */
   const emptyOptions$1 = {};
 
-  const own$6 = {}.hasOwnProperty;
+  const own$7 = {}.hasOwnProperty;
 
   const one$3 = zwitch('type', {handlers: {root: root$3, element: element$2, text: text$2, comment: comment$2, doctype: doctype$2}});
 
@@ -43811,7 +45479,7 @@
   function toParse5(tree, options) {
     const settings = options || emptyOptions$1;
     const space = settings.space;
-    return one$3(tree, space === 'svg' ? svg : html$2)
+    return one$3(tree, space === 'svg' ? svg$1 : html$4)
   }
 
   /**
@@ -43924,7 +45592,7 @@
       node.tagName.toLowerCase() === 'svg' &&
       parentSchema.space === 'html'
     ) {
-      currentSchema = svg;
+      currentSchema = svg$1;
     }
 
     /** @type {Array<Parse5Attribute>} */
@@ -43934,7 +45602,7 @@
 
     if (node.properties) {
       for (prop in node.properties) {
-        if (prop !== 'children' && own$6.call(node.properties, prop)) {
+        if (prop !== 'children' && own$7.call(node.properties, prop)) {
           const result = createProperty(
             currentSchema,
             prop,
@@ -43984,7 +45652,7 @@
    *   Field for runtime, optional.
    */
   function createProperty(schema, prop, value) {
-    const info = find(schema, prop);
+    const info = find$1(schema, prop);
 
     // Ignore nullish and `NaN` values.
     if (
@@ -44130,7 +45798,6 @@
       CODE_POINTS[CODE_POINTS["SPACE"] = 32] = "SPACE";
       CODE_POINTS[CODE_POINTS["EXCLAMATION_MARK"] = 33] = "EXCLAMATION_MARK";
       CODE_POINTS[CODE_POINTS["QUOTATION_MARK"] = 34] = "QUOTATION_MARK";
-      CODE_POINTS[CODE_POINTS["NUMBER_SIGN"] = 35] = "NUMBER_SIGN";
       CODE_POINTS[CODE_POINTS["AMPERSAND"] = 38] = "AMPERSAND";
       CODE_POINTS[CODE_POINTS["APOSTROPHE"] = 39] = "APOSTROPHE";
       CODE_POINTS[CODE_POINTS["HYPHEN_MINUS"] = 45] = "HYPHEN_MINUS";
@@ -44143,17 +45810,12 @@
       CODE_POINTS[CODE_POINTS["GREATER_THAN_SIGN"] = 62] = "GREATER_THAN_SIGN";
       CODE_POINTS[CODE_POINTS["QUESTION_MARK"] = 63] = "QUESTION_MARK";
       CODE_POINTS[CODE_POINTS["LATIN_CAPITAL_A"] = 65] = "LATIN_CAPITAL_A";
-      CODE_POINTS[CODE_POINTS["LATIN_CAPITAL_F"] = 70] = "LATIN_CAPITAL_F";
-      CODE_POINTS[CODE_POINTS["LATIN_CAPITAL_X"] = 88] = "LATIN_CAPITAL_X";
       CODE_POINTS[CODE_POINTS["LATIN_CAPITAL_Z"] = 90] = "LATIN_CAPITAL_Z";
       CODE_POINTS[CODE_POINTS["RIGHT_SQUARE_BRACKET"] = 93] = "RIGHT_SQUARE_BRACKET";
       CODE_POINTS[CODE_POINTS["GRAVE_ACCENT"] = 96] = "GRAVE_ACCENT";
       CODE_POINTS[CODE_POINTS["LATIN_SMALL_A"] = 97] = "LATIN_SMALL_A";
-      CODE_POINTS[CODE_POINTS["LATIN_SMALL_F"] = 102] = "LATIN_SMALL_F";
-      CODE_POINTS[CODE_POINTS["LATIN_SMALL_X"] = 120] = "LATIN_SMALL_X";
       CODE_POINTS[CODE_POINTS["LATIN_SMALL_Z"] = 122] = "LATIN_SMALL_Z";
-      CODE_POINTS[CODE_POINTS["REPLACEMENT_CHARACTER"] = 65533] = "REPLACEMENT_CHARACTER";
-  })(CODE_POINTS = CODE_POINTS || (CODE_POINTS = {}));
+  })(CODE_POINTS || (CODE_POINTS = {}));
   const SEQUENCES = {
       DASH_DASH: '--',
       CDATA_START: '[CDATA[',
@@ -44243,7 +45905,7 @@
       ERR["misplacedStartTagForHeadElement"] = "misplaced-start-tag-for-head-element";
       ERR["nestedNoscriptInHead"] = "nested-noscript-in-head";
       ERR["eofInElementThatCanContainOnlyText"] = "eof-in-element-that-can-contain-only-text";
-  })(ERR = ERR || (ERR = {}));
+  })(ERR || (ERR = {}));
 
   //Const
   const DEFAULT_BUFFER_WATERLINE = 1 << 16;
@@ -44276,22 +45938,24 @@
       get offset() {
           return this.droppedBufferSize + this.pos;
       }
-      getError(code) {
+      getError(code, cpOffset) {
           const { line, col, offset } = this;
+          const startCol = col + cpOffset;
+          const startOffset = offset + cpOffset;
           return {
               code,
               startLine: line,
               endLine: line,
-              startCol: col,
-              endCol: col,
-              startOffset: offset,
-              endOffset: offset,
+              startCol,
+              endCol: startCol,
+              startOffset,
+              endOffset: startOffset,
           };
       }
       _err(code) {
           if (this.handler.onParseError && this.lastErrOffset !== this.offset) {
               this.lastErrOffset = this.offset;
-              this.handler.onParseError(this.getError(code));
+              this.handler.onParseError(this.getError(code, 0));
           }
       }
       _addGap() {
@@ -44449,7 +46113,7 @@
       TokenType[TokenType["DOCTYPE"] = 6] = "DOCTYPE";
       TokenType[TokenType["EOF"] = 7] = "EOF";
       TokenType[TokenType["HIBERNATION"] = 8] = "HIBERNATION";
-  })(TokenType = TokenType || (TokenType = {}));
+  })(TokenType || (TokenType = {}));
   function getTokenAttr(token, attrName) {
       for (let i = token.attrs.length - 1; i >= 0; i--) {
           if (token.attrs[i].name === attrName) {
@@ -44460,21 +46124,13 @@
   }
 
   // Generated using scripts/write-decode-map.ts
-  var htmlDecodeTree = new Uint16Array(
+  const htmlDecodeTree = /* #__PURE__ */ new Uint16Array(
   // prettier-ignore
-  "\u1d41<\xd5\u0131\u028a\u049d\u057b\u05d0\u0675\u06de\u07a2\u07d6\u080f\u0a4a\u0a91\u0da1\u0e6d\u0f09\u0f26\u10ca\u1228\u12e1\u1415\u149d\u14c3\u14df\u1525\0\0\0\0\0\0\u156b\u16cd\u198d\u1c12\u1ddd\u1f7e\u2060\u21b0\u228d\u23c0\u23fb\u2442\u2824\u2912\u2d08\u2e48\u2fce\u3016\u32ba\u3639\u37ac\u38fe\u3a28\u3a71\u3ae0\u3b2e\u0800EMabcfglmnoprstu\\bfms\x7f\x84\x8b\x90\x95\x98\xa6\xb3\xb9\xc8\xcflig\u803b\xc6\u40c6P\u803b&\u4026cute\u803b\xc1\u40c1reve;\u4102\u0100iyx}rc\u803b\xc2\u40c2;\u4410r;\uc000\ud835\udd04rave\u803b\xc0\u40c0pha;\u4391acr;\u4100d;\u6a53\u0100gp\x9d\xa1on;\u4104f;\uc000\ud835\udd38plyFunction;\u6061ing\u803b\xc5\u40c5\u0100cs\xbe\xc3r;\uc000\ud835\udc9cign;\u6254ilde\u803b\xc3\u40c3ml\u803b\xc4\u40c4\u0400aceforsu\xe5\xfb\xfe\u0117\u011c\u0122\u0127\u012a\u0100cr\xea\xf2kslash;\u6216\u0176\xf6\xf8;\u6ae7ed;\u6306y;\u4411\u0180crt\u0105\u010b\u0114ause;\u6235noullis;\u612ca;\u4392r;\uc000\ud835\udd05pf;\uc000\ud835\udd39eve;\u42d8c\xf2\u0113mpeq;\u624e\u0700HOacdefhilorsu\u014d\u0151\u0156\u0180\u019e\u01a2\u01b5\u01b7\u01ba\u01dc\u0215\u0273\u0278\u027ecy;\u4427PY\u803b\xa9\u40a9\u0180cpy\u015d\u0162\u017aute;\u4106\u0100;i\u0167\u0168\u62d2talDifferentialD;\u6145leys;\u612d\u0200aeio\u0189\u018e\u0194\u0198ron;\u410cdil\u803b\xc7\u40c7rc;\u4108nint;\u6230ot;\u410a\u0100dn\u01a7\u01adilla;\u40b8terDot;\u40b7\xf2\u017fi;\u43a7rcle\u0200DMPT\u01c7\u01cb\u01d1\u01d6ot;\u6299inus;\u6296lus;\u6295imes;\u6297o\u0100cs\u01e2\u01f8kwiseContourIntegral;\u6232eCurly\u0100DQ\u0203\u020foubleQuote;\u601duote;\u6019\u0200lnpu\u021e\u0228\u0247\u0255on\u0100;e\u0225\u0226\u6237;\u6a74\u0180git\u022f\u0236\u023aruent;\u6261nt;\u622fourIntegral;\u622e\u0100fr\u024c\u024e;\u6102oduct;\u6210nterClockwiseContourIntegral;\u6233oss;\u6a2fcr;\uc000\ud835\udc9ep\u0100;C\u0284\u0285\u62d3ap;\u624d\u0580DJSZacefios\u02a0\u02ac\u02b0\u02b4\u02b8\u02cb\u02d7\u02e1\u02e6\u0333\u048d\u0100;o\u0179\u02a5trahd;\u6911cy;\u4402cy;\u4405cy;\u440f\u0180grs\u02bf\u02c4\u02c7ger;\u6021r;\u61a1hv;\u6ae4\u0100ay\u02d0\u02d5ron;\u410e;\u4414l\u0100;t\u02dd\u02de\u6207a;\u4394r;\uc000\ud835\udd07\u0100af\u02eb\u0327\u0100cm\u02f0\u0322ritical\u0200ADGT\u0300\u0306\u0316\u031ccute;\u40b4o\u0174\u030b\u030d;\u42d9bleAcute;\u42ddrave;\u4060ilde;\u42dcond;\u62c4ferentialD;\u6146\u0470\u033d\0\0\0\u0342\u0354\0\u0405f;\uc000\ud835\udd3b\u0180;DE\u0348\u0349\u034d\u40a8ot;\u60dcqual;\u6250ble\u0300CDLRUV\u0363\u0372\u0382\u03cf\u03e2\u03f8ontourIntegra\xec\u0239o\u0274\u0379\0\0\u037b\xbb\u0349nArrow;\u61d3\u0100eo\u0387\u03a4ft\u0180ART\u0390\u0396\u03a1rrow;\u61d0ightArrow;\u61d4e\xe5\u02cang\u0100LR\u03ab\u03c4eft\u0100AR\u03b3\u03b9rrow;\u67f8ightArrow;\u67faightArrow;\u67f9ight\u0100AT\u03d8\u03derrow;\u61d2ee;\u62a8p\u0241\u03e9\0\0\u03efrrow;\u61d1ownArrow;\u61d5erticalBar;\u6225n\u0300ABLRTa\u0412\u042a\u0430\u045e\u047f\u037crrow\u0180;BU\u041d\u041e\u0422\u6193ar;\u6913pArrow;\u61f5reve;\u4311eft\u02d2\u043a\0\u0446\0\u0450ightVector;\u6950eeVector;\u695eector\u0100;B\u0459\u045a\u61bdar;\u6956ight\u01d4\u0467\0\u0471eeVector;\u695fector\u0100;B\u047a\u047b\u61c1ar;\u6957ee\u0100;A\u0486\u0487\u62a4rrow;\u61a7\u0100ct\u0492\u0497r;\uc000\ud835\udc9frok;\u4110\u0800NTacdfglmopqstux\u04bd\u04c0\u04c4\u04cb\u04de\u04e2\u04e7\u04ee\u04f5\u0521\u052f\u0536\u0552\u055d\u0560\u0565G;\u414aH\u803b\xd0\u40d0cute\u803b\xc9\u40c9\u0180aiy\u04d2\u04d7\u04dcron;\u411arc\u803b\xca\u40ca;\u442dot;\u4116r;\uc000\ud835\udd08rave\u803b\xc8\u40c8ement;\u6208\u0100ap\u04fa\u04fecr;\u4112ty\u0253\u0506\0\0\u0512mallSquare;\u65fberySmallSquare;\u65ab\u0100gp\u0526\u052aon;\u4118f;\uc000\ud835\udd3csilon;\u4395u\u0100ai\u053c\u0549l\u0100;T\u0542\u0543\u6a75ilde;\u6242librium;\u61cc\u0100ci\u0557\u055ar;\u6130m;\u6a73a;\u4397ml\u803b\xcb\u40cb\u0100ip\u056a\u056fsts;\u6203onentialE;\u6147\u0280cfios\u0585\u0588\u058d\u05b2\u05ccy;\u4424r;\uc000\ud835\udd09lled\u0253\u0597\0\0\u05a3mallSquare;\u65fcerySmallSquare;\u65aa\u0370\u05ba\0\u05bf\0\0\u05c4f;\uc000\ud835\udd3dAll;\u6200riertrf;\u6131c\xf2\u05cb\u0600JTabcdfgorst\u05e8\u05ec\u05ef\u05fa\u0600\u0612\u0616\u061b\u061d\u0623\u066c\u0672cy;\u4403\u803b>\u403emma\u0100;d\u05f7\u05f8\u4393;\u43dcreve;\u411e\u0180eiy\u0607\u060c\u0610dil;\u4122rc;\u411c;\u4413ot;\u4120r;\uc000\ud835\udd0a;\u62d9pf;\uc000\ud835\udd3eeater\u0300EFGLST\u0635\u0644\u064e\u0656\u065b\u0666qual\u0100;L\u063e\u063f\u6265ess;\u62dbullEqual;\u6267reater;\u6aa2ess;\u6277lantEqual;\u6a7eilde;\u6273cr;\uc000\ud835\udca2;\u626b\u0400Aacfiosu\u0685\u068b\u0696\u069b\u069e\u06aa\u06be\u06caRDcy;\u442a\u0100ct\u0690\u0694ek;\u42c7;\u405eirc;\u4124r;\u610clbertSpace;\u610b\u01f0\u06af\0\u06b2f;\u610dizontalLine;\u6500\u0100ct\u06c3\u06c5\xf2\u06a9rok;\u4126mp\u0144\u06d0\u06d8ownHum\xf0\u012fqual;\u624f\u0700EJOacdfgmnostu\u06fa\u06fe\u0703\u0707\u070e\u071a\u071e\u0721\u0728\u0744\u0778\u078b\u078f\u0795cy;\u4415lig;\u4132cy;\u4401cute\u803b\xcd\u40cd\u0100iy\u0713\u0718rc\u803b\xce\u40ce;\u4418ot;\u4130r;\u6111rave\u803b\xcc\u40cc\u0180;ap\u0720\u072f\u073f\u0100cg\u0734\u0737r;\u412ainaryI;\u6148lie\xf3\u03dd\u01f4\u0749\0\u0762\u0100;e\u074d\u074e\u622c\u0100gr\u0753\u0758ral;\u622bsection;\u62c2isible\u0100CT\u076c\u0772omma;\u6063imes;\u6062\u0180gpt\u077f\u0783\u0788on;\u412ef;\uc000\ud835\udd40a;\u4399cr;\u6110ilde;\u4128\u01eb\u079a\0\u079ecy;\u4406l\u803b\xcf\u40cf\u0280cfosu\u07ac\u07b7\u07bc\u07c2\u07d0\u0100iy\u07b1\u07b5rc;\u4134;\u4419r;\uc000\ud835\udd0dpf;\uc000\ud835\udd41\u01e3\u07c7\0\u07ccr;\uc000\ud835\udca5rcy;\u4408kcy;\u4404\u0380HJacfos\u07e4\u07e8\u07ec\u07f1\u07fd\u0802\u0808cy;\u4425cy;\u440cppa;\u439a\u0100ey\u07f6\u07fbdil;\u4136;\u441ar;\uc000\ud835\udd0epf;\uc000\ud835\udd42cr;\uc000\ud835\udca6\u0580JTaceflmost\u0825\u0829\u082c\u0850\u0863\u09b3\u09b8\u09c7\u09cd\u0a37\u0a47cy;\u4409\u803b<\u403c\u0280cmnpr\u0837\u083c\u0841\u0844\u084dute;\u4139bda;\u439bg;\u67ealacetrf;\u6112r;\u619e\u0180aey\u0857\u085c\u0861ron;\u413ddil;\u413b;\u441b\u0100fs\u0868\u0970t\u0500ACDFRTUVar\u087e\u08a9\u08b1\u08e0\u08e6\u08fc\u092f\u095b\u0390\u096a\u0100nr\u0883\u088fgleBracket;\u67e8row\u0180;BR\u0899\u089a\u089e\u6190ar;\u61e4ightArrow;\u61c6eiling;\u6308o\u01f5\u08b7\0\u08c3bleBracket;\u67e6n\u01d4\u08c8\0\u08d2eeVector;\u6961ector\u0100;B\u08db\u08dc\u61c3ar;\u6959loor;\u630aight\u0100AV\u08ef\u08f5rrow;\u6194ector;\u694e\u0100er\u0901\u0917e\u0180;AV\u0909\u090a\u0910\u62a3rrow;\u61a4ector;\u695aiangle\u0180;BE\u0924\u0925\u0929\u62b2ar;\u69cfqual;\u62b4p\u0180DTV\u0937\u0942\u094cownVector;\u6951eeVector;\u6960ector\u0100;B\u0956\u0957\u61bfar;\u6958ector\u0100;B\u0965\u0966\u61bcar;\u6952ight\xe1\u039cs\u0300EFGLST\u097e\u098b\u0995\u099d\u09a2\u09adqualGreater;\u62daullEqual;\u6266reater;\u6276ess;\u6aa1lantEqual;\u6a7dilde;\u6272r;\uc000\ud835\udd0f\u0100;e\u09bd\u09be\u62d8ftarrow;\u61daidot;\u413f\u0180npw\u09d4\u0a16\u0a1bg\u0200LRlr\u09de\u09f7\u0a02\u0a10eft\u0100AR\u09e6\u09ecrrow;\u67f5ightArrow;\u67f7ightArrow;\u67f6eft\u0100ar\u03b3\u0a0aight\xe1\u03bfight\xe1\u03caf;\uc000\ud835\udd43er\u0100LR\u0a22\u0a2ceftArrow;\u6199ightArrow;\u6198\u0180cht\u0a3e\u0a40\u0a42\xf2\u084c;\u61b0rok;\u4141;\u626a\u0400acefiosu\u0a5a\u0a5d\u0a60\u0a77\u0a7c\u0a85\u0a8b\u0a8ep;\u6905y;\u441c\u0100dl\u0a65\u0a6fiumSpace;\u605flintrf;\u6133r;\uc000\ud835\udd10nusPlus;\u6213pf;\uc000\ud835\udd44c\xf2\u0a76;\u439c\u0480Jacefostu\u0aa3\u0aa7\u0aad\u0ac0\u0b14\u0b19\u0d91\u0d97\u0d9ecy;\u440acute;\u4143\u0180aey\u0ab4\u0ab9\u0aberon;\u4147dil;\u4145;\u441d\u0180gsw\u0ac7\u0af0\u0b0eative\u0180MTV\u0ad3\u0adf\u0ae8ediumSpace;\u600bhi\u0100cn\u0ae6\u0ad8\xeb\u0ad9eryThi\xee\u0ad9ted\u0100GL\u0af8\u0b06reaterGreate\xf2\u0673essLes\xf3\u0a48Line;\u400ar;\uc000\ud835\udd11\u0200Bnpt\u0b22\u0b28\u0b37\u0b3areak;\u6060BreakingSpace;\u40a0f;\u6115\u0680;CDEGHLNPRSTV\u0b55\u0b56\u0b6a\u0b7c\u0ba1\u0beb\u0c04\u0c5e\u0c84\u0ca6\u0cd8\u0d61\u0d85\u6aec\u0100ou\u0b5b\u0b64ngruent;\u6262pCap;\u626doubleVerticalBar;\u6226\u0180lqx\u0b83\u0b8a\u0b9bement;\u6209ual\u0100;T\u0b92\u0b93\u6260ilde;\uc000\u2242\u0338ists;\u6204reater\u0380;EFGLST\u0bb6\u0bb7\u0bbd\u0bc9\u0bd3\u0bd8\u0be5\u626fqual;\u6271ullEqual;\uc000\u2267\u0338reater;\uc000\u226b\u0338ess;\u6279lantEqual;\uc000\u2a7e\u0338ilde;\u6275ump\u0144\u0bf2\u0bfdownHump;\uc000\u224e\u0338qual;\uc000\u224f\u0338e\u0100fs\u0c0a\u0c27tTriangle\u0180;BE\u0c1a\u0c1b\u0c21\u62eaar;\uc000\u29cf\u0338qual;\u62ecs\u0300;EGLST\u0c35\u0c36\u0c3c\u0c44\u0c4b\u0c58\u626equal;\u6270reater;\u6278ess;\uc000\u226a\u0338lantEqual;\uc000\u2a7d\u0338ilde;\u6274ested\u0100GL\u0c68\u0c79reaterGreater;\uc000\u2aa2\u0338essLess;\uc000\u2aa1\u0338recedes\u0180;ES\u0c92\u0c93\u0c9b\u6280qual;\uc000\u2aaf\u0338lantEqual;\u62e0\u0100ei\u0cab\u0cb9verseElement;\u620cghtTriangle\u0180;BE\u0ccb\u0ccc\u0cd2\u62ebar;\uc000\u29d0\u0338qual;\u62ed\u0100qu\u0cdd\u0d0cuareSu\u0100bp\u0ce8\u0cf9set\u0100;E\u0cf0\u0cf3\uc000\u228f\u0338qual;\u62e2erset\u0100;E\u0d03\u0d06\uc000\u2290\u0338qual;\u62e3\u0180bcp\u0d13\u0d24\u0d4eset\u0100;E\u0d1b\u0d1e\uc000\u2282\u20d2qual;\u6288ceeds\u0200;EST\u0d32\u0d33\u0d3b\u0d46\u6281qual;\uc000\u2ab0\u0338lantEqual;\u62e1ilde;\uc000\u227f\u0338erset\u0100;E\u0d58\u0d5b\uc000\u2283\u20d2qual;\u6289ilde\u0200;EFT\u0d6e\u0d6f\u0d75\u0d7f\u6241qual;\u6244ullEqual;\u6247ilde;\u6249erticalBar;\u6224cr;\uc000\ud835\udca9ilde\u803b\xd1\u40d1;\u439d\u0700Eacdfgmoprstuv\u0dbd\u0dc2\u0dc9\u0dd5\u0ddb\u0de0\u0de7\u0dfc\u0e02\u0e20\u0e22\u0e32\u0e3f\u0e44lig;\u4152cute\u803b\xd3\u40d3\u0100iy\u0dce\u0dd3rc\u803b\xd4\u40d4;\u441eblac;\u4150r;\uc000\ud835\udd12rave\u803b\xd2\u40d2\u0180aei\u0dee\u0df2\u0df6cr;\u414cga;\u43a9cron;\u439fpf;\uc000\ud835\udd46enCurly\u0100DQ\u0e0e\u0e1aoubleQuote;\u601cuote;\u6018;\u6a54\u0100cl\u0e27\u0e2cr;\uc000\ud835\udcaaash\u803b\xd8\u40d8i\u016c\u0e37\u0e3cde\u803b\xd5\u40d5es;\u6a37ml\u803b\xd6\u40d6er\u0100BP\u0e4b\u0e60\u0100ar\u0e50\u0e53r;\u603eac\u0100ek\u0e5a\u0e5c;\u63deet;\u63b4arenthesis;\u63dc\u0480acfhilors\u0e7f\u0e87\u0e8a\u0e8f\u0e92\u0e94\u0e9d\u0eb0\u0efcrtialD;\u6202y;\u441fr;\uc000\ud835\udd13i;\u43a6;\u43a0usMinus;\u40b1\u0100ip\u0ea2\u0eadncareplan\xe5\u069df;\u6119\u0200;eio\u0eb9\u0eba\u0ee0\u0ee4\u6abbcedes\u0200;EST\u0ec8\u0ec9\u0ecf\u0eda\u627aqual;\u6aaflantEqual;\u627cilde;\u627eme;\u6033\u0100dp\u0ee9\u0eeeuct;\u620fortion\u0100;a\u0225\u0ef9l;\u621d\u0100ci\u0f01\u0f06r;\uc000\ud835\udcab;\u43a8\u0200Ufos\u0f11\u0f16\u0f1b\u0f1fOT\u803b\"\u4022r;\uc000\ud835\udd14pf;\u611acr;\uc000\ud835\udcac\u0600BEacefhiorsu\u0f3e\u0f43\u0f47\u0f60\u0f73\u0fa7\u0faa\u0fad\u1096\u10a9\u10b4\u10bearr;\u6910G\u803b\xae\u40ae\u0180cnr\u0f4e\u0f53\u0f56ute;\u4154g;\u67ebr\u0100;t\u0f5c\u0f5d\u61a0l;\u6916\u0180aey\u0f67\u0f6c\u0f71ron;\u4158dil;\u4156;\u4420\u0100;v\u0f78\u0f79\u611cerse\u0100EU\u0f82\u0f99\u0100lq\u0f87\u0f8eement;\u620builibrium;\u61cbpEquilibrium;\u696fr\xbb\u0f79o;\u43a1ght\u0400ACDFTUVa\u0fc1\u0feb\u0ff3\u1022\u1028\u105b\u1087\u03d8\u0100nr\u0fc6\u0fd2gleBracket;\u67e9row\u0180;BL\u0fdc\u0fdd\u0fe1\u6192ar;\u61e5eftArrow;\u61c4eiling;\u6309o\u01f5\u0ff9\0\u1005bleBracket;\u67e7n\u01d4\u100a\0\u1014eeVector;\u695dector\u0100;B\u101d\u101e\u61c2ar;\u6955loor;\u630b\u0100er\u102d\u1043e\u0180;AV\u1035\u1036\u103c\u62a2rrow;\u61a6ector;\u695biangle\u0180;BE\u1050\u1051\u1055\u62b3ar;\u69d0qual;\u62b5p\u0180DTV\u1063\u106e\u1078ownVector;\u694feeVector;\u695cector\u0100;B\u1082\u1083\u61bear;\u6954ector\u0100;B\u1091\u1092\u61c0ar;\u6953\u0100pu\u109b\u109ef;\u611dndImplies;\u6970ightarrow;\u61db\u0100ch\u10b9\u10bcr;\u611b;\u61b1leDelayed;\u69f4\u0680HOacfhimoqstu\u10e4\u10f1\u10f7\u10fd\u1119\u111e\u1151\u1156\u1161\u1167\u11b5\u11bb\u11bf\u0100Cc\u10e9\u10eeHcy;\u4429y;\u4428FTcy;\u442ccute;\u415a\u0280;aeiy\u1108\u1109\u110e\u1113\u1117\u6abcron;\u4160dil;\u415erc;\u415c;\u4421r;\uc000\ud835\udd16ort\u0200DLRU\u112a\u1134\u113e\u1149ownArrow\xbb\u041eeftArrow\xbb\u089aightArrow\xbb\u0fddpArrow;\u6191gma;\u43a3allCircle;\u6218pf;\uc000\ud835\udd4a\u0272\u116d\0\0\u1170t;\u621aare\u0200;ISU\u117b\u117c\u1189\u11af\u65a1ntersection;\u6293u\u0100bp\u118f\u119eset\u0100;E\u1197\u1198\u628fqual;\u6291erset\u0100;E\u11a8\u11a9\u6290qual;\u6292nion;\u6294cr;\uc000\ud835\udcaear;\u62c6\u0200bcmp\u11c8\u11db\u1209\u120b\u0100;s\u11cd\u11ce\u62d0et\u0100;E\u11cd\u11d5qual;\u6286\u0100ch\u11e0\u1205eeds\u0200;EST\u11ed\u11ee\u11f4\u11ff\u627bqual;\u6ab0lantEqual;\u627dilde;\u627fTh\xe1\u0f8c;\u6211\u0180;es\u1212\u1213\u1223\u62d1rset\u0100;E\u121c\u121d\u6283qual;\u6287et\xbb\u1213\u0580HRSacfhiors\u123e\u1244\u1249\u1255\u125e\u1271\u1276\u129f\u12c2\u12c8\u12d1ORN\u803b\xde\u40deADE;\u6122\u0100Hc\u124e\u1252cy;\u440by;\u4426\u0100bu\u125a\u125c;\u4009;\u43a4\u0180aey\u1265\u126a\u126fron;\u4164dil;\u4162;\u4422r;\uc000\ud835\udd17\u0100ei\u127b\u1289\u01f2\u1280\0\u1287efore;\u6234a;\u4398\u0100cn\u128e\u1298kSpace;\uc000\u205f\u200aSpace;\u6009lde\u0200;EFT\u12ab\u12ac\u12b2\u12bc\u623cqual;\u6243ullEqual;\u6245ilde;\u6248pf;\uc000\ud835\udd4bipleDot;\u60db\u0100ct\u12d6\u12dbr;\uc000\ud835\udcafrok;\u4166\u0ae1\u12f7\u130e\u131a\u1326\0\u132c\u1331\0\0\0\0\0\u1338\u133d\u1377\u1385\0\u13ff\u1404\u140a\u1410\u0100cr\u12fb\u1301ute\u803b\xda\u40dar\u0100;o\u1307\u1308\u619fcir;\u6949r\u01e3\u1313\0\u1316y;\u440eve;\u416c\u0100iy\u131e\u1323rc\u803b\xdb\u40db;\u4423blac;\u4170r;\uc000\ud835\udd18rave\u803b\xd9\u40d9acr;\u416a\u0100di\u1341\u1369er\u0100BP\u1348\u135d\u0100ar\u134d\u1350r;\u405fac\u0100ek\u1357\u1359;\u63dfet;\u63b5arenthesis;\u63ddon\u0100;P\u1370\u1371\u62c3lus;\u628e\u0100gp\u137b\u137fon;\u4172f;\uc000\ud835\udd4c\u0400ADETadps\u1395\u13ae\u13b8\u13c4\u03e8\u13d2\u13d7\u13f3rrow\u0180;BD\u1150\u13a0\u13a4ar;\u6912ownArrow;\u61c5ownArrow;\u6195quilibrium;\u696eee\u0100;A\u13cb\u13cc\u62a5rrow;\u61a5own\xe1\u03f3er\u0100LR\u13de\u13e8eftArrow;\u6196ightArrow;\u6197i\u0100;l\u13f9\u13fa\u43d2on;\u43a5ing;\u416ecr;\uc000\ud835\udcb0ilde;\u4168ml\u803b\xdc\u40dc\u0480Dbcdefosv\u1427\u142c\u1430\u1433\u143e\u1485\u148a\u1490\u1496ash;\u62abar;\u6aeby;\u4412ash\u0100;l\u143b\u143c\u62a9;\u6ae6\u0100er\u1443\u1445;\u62c1\u0180bty\u144c\u1450\u147aar;\u6016\u0100;i\u144f\u1455cal\u0200BLST\u1461\u1465\u146a\u1474ar;\u6223ine;\u407ceparator;\u6758ilde;\u6240ThinSpace;\u600ar;\uc000\ud835\udd19pf;\uc000\ud835\udd4dcr;\uc000\ud835\udcb1dash;\u62aa\u0280cefos\u14a7\u14ac\u14b1\u14b6\u14bcirc;\u4174dge;\u62c0r;\uc000\ud835\udd1apf;\uc000\ud835\udd4ecr;\uc000\ud835\udcb2\u0200fios\u14cb\u14d0\u14d2\u14d8r;\uc000\ud835\udd1b;\u439epf;\uc000\ud835\udd4fcr;\uc000\ud835\udcb3\u0480AIUacfosu\u14f1\u14f5\u14f9\u14fd\u1504\u150f\u1514\u151a\u1520cy;\u442fcy;\u4407cy;\u442ecute\u803b\xdd\u40dd\u0100iy\u1509\u150drc;\u4176;\u442br;\uc000\ud835\udd1cpf;\uc000\ud835\udd50cr;\uc000\ud835\udcb4ml;\u4178\u0400Hacdefos\u1535\u1539\u153f\u154b\u154f\u155d\u1560\u1564cy;\u4416cute;\u4179\u0100ay\u1544\u1549ron;\u417d;\u4417ot;\u417b\u01f2\u1554\0\u155boWidt\xe8\u0ad9a;\u4396r;\u6128pf;\u6124cr;\uc000\ud835\udcb5\u0be1\u1583\u158a\u1590\0\u15b0\u15b6\u15bf\0\0\0\0\u15c6\u15db\u15eb\u165f\u166d\0\u1695\u169b\u16b2\u16b9\0\u16becute\u803b\xe1\u40e1reve;\u4103\u0300;Ediuy\u159c\u159d\u15a1\u15a3\u15a8\u15ad\u623e;\uc000\u223e\u0333;\u623frc\u803b\xe2\u40e2te\u80bb\xb4\u0306;\u4430lig\u803b\xe6\u40e6\u0100;r\xb2\u15ba;\uc000\ud835\udd1erave\u803b\xe0\u40e0\u0100ep\u15ca\u15d6\u0100fp\u15cf\u15d4sym;\u6135\xe8\u15d3ha;\u43b1\u0100ap\u15dfc\u0100cl\u15e4\u15e7r;\u4101g;\u6a3f\u0264\u15f0\0\0\u160a\u0280;adsv\u15fa\u15fb\u15ff\u1601\u1607\u6227nd;\u6a55;\u6a5clope;\u6a58;\u6a5a\u0380;elmrsz\u1618\u1619\u161b\u161e\u163f\u164f\u1659\u6220;\u69a4e\xbb\u1619sd\u0100;a\u1625\u1626\u6221\u0461\u1630\u1632\u1634\u1636\u1638\u163a\u163c\u163e;\u69a8;\u69a9;\u69aa;\u69ab;\u69ac;\u69ad;\u69ae;\u69aft\u0100;v\u1645\u1646\u621fb\u0100;d\u164c\u164d\u62be;\u699d\u0100pt\u1654\u1657h;\u6222\xbb\xb9arr;\u637c\u0100gp\u1663\u1667on;\u4105f;\uc000\ud835\udd52\u0380;Eaeiop\u12c1\u167b\u167d\u1682\u1684\u1687\u168a;\u6a70cir;\u6a6f;\u624ad;\u624bs;\u4027rox\u0100;e\u12c1\u1692\xf1\u1683ing\u803b\xe5\u40e5\u0180cty\u16a1\u16a6\u16a8r;\uc000\ud835\udcb6;\u402amp\u0100;e\u12c1\u16af\xf1\u0288ilde\u803b\xe3\u40e3ml\u803b\xe4\u40e4\u0100ci\u16c2\u16c8onin\xf4\u0272nt;\u6a11\u0800Nabcdefiklnoprsu\u16ed\u16f1\u1730\u173c\u1743\u1748\u1778\u177d\u17e0\u17e6\u1839\u1850\u170d\u193d\u1948\u1970ot;\u6aed\u0100cr\u16f6\u171ek\u0200ceps\u1700\u1705\u170d\u1713ong;\u624cpsilon;\u43f6rime;\u6035im\u0100;e\u171a\u171b\u623dq;\u62cd\u0176\u1722\u1726ee;\u62bded\u0100;g\u172c\u172d\u6305e\xbb\u172drk\u0100;t\u135c\u1737brk;\u63b6\u0100oy\u1701\u1741;\u4431quo;\u601e\u0280cmprt\u1753\u175b\u1761\u1764\u1768aus\u0100;e\u010a\u0109ptyv;\u69b0s\xe9\u170cno\xf5\u0113\u0180ahw\u176f\u1771\u1773;\u43b2;\u6136een;\u626cr;\uc000\ud835\udd1fg\u0380costuvw\u178d\u179d\u17b3\u17c1\u17d5\u17db\u17de\u0180aiu\u1794\u1796\u179a\xf0\u0760rc;\u65efp\xbb\u1371\u0180dpt\u17a4\u17a8\u17adot;\u6a00lus;\u6a01imes;\u6a02\u0271\u17b9\0\0\u17becup;\u6a06ar;\u6605riangle\u0100du\u17cd\u17d2own;\u65bdp;\u65b3plus;\u6a04e\xe5\u1444\xe5\u14adarow;\u690d\u0180ako\u17ed\u1826\u1835\u0100cn\u17f2\u1823k\u0180lst\u17fa\u05ab\u1802ozenge;\u69ebriangle\u0200;dlr\u1812\u1813\u1818\u181d\u65b4own;\u65beeft;\u65c2ight;\u65b8k;\u6423\u01b1\u182b\0\u1833\u01b2\u182f\0\u1831;\u6592;\u65914;\u6593ck;\u6588\u0100eo\u183e\u184d\u0100;q\u1843\u1846\uc000=\u20e5uiv;\uc000\u2261\u20e5t;\u6310\u0200ptwx\u1859\u185e\u1867\u186cf;\uc000\ud835\udd53\u0100;t\u13cb\u1863om\xbb\u13cctie;\u62c8\u0600DHUVbdhmptuv\u1885\u1896\u18aa\u18bb\u18d7\u18db\u18ec\u18ff\u1905\u190a\u1910\u1921\u0200LRlr\u188e\u1890\u1892\u1894;\u6557;\u6554;\u6556;\u6553\u0280;DUdu\u18a1\u18a2\u18a4\u18a6\u18a8\u6550;\u6566;\u6569;\u6564;\u6567\u0200LRlr\u18b3\u18b5\u18b7\u18b9;\u655d;\u655a;\u655c;\u6559\u0380;HLRhlr\u18ca\u18cb\u18cd\u18cf\u18d1\u18d3\u18d5\u6551;\u656c;\u6563;\u6560;\u656b;\u6562;\u655fox;\u69c9\u0200LRlr\u18e4\u18e6\u18e8\u18ea;\u6555;\u6552;\u6510;\u650c\u0280;DUdu\u06bd\u18f7\u18f9\u18fb\u18fd;\u6565;\u6568;\u652c;\u6534inus;\u629flus;\u629eimes;\u62a0\u0200LRlr\u1919\u191b\u191d\u191f;\u655b;\u6558;\u6518;\u6514\u0380;HLRhlr\u1930\u1931\u1933\u1935\u1937\u1939\u193b\u6502;\u656a;\u6561;\u655e;\u653c;\u6524;\u651c\u0100ev\u0123\u1942bar\u803b\xa6\u40a6\u0200ceio\u1951\u1956\u195a\u1960r;\uc000\ud835\udcb7mi;\u604fm\u0100;e\u171a\u171cl\u0180;bh\u1968\u1969\u196b\u405c;\u69c5sub;\u67c8\u016c\u1974\u197el\u0100;e\u1979\u197a\u6022t\xbb\u197ap\u0180;Ee\u012f\u1985\u1987;\u6aae\u0100;q\u06dc\u06db\u0ce1\u19a7\0\u19e8\u1a11\u1a15\u1a32\0\u1a37\u1a50\0\0\u1ab4\0\0\u1ac1\0\0\u1b21\u1b2e\u1b4d\u1b52\0\u1bfd\0\u1c0c\u0180cpr\u19ad\u19b2\u19ddute;\u4107\u0300;abcds\u19bf\u19c0\u19c4\u19ca\u19d5\u19d9\u6229nd;\u6a44rcup;\u6a49\u0100au\u19cf\u19d2p;\u6a4bp;\u6a47ot;\u6a40;\uc000\u2229\ufe00\u0100eo\u19e2\u19e5t;\u6041\xee\u0693\u0200aeiu\u19f0\u19fb\u1a01\u1a05\u01f0\u19f5\0\u19f8s;\u6a4don;\u410ddil\u803b\xe7\u40e7rc;\u4109ps\u0100;s\u1a0c\u1a0d\u6a4cm;\u6a50ot;\u410b\u0180dmn\u1a1b\u1a20\u1a26il\u80bb\xb8\u01adptyv;\u69b2t\u8100\xa2;e\u1a2d\u1a2e\u40a2r\xe4\u01b2r;\uc000\ud835\udd20\u0180cei\u1a3d\u1a40\u1a4dy;\u4447ck\u0100;m\u1a47\u1a48\u6713ark\xbb\u1a48;\u43c7r\u0380;Ecefms\u1a5f\u1a60\u1a62\u1a6b\u1aa4\u1aaa\u1aae\u65cb;\u69c3\u0180;el\u1a69\u1a6a\u1a6d\u42c6q;\u6257e\u0261\u1a74\0\0\u1a88rrow\u0100lr\u1a7c\u1a81eft;\u61baight;\u61bb\u0280RSacd\u1a92\u1a94\u1a96\u1a9a\u1a9f\xbb\u0f47;\u64c8st;\u629birc;\u629aash;\u629dnint;\u6a10id;\u6aefcir;\u69c2ubs\u0100;u\u1abb\u1abc\u6663it\xbb\u1abc\u02ec\u1ac7\u1ad4\u1afa\0\u1b0aon\u0100;e\u1acd\u1ace\u403a\u0100;q\xc7\xc6\u026d\u1ad9\0\0\u1ae2a\u0100;t\u1ade\u1adf\u402c;\u4040\u0180;fl\u1ae8\u1ae9\u1aeb\u6201\xee\u1160e\u0100mx\u1af1\u1af6ent\xbb\u1ae9e\xf3\u024d\u01e7\u1afe\0\u1b07\u0100;d\u12bb\u1b02ot;\u6a6dn\xf4\u0246\u0180fry\u1b10\u1b14\u1b17;\uc000\ud835\udd54o\xe4\u0254\u8100\xa9;s\u0155\u1b1dr;\u6117\u0100ao\u1b25\u1b29rr;\u61b5ss;\u6717\u0100cu\u1b32\u1b37r;\uc000\ud835\udcb8\u0100bp\u1b3c\u1b44\u0100;e\u1b41\u1b42\u6acf;\u6ad1\u0100;e\u1b49\u1b4a\u6ad0;\u6ad2dot;\u62ef\u0380delprvw\u1b60\u1b6c\u1b77\u1b82\u1bac\u1bd4\u1bf9arr\u0100lr\u1b68\u1b6a;\u6938;\u6935\u0270\u1b72\0\0\u1b75r;\u62dec;\u62dfarr\u0100;p\u1b7f\u1b80\u61b6;\u693d\u0300;bcdos\u1b8f\u1b90\u1b96\u1ba1\u1ba5\u1ba8\u622arcap;\u6a48\u0100au\u1b9b\u1b9ep;\u6a46p;\u6a4aot;\u628dr;\u6a45;\uc000\u222a\ufe00\u0200alrv\u1bb5\u1bbf\u1bde\u1be3rr\u0100;m\u1bbc\u1bbd\u61b7;\u693cy\u0180evw\u1bc7\u1bd4\u1bd8q\u0270\u1bce\0\0\u1bd2re\xe3\u1b73u\xe3\u1b75ee;\u62ceedge;\u62cfen\u803b\xa4\u40a4earrow\u0100lr\u1bee\u1bf3eft\xbb\u1b80ight\xbb\u1bbde\xe4\u1bdd\u0100ci\u1c01\u1c07onin\xf4\u01f7nt;\u6231lcty;\u632d\u0980AHabcdefhijlorstuwz\u1c38\u1c3b\u1c3f\u1c5d\u1c69\u1c75\u1c8a\u1c9e\u1cac\u1cb7\u1cfb\u1cff\u1d0d\u1d7b\u1d91\u1dab\u1dbb\u1dc6\u1dcdr\xf2\u0381ar;\u6965\u0200glrs\u1c48\u1c4d\u1c52\u1c54ger;\u6020eth;\u6138\xf2\u1133h\u0100;v\u1c5a\u1c5b\u6010\xbb\u090a\u016b\u1c61\u1c67arow;\u690fa\xe3\u0315\u0100ay\u1c6e\u1c73ron;\u410f;\u4434\u0180;ao\u0332\u1c7c\u1c84\u0100gr\u02bf\u1c81r;\u61catseq;\u6a77\u0180glm\u1c91\u1c94\u1c98\u803b\xb0\u40b0ta;\u43b4ptyv;\u69b1\u0100ir\u1ca3\u1ca8sht;\u697f;\uc000\ud835\udd21ar\u0100lr\u1cb3\u1cb5\xbb\u08dc\xbb\u101e\u0280aegsv\u1cc2\u0378\u1cd6\u1cdc\u1ce0m\u0180;os\u0326\u1cca\u1cd4nd\u0100;s\u0326\u1cd1uit;\u6666amma;\u43ddin;\u62f2\u0180;io\u1ce7\u1ce8\u1cf8\u40f7de\u8100\xf7;o\u1ce7\u1cf0ntimes;\u62c7n\xf8\u1cf7cy;\u4452c\u026f\u1d06\0\0\u1d0arn;\u631eop;\u630d\u0280lptuw\u1d18\u1d1d\u1d22\u1d49\u1d55lar;\u4024f;\uc000\ud835\udd55\u0280;emps\u030b\u1d2d\u1d37\u1d3d\u1d42q\u0100;d\u0352\u1d33ot;\u6251inus;\u6238lus;\u6214quare;\u62a1blebarwedg\xe5\xfan\u0180adh\u112e\u1d5d\u1d67ownarrow\xf3\u1c83arpoon\u0100lr\u1d72\u1d76ef\xf4\u1cb4igh\xf4\u1cb6\u0162\u1d7f\u1d85karo\xf7\u0f42\u026f\u1d8a\0\0\u1d8ern;\u631fop;\u630c\u0180cot\u1d98\u1da3\u1da6\u0100ry\u1d9d\u1da1;\uc000\ud835\udcb9;\u4455l;\u69f6rok;\u4111\u0100dr\u1db0\u1db4ot;\u62f1i\u0100;f\u1dba\u1816\u65bf\u0100ah\u1dc0\u1dc3r\xf2\u0429a\xf2\u0fa6angle;\u69a6\u0100ci\u1dd2\u1dd5y;\u445fgrarr;\u67ff\u0900Dacdefglmnopqrstux\u1e01\u1e09\u1e19\u1e38\u0578\u1e3c\u1e49\u1e61\u1e7e\u1ea5\u1eaf\u1ebd\u1ee1\u1f2a\u1f37\u1f44\u1f4e\u1f5a\u0100Do\u1e06\u1d34o\xf4\u1c89\u0100cs\u1e0e\u1e14ute\u803b\xe9\u40e9ter;\u6a6e\u0200aioy\u1e22\u1e27\u1e31\u1e36ron;\u411br\u0100;c\u1e2d\u1e2e\u6256\u803b\xea\u40ealon;\u6255;\u444dot;\u4117\u0100Dr\u1e41\u1e45ot;\u6252;\uc000\ud835\udd22\u0180;rs\u1e50\u1e51\u1e57\u6a9aave\u803b\xe8\u40e8\u0100;d\u1e5c\u1e5d\u6a96ot;\u6a98\u0200;ils\u1e6a\u1e6b\u1e72\u1e74\u6a99nters;\u63e7;\u6113\u0100;d\u1e79\u1e7a\u6a95ot;\u6a97\u0180aps\u1e85\u1e89\u1e97cr;\u4113ty\u0180;sv\u1e92\u1e93\u1e95\u6205et\xbb\u1e93p\u01001;\u1e9d\u1ea4\u0133\u1ea1\u1ea3;\u6004;\u6005\u6003\u0100gs\u1eaa\u1eac;\u414bp;\u6002\u0100gp\u1eb4\u1eb8on;\u4119f;\uc000\ud835\udd56\u0180als\u1ec4\u1ece\u1ed2r\u0100;s\u1eca\u1ecb\u62d5l;\u69e3us;\u6a71i\u0180;lv\u1eda\u1edb\u1edf\u43b5on\xbb\u1edb;\u43f5\u0200csuv\u1eea\u1ef3\u1f0b\u1f23\u0100io\u1eef\u1e31rc\xbb\u1e2e\u0269\u1ef9\0\0\u1efb\xed\u0548ant\u0100gl\u1f02\u1f06tr\xbb\u1e5dess\xbb\u1e7a\u0180aei\u1f12\u1f16\u1f1als;\u403dst;\u625fv\u0100;D\u0235\u1f20D;\u6a78parsl;\u69e5\u0100Da\u1f2f\u1f33ot;\u6253rr;\u6971\u0180cdi\u1f3e\u1f41\u1ef8r;\u612fo\xf4\u0352\u0100ah\u1f49\u1f4b;\u43b7\u803b\xf0\u40f0\u0100mr\u1f53\u1f57l\u803b\xeb\u40ebo;\u60ac\u0180cip\u1f61\u1f64\u1f67l;\u4021s\xf4\u056e\u0100eo\u1f6c\u1f74ctatio\xee\u0559nential\xe5\u0579\u09e1\u1f92\0\u1f9e\0\u1fa1\u1fa7\0\0\u1fc6\u1fcc\0\u1fd3\0\u1fe6\u1fea\u2000\0\u2008\u205allingdotse\xf1\u1e44y;\u4444male;\u6640\u0180ilr\u1fad\u1fb3\u1fc1lig;\u8000\ufb03\u0269\u1fb9\0\0\u1fbdg;\u8000\ufb00ig;\u8000\ufb04;\uc000\ud835\udd23lig;\u8000\ufb01lig;\uc000fj\u0180alt\u1fd9\u1fdc\u1fe1t;\u666dig;\u8000\ufb02ns;\u65b1of;\u4192\u01f0\u1fee\0\u1ff3f;\uc000\ud835\udd57\u0100ak\u05bf\u1ff7\u0100;v\u1ffc\u1ffd\u62d4;\u6ad9artint;\u6a0d\u0100ao\u200c\u2055\u0100cs\u2011\u2052\u03b1\u201a\u2030\u2038\u2045\u2048\0\u2050\u03b2\u2022\u2025\u2027\u202a\u202c\0\u202e\u803b\xbd\u40bd;\u6153\u803b\xbc\u40bc;\u6155;\u6159;\u615b\u01b3\u2034\0\u2036;\u6154;\u6156\u02b4\u203e\u2041\0\0\u2043\u803b\xbe\u40be;\u6157;\u615c5;\u6158\u01b6\u204c\0\u204e;\u615a;\u615d8;\u615el;\u6044wn;\u6322cr;\uc000\ud835\udcbb\u0880Eabcdefgijlnorstv\u2082\u2089\u209f\u20a5\u20b0\u20b4\u20f0\u20f5\u20fa\u20ff\u2103\u2112\u2138\u0317\u213e\u2152\u219e\u0100;l\u064d\u2087;\u6a8c\u0180cmp\u2090\u2095\u209dute;\u41f5ma\u0100;d\u209c\u1cda\u43b3;\u6a86reve;\u411f\u0100iy\u20aa\u20aerc;\u411d;\u4433ot;\u4121\u0200;lqs\u063e\u0642\u20bd\u20c9\u0180;qs\u063e\u064c\u20c4lan\xf4\u0665\u0200;cdl\u0665\u20d2\u20d5\u20e5c;\u6aa9ot\u0100;o\u20dc\u20dd\u6a80\u0100;l\u20e2\u20e3\u6a82;\u6a84\u0100;e\u20ea\u20ed\uc000\u22db\ufe00s;\u6a94r;\uc000\ud835\udd24\u0100;g\u0673\u061bmel;\u6137cy;\u4453\u0200;Eaj\u065a\u210c\u210e\u2110;\u6a92;\u6aa5;\u6aa4\u0200Eaes\u211b\u211d\u2129\u2134;\u6269p\u0100;p\u2123\u2124\u6a8arox\xbb\u2124\u0100;q\u212e\u212f\u6a88\u0100;q\u212e\u211bim;\u62e7pf;\uc000\ud835\udd58\u0100ci\u2143\u2146r;\u610am\u0180;el\u066b\u214e\u2150;\u6a8e;\u6a90\u8300>;cdlqr\u05ee\u2160\u216a\u216e\u2173\u2179\u0100ci\u2165\u2167;\u6aa7r;\u6a7aot;\u62d7Par;\u6995uest;\u6a7c\u0280adels\u2184\u216a\u2190\u0656\u219b\u01f0\u2189\0\u218epro\xf8\u209er;\u6978q\u0100lq\u063f\u2196les\xf3\u2088i\xed\u066b\u0100en\u21a3\u21adrtneqq;\uc000\u2269\ufe00\xc5\u21aa\u0500Aabcefkosy\u21c4\u21c7\u21f1\u21f5\u21fa\u2218\u221d\u222f\u2268\u227dr\xf2\u03a0\u0200ilmr\u21d0\u21d4\u21d7\u21dbrs\xf0\u1484f\xbb\u2024il\xf4\u06a9\u0100dr\u21e0\u21e4cy;\u444a\u0180;cw\u08f4\u21eb\u21efir;\u6948;\u61adar;\u610firc;\u4125\u0180alr\u2201\u220e\u2213rts\u0100;u\u2209\u220a\u6665it\xbb\u220alip;\u6026con;\u62b9r;\uc000\ud835\udd25s\u0100ew\u2223\u2229arow;\u6925arow;\u6926\u0280amopr\u223a\u223e\u2243\u225e\u2263rr;\u61fftht;\u623bk\u0100lr\u2249\u2253eftarrow;\u61a9ightarrow;\u61aaf;\uc000\ud835\udd59bar;\u6015\u0180clt\u226f\u2274\u2278r;\uc000\ud835\udcbdas\xe8\u21f4rok;\u4127\u0100bp\u2282\u2287ull;\u6043hen\xbb\u1c5b\u0ae1\u22a3\0\u22aa\0\u22b8\u22c5\u22ce\0\u22d5\u22f3\0\0\u22f8\u2322\u2367\u2362\u237f\0\u2386\u23aa\u23b4cute\u803b\xed\u40ed\u0180;iy\u0771\u22b0\u22b5rc\u803b\xee\u40ee;\u4438\u0100cx\u22bc\u22bfy;\u4435cl\u803b\xa1\u40a1\u0100fr\u039f\u22c9;\uc000\ud835\udd26rave\u803b\xec\u40ec\u0200;ino\u073e\u22dd\u22e9\u22ee\u0100in\u22e2\u22e6nt;\u6a0ct;\u622dfin;\u69dcta;\u6129lig;\u4133\u0180aop\u22fe\u231a\u231d\u0180cgt\u2305\u2308\u2317r;\u412b\u0180elp\u071f\u230f\u2313in\xe5\u078ear\xf4\u0720h;\u4131f;\u62b7ed;\u41b5\u0280;cfot\u04f4\u232c\u2331\u233d\u2341are;\u6105in\u0100;t\u2338\u2339\u621eie;\u69dddo\xf4\u2319\u0280;celp\u0757\u234c\u2350\u235b\u2361al;\u62ba\u0100gr\u2355\u2359er\xf3\u1563\xe3\u234darhk;\u6a17rod;\u6a3c\u0200cgpt\u236f\u2372\u2376\u237by;\u4451on;\u412ff;\uc000\ud835\udd5aa;\u43b9uest\u803b\xbf\u40bf\u0100ci\u238a\u238fr;\uc000\ud835\udcben\u0280;Edsv\u04f4\u239b\u239d\u23a1\u04f3;\u62f9ot;\u62f5\u0100;v\u23a6\u23a7\u62f4;\u62f3\u0100;i\u0777\u23aelde;\u4129\u01eb\u23b8\0\u23bccy;\u4456l\u803b\xef\u40ef\u0300cfmosu\u23cc\u23d7\u23dc\u23e1\u23e7\u23f5\u0100iy\u23d1\u23d5rc;\u4135;\u4439r;\uc000\ud835\udd27ath;\u4237pf;\uc000\ud835\udd5b\u01e3\u23ec\0\u23f1r;\uc000\ud835\udcbfrcy;\u4458kcy;\u4454\u0400acfghjos\u240b\u2416\u2422\u2427\u242d\u2431\u2435\u243bppa\u0100;v\u2413\u2414\u43ba;\u43f0\u0100ey\u241b\u2420dil;\u4137;\u443ar;\uc000\ud835\udd28reen;\u4138cy;\u4445cy;\u445cpf;\uc000\ud835\udd5ccr;\uc000\ud835\udcc0\u0b80ABEHabcdefghjlmnoprstuv\u2470\u2481\u2486\u248d\u2491\u250e\u253d\u255a\u2580\u264e\u265e\u2665\u2679\u267d\u269a\u26b2\u26d8\u275d\u2768\u278b\u27c0\u2801\u2812\u0180art\u2477\u247a\u247cr\xf2\u09c6\xf2\u0395ail;\u691barr;\u690e\u0100;g\u0994\u248b;\u6a8bar;\u6962\u0963\u24a5\0\u24aa\0\u24b1\0\0\0\0\0\u24b5\u24ba\0\u24c6\u24c8\u24cd\0\u24f9ute;\u413amptyv;\u69b4ra\xee\u084cbda;\u43bbg\u0180;dl\u088e\u24c1\u24c3;\u6991\xe5\u088e;\u6a85uo\u803b\xab\u40abr\u0400;bfhlpst\u0899\u24de\u24e6\u24e9\u24eb\u24ee\u24f1\u24f5\u0100;f\u089d\u24e3s;\u691fs;\u691d\xeb\u2252p;\u61abl;\u6939im;\u6973l;\u61a2\u0180;ae\u24ff\u2500\u2504\u6aabil;\u6919\u0100;s\u2509\u250a\u6aad;\uc000\u2aad\ufe00\u0180abr\u2515\u2519\u251drr;\u690crk;\u6772\u0100ak\u2522\u252cc\u0100ek\u2528\u252a;\u407b;\u405b\u0100es\u2531\u2533;\u698bl\u0100du\u2539\u253b;\u698f;\u698d\u0200aeuy\u2546\u254b\u2556\u2558ron;\u413e\u0100di\u2550\u2554il;\u413c\xec\u08b0\xe2\u2529;\u443b\u0200cqrs\u2563\u2566\u256d\u257da;\u6936uo\u0100;r\u0e19\u1746\u0100du\u2572\u2577har;\u6967shar;\u694bh;\u61b2\u0280;fgqs\u258b\u258c\u0989\u25f3\u25ff\u6264t\u0280ahlrt\u2598\u25a4\u25b7\u25c2\u25e8rrow\u0100;t\u0899\u25a1a\xe9\u24f6arpoon\u0100du\u25af\u25b4own\xbb\u045ap\xbb\u0966eftarrows;\u61c7ight\u0180ahs\u25cd\u25d6\u25derrow\u0100;s\u08f4\u08a7arpoon\xf3\u0f98quigarro\xf7\u21f0hreetimes;\u62cb\u0180;qs\u258b\u0993\u25falan\xf4\u09ac\u0280;cdgs\u09ac\u260a\u260d\u261d\u2628c;\u6aa8ot\u0100;o\u2614\u2615\u6a7f\u0100;r\u261a\u261b\u6a81;\u6a83\u0100;e\u2622\u2625\uc000\u22da\ufe00s;\u6a93\u0280adegs\u2633\u2639\u263d\u2649\u264bppro\xf8\u24c6ot;\u62d6q\u0100gq\u2643\u2645\xf4\u0989gt\xf2\u248c\xf4\u099bi\xed\u09b2\u0180ilr\u2655\u08e1\u265asht;\u697c;\uc000\ud835\udd29\u0100;E\u099c\u2663;\u6a91\u0161\u2669\u2676r\u0100du\u25b2\u266e\u0100;l\u0965\u2673;\u696alk;\u6584cy;\u4459\u0280;acht\u0a48\u2688\u268b\u2691\u2696r\xf2\u25c1orne\xf2\u1d08ard;\u696bri;\u65fa\u0100io\u269f\u26a4dot;\u4140ust\u0100;a\u26ac\u26ad\u63b0che\xbb\u26ad\u0200Eaes\u26bb\u26bd\u26c9\u26d4;\u6268p\u0100;p\u26c3\u26c4\u6a89rox\xbb\u26c4\u0100;q\u26ce\u26cf\u6a87\u0100;q\u26ce\u26bbim;\u62e6\u0400abnoptwz\u26e9\u26f4\u26f7\u271a\u272f\u2741\u2747\u2750\u0100nr\u26ee\u26f1g;\u67ecr;\u61fdr\xeb\u08c1g\u0180lmr\u26ff\u270d\u2714eft\u0100ar\u09e6\u2707ight\xe1\u09f2apsto;\u67fcight\xe1\u09fdparrow\u0100lr\u2725\u2729ef\xf4\u24edight;\u61ac\u0180afl\u2736\u2739\u273dr;\u6985;\uc000\ud835\udd5dus;\u6a2dimes;\u6a34\u0161\u274b\u274fst;\u6217\xe1\u134e\u0180;ef\u2757\u2758\u1800\u65cange\xbb\u2758ar\u0100;l\u2764\u2765\u4028t;\u6993\u0280achmt\u2773\u2776\u277c\u2785\u2787r\xf2\u08a8orne\xf2\u1d8car\u0100;d\u0f98\u2783;\u696d;\u600eri;\u62bf\u0300achiqt\u2798\u279d\u0a40\u27a2\u27ae\u27bbquo;\u6039r;\uc000\ud835\udcc1m\u0180;eg\u09b2\u27aa\u27ac;\u6a8d;\u6a8f\u0100bu\u252a\u27b3o\u0100;r\u0e1f\u27b9;\u601arok;\u4142\u8400<;cdhilqr\u082b\u27d2\u2639\u27dc\u27e0\u27e5\u27ea\u27f0\u0100ci\u27d7\u27d9;\u6aa6r;\u6a79re\xe5\u25f2mes;\u62c9arr;\u6976uest;\u6a7b\u0100Pi\u27f5\u27f9ar;\u6996\u0180;ef\u2800\u092d\u181b\u65c3r\u0100du\u2807\u280dshar;\u694ahar;\u6966\u0100en\u2817\u2821rtneqq;\uc000\u2268\ufe00\xc5\u281e\u0700Dacdefhilnopsu\u2840\u2845\u2882\u288e\u2893\u28a0\u28a5\u28a8\u28da\u28e2\u28e4\u0a83\u28f3\u2902Dot;\u623a\u0200clpr\u284e\u2852\u2863\u287dr\u803b\xaf\u40af\u0100et\u2857\u2859;\u6642\u0100;e\u285e\u285f\u6720se\xbb\u285f\u0100;s\u103b\u2868to\u0200;dlu\u103b\u2873\u2877\u287bow\xee\u048cef\xf4\u090f\xf0\u13d1ker;\u65ae\u0100oy\u2887\u288cmma;\u6a29;\u443cash;\u6014asuredangle\xbb\u1626r;\uc000\ud835\udd2ao;\u6127\u0180cdn\u28af\u28b4\u28c9ro\u803b\xb5\u40b5\u0200;acd\u1464\u28bd\u28c0\u28c4s\xf4\u16a7ir;\u6af0ot\u80bb\xb7\u01b5us\u0180;bd\u28d2\u1903\u28d3\u6212\u0100;u\u1d3c\u28d8;\u6a2a\u0163\u28de\u28e1p;\u6adb\xf2\u2212\xf0\u0a81\u0100dp\u28e9\u28eeels;\u62a7f;\uc000\ud835\udd5e\u0100ct\u28f8\u28fdr;\uc000\ud835\udcc2pos\xbb\u159d\u0180;lm\u2909\u290a\u290d\u43bctimap;\u62b8\u0c00GLRVabcdefghijlmoprstuvw\u2942\u2953\u297e\u2989\u2998\u29da\u29e9\u2a15\u2a1a\u2a58\u2a5d\u2a83\u2a95\u2aa4\u2aa8\u2b04\u2b07\u2b44\u2b7f\u2bae\u2c34\u2c67\u2c7c\u2ce9\u0100gt\u2947\u294b;\uc000\u22d9\u0338\u0100;v\u2950\u0bcf\uc000\u226b\u20d2\u0180elt\u295a\u2972\u2976ft\u0100ar\u2961\u2967rrow;\u61cdightarrow;\u61ce;\uc000\u22d8\u0338\u0100;v\u297b\u0c47\uc000\u226a\u20d2ightarrow;\u61cf\u0100Dd\u298e\u2993ash;\u62afash;\u62ae\u0280bcnpt\u29a3\u29a7\u29ac\u29b1\u29ccla\xbb\u02deute;\u4144g;\uc000\u2220\u20d2\u0280;Eiop\u0d84\u29bc\u29c0\u29c5\u29c8;\uc000\u2a70\u0338d;\uc000\u224b\u0338s;\u4149ro\xf8\u0d84ur\u0100;a\u29d3\u29d4\u666el\u0100;s\u29d3\u0b38\u01f3\u29df\0\u29e3p\u80bb\xa0\u0b37mp\u0100;e\u0bf9\u0c00\u0280aeouy\u29f4\u29fe\u2a03\u2a10\u2a13\u01f0\u29f9\0\u29fb;\u6a43on;\u4148dil;\u4146ng\u0100;d\u0d7e\u2a0aot;\uc000\u2a6d\u0338p;\u6a42;\u443dash;\u6013\u0380;Aadqsx\u0b92\u2a29\u2a2d\u2a3b\u2a41\u2a45\u2a50rr;\u61d7r\u0100hr\u2a33\u2a36k;\u6924\u0100;o\u13f2\u13f0ot;\uc000\u2250\u0338ui\xf6\u0b63\u0100ei\u2a4a\u2a4ear;\u6928\xed\u0b98ist\u0100;s\u0ba0\u0b9fr;\uc000\ud835\udd2b\u0200Eest\u0bc5\u2a66\u2a79\u2a7c\u0180;qs\u0bbc\u2a6d\u0be1\u0180;qs\u0bbc\u0bc5\u2a74lan\xf4\u0be2i\xed\u0bea\u0100;r\u0bb6\u2a81\xbb\u0bb7\u0180Aap\u2a8a\u2a8d\u2a91r\xf2\u2971rr;\u61aear;\u6af2\u0180;sv\u0f8d\u2a9c\u0f8c\u0100;d\u2aa1\u2aa2\u62fc;\u62facy;\u445a\u0380AEadest\u2ab7\u2aba\u2abe\u2ac2\u2ac5\u2af6\u2af9r\xf2\u2966;\uc000\u2266\u0338rr;\u619ar;\u6025\u0200;fqs\u0c3b\u2ace\u2ae3\u2aeft\u0100ar\u2ad4\u2ad9rro\xf7\u2ac1ightarro\xf7\u2a90\u0180;qs\u0c3b\u2aba\u2aealan\xf4\u0c55\u0100;s\u0c55\u2af4\xbb\u0c36i\xed\u0c5d\u0100;r\u0c35\u2afei\u0100;e\u0c1a\u0c25i\xe4\u0d90\u0100pt\u2b0c\u2b11f;\uc000\ud835\udd5f\u8180\xac;in\u2b19\u2b1a\u2b36\u40acn\u0200;Edv\u0b89\u2b24\u2b28\u2b2e;\uc000\u22f9\u0338ot;\uc000\u22f5\u0338\u01e1\u0b89\u2b33\u2b35;\u62f7;\u62f6i\u0100;v\u0cb8\u2b3c\u01e1\u0cb8\u2b41\u2b43;\u62fe;\u62fd\u0180aor\u2b4b\u2b63\u2b69r\u0200;ast\u0b7b\u2b55\u2b5a\u2b5flle\xec\u0b7bl;\uc000\u2afd\u20e5;\uc000\u2202\u0338lint;\u6a14\u0180;ce\u0c92\u2b70\u2b73u\xe5\u0ca5\u0100;c\u0c98\u2b78\u0100;e\u0c92\u2b7d\xf1\u0c98\u0200Aait\u2b88\u2b8b\u2b9d\u2ba7r\xf2\u2988rr\u0180;cw\u2b94\u2b95\u2b99\u619b;\uc000\u2933\u0338;\uc000\u219d\u0338ghtarrow\xbb\u2b95ri\u0100;e\u0ccb\u0cd6\u0380chimpqu\u2bbd\u2bcd\u2bd9\u2b04\u0b78\u2be4\u2bef\u0200;cer\u0d32\u2bc6\u0d37\u2bc9u\xe5\u0d45;\uc000\ud835\udcc3ort\u026d\u2b05\0\0\u2bd6ar\xe1\u2b56m\u0100;e\u0d6e\u2bdf\u0100;q\u0d74\u0d73su\u0100bp\u2beb\u2bed\xe5\u0cf8\xe5\u0d0b\u0180bcp\u2bf6\u2c11\u2c19\u0200;Ees\u2bff\u2c00\u0d22\u2c04\u6284;\uc000\u2ac5\u0338et\u0100;e\u0d1b\u2c0bq\u0100;q\u0d23\u2c00c\u0100;e\u0d32\u2c17\xf1\u0d38\u0200;Ees\u2c22\u2c23\u0d5f\u2c27\u6285;\uc000\u2ac6\u0338et\u0100;e\u0d58\u2c2eq\u0100;q\u0d60\u2c23\u0200gilr\u2c3d\u2c3f\u2c45\u2c47\xec\u0bd7lde\u803b\xf1\u40f1\xe7\u0c43iangle\u0100lr\u2c52\u2c5ceft\u0100;e\u0c1a\u2c5a\xf1\u0c26ight\u0100;e\u0ccb\u2c65\xf1\u0cd7\u0100;m\u2c6c\u2c6d\u43bd\u0180;es\u2c74\u2c75\u2c79\u4023ro;\u6116p;\u6007\u0480DHadgilrs\u2c8f\u2c94\u2c99\u2c9e\u2ca3\u2cb0\u2cb6\u2cd3\u2ce3ash;\u62adarr;\u6904p;\uc000\u224d\u20d2ash;\u62ac\u0100et\u2ca8\u2cac;\uc000\u2265\u20d2;\uc000>\u20d2nfin;\u69de\u0180Aet\u2cbd\u2cc1\u2cc5rr;\u6902;\uc000\u2264\u20d2\u0100;r\u2cca\u2ccd\uc000<\u20d2ie;\uc000\u22b4\u20d2\u0100At\u2cd8\u2cdcrr;\u6903rie;\uc000\u22b5\u20d2im;\uc000\u223c\u20d2\u0180Aan\u2cf0\u2cf4\u2d02rr;\u61d6r\u0100hr\u2cfa\u2cfdk;\u6923\u0100;o\u13e7\u13e5ear;\u6927\u1253\u1a95\0\0\0\0\0\0\0\0\0\0\0\0\0\u2d2d\0\u2d38\u2d48\u2d60\u2d65\u2d72\u2d84\u1b07\0\0\u2d8d\u2dab\0\u2dc8\u2dce\0\u2ddc\u2e19\u2e2b\u2e3e\u2e43\u0100cs\u2d31\u1a97ute\u803b\xf3\u40f3\u0100iy\u2d3c\u2d45r\u0100;c\u1a9e\u2d42\u803b\xf4\u40f4;\u443e\u0280abios\u1aa0\u2d52\u2d57\u01c8\u2d5alac;\u4151v;\u6a38old;\u69bclig;\u4153\u0100cr\u2d69\u2d6dir;\u69bf;\uc000\ud835\udd2c\u036f\u2d79\0\0\u2d7c\0\u2d82n;\u42dbave\u803b\xf2\u40f2;\u69c1\u0100bm\u2d88\u0df4ar;\u69b5\u0200acit\u2d95\u2d98\u2da5\u2da8r\xf2\u1a80\u0100ir\u2d9d\u2da0r;\u69beoss;\u69bbn\xe5\u0e52;\u69c0\u0180aei\u2db1\u2db5\u2db9cr;\u414dga;\u43c9\u0180cdn\u2dc0\u2dc5\u01cdron;\u43bf;\u69b6pf;\uc000\ud835\udd60\u0180ael\u2dd4\u2dd7\u01d2r;\u69b7rp;\u69b9\u0380;adiosv\u2dea\u2deb\u2dee\u2e08\u2e0d\u2e10\u2e16\u6228r\xf2\u1a86\u0200;efm\u2df7\u2df8\u2e02\u2e05\u6a5dr\u0100;o\u2dfe\u2dff\u6134f\xbb\u2dff\u803b\xaa\u40aa\u803b\xba\u40bagof;\u62b6r;\u6a56lope;\u6a57;\u6a5b\u0180clo\u2e1f\u2e21\u2e27\xf2\u2e01ash\u803b\xf8\u40f8l;\u6298i\u016c\u2e2f\u2e34de\u803b\xf5\u40f5es\u0100;a\u01db\u2e3as;\u6a36ml\u803b\xf6\u40f6bar;\u633d\u0ae1\u2e5e\0\u2e7d\0\u2e80\u2e9d\0\u2ea2\u2eb9\0\0\u2ecb\u0e9c\0\u2f13\0\0\u2f2b\u2fbc\0\u2fc8r\u0200;ast\u0403\u2e67\u2e72\u0e85\u8100\xb6;l\u2e6d\u2e6e\u40b6le\xec\u0403\u0269\u2e78\0\0\u2e7bm;\u6af3;\u6afdy;\u443fr\u0280cimpt\u2e8b\u2e8f\u2e93\u1865\u2e97nt;\u4025od;\u402eil;\u6030enk;\u6031r;\uc000\ud835\udd2d\u0180imo\u2ea8\u2eb0\u2eb4\u0100;v\u2ead\u2eae\u43c6;\u43d5ma\xf4\u0a76ne;\u660e\u0180;tv\u2ebf\u2ec0\u2ec8\u43c0chfork\xbb\u1ffd;\u43d6\u0100au\u2ecf\u2edfn\u0100ck\u2ed5\u2eddk\u0100;h\u21f4\u2edb;\u610e\xf6\u21f4s\u0480;abcdemst\u2ef3\u2ef4\u1908\u2ef9\u2efd\u2f04\u2f06\u2f0a\u2f0e\u402bcir;\u6a23ir;\u6a22\u0100ou\u1d40\u2f02;\u6a25;\u6a72n\u80bb\xb1\u0e9dim;\u6a26wo;\u6a27\u0180ipu\u2f19\u2f20\u2f25ntint;\u6a15f;\uc000\ud835\udd61nd\u803b\xa3\u40a3\u0500;Eaceinosu\u0ec8\u2f3f\u2f41\u2f44\u2f47\u2f81\u2f89\u2f92\u2f7e\u2fb6;\u6ab3p;\u6ab7u\xe5\u0ed9\u0100;c\u0ece\u2f4c\u0300;acens\u0ec8\u2f59\u2f5f\u2f66\u2f68\u2f7eppro\xf8\u2f43urlye\xf1\u0ed9\xf1\u0ece\u0180aes\u2f6f\u2f76\u2f7approx;\u6ab9qq;\u6ab5im;\u62e8i\xed\u0edfme\u0100;s\u2f88\u0eae\u6032\u0180Eas\u2f78\u2f90\u2f7a\xf0\u2f75\u0180dfp\u0eec\u2f99\u2faf\u0180als\u2fa0\u2fa5\u2faalar;\u632eine;\u6312urf;\u6313\u0100;t\u0efb\u2fb4\xef\u0efbrel;\u62b0\u0100ci\u2fc0\u2fc5r;\uc000\ud835\udcc5;\u43c8ncsp;\u6008\u0300fiopsu\u2fda\u22e2\u2fdf\u2fe5\u2feb\u2ff1r;\uc000\ud835\udd2epf;\uc000\ud835\udd62rime;\u6057cr;\uc000\ud835\udcc6\u0180aeo\u2ff8\u3009\u3013t\u0100ei\u2ffe\u3005rnion\xf3\u06b0nt;\u6a16st\u0100;e\u3010\u3011\u403f\xf1\u1f19\xf4\u0f14\u0a80ABHabcdefhilmnoprstux\u3040\u3051\u3055\u3059\u30e0\u310e\u312b\u3147\u3162\u3172\u318e\u3206\u3215\u3224\u3229\u3258\u326e\u3272\u3290\u32b0\u32b7\u0180art\u3047\u304a\u304cr\xf2\u10b3\xf2\u03ddail;\u691car\xf2\u1c65ar;\u6964\u0380cdenqrt\u3068\u3075\u3078\u307f\u308f\u3094\u30cc\u0100eu\u306d\u3071;\uc000\u223d\u0331te;\u4155i\xe3\u116emptyv;\u69b3g\u0200;del\u0fd1\u3089\u308b\u308d;\u6992;\u69a5\xe5\u0fd1uo\u803b\xbb\u40bbr\u0580;abcfhlpstw\u0fdc\u30ac\u30af\u30b7\u30b9\u30bc\u30be\u30c0\u30c3\u30c7\u30cap;\u6975\u0100;f\u0fe0\u30b4s;\u6920;\u6933s;\u691e\xeb\u225d\xf0\u272el;\u6945im;\u6974l;\u61a3;\u619d\u0100ai\u30d1\u30d5il;\u691ao\u0100;n\u30db\u30dc\u6236al\xf3\u0f1e\u0180abr\u30e7\u30ea\u30eer\xf2\u17e5rk;\u6773\u0100ak\u30f3\u30fdc\u0100ek\u30f9\u30fb;\u407d;\u405d\u0100es\u3102\u3104;\u698cl\u0100du\u310a\u310c;\u698e;\u6990\u0200aeuy\u3117\u311c\u3127\u3129ron;\u4159\u0100di\u3121\u3125il;\u4157\xec\u0ff2\xe2\u30fa;\u4440\u0200clqs\u3134\u3137\u313d\u3144a;\u6937dhar;\u6969uo\u0100;r\u020e\u020dh;\u61b3\u0180acg\u314e\u315f\u0f44l\u0200;ips\u0f78\u3158\u315b\u109cn\xe5\u10bbar\xf4\u0fa9t;\u65ad\u0180ilr\u3169\u1023\u316esht;\u697d;\uc000\ud835\udd2f\u0100ao\u3177\u3186r\u0100du\u317d\u317f\xbb\u047b\u0100;l\u1091\u3184;\u696c\u0100;v\u318b\u318c\u43c1;\u43f1\u0180gns\u3195\u31f9\u31fcht\u0300ahlrst\u31a4\u31b0\u31c2\u31d8\u31e4\u31eerrow\u0100;t\u0fdc\u31ada\xe9\u30c8arpoon\u0100du\u31bb\u31bfow\xee\u317ep\xbb\u1092eft\u0100ah\u31ca\u31d0rrow\xf3\u0feaarpoon\xf3\u0551ightarrows;\u61c9quigarro\xf7\u30cbhreetimes;\u62ccg;\u42daingdotse\xf1\u1f32\u0180ahm\u320d\u3210\u3213r\xf2\u0feaa\xf2\u0551;\u600foust\u0100;a\u321e\u321f\u63b1che\xbb\u321fmid;\u6aee\u0200abpt\u3232\u323d\u3240\u3252\u0100nr\u3237\u323ag;\u67edr;\u61fer\xeb\u1003\u0180afl\u3247\u324a\u324er;\u6986;\uc000\ud835\udd63us;\u6a2eimes;\u6a35\u0100ap\u325d\u3267r\u0100;g\u3263\u3264\u4029t;\u6994olint;\u6a12ar\xf2\u31e3\u0200achq\u327b\u3280\u10bc\u3285quo;\u603ar;\uc000\ud835\udcc7\u0100bu\u30fb\u328ao\u0100;r\u0214\u0213\u0180hir\u3297\u329b\u32a0re\xe5\u31f8mes;\u62cai\u0200;efl\u32aa\u1059\u1821\u32ab\u65b9tri;\u69celuhar;\u6968;\u611e\u0d61\u32d5\u32db\u32df\u332c\u3338\u3371\0\u337a\u33a4\0\0\u33ec\u33f0\0\u3428\u3448\u345a\u34ad\u34b1\u34ca\u34f1\0\u3616\0\0\u3633cute;\u415bqu\xef\u27ba\u0500;Eaceinpsy\u11ed\u32f3\u32f5\u32ff\u3302\u330b\u330f\u331f\u3326\u3329;\u6ab4\u01f0\u32fa\0\u32fc;\u6ab8on;\u4161u\xe5\u11fe\u0100;d\u11f3\u3307il;\u415frc;\u415d\u0180Eas\u3316\u3318\u331b;\u6ab6p;\u6abaim;\u62e9olint;\u6a13i\xed\u1204;\u4441ot\u0180;be\u3334\u1d47\u3335\u62c5;\u6a66\u0380Aacmstx\u3346\u334a\u3357\u335b\u335e\u3363\u336drr;\u61d8r\u0100hr\u3350\u3352\xeb\u2228\u0100;o\u0a36\u0a34t\u803b\xa7\u40a7i;\u403bwar;\u6929m\u0100in\u3369\xf0nu\xf3\xf1t;\u6736r\u0100;o\u3376\u2055\uc000\ud835\udd30\u0200acoy\u3382\u3386\u3391\u33a0rp;\u666f\u0100hy\u338b\u338fcy;\u4449;\u4448rt\u026d\u3399\0\0\u339ci\xe4\u1464ara\xec\u2e6f\u803b\xad\u40ad\u0100gm\u33a8\u33b4ma\u0180;fv\u33b1\u33b2\u33b2\u43c3;\u43c2\u0400;deglnpr\u12ab\u33c5\u33c9\u33ce\u33d6\u33de\u33e1\u33e6ot;\u6a6a\u0100;q\u12b1\u12b0\u0100;E\u33d3\u33d4\u6a9e;\u6aa0\u0100;E\u33db\u33dc\u6a9d;\u6a9fe;\u6246lus;\u6a24arr;\u6972ar\xf2\u113d\u0200aeit\u33f8\u3408\u340f\u3417\u0100ls\u33fd\u3404lsetm\xe9\u336ahp;\u6a33parsl;\u69e4\u0100dl\u1463\u3414e;\u6323\u0100;e\u341c\u341d\u6aaa\u0100;s\u3422\u3423\u6aac;\uc000\u2aac\ufe00\u0180flp\u342e\u3433\u3442tcy;\u444c\u0100;b\u3438\u3439\u402f\u0100;a\u343e\u343f\u69c4r;\u633ff;\uc000\ud835\udd64a\u0100dr\u344d\u0402es\u0100;u\u3454\u3455\u6660it\xbb\u3455\u0180csu\u3460\u3479\u349f\u0100au\u3465\u346fp\u0100;s\u1188\u346b;\uc000\u2293\ufe00p\u0100;s\u11b4\u3475;\uc000\u2294\ufe00u\u0100bp\u347f\u348f\u0180;es\u1197\u119c\u3486et\u0100;e\u1197\u348d\xf1\u119d\u0180;es\u11a8\u11ad\u3496et\u0100;e\u11a8\u349d\xf1\u11ae\u0180;af\u117b\u34a6\u05b0r\u0165\u34ab\u05b1\xbb\u117car\xf2\u1148\u0200cemt\u34b9\u34be\u34c2\u34c5r;\uc000\ud835\udcc8tm\xee\xf1i\xec\u3415ar\xe6\u11be\u0100ar\u34ce\u34d5r\u0100;f\u34d4\u17bf\u6606\u0100an\u34da\u34edight\u0100ep\u34e3\u34eapsilo\xee\u1ee0h\xe9\u2eafs\xbb\u2852\u0280bcmnp\u34fb\u355e\u1209\u358b\u358e\u0480;Edemnprs\u350e\u350f\u3511\u3515\u351e\u3523\u352c\u3531\u3536\u6282;\u6ac5ot;\u6abd\u0100;d\u11da\u351aot;\u6ac3ult;\u6ac1\u0100Ee\u3528\u352a;\u6acb;\u628alus;\u6abfarr;\u6979\u0180eiu\u353d\u3552\u3555t\u0180;en\u350e\u3545\u354bq\u0100;q\u11da\u350feq\u0100;q\u352b\u3528m;\u6ac7\u0100bp\u355a\u355c;\u6ad5;\u6ad3c\u0300;acens\u11ed\u356c\u3572\u3579\u357b\u3326ppro\xf8\u32faurlye\xf1\u11fe\xf1\u11f3\u0180aes\u3582\u3588\u331bppro\xf8\u331aq\xf1\u3317g;\u666a\u0680123;Edehlmnps\u35a9\u35ac\u35af\u121c\u35b2\u35b4\u35c0\u35c9\u35d5\u35da\u35df\u35e8\u35ed\u803b\xb9\u40b9\u803b\xb2\u40b2\u803b\xb3\u40b3;\u6ac6\u0100os\u35b9\u35bct;\u6abeub;\u6ad8\u0100;d\u1222\u35c5ot;\u6ac4s\u0100ou\u35cf\u35d2l;\u67c9b;\u6ad7arr;\u697bult;\u6ac2\u0100Ee\u35e4\u35e6;\u6acc;\u628blus;\u6ac0\u0180eiu\u35f4\u3609\u360ct\u0180;en\u121c\u35fc\u3602q\u0100;q\u1222\u35b2eq\u0100;q\u35e7\u35e4m;\u6ac8\u0100bp\u3611\u3613;\u6ad4;\u6ad6\u0180Aan\u361c\u3620\u362drr;\u61d9r\u0100hr\u3626\u3628\xeb\u222e\u0100;o\u0a2b\u0a29war;\u692alig\u803b\xdf\u40df\u0be1\u3651\u365d\u3660\u12ce\u3673\u3679\0\u367e\u36c2\0\0\0\0\0\u36db\u3703\0\u3709\u376c\0\0\0\u3787\u0272\u3656\0\0\u365bget;\u6316;\u43c4r\xeb\u0e5f\u0180aey\u3666\u366b\u3670ron;\u4165dil;\u4163;\u4442lrec;\u6315r;\uc000\ud835\udd31\u0200eiko\u3686\u369d\u36b5\u36bc\u01f2\u368b\0\u3691e\u01004f\u1284\u1281a\u0180;sv\u3698\u3699\u369b\u43b8ym;\u43d1\u0100cn\u36a2\u36b2k\u0100as\u36a8\u36aeppro\xf8\u12c1im\xbb\u12acs\xf0\u129e\u0100as\u36ba\u36ae\xf0\u12c1rn\u803b\xfe\u40fe\u01ec\u031f\u36c6\u22e7es\u8180\xd7;bd\u36cf\u36d0\u36d8\u40d7\u0100;a\u190f\u36d5r;\u6a31;\u6a30\u0180eps\u36e1\u36e3\u3700\xe1\u2a4d\u0200;bcf\u0486\u36ec\u36f0\u36f4ot;\u6336ir;\u6af1\u0100;o\u36f9\u36fc\uc000\ud835\udd65rk;\u6ada\xe1\u3362rime;\u6034\u0180aip\u370f\u3712\u3764d\xe5\u1248\u0380adempst\u3721\u374d\u3740\u3751\u3757\u375c\u375fngle\u0280;dlqr\u3730\u3731\u3736\u3740\u3742\u65b5own\xbb\u1dbbeft\u0100;e\u2800\u373e\xf1\u092e;\u625cight\u0100;e\u32aa\u374b\xf1\u105aot;\u65ecinus;\u6a3alus;\u6a39b;\u69cdime;\u6a3bezium;\u63e2\u0180cht\u3772\u377d\u3781\u0100ry\u3777\u377b;\uc000\ud835\udcc9;\u4446cy;\u445brok;\u4167\u0100io\u378b\u378ex\xf4\u1777head\u0100lr\u3797\u37a0eftarro\xf7\u084fightarrow\xbb\u0f5d\u0900AHabcdfghlmoprstuw\u37d0\u37d3\u37d7\u37e4\u37f0\u37fc\u380e\u381c\u3823\u3834\u3851\u385d\u386b\u38a9\u38cc\u38d2\u38ea\u38f6r\xf2\u03edar;\u6963\u0100cr\u37dc\u37e2ute\u803b\xfa\u40fa\xf2\u1150r\u01e3\u37ea\0\u37edy;\u445eve;\u416d\u0100iy\u37f5\u37farc\u803b\xfb\u40fb;\u4443\u0180abh\u3803\u3806\u380br\xf2\u13adlac;\u4171a\xf2\u13c3\u0100ir\u3813\u3818sht;\u697e;\uc000\ud835\udd32rave\u803b\xf9\u40f9\u0161\u3827\u3831r\u0100lr\u382c\u382e\xbb\u0957\xbb\u1083lk;\u6580\u0100ct\u3839\u384d\u026f\u383f\0\0\u384arn\u0100;e\u3845\u3846\u631cr\xbb\u3846op;\u630fri;\u65f8\u0100al\u3856\u385acr;\u416b\u80bb\xa8\u0349\u0100gp\u3862\u3866on;\u4173f;\uc000\ud835\udd66\u0300adhlsu\u114b\u3878\u387d\u1372\u3891\u38a0own\xe1\u13b3arpoon\u0100lr\u3888\u388cef\xf4\u382digh\xf4\u382fi\u0180;hl\u3899\u389a\u389c\u43c5\xbb\u13faon\xbb\u389aparrows;\u61c8\u0180cit\u38b0\u38c4\u38c8\u026f\u38b6\0\0\u38c1rn\u0100;e\u38bc\u38bd\u631dr\xbb\u38bdop;\u630eng;\u416fri;\u65f9cr;\uc000\ud835\udcca\u0180dir\u38d9\u38dd\u38e2ot;\u62f0lde;\u4169i\u0100;f\u3730\u38e8\xbb\u1813\u0100am\u38ef\u38f2r\xf2\u38a8l\u803b\xfc\u40fcangle;\u69a7\u0780ABDacdeflnoprsz\u391c\u391f\u3929\u392d\u39b5\u39b8\u39bd\u39df\u39e4\u39e8\u39f3\u39f9\u39fd\u3a01\u3a20r\xf2\u03f7ar\u0100;v\u3926\u3927\u6ae8;\u6ae9as\xe8\u03e1\u0100nr\u3932\u3937grt;\u699c\u0380eknprst\u34e3\u3946\u394b\u3952\u395d\u3964\u3996app\xe1\u2415othin\xe7\u1e96\u0180hir\u34eb\u2ec8\u3959op\xf4\u2fb5\u0100;h\u13b7\u3962\xef\u318d\u0100iu\u3969\u396dgm\xe1\u33b3\u0100bp\u3972\u3984setneq\u0100;q\u397d\u3980\uc000\u228a\ufe00;\uc000\u2acb\ufe00setneq\u0100;q\u398f\u3992\uc000\u228b\ufe00;\uc000\u2acc\ufe00\u0100hr\u399b\u399fet\xe1\u369ciangle\u0100lr\u39aa\u39afeft\xbb\u0925ight\xbb\u1051y;\u4432ash\xbb\u1036\u0180elr\u39c4\u39d2\u39d7\u0180;be\u2dea\u39cb\u39cfar;\u62bbq;\u625alip;\u62ee\u0100bt\u39dc\u1468a\xf2\u1469r;\uc000\ud835\udd33tr\xe9\u39aesu\u0100bp\u39ef\u39f1\xbb\u0d1c\xbb\u0d59pf;\uc000\ud835\udd67ro\xf0\u0efbtr\xe9\u39b4\u0100cu\u3a06\u3a0br;\uc000\ud835\udccb\u0100bp\u3a10\u3a18n\u0100Ee\u3980\u3a16\xbb\u397en\u0100Ee\u3992\u3a1e\xbb\u3990igzag;\u699a\u0380cefoprs\u3a36\u3a3b\u3a56\u3a5b\u3a54\u3a61\u3a6airc;\u4175\u0100di\u3a40\u3a51\u0100bg\u3a45\u3a49ar;\u6a5fe\u0100;q\u15fa\u3a4f;\u6259erp;\u6118r;\uc000\ud835\udd34pf;\uc000\ud835\udd68\u0100;e\u1479\u3a66at\xe8\u1479cr;\uc000\ud835\udccc\u0ae3\u178e\u3a87\0\u3a8b\0\u3a90\u3a9b\0\0\u3a9d\u3aa8\u3aab\u3aaf\0\0\u3ac3\u3ace\0\u3ad8\u17dc\u17dftr\xe9\u17d1r;\uc000\ud835\udd35\u0100Aa\u3a94\u3a97r\xf2\u03c3r\xf2\u09f6;\u43be\u0100Aa\u3aa1\u3aa4r\xf2\u03b8r\xf2\u09eba\xf0\u2713is;\u62fb\u0180dpt\u17a4\u3ab5\u3abe\u0100fl\u3aba\u17a9;\uc000\ud835\udd69im\xe5\u17b2\u0100Aa\u3ac7\u3acar\xf2\u03cer\xf2\u0a01\u0100cq\u3ad2\u17b8r;\uc000\ud835\udccd\u0100pt\u17d6\u3adcr\xe9\u17d4\u0400acefiosu\u3af0\u3afd\u3b08\u3b0c\u3b11\u3b15\u3b1b\u3b21c\u0100uy\u3af6\u3afbte\u803b\xfd\u40fd;\u444f\u0100iy\u3b02\u3b06rc;\u4177;\u444bn\u803b\xa5\u40a5r;\uc000\ud835\udd36cy;\u4457pf;\uc000\ud835\udd6acr;\uc000\ud835\udcce\u0100cm\u3b26\u3b29y;\u444el\u803b\xff\u40ff\u0500acdefhiosw\u3b42\u3b48\u3b54\u3b58\u3b64\u3b69\u3b6d\u3b74\u3b7a\u3b80cute;\u417a\u0100ay\u3b4d\u3b52ron;\u417e;\u4437ot;\u417c\u0100et\u3b5d\u3b61tr\xe6\u155fa;\u43b6r;\uc000\ud835\udd37cy;\u4436grarr;\u61ddpf;\uc000\ud835\udd6bcr;\uc000\ud835\udccf\u0100jn\u3b85\u3b87;\u600dj;\u600c"
-      .split("")
-      .map((c) => c.charCodeAt(0)));
-
-  // Generated using scripts/write-decode-map.ts
-  var xmlDecodeTree = new Uint16Array(
-  // prettier-ignore
-  "\u0200aglq\t\x15\x18\x1b\u026d\x0f\0\0\x12p;\u4026os;\u4027t;\u403et;\u403cuot;\u4022"
+  /* #__PURE__ */ "\u1d41<\xd5\u0131\u028a\u049d\u057b\u05d0\u0675\u06de\u07a2\u07d6\u080f\u0a4a\u0a91\u0da1\u0e6d\u0f09\u0f26\u10ca\u1228\u12e1\u1415\u149d\u14c3\u14df\u1525\0\0\0\0\0\0\u156b\u16cd\u198d\u1c12\u1ddd\u1f7e\u2060\u21b0\u228d\u23c0\u23fb\u2442\u2824\u2912\u2d08\u2e48\u2fce\u3016\u32ba\u3639\u37ac\u38fe\u3a28\u3a71\u3ae0\u3b2e\u0800EMabcfglmnoprstu\\bfms\x7f\x84\x8b\x90\x95\x98\xa6\xb3\xb9\xc8\xcflig\u803b\xc6\u40c6P\u803b&\u4026cute\u803b\xc1\u40c1reve;\u4102\u0100iyx}rc\u803b\xc2\u40c2;\u4410r;\uc000\ud835\udd04rave\u803b\xc0\u40c0pha;\u4391acr;\u4100d;\u6a53\u0100gp\x9d\xa1on;\u4104f;\uc000\ud835\udd38plyFunction;\u6061ing\u803b\xc5\u40c5\u0100cs\xbe\xc3r;\uc000\ud835\udc9cign;\u6254ilde\u803b\xc3\u40c3ml\u803b\xc4\u40c4\u0400aceforsu\xe5\xfb\xfe\u0117\u011c\u0122\u0127\u012a\u0100cr\xea\xf2kslash;\u6216\u0176\xf6\xf8;\u6ae7ed;\u6306y;\u4411\u0180crt\u0105\u010b\u0114ause;\u6235noullis;\u612ca;\u4392r;\uc000\ud835\udd05pf;\uc000\ud835\udd39eve;\u42d8c\xf2\u0113mpeq;\u624e\u0700HOacdefhilorsu\u014d\u0151\u0156\u0180\u019e\u01a2\u01b5\u01b7\u01ba\u01dc\u0215\u0273\u0278\u027ecy;\u4427PY\u803b\xa9\u40a9\u0180cpy\u015d\u0162\u017aute;\u4106\u0100;i\u0167\u0168\u62d2talDifferentialD;\u6145leys;\u612d\u0200aeio\u0189\u018e\u0194\u0198ron;\u410cdil\u803b\xc7\u40c7rc;\u4108nint;\u6230ot;\u410a\u0100dn\u01a7\u01adilla;\u40b8terDot;\u40b7\xf2\u017fi;\u43a7rcle\u0200DMPT\u01c7\u01cb\u01d1\u01d6ot;\u6299inus;\u6296lus;\u6295imes;\u6297o\u0100cs\u01e2\u01f8kwiseContourIntegral;\u6232eCurly\u0100DQ\u0203\u020foubleQuote;\u601duote;\u6019\u0200lnpu\u021e\u0228\u0247\u0255on\u0100;e\u0225\u0226\u6237;\u6a74\u0180git\u022f\u0236\u023aruent;\u6261nt;\u622fourIntegral;\u622e\u0100fr\u024c\u024e;\u6102oduct;\u6210nterClockwiseContourIntegral;\u6233oss;\u6a2fcr;\uc000\ud835\udc9ep\u0100;C\u0284\u0285\u62d3ap;\u624d\u0580DJSZacefios\u02a0\u02ac\u02b0\u02b4\u02b8\u02cb\u02d7\u02e1\u02e6\u0333\u048d\u0100;o\u0179\u02a5trahd;\u6911cy;\u4402cy;\u4405cy;\u440f\u0180grs\u02bf\u02c4\u02c7ger;\u6021r;\u61a1hv;\u6ae4\u0100ay\u02d0\u02d5ron;\u410e;\u4414l\u0100;t\u02dd\u02de\u6207a;\u4394r;\uc000\ud835\udd07\u0100af\u02eb\u0327\u0100cm\u02f0\u0322ritical\u0200ADGT\u0300\u0306\u0316\u031ccute;\u40b4o\u0174\u030b\u030d;\u42d9bleAcute;\u42ddrave;\u4060ilde;\u42dcond;\u62c4ferentialD;\u6146\u0470\u033d\0\0\0\u0342\u0354\0\u0405f;\uc000\ud835\udd3b\u0180;DE\u0348\u0349\u034d\u40a8ot;\u60dcqual;\u6250ble\u0300CDLRUV\u0363\u0372\u0382\u03cf\u03e2\u03f8ontourIntegra\xec\u0239o\u0274\u0379\0\0\u037b\xbb\u0349nArrow;\u61d3\u0100eo\u0387\u03a4ft\u0180ART\u0390\u0396\u03a1rrow;\u61d0ightArrow;\u61d4e\xe5\u02cang\u0100LR\u03ab\u03c4eft\u0100AR\u03b3\u03b9rrow;\u67f8ightArrow;\u67faightArrow;\u67f9ight\u0100AT\u03d8\u03derrow;\u61d2ee;\u62a8p\u0241\u03e9\0\0\u03efrrow;\u61d1ownArrow;\u61d5erticalBar;\u6225n\u0300ABLRTa\u0412\u042a\u0430\u045e\u047f\u037crrow\u0180;BU\u041d\u041e\u0422\u6193ar;\u6913pArrow;\u61f5reve;\u4311eft\u02d2\u043a\0\u0446\0\u0450ightVector;\u6950eeVector;\u695eector\u0100;B\u0459\u045a\u61bdar;\u6956ight\u01d4\u0467\0\u0471eeVector;\u695fector\u0100;B\u047a\u047b\u61c1ar;\u6957ee\u0100;A\u0486\u0487\u62a4rrow;\u61a7\u0100ct\u0492\u0497r;\uc000\ud835\udc9frok;\u4110\u0800NTacdfglmopqstux\u04bd\u04c0\u04c4\u04cb\u04de\u04e2\u04e7\u04ee\u04f5\u0521\u052f\u0536\u0552\u055d\u0560\u0565G;\u414aH\u803b\xd0\u40d0cute\u803b\xc9\u40c9\u0180aiy\u04d2\u04d7\u04dcron;\u411arc\u803b\xca\u40ca;\u442dot;\u4116r;\uc000\ud835\udd08rave\u803b\xc8\u40c8ement;\u6208\u0100ap\u04fa\u04fecr;\u4112ty\u0253\u0506\0\0\u0512mallSquare;\u65fberySmallSquare;\u65ab\u0100gp\u0526\u052aon;\u4118f;\uc000\ud835\udd3csilon;\u4395u\u0100ai\u053c\u0549l\u0100;T\u0542\u0543\u6a75ilde;\u6242librium;\u61cc\u0100ci\u0557\u055ar;\u6130m;\u6a73a;\u4397ml\u803b\xcb\u40cb\u0100ip\u056a\u056fsts;\u6203onentialE;\u6147\u0280cfios\u0585\u0588\u058d\u05b2\u05ccy;\u4424r;\uc000\ud835\udd09lled\u0253\u0597\0\0\u05a3mallSquare;\u65fcerySmallSquare;\u65aa\u0370\u05ba\0\u05bf\0\0\u05c4f;\uc000\ud835\udd3dAll;\u6200riertrf;\u6131c\xf2\u05cb\u0600JTabcdfgorst\u05e8\u05ec\u05ef\u05fa\u0600\u0612\u0616\u061b\u061d\u0623\u066c\u0672cy;\u4403\u803b>\u403emma\u0100;d\u05f7\u05f8\u4393;\u43dcreve;\u411e\u0180eiy\u0607\u060c\u0610dil;\u4122rc;\u411c;\u4413ot;\u4120r;\uc000\ud835\udd0a;\u62d9pf;\uc000\ud835\udd3eeater\u0300EFGLST\u0635\u0644\u064e\u0656\u065b\u0666qual\u0100;L\u063e\u063f\u6265ess;\u62dbullEqual;\u6267reater;\u6aa2ess;\u6277lantEqual;\u6a7eilde;\u6273cr;\uc000\ud835\udca2;\u626b\u0400Aacfiosu\u0685\u068b\u0696\u069b\u069e\u06aa\u06be\u06caRDcy;\u442a\u0100ct\u0690\u0694ek;\u42c7;\u405eirc;\u4124r;\u610clbertSpace;\u610b\u01f0\u06af\0\u06b2f;\u610dizontalLine;\u6500\u0100ct\u06c3\u06c5\xf2\u06a9rok;\u4126mp\u0144\u06d0\u06d8ownHum\xf0\u012fqual;\u624f\u0700EJOacdfgmnostu\u06fa\u06fe\u0703\u0707\u070e\u071a\u071e\u0721\u0728\u0744\u0778\u078b\u078f\u0795cy;\u4415lig;\u4132cy;\u4401cute\u803b\xcd\u40cd\u0100iy\u0713\u0718rc\u803b\xce\u40ce;\u4418ot;\u4130r;\u6111rave\u803b\xcc\u40cc\u0180;ap\u0720\u072f\u073f\u0100cg\u0734\u0737r;\u412ainaryI;\u6148lie\xf3\u03dd\u01f4\u0749\0\u0762\u0100;e\u074d\u074e\u622c\u0100gr\u0753\u0758ral;\u622bsection;\u62c2isible\u0100CT\u076c\u0772omma;\u6063imes;\u6062\u0180gpt\u077f\u0783\u0788on;\u412ef;\uc000\ud835\udd40a;\u4399cr;\u6110ilde;\u4128\u01eb\u079a\0\u079ecy;\u4406l\u803b\xcf\u40cf\u0280cfosu\u07ac\u07b7\u07bc\u07c2\u07d0\u0100iy\u07b1\u07b5rc;\u4134;\u4419r;\uc000\ud835\udd0dpf;\uc000\ud835\udd41\u01e3\u07c7\0\u07ccr;\uc000\ud835\udca5rcy;\u4408kcy;\u4404\u0380HJacfos\u07e4\u07e8\u07ec\u07f1\u07fd\u0802\u0808cy;\u4425cy;\u440cppa;\u439a\u0100ey\u07f6\u07fbdil;\u4136;\u441ar;\uc000\ud835\udd0epf;\uc000\ud835\udd42cr;\uc000\ud835\udca6\u0580JTaceflmost\u0825\u0829\u082c\u0850\u0863\u09b3\u09b8\u09c7\u09cd\u0a37\u0a47cy;\u4409\u803b<\u403c\u0280cmnpr\u0837\u083c\u0841\u0844\u084dute;\u4139bda;\u439bg;\u67ealacetrf;\u6112r;\u619e\u0180aey\u0857\u085c\u0861ron;\u413ddil;\u413b;\u441b\u0100fs\u0868\u0970t\u0500ACDFRTUVar\u087e\u08a9\u08b1\u08e0\u08e6\u08fc\u092f\u095b\u0390\u096a\u0100nr\u0883\u088fgleBracket;\u67e8row\u0180;BR\u0899\u089a\u089e\u6190ar;\u61e4ightArrow;\u61c6eiling;\u6308o\u01f5\u08b7\0\u08c3bleBracket;\u67e6n\u01d4\u08c8\0\u08d2eeVector;\u6961ector\u0100;B\u08db\u08dc\u61c3ar;\u6959loor;\u630aight\u0100AV\u08ef\u08f5rrow;\u6194ector;\u694e\u0100er\u0901\u0917e\u0180;AV\u0909\u090a\u0910\u62a3rrow;\u61a4ector;\u695aiangle\u0180;BE\u0924\u0925\u0929\u62b2ar;\u69cfqual;\u62b4p\u0180DTV\u0937\u0942\u094cownVector;\u6951eeVector;\u6960ector\u0100;B\u0956\u0957\u61bfar;\u6958ector\u0100;B\u0965\u0966\u61bcar;\u6952ight\xe1\u039cs\u0300EFGLST\u097e\u098b\u0995\u099d\u09a2\u09adqualGreater;\u62daullEqual;\u6266reater;\u6276ess;\u6aa1lantEqual;\u6a7dilde;\u6272r;\uc000\ud835\udd0f\u0100;e\u09bd\u09be\u62d8ftarrow;\u61daidot;\u413f\u0180npw\u09d4\u0a16\u0a1bg\u0200LRlr\u09de\u09f7\u0a02\u0a10eft\u0100AR\u09e6\u09ecrrow;\u67f5ightArrow;\u67f7ightArrow;\u67f6eft\u0100ar\u03b3\u0a0aight\xe1\u03bfight\xe1\u03caf;\uc000\ud835\udd43er\u0100LR\u0a22\u0a2ceftArrow;\u6199ightArrow;\u6198\u0180cht\u0a3e\u0a40\u0a42\xf2\u084c;\u61b0rok;\u4141;\u626a\u0400acefiosu\u0a5a\u0a5d\u0a60\u0a77\u0a7c\u0a85\u0a8b\u0a8ep;\u6905y;\u441c\u0100dl\u0a65\u0a6fiumSpace;\u605flintrf;\u6133r;\uc000\ud835\udd10nusPlus;\u6213pf;\uc000\ud835\udd44c\xf2\u0a76;\u439c\u0480Jacefostu\u0aa3\u0aa7\u0aad\u0ac0\u0b14\u0b19\u0d91\u0d97\u0d9ecy;\u440acute;\u4143\u0180aey\u0ab4\u0ab9\u0aberon;\u4147dil;\u4145;\u441d\u0180gsw\u0ac7\u0af0\u0b0eative\u0180MTV\u0ad3\u0adf\u0ae8ediumSpace;\u600bhi\u0100cn\u0ae6\u0ad8\xeb\u0ad9eryThi\xee\u0ad9ted\u0100GL\u0af8\u0b06reaterGreate\xf2\u0673essLes\xf3\u0a48Line;\u400ar;\uc000\ud835\udd11\u0200Bnpt\u0b22\u0b28\u0b37\u0b3areak;\u6060BreakingSpace;\u40a0f;\u6115\u0680;CDEGHLNPRSTV\u0b55\u0b56\u0b6a\u0b7c\u0ba1\u0beb\u0c04\u0c5e\u0c84\u0ca6\u0cd8\u0d61\u0d85\u6aec\u0100ou\u0b5b\u0b64ngruent;\u6262pCap;\u626doubleVerticalBar;\u6226\u0180lqx\u0b83\u0b8a\u0b9bement;\u6209ual\u0100;T\u0b92\u0b93\u6260ilde;\uc000\u2242\u0338ists;\u6204reater\u0380;EFGLST\u0bb6\u0bb7\u0bbd\u0bc9\u0bd3\u0bd8\u0be5\u626fqual;\u6271ullEqual;\uc000\u2267\u0338reater;\uc000\u226b\u0338ess;\u6279lantEqual;\uc000\u2a7e\u0338ilde;\u6275ump\u0144\u0bf2\u0bfdownHump;\uc000\u224e\u0338qual;\uc000\u224f\u0338e\u0100fs\u0c0a\u0c27tTriangle\u0180;BE\u0c1a\u0c1b\u0c21\u62eaar;\uc000\u29cf\u0338qual;\u62ecs\u0300;EGLST\u0c35\u0c36\u0c3c\u0c44\u0c4b\u0c58\u626equal;\u6270reater;\u6278ess;\uc000\u226a\u0338lantEqual;\uc000\u2a7d\u0338ilde;\u6274ested\u0100GL\u0c68\u0c79reaterGreater;\uc000\u2aa2\u0338essLess;\uc000\u2aa1\u0338recedes\u0180;ES\u0c92\u0c93\u0c9b\u6280qual;\uc000\u2aaf\u0338lantEqual;\u62e0\u0100ei\u0cab\u0cb9verseElement;\u620cghtTriangle\u0180;BE\u0ccb\u0ccc\u0cd2\u62ebar;\uc000\u29d0\u0338qual;\u62ed\u0100qu\u0cdd\u0d0cuareSu\u0100bp\u0ce8\u0cf9set\u0100;E\u0cf0\u0cf3\uc000\u228f\u0338qual;\u62e2erset\u0100;E\u0d03\u0d06\uc000\u2290\u0338qual;\u62e3\u0180bcp\u0d13\u0d24\u0d4eset\u0100;E\u0d1b\u0d1e\uc000\u2282\u20d2qual;\u6288ceeds\u0200;EST\u0d32\u0d33\u0d3b\u0d46\u6281qual;\uc000\u2ab0\u0338lantEqual;\u62e1ilde;\uc000\u227f\u0338erset\u0100;E\u0d58\u0d5b\uc000\u2283\u20d2qual;\u6289ilde\u0200;EFT\u0d6e\u0d6f\u0d75\u0d7f\u6241qual;\u6244ullEqual;\u6247ilde;\u6249erticalBar;\u6224cr;\uc000\ud835\udca9ilde\u803b\xd1\u40d1;\u439d\u0700Eacdfgmoprstuv\u0dbd\u0dc2\u0dc9\u0dd5\u0ddb\u0de0\u0de7\u0dfc\u0e02\u0e20\u0e22\u0e32\u0e3f\u0e44lig;\u4152cute\u803b\xd3\u40d3\u0100iy\u0dce\u0dd3rc\u803b\xd4\u40d4;\u441eblac;\u4150r;\uc000\ud835\udd12rave\u803b\xd2\u40d2\u0180aei\u0dee\u0df2\u0df6cr;\u414cga;\u43a9cron;\u439fpf;\uc000\ud835\udd46enCurly\u0100DQ\u0e0e\u0e1aoubleQuote;\u601cuote;\u6018;\u6a54\u0100cl\u0e27\u0e2cr;\uc000\ud835\udcaaash\u803b\xd8\u40d8i\u016c\u0e37\u0e3cde\u803b\xd5\u40d5es;\u6a37ml\u803b\xd6\u40d6er\u0100BP\u0e4b\u0e60\u0100ar\u0e50\u0e53r;\u603eac\u0100ek\u0e5a\u0e5c;\u63deet;\u63b4arenthesis;\u63dc\u0480acfhilors\u0e7f\u0e87\u0e8a\u0e8f\u0e92\u0e94\u0e9d\u0eb0\u0efcrtialD;\u6202y;\u441fr;\uc000\ud835\udd13i;\u43a6;\u43a0usMinus;\u40b1\u0100ip\u0ea2\u0eadncareplan\xe5\u069df;\u6119\u0200;eio\u0eb9\u0eba\u0ee0\u0ee4\u6abbcedes\u0200;EST\u0ec8\u0ec9\u0ecf\u0eda\u627aqual;\u6aaflantEqual;\u627cilde;\u627eme;\u6033\u0100dp\u0ee9\u0eeeuct;\u620fortion\u0100;a\u0225\u0ef9l;\u621d\u0100ci\u0f01\u0f06r;\uc000\ud835\udcab;\u43a8\u0200Ufos\u0f11\u0f16\u0f1b\u0f1fOT\u803b\"\u4022r;\uc000\ud835\udd14pf;\u611acr;\uc000\ud835\udcac\u0600BEacefhiorsu\u0f3e\u0f43\u0f47\u0f60\u0f73\u0fa7\u0faa\u0fad\u1096\u10a9\u10b4\u10bearr;\u6910G\u803b\xae\u40ae\u0180cnr\u0f4e\u0f53\u0f56ute;\u4154g;\u67ebr\u0100;t\u0f5c\u0f5d\u61a0l;\u6916\u0180aey\u0f67\u0f6c\u0f71ron;\u4158dil;\u4156;\u4420\u0100;v\u0f78\u0f79\u611cerse\u0100EU\u0f82\u0f99\u0100lq\u0f87\u0f8eement;\u620builibrium;\u61cbpEquilibrium;\u696fr\xbb\u0f79o;\u43a1ght\u0400ACDFTUVa\u0fc1\u0feb\u0ff3\u1022\u1028\u105b\u1087\u03d8\u0100nr\u0fc6\u0fd2gleBracket;\u67e9row\u0180;BL\u0fdc\u0fdd\u0fe1\u6192ar;\u61e5eftArrow;\u61c4eiling;\u6309o\u01f5\u0ff9\0\u1005bleBracket;\u67e7n\u01d4\u100a\0\u1014eeVector;\u695dector\u0100;B\u101d\u101e\u61c2ar;\u6955loor;\u630b\u0100er\u102d\u1043e\u0180;AV\u1035\u1036\u103c\u62a2rrow;\u61a6ector;\u695biangle\u0180;BE\u1050\u1051\u1055\u62b3ar;\u69d0qual;\u62b5p\u0180DTV\u1063\u106e\u1078ownVector;\u694feeVector;\u695cector\u0100;B\u1082\u1083\u61bear;\u6954ector\u0100;B\u1091\u1092\u61c0ar;\u6953\u0100pu\u109b\u109ef;\u611dndImplies;\u6970ightarrow;\u61db\u0100ch\u10b9\u10bcr;\u611b;\u61b1leDelayed;\u69f4\u0680HOacfhimoqstu\u10e4\u10f1\u10f7\u10fd\u1119\u111e\u1151\u1156\u1161\u1167\u11b5\u11bb\u11bf\u0100Cc\u10e9\u10eeHcy;\u4429y;\u4428FTcy;\u442ccute;\u415a\u0280;aeiy\u1108\u1109\u110e\u1113\u1117\u6abcron;\u4160dil;\u415erc;\u415c;\u4421r;\uc000\ud835\udd16ort\u0200DLRU\u112a\u1134\u113e\u1149ownArrow\xbb\u041eeftArrow\xbb\u089aightArrow\xbb\u0fddpArrow;\u6191gma;\u43a3allCircle;\u6218pf;\uc000\ud835\udd4a\u0272\u116d\0\0\u1170t;\u621aare\u0200;ISU\u117b\u117c\u1189\u11af\u65a1ntersection;\u6293u\u0100bp\u118f\u119eset\u0100;E\u1197\u1198\u628fqual;\u6291erset\u0100;E\u11a8\u11a9\u6290qual;\u6292nion;\u6294cr;\uc000\ud835\udcaear;\u62c6\u0200bcmp\u11c8\u11db\u1209\u120b\u0100;s\u11cd\u11ce\u62d0et\u0100;E\u11cd\u11d5qual;\u6286\u0100ch\u11e0\u1205eeds\u0200;EST\u11ed\u11ee\u11f4\u11ff\u627bqual;\u6ab0lantEqual;\u627dilde;\u627fTh\xe1\u0f8c;\u6211\u0180;es\u1212\u1213\u1223\u62d1rset\u0100;E\u121c\u121d\u6283qual;\u6287et\xbb\u1213\u0580HRSacfhiors\u123e\u1244\u1249\u1255\u125e\u1271\u1276\u129f\u12c2\u12c8\u12d1ORN\u803b\xde\u40deADE;\u6122\u0100Hc\u124e\u1252cy;\u440by;\u4426\u0100bu\u125a\u125c;\u4009;\u43a4\u0180aey\u1265\u126a\u126fron;\u4164dil;\u4162;\u4422r;\uc000\ud835\udd17\u0100ei\u127b\u1289\u01f2\u1280\0\u1287efore;\u6234a;\u4398\u0100cn\u128e\u1298kSpace;\uc000\u205f\u200aSpace;\u6009lde\u0200;EFT\u12ab\u12ac\u12b2\u12bc\u623cqual;\u6243ullEqual;\u6245ilde;\u6248pf;\uc000\ud835\udd4bipleDot;\u60db\u0100ct\u12d6\u12dbr;\uc000\ud835\udcafrok;\u4166\u0ae1\u12f7\u130e\u131a\u1326\0\u132c\u1331\0\0\0\0\0\u1338\u133d\u1377\u1385\0\u13ff\u1404\u140a\u1410\u0100cr\u12fb\u1301ute\u803b\xda\u40dar\u0100;o\u1307\u1308\u619fcir;\u6949r\u01e3\u1313\0\u1316y;\u440eve;\u416c\u0100iy\u131e\u1323rc\u803b\xdb\u40db;\u4423blac;\u4170r;\uc000\ud835\udd18rave\u803b\xd9\u40d9acr;\u416a\u0100di\u1341\u1369er\u0100BP\u1348\u135d\u0100ar\u134d\u1350r;\u405fac\u0100ek\u1357\u1359;\u63dfet;\u63b5arenthesis;\u63ddon\u0100;P\u1370\u1371\u62c3lus;\u628e\u0100gp\u137b\u137fon;\u4172f;\uc000\ud835\udd4c\u0400ADETadps\u1395\u13ae\u13b8\u13c4\u03e8\u13d2\u13d7\u13f3rrow\u0180;BD\u1150\u13a0\u13a4ar;\u6912ownArrow;\u61c5ownArrow;\u6195quilibrium;\u696eee\u0100;A\u13cb\u13cc\u62a5rrow;\u61a5own\xe1\u03f3er\u0100LR\u13de\u13e8eftArrow;\u6196ightArrow;\u6197i\u0100;l\u13f9\u13fa\u43d2on;\u43a5ing;\u416ecr;\uc000\ud835\udcb0ilde;\u4168ml\u803b\xdc\u40dc\u0480Dbcdefosv\u1427\u142c\u1430\u1433\u143e\u1485\u148a\u1490\u1496ash;\u62abar;\u6aeby;\u4412ash\u0100;l\u143b\u143c\u62a9;\u6ae6\u0100er\u1443\u1445;\u62c1\u0180bty\u144c\u1450\u147aar;\u6016\u0100;i\u144f\u1455cal\u0200BLST\u1461\u1465\u146a\u1474ar;\u6223ine;\u407ceparator;\u6758ilde;\u6240ThinSpace;\u600ar;\uc000\ud835\udd19pf;\uc000\ud835\udd4dcr;\uc000\ud835\udcb1dash;\u62aa\u0280cefos\u14a7\u14ac\u14b1\u14b6\u14bcirc;\u4174dge;\u62c0r;\uc000\ud835\udd1apf;\uc000\ud835\udd4ecr;\uc000\ud835\udcb2\u0200fios\u14cb\u14d0\u14d2\u14d8r;\uc000\ud835\udd1b;\u439epf;\uc000\ud835\udd4fcr;\uc000\ud835\udcb3\u0480AIUacfosu\u14f1\u14f5\u14f9\u14fd\u1504\u150f\u1514\u151a\u1520cy;\u442fcy;\u4407cy;\u442ecute\u803b\xdd\u40dd\u0100iy\u1509\u150drc;\u4176;\u442br;\uc000\ud835\udd1cpf;\uc000\ud835\udd50cr;\uc000\ud835\udcb4ml;\u4178\u0400Hacdefos\u1535\u1539\u153f\u154b\u154f\u155d\u1560\u1564cy;\u4416cute;\u4179\u0100ay\u1544\u1549ron;\u417d;\u4417ot;\u417b\u01f2\u1554\0\u155boWidt\xe8\u0ad9a;\u4396r;\u6128pf;\u6124cr;\uc000\ud835\udcb5\u0be1\u1583\u158a\u1590\0\u15b0\u15b6\u15bf\0\0\0\0\u15c6\u15db\u15eb\u165f\u166d\0\u1695\u169b\u16b2\u16b9\0\u16becute\u803b\xe1\u40e1reve;\u4103\u0300;Ediuy\u159c\u159d\u15a1\u15a3\u15a8\u15ad\u623e;\uc000\u223e\u0333;\u623frc\u803b\xe2\u40e2te\u80bb\xb4\u0306;\u4430lig\u803b\xe6\u40e6\u0100;r\xb2\u15ba;\uc000\ud835\udd1erave\u803b\xe0\u40e0\u0100ep\u15ca\u15d6\u0100fp\u15cf\u15d4sym;\u6135\xe8\u15d3ha;\u43b1\u0100ap\u15dfc\u0100cl\u15e4\u15e7r;\u4101g;\u6a3f\u0264\u15f0\0\0\u160a\u0280;adsv\u15fa\u15fb\u15ff\u1601\u1607\u6227nd;\u6a55;\u6a5clope;\u6a58;\u6a5a\u0380;elmrsz\u1618\u1619\u161b\u161e\u163f\u164f\u1659\u6220;\u69a4e\xbb\u1619sd\u0100;a\u1625\u1626\u6221\u0461\u1630\u1632\u1634\u1636\u1638\u163a\u163c\u163e;\u69a8;\u69a9;\u69aa;\u69ab;\u69ac;\u69ad;\u69ae;\u69aft\u0100;v\u1645\u1646\u621fb\u0100;d\u164c\u164d\u62be;\u699d\u0100pt\u1654\u1657h;\u6222\xbb\xb9arr;\u637c\u0100gp\u1663\u1667on;\u4105f;\uc000\ud835\udd52\u0380;Eaeiop\u12c1\u167b\u167d\u1682\u1684\u1687\u168a;\u6a70cir;\u6a6f;\u624ad;\u624bs;\u4027rox\u0100;e\u12c1\u1692\xf1\u1683ing\u803b\xe5\u40e5\u0180cty\u16a1\u16a6\u16a8r;\uc000\ud835\udcb6;\u402amp\u0100;e\u12c1\u16af\xf1\u0288ilde\u803b\xe3\u40e3ml\u803b\xe4\u40e4\u0100ci\u16c2\u16c8onin\xf4\u0272nt;\u6a11\u0800Nabcdefiklnoprsu\u16ed\u16f1\u1730\u173c\u1743\u1748\u1778\u177d\u17e0\u17e6\u1839\u1850\u170d\u193d\u1948\u1970ot;\u6aed\u0100cr\u16f6\u171ek\u0200ceps\u1700\u1705\u170d\u1713ong;\u624cpsilon;\u43f6rime;\u6035im\u0100;e\u171a\u171b\u623dq;\u62cd\u0176\u1722\u1726ee;\u62bded\u0100;g\u172c\u172d\u6305e\xbb\u172drk\u0100;t\u135c\u1737brk;\u63b6\u0100oy\u1701\u1741;\u4431quo;\u601e\u0280cmprt\u1753\u175b\u1761\u1764\u1768aus\u0100;e\u010a\u0109ptyv;\u69b0s\xe9\u170cno\xf5\u0113\u0180ahw\u176f\u1771\u1773;\u43b2;\u6136een;\u626cr;\uc000\ud835\udd1fg\u0380costuvw\u178d\u179d\u17b3\u17c1\u17d5\u17db\u17de\u0180aiu\u1794\u1796\u179a\xf0\u0760rc;\u65efp\xbb\u1371\u0180dpt\u17a4\u17a8\u17adot;\u6a00lus;\u6a01imes;\u6a02\u0271\u17b9\0\0\u17becup;\u6a06ar;\u6605riangle\u0100du\u17cd\u17d2own;\u65bdp;\u65b3plus;\u6a04e\xe5\u1444\xe5\u14adarow;\u690d\u0180ako\u17ed\u1826\u1835\u0100cn\u17f2\u1823k\u0180lst\u17fa\u05ab\u1802ozenge;\u69ebriangle\u0200;dlr\u1812\u1813\u1818\u181d\u65b4own;\u65beeft;\u65c2ight;\u65b8k;\u6423\u01b1\u182b\0\u1833\u01b2\u182f\0\u1831;\u6592;\u65914;\u6593ck;\u6588\u0100eo\u183e\u184d\u0100;q\u1843\u1846\uc000=\u20e5uiv;\uc000\u2261\u20e5t;\u6310\u0200ptwx\u1859\u185e\u1867\u186cf;\uc000\ud835\udd53\u0100;t\u13cb\u1863om\xbb\u13cctie;\u62c8\u0600DHUVbdhmptuv\u1885\u1896\u18aa\u18bb\u18d7\u18db\u18ec\u18ff\u1905\u190a\u1910\u1921\u0200LRlr\u188e\u1890\u1892\u1894;\u6557;\u6554;\u6556;\u6553\u0280;DUdu\u18a1\u18a2\u18a4\u18a6\u18a8\u6550;\u6566;\u6569;\u6564;\u6567\u0200LRlr\u18b3\u18b5\u18b7\u18b9;\u655d;\u655a;\u655c;\u6559\u0380;HLRhlr\u18ca\u18cb\u18cd\u18cf\u18d1\u18d3\u18d5\u6551;\u656c;\u6563;\u6560;\u656b;\u6562;\u655fox;\u69c9\u0200LRlr\u18e4\u18e6\u18e8\u18ea;\u6555;\u6552;\u6510;\u650c\u0280;DUdu\u06bd\u18f7\u18f9\u18fb\u18fd;\u6565;\u6568;\u652c;\u6534inus;\u629flus;\u629eimes;\u62a0\u0200LRlr\u1919\u191b\u191d\u191f;\u655b;\u6558;\u6518;\u6514\u0380;HLRhlr\u1930\u1931\u1933\u1935\u1937\u1939\u193b\u6502;\u656a;\u6561;\u655e;\u653c;\u6524;\u651c\u0100ev\u0123\u1942bar\u803b\xa6\u40a6\u0200ceio\u1951\u1956\u195a\u1960r;\uc000\ud835\udcb7mi;\u604fm\u0100;e\u171a\u171cl\u0180;bh\u1968\u1969\u196b\u405c;\u69c5sub;\u67c8\u016c\u1974\u197el\u0100;e\u1979\u197a\u6022t\xbb\u197ap\u0180;Ee\u012f\u1985\u1987;\u6aae\u0100;q\u06dc\u06db\u0ce1\u19a7\0\u19e8\u1a11\u1a15\u1a32\0\u1a37\u1a50\0\0\u1ab4\0\0\u1ac1\0\0\u1b21\u1b2e\u1b4d\u1b52\0\u1bfd\0\u1c0c\u0180cpr\u19ad\u19b2\u19ddute;\u4107\u0300;abcds\u19bf\u19c0\u19c4\u19ca\u19d5\u19d9\u6229nd;\u6a44rcup;\u6a49\u0100au\u19cf\u19d2p;\u6a4bp;\u6a47ot;\u6a40;\uc000\u2229\ufe00\u0100eo\u19e2\u19e5t;\u6041\xee\u0693\u0200aeiu\u19f0\u19fb\u1a01\u1a05\u01f0\u19f5\0\u19f8s;\u6a4don;\u410ddil\u803b\xe7\u40e7rc;\u4109ps\u0100;s\u1a0c\u1a0d\u6a4cm;\u6a50ot;\u410b\u0180dmn\u1a1b\u1a20\u1a26il\u80bb\xb8\u01adptyv;\u69b2t\u8100\xa2;e\u1a2d\u1a2e\u40a2r\xe4\u01b2r;\uc000\ud835\udd20\u0180cei\u1a3d\u1a40\u1a4dy;\u4447ck\u0100;m\u1a47\u1a48\u6713ark\xbb\u1a48;\u43c7r\u0380;Ecefms\u1a5f\u1a60\u1a62\u1a6b\u1aa4\u1aaa\u1aae\u65cb;\u69c3\u0180;el\u1a69\u1a6a\u1a6d\u42c6q;\u6257e\u0261\u1a74\0\0\u1a88rrow\u0100lr\u1a7c\u1a81eft;\u61baight;\u61bb\u0280RSacd\u1a92\u1a94\u1a96\u1a9a\u1a9f\xbb\u0f47;\u64c8st;\u629birc;\u629aash;\u629dnint;\u6a10id;\u6aefcir;\u69c2ubs\u0100;u\u1abb\u1abc\u6663it\xbb\u1abc\u02ec\u1ac7\u1ad4\u1afa\0\u1b0aon\u0100;e\u1acd\u1ace\u403a\u0100;q\xc7\xc6\u026d\u1ad9\0\0\u1ae2a\u0100;t\u1ade\u1adf\u402c;\u4040\u0180;fl\u1ae8\u1ae9\u1aeb\u6201\xee\u1160e\u0100mx\u1af1\u1af6ent\xbb\u1ae9e\xf3\u024d\u01e7\u1afe\0\u1b07\u0100;d\u12bb\u1b02ot;\u6a6dn\xf4\u0246\u0180fry\u1b10\u1b14\u1b17;\uc000\ud835\udd54o\xe4\u0254\u8100\xa9;s\u0155\u1b1dr;\u6117\u0100ao\u1b25\u1b29rr;\u61b5ss;\u6717\u0100cu\u1b32\u1b37r;\uc000\ud835\udcb8\u0100bp\u1b3c\u1b44\u0100;e\u1b41\u1b42\u6acf;\u6ad1\u0100;e\u1b49\u1b4a\u6ad0;\u6ad2dot;\u62ef\u0380delprvw\u1b60\u1b6c\u1b77\u1b82\u1bac\u1bd4\u1bf9arr\u0100lr\u1b68\u1b6a;\u6938;\u6935\u0270\u1b72\0\0\u1b75r;\u62dec;\u62dfarr\u0100;p\u1b7f\u1b80\u61b6;\u693d\u0300;bcdos\u1b8f\u1b90\u1b96\u1ba1\u1ba5\u1ba8\u622arcap;\u6a48\u0100au\u1b9b\u1b9ep;\u6a46p;\u6a4aot;\u628dr;\u6a45;\uc000\u222a\ufe00\u0200alrv\u1bb5\u1bbf\u1bde\u1be3rr\u0100;m\u1bbc\u1bbd\u61b7;\u693cy\u0180evw\u1bc7\u1bd4\u1bd8q\u0270\u1bce\0\0\u1bd2re\xe3\u1b73u\xe3\u1b75ee;\u62ceedge;\u62cfen\u803b\xa4\u40a4earrow\u0100lr\u1bee\u1bf3eft\xbb\u1b80ight\xbb\u1bbde\xe4\u1bdd\u0100ci\u1c01\u1c07onin\xf4\u01f7nt;\u6231lcty;\u632d\u0980AHabcdefhijlorstuwz\u1c38\u1c3b\u1c3f\u1c5d\u1c69\u1c75\u1c8a\u1c9e\u1cac\u1cb7\u1cfb\u1cff\u1d0d\u1d7b\u1d91\u1dab\u1dbb\u1dc6\u1dcdr\xf2\u0381ar;\u6965\u0200glrs\u1c48\u1c4d\u1c52\u1c54ger;\u6020eth;\u6138\xf2\u1133h\u0100;v\u1c5a\u1c5b\u6010\xbb\u090a\u016b\u1c61\u1c67arow;\u690fa\xe3\u0315\u0100ay\u1c6e\u1c73ron;\u410f;\u4434\u0180;ao\u0332\u1c7c\u1c84\u0100gr\u02bf\u1c81r;\u61catseq;\u6a77\u0180glm\u1c91\u1c94\u1c98\u803b\xb0\u40b0ta;\u43b4ptyv;\u69b1\u0100ir\u1ca3\u1ca8sht;\u697f;\uc000\ud835\udd21ar\u0100lr\u1cb3\u1cb5\xbb\u08dc\xbb\u101e\u0280aegsv\u1cc2\u0378\u1cd6\u1cdc\u1ce0m\u0180;os\u0326\u1cca\u1cd4nd\u0100;s\u0326\u1cd1uit;\u6666amma;\u43ddin;\u62f2\u0180;io\u1ce7\u1ce8\u1cf8\u40f7de\u8100\xf7;o\u1ce7\u1cf0ntimes;\u62c7n\xf8\u1cf7cy;\u4452c\u026f\u1d06\0\0\u1d0arn;\u631eop;\u630d\u0280lptuw\u1d18\u1d1d\u1d22\u1d49\u1d55lar;\u4024f;\uc000\ud835\udd55\u0280;emps\u030b\u1d2d\u1d37\u1d3d\u1d42q\u0100;d\u0352\u1d33ot;\u6251inus;\u6238lus;\u6214quare;\u62a1blebarwedg\xe5\xfan\u0180adh\u112e\u1d5d\u1d67ownarrow\xf3\u1c83arpoon\u0100lr\u1d72\u1d76ef\xf4\u1cb4igh\xf4\u1cb6\u0162\u1d7f\u1d85karo\xf7\u0f42\u026f\u1d8a\0\0\u1d8ern;\u631fop;\u630c\u0180cot\u1d98\u1da3\u1da6\u0100ry\u1d9d\u1da1;\uc000\ud835\udcb9;\u4455l;\u69f6rok;\u4111\u0100dr\u1db0\u1db4ot;\u62f1i\u0100;f\u1dba\u1816\u65bf\u0100ah\u1dc0\u1dc3r\xf2\u0429a\xf2\u0fa6angle;\u69a6\u0100ci\u1dd2\u1dd5y;\u445fgrarr;\u67ff\u0900Dacdefglmnopqrstux\u1e01\u1e09\u1e19\u1e38\u0578\u1e3c\u1e49\u1e61\u1e7e\u1ea5\u1eaf\u1ebd\u1ee1\u1f2a\u1f37\u1f44\u1f4e\u1f5a\u0100Do\u1e06\u1d34o\xf4\u1c89\u0100cs\u1e0e\u1e14ute\u803b\xe9\u40e9ter;\u6a6e\u0200aioy\u1e22\u1e27\u1e31\u1e36ron;\u411br\u0100;c\u1e2d\u1e2e\u6256\u803b\xea\u40ealon;\u6255;\u444dot;\u4117\u0100Dr\u1e41\u1e45ot;\u6252;\uc000\ud835\udd22\u0180;rs\u1e50\u1e51\u1e57\u6a9aave\u803b\xe8\u40e8\u0100;d\u1e5c\u1e5d\u6a96ot;\u6a98\u0200;ils\u1e6a\u1e6b\u1e72\u1e74\u6a99nters;\u63e7;\u6113\u0100;d\u1e79\u1e7a\u6a95ot;\u6a97\u0180aps\u1e85\u1e89\u1e97cr;\u4113ty\u0180;sv\u1e92\u1e93\u1e95\u6205et\xbb\u1e93p\u01001;\u1e9d\u1ea4\u0133\u1ea1\u1ea3;\u6004;\u6005\u6003\u0100gs\u1eaa\u1eac;\u414bp;\u6002\u0100gp\u1eb4\u1eb8on;\u4119f;\uc000\ud835\udd56\u0180als\u1ec4\u1ece\u1ed2r\u0100;s\u1eca\u1ecb\u62d5l;\u69e3us;\u6a71i\u0180;lv\u1eda\u1edb\u1edf\u43b5on\xbb\u1edb;\u43f5\u0200csuv\u1eea\u1ef3\u1f0b\u1f23\u0100io\u1eef\u1e31rc\xbb\u1e2e\u0269\u1ef9\0\0\u1efb\xed\u0548ant\u0100gl\u1f02\u1f06tr\xbb\u1e5dess\xbb\u1e7a\u0180aei\u1f12\u1f16\u1f1als;\u403dst;\u625fv\u0100;D\u0235\u1f20D;\u6a78parsl;\u69e5\u0100Da\u1f2f\u1f33ot;\u6253rr;\u6971\u0180cdi\u1f3e\u1f41\u1ef8r;\u612fo\xf4\u0352\u0100ah\u1f49\u1f4b;\u43b7\u803b\xf0\u40f0\u0100mr\u1f53\u1f57l\u803b\xeb\u40ebo;\u60ac\u0180cip\u1f61\u1f64\u1f67l;\u4021s\xf4\u056e\u0100eo\u1f6c\u1f74ctatio\xee\u0559nential\xe5\u0579\u09e1\u1f92\0\u1f9e\0\u1fa1\u1fa7\0\0\u1fc6\u1fcc\0\u1fd3\0\u1fe6\u1fea\u2000\0\u2008\u205allingdotse\xf1\u1e44y;\u4444male;\u6640\u0180ilr\u1fad\u1fb3\u1fc1lig;\u8000\ufb03\u0269\u1fb9\0\0\u1fbdg;\u8000\ufb00ig;\u8000\ufb04;\uc000\ud835\udd23lig;\u8000\ufb01lig;\uc000fj\u0180alt\u1fd9\u1fdc\u1fe1t;\u666dig;\u8000\ufb02ns;\u65b1of;\u4192\u01f0\u1fee\0\u1ff3f;\uc000\ud835\udd57\u0100ak\u05bf\u1ff7\u0100;v\u1ffc\u1ffd\u62d4;\u6ad9artint;\u6a0d\u0100ao\u200c\u2055\u0100cs\u2011\u2052\u03b1\u201a\u2030\u2038\u2045\u2048\0\u2050\u03b2\u2022\u2025\u2027\u202a\u202c\0\u202e\u803b\xbd\u40bd;\u6153\u803b\xbc\u40bc;\u6155;\u6159;\u615b\u01b3\u2034\0\u2036;\u6154;\u6156\u02b4\u203e\u2041\0\0\u2043\u803b\xbe\u40be;\u6157;\u615c5;\u6158\u01b6\u204c\0\u204e;\u615a;\u615d8;\u615el;\u6044wn;\u6322cr;\uc000\ud835\udcbb\u0880Eabcdefgijlnorstv\u2082\u2089\u209f\u20a5\u20b0\u20b4\u20f0\u20f5\u20fa\u20ff\u2103\u2112\u2138\u0317\u213e\u2152\u219e\u0100;l\u064d\u2087;\u6a8c\u0180cmp\u2090\u2095\u209dute;\u41f5ma\u0100;d\u209c\u1cda\u43b3;\u6a86reve;\u411f\u0100iy\u20aa\u20aerc;\u411d;\u4433ot;\u4121\u0200;lqs\u063e\u0642\u20bd\u20c9\u0180;qs\u063e\u064c\u20c4lan\xf4\u0665\u0200;cdl\u0665\u20d2\u20d5\u20e5c;\u6aa9ot\u0100;o\u20dc\u20dd\u6a80\u0100;l\u20e2\u20e3\u6a82;\u6a84\u0100;e\u20ea\u20ed\uc000\u22db\ufe00s;\u6a94r;\uc000\ud835\udd24\u0100;g\u0673\u061bmel;\u6137cy;\u4453\u0200;Eaj\u065a\u210c\u210e\u2110;\u6a92;\u6aa5;\u6aa4\u0200Eaes\u211b\u211d\u2129\u2134;\u6269p\u0100;p\u2123\u2124\u6a8arox\xbb\u2124\u0100;q\u212e\u212f\u6a88\u0100;q\u212e\u211bim;\u62e7pf;\uc000\ud835\udd58\u0100ci\u2143\u2146r;\u610am\u0180;el\u066b\u214e\u2150;\u6a8e;\u6a90\u8300>;cdlqr\u05ee\u2160\u216a\u216e\u2173\u2179\u0100ci\u2165\u2167;\u6aa7r;\u6a7aot;\u62d7Par;\u6995uest;\u6a7c\u0280adels\u2184\u216a\u2190\u0656\u219b\u01f0\u2189\0\u218epro\xf8\u209er;\u6978q\u0100lq\u063f\u2196les\xf3\u2088i\xed\u066b\u0100en\u21a3\u21adrtneqq;\uc000\u2269\ufe00\xc5\u21aa\u0500Aabcefkosy\u21c4\u21c7\u21f1\u21f5\u21fa\u2218\u221d\u222f\u2268\u227dr\xf2\u03a0\u0200ilmr\u21d0\u21d4\u21d7\u21dbrs\xf0\u1484f\xbb\u2024il\xf4\u06a9\u0100dr\u21e0\u21e4cy;\u444a\u0180;cw\u08f4\u21eb\u21efir;\u6948;\u61adar;\u610firc;\u4125\u0180alr\u2201\u220e\u2213rts\u0100;u\u2209\u220a\u6665it\xbb\u220alip;\u6026con;\u62b9r;\uc000\ud835\udd25s\u0100ew\u2223\u2229arow;\u6925arow;\u6926\u0280amopr\u223a\u223e\u2243\u225e\u2263rr;\u61fftht;\u623bk\u0100lr\u2249\u2253eftarrow;\u61a9ightarrow;\u61aaf;\uc000\ud835\udd59bar;\u6015\u0180clt\u226f\u2274\u2278r;\uc000\ud835\udcbdas\xe8\u21f4rok;\u4127\u0100bp\u2282\u2287ull;\u6043hen\xbb\u1c5b\u0ae1\u22a3\0\u22aa\0\u22b8\u22c5\u22ce\0\u22d5\u22f3\0\0\u22f8\u2322\u2367\u2362\u237f\0\u2386\u23aa\u23b4cute\u803b\xed\u40ed\u0180;iy\u0771\u22b0\u22b5rc\u803b\xee\u40ee;\u4438\u0100cx\u22bc\u22bfy;\u4435cl\u803b\xa1\u40a1\u0100fr\u039f\u22c9;\uc000\ud835\udd26rave\u803b\xec\u40ec\u0200;ino\u073e\u22dd\u22e9\u22ee\u0100in\u22e2\u22e6nt;\u6a0ct;\u622dfin;\u69dcta;\u6129lig;\u4133\u0180aop\u22fe\u231a\u231d\u0180cgt\u2305\u2308\u2317r;\u412b\u0180elp\u071f\u230f\u2313in\xe5\u078ear\xf4\u0720h;\u4131f;\u62b7ed;\u41b5\u0280;cfot\u04f4\u232c\u2331\u233d\u2341are;\u6105in\u0100;t\u2338\u2339\u621eie;\u69dddo\xf4\u2319\u0280;celp\u0757\u234c\u2350\u235b\u2361al;\u62ba\u0100gr\u2355\u2359er\xf3\u1563\xe3\u234darhk;\u6a17rod;\u6a3c\u0200cgpt\u236f\u2372\u2376\u237by;\u4451on;\u412ff;\uc000\ud835\udd5aa;\u43b9uest\u803b\xbf\u40bf\u0100ci\u238a\u238fr;\uc000\ud835\udcben\u0280;Edsv\u04f4\u239b\u239d\u23a1\u04f3;\u62f9ot;\u62f5\u0100;v\u23a6\u23a7\u62f4;\u62f3\u0100;i\u0777\u23aelde;\u4129\u01eb\u23b8\0\u23bccy;\u4456l\u803b\xef\u40ef\u0300cfmosu\u23cc\u23d7\u23dc\u23e1\u23e7\u23f5\u0100iy\u23d1\u23d5rc;\u4135;\u4439r;\uc000\ud835\udd27ath;\u4237pf;\uc000\ud835\udd5b\u01e3\u23ec\0\u23f1r;\uc000\ud835\udcbfrcy;\u4458kcy;\u4454\u0400acfghjos\u240b\u2416\u2422\u2427\u242d\u2431\u2435\u243bppa\u0100;v\u2413\u2414\u43ba;\u43f0\u0100ey\u241b\u2420dil;\u4137;\u443ar;\uc000\ud835\udd28reen;\u4138cy;\u4445cy;\u445cpf;\uc000\ud835\udd5ccr;\uc000\ud835\udcc0\u0b80ABEHabcdefghjlmnoprstuv\u2470\u2481\u2486\u248d\u2491\u250e\u253d\u255a\u2580\u264e\u265e\u2665\u2679\u267d\u269a\u26b2\u26d8\u275d\u2768\u278b\u27c0\u2801\u2812\u0180art\u2477\u247a\u247cr\xf2\u09c6\xf2\u0395ail;\u691barr;\u690e\u0100;g\u0994\u248b;\u6a8bar;\u6962\u0963\u24a5\0\u24aa\0\u24b1\0\0\0\0\0\u24b5\u24ba\0\u24c6\u24c8\u24cd\0\u24f9ute;\u413amptyv;\u69b4ra\xee\u084cbda;\u43bbg\u0180;dl\u088e\u24c1\u24c3;\u6991\xe5\u088e;\u6a85uo\u803b\xab\u40abr\u0400;bfhlpst\u0899\u24de\u24e6\u24e9\u24eb\u24ee\u24f1\u24f5\u0100;f\u089d\u24e3s;\u691fs;\u691d\xeb\u2252p;\u61abl;\u6939im;\u6973l;\u61a2\u0180;ae\u24ff\u2500\u2504\u6aabil;\u6919\u0100;s\u2509\u250a\u6aad;\uc000\u2aad\ufe00\u0180abr\u2515\u2519\u251drr;\u690crk;\u6772\u0100ak\u2522\u252cc\u0100ek\u2528\u252a;\u407b;\u405b\u0100es\u2531\u2533;\u698bl\u0100du\u2539\u253b;\u698f;\u698d\u0200aeuy\u2546\u254b\u2556\u2558ron;\u413e\u0100di\u2550\u2554il;\u413c\xec\u08b0\xe2\u2529;\u443b\u0200cqrs\u2563\u2566\u256d\u257da;\u6936uo\u0100;r\u0e19\u1746\u0100du\u2572\u2577har;\u6967shar;\u694bh;\u61b2\u0280;fgqs\u258b\u258c\u0989\u25f3\u25ff\u6264t\u0280ahlrt\u2598\u25a4\u25b7\u25c2\u25e8rrow\u0100;t\u0899\u25a1a\xe9\u24f6arpoon\u0100du\u25af\u25b4own\xbb\u045ap\xbb\u0966eftarrows;\u61c7ight\u0180ahs\u25cd\u25d6\u25derrow\u0100;s\u08f4\u08a7arpoon\xf3\u0f98quigarro\xf7\u21f0hreetimes;\u62cb\u0180;qs\u258b\u0993\u25falan\xf4\u09ac\u0280;cdgs\u09ac\u260a\u260d\u261d\u2628c;\u6aa8ot\u0100;o\u2614\u2615\u6a7f\u0100;r\u261a\u261b\u6a81;\u6a83\u0100;e\u2622\u2625\uc000\u22da\ufe00s;\u6a93\u0280adegs\u2633\u2639\u263d\u2649\u264bppro\xf8\u24c6ot;\u62d6q\u0100gq\u2643\u2645\xf4\u0989gt\xf2\u248c\xf4\u099bi\xed\u09b2\u0180ilr\u2655\u08e1\u265asht;\u697c;\uc000\ud835\udd29\u0100;E\u099c\u2663;\u6a91\u0161\u2669\u2676r\u0100du\u25b2\u266e\u0100;l\u0965\u2673;\u696alk;\u6584cy;\u4459\u0280;acht\u0a48\u2688\u268b\u2691\u2696r\xf2\u25c1orne\xf2\u1d08ard;\u696bri;\u65fa\u0100io\u269f\u26a4dot;\u4140ust\u0100;a\u26ac\u26ad\u63b0che\xbb\u26ad\u0200Eaes\u26bb\u26bd\u26c9\u26d4;\u6268p\u0100;p\u26c3\u26c4\u6a89rox\xbb\u26c4\u0100;q\u26ce\u26cf\u6a87\u0100;q\u26ce\u26bbim;\u62e6\u0400abnoptwz\u26e9\u26f4\u26f7\u271a\u272f\u2741\u2747\u2750\u0100nr\u26ee\u26f1g;\u67ecr;\u61fdr\xeb\u08c1g\u0180lmr\u26ff\u270d\u2714eft\u0100ar\u09e6\u2707ight\xe1\u09f2apsto;\u67fcight\xe1\u09fdparrow\u0100lr\u2725\u2729ef\xf4\u24edight;\u61ac\u0180afl\u2736\u2739\u273dr;\u6985;\uc000\ud835\udd5dus;\u6a2dimes;\u6a34\u0161\u274b\u274fst;\u6217\xe1\u134e\u0180;ef\u2757\u2758\u1800\u65cange\xbb\u2758ar\u0100;l\u2764\u2765\u4028t;\u6993\u0280achmt\u2773\u2776\u277c\u2785\u2787r\xf2\u08a8orne\xf2\u1d8car\u0100;d\u0f98\u2783;\u696d;\u600eri;\u62bf\u0300achiqt\u2798\u279d\u0a40\u27a2\u27ae\u27bbquo;\u6039r;\uc000\ud835\udcc1m\u0180;eg\u09b2\u27aa\u27ac;\u6a8d;\u6a8f\u0100bu\u252a\u27b3o\u0100;r\u0e1f\u27b9;\u601arok;\u4142\u8400<;cdhilqr\u082b\u27d2\u2639\u27dc\u27e0\u27e5\u27ea\u27f0\u0100ci\u27d7\u27d9;\u6aa6r;\u6a79re\xe5\u25f2mes;\u62c9arr;\u6976uest;\u6a7b\u0100Pi\u27f5\u27f9ar;\u6996\u0180;ef\u2800\u092d\u181b\u65c3r\u0100du\u2807\u280dshar;\u694ahar;\u6966\u0100en\u2817\u2821rtneqq;\uc000\u2268\ufe00\xc5\u281e\u0700Dacdefhilnopsu\u2840\u2845\u2882\u288e\u2893\u28a0\u28a5\u28a8\u28da\u28e2\u28e4\u0a83\u28f3\u2902Dot;\u623a\u0200clpr\u284e\u2852\u2863\u287dr\u803b\xaf\u40af\u0100et\u2857\u2859;\u6642\u0100;e\u285e\u285f\u6720se\xbb\u285f\u0100;s\u103b\u2868to\u0200;dlu\u103b\u2873\u2877\u287bow\xee\u048cef\xf4\u090f\xf0\u13d1ker;\u65ae\u0100oy\u2887\u288cmma;\u6a29;\u443cash;\u6014asuredangle\xbb\u1626r;\uc000\ud835\udd2ao;\u6127\u0180cdn\u28af\u28b4\u28c9ro\u803b\xb5\u40b5\u0200;acd\u1464\u28bd\u28c0\u28c4s\xf4\u16a7ir;\u6af0ot\u80bb\xb7\u01b5us\u0180;bd\u28d2\u1903\u28d3\u6212\u0100;u\u1d3c\u28d8;\u6a2a\u0163\u28de\u28e1p;\u6adb\xf2\u2212\xf0\u0a81\u0100dp\u28e9\u28eeels;\u62a7f;\uc000\ud835\udd5e\u0100ct\u28f8\u28fdr;\uc000\ud835\udcc2pos\xbb\u159d\u0180;lm\u2909\u290a\u290d\u43bctimap;\u62b8\u0c00GLRVabcdefghijlmoprstuvw\u2942\u2953\u297e\u2989\u2998\u29da\u29e9\u2a15\u2a1a\u2a58\u2a5d\u2a83\u2a95\u2aa4\u2aa8\u2b04\u2b07\u2b44\u2b7f\u2bae\u2c34\u2c67\u2c7c\u2ce9\u0100gt\u2947\u294b;\uc000\u22d9\u0338\u0100;v\u2950\u0bcf\uc000\u226b\u20d2\u0180elt\u295a\u2972\u2976ft\u0100ar\u2961\u2967rrow;\u61cdightarrow;\u61ce;\uc000\u22d8\u0338\u0100;v\u297b\u0c47\uc000\u226a\u20d2ightarrow;\u61cf\u0100Dd\u298e\u2993ash;\u62afash;\u62ae\u0280bcnpt\u29a3\u29a7\u29ac\u29b1\u29ccla\xbb\u02deute;\u4144g;\uc000\u2220\u20d2\u0280;Eiop\u0d84\u29bc\u29c0\u29c5\u29c8;\uc000\u2a70\u0338d;\uc000\u224b\u0338s;\u4149ro\xf8\u0d84ur\u0100;a\u29d3\u29d4\u666el\u0100;s\u29d3\u0b38\u01f3\u29df\0\u29e3p\u80bb\xa0\u0b37mp\u0100;e\u0bf9\u0c00\u0280aeouy\u29f4\u29fe\u2a03\u2a10\u2a13\u01f0\u29f9\0\u29fb;\u6a43on;\u4148dil;\u4146ng\u0100;d\u0d7e\u2a0aot;\uc000\u2a6d\u0338p;\u6a42;\u443dash;\u6013\u0380;Aadqsx\u0b92\u2a29\u2a2d\u2a3b\u2a41\u2a45\u2a50rr;\u61d7r\u0100hr\u2a33\u2a36k;\u6924\u0100;o\u13f2\u13f0ot;\uc000\u2250\u0338ui\xf6\u0b63\u0100ei\u2a4a\u2a4ear;\u6928\xed\u0b98ist\u0100;s\u0ba0\u0b9fr;\uc000\ud835\udd2b\u0200Eest\u0bc5\u2a66\u2a79\u2a7c\u0180;qs\u0bbc\u2a6d\u0be1\u0180;qs\u0bbc\u0bc5\u2a74lan\xf4\u0be2i\xed\u0bea\u0100;r\u0bb6\u2a81\xbb\u0bb7\u0180Aap\u2a8a\u2a8d\u2a91r\xf2\u2971rr;\u61aear;\u6af2\u0180;sv\u0f8d\u2a9c\u0f8c\u0100;d\u2aa1\u2aa2\u62fc;\u62facy;\u445a\u0380AEadest\u2ab7\u2aba\u2abe\u2ac2\u2ac5\u2af6\u2af9r\xf2\u2966;\uc000\u2266\u0338rr;\u619ar;\u6025\u0200;fqs\u0c3b\u2ace\u2ae3\u2aeft\u0100ar\u2ad4\u2ad9rro\xf7\u2ac1ightarro\xf7\u2a90\u0180;qs\u0c3b\u2aba\u2aealan\xf4\u0c55\u0100;s\u0c55\u2af4\xbb\u0c36i\xed\u0c5d\u0100;r\u0c35\u2afei\u0100;e\u0c1a\u0c25i\xe4\u0d90\u0100pt\u2b0c\u2b11f;\uc000\ud835\udd5f\u8180\xac;in\u2b19\u2b1a\u2b36\u40acn\u0200;Edv\u0b89\u2b24\u2b28\u2b2e;\uc000\u22f9\u0338ot;\uc000\u22f5\u0338\u01e1\u0b89\u2b33\u2b35;\u62f7;\u62f6i\u0100;v\u0cb8\u2b3c\u01e1\u0cb8\u2b41\u2b43;\u62fe;\u62fd\u0180aor\u2b4b\u2b63\u2b69r\u0200;ast\u0b7b\u2b55\u2b5a\u2b5flle\xec\u0b7bl;\uc000\u2afd\u20e5;\uc000\u2202\u0338lint;\u6a14\u0180;ce\u0c92\u2b70\u2b73u\xe5\u0ca5\u0100;c\u0c98\u2b78\u0100;e\u0c92\u2b7d\xf1\u0c98\u0200Aait\u2b88\u2b8b\u2b9d\u2ba7r\xf2\u2988rr\u0180;cw\u2b94\u2b95\u2b99\u619b;\uc000\u2933\u0338;\uc000\u219d\u0338ghtarrow\xbb\u2b95ri\u0100;e\u0ccb\u0cd6\u0380chimpqu\u2bbd\u2bcd\u2bd9\u2b04\u0b78\u2be4\u2bef\u0200;cer\u0d32\u2bc6\u0d37\u2bc9u\xe5\u0d45;\uc000\ud835\udcc3ort\u026d\u2b05\0\0\u2bd6ar\xe1\u2b56m\u0100;e\u0d6e\u2bdf\u0100;q\u0d74\u0d73su\u0100bp\u2beb\u2bed\xe5\u0cf8\xe5\u0d0b\u0180bcp\u2bf6\u2c11\u2c19\u0200;Ees\u2bff\u2c00\u0d22\u2c04\u6284;\uc000\u2ac5\u0338et\u0100;e\u0d1b\u2c0bq\u0100;q\u0d23\u2c00c\u0100;e\u0d32\u2c17\xf1\u0d38\u0200;Ees\u2c22\u2c23\u0d5f\u2c27\u6285;\uc000\u2ac6\u0338et\u0100;e\u0d58\u2c2eq\u0100;q\u0d60\u2c23\u0200gilr\u2c3d\u2c3f\u2c45\u2c47\xec\u0bd7lde\u803b\xf1\u40f1\xe7\u0c43iangle\u0100lr\u2c52\u2c5ceft\u0100;e\u0c1a\u2c5a\xf1\u0c26ight\u0100;e\u0ccb\u2c65\xf1\u0cd7\u0100;m\u2c6c\u2c6d\u43bd\u0180;es\u2c74\u2c75\u2c79\u4023ro;\u6116p;\u6007\u0480DHadgilrs\u2c8f\u2c94\u2c99\u2c9e\u2ca3\u2cb0\u2cb6\u2cd3\u2ce3ash;\u62adarr;\u6904p;\uc000\u224d\u20d2ash;\u62ac\u0100et\u2ca8\u2cac;\uc000\u2265\u20d2;\uc000>\u20d2nfin;\u69de\u0180Aet\u2cbd\u2cc1\u2cc5rr;\u6902;\uc000\u2264\u20d2\u0100;r\u2cca\u2ccd\uc000<\u20d2ie;\uc000\u22b4\u20d2\u0100At\u2cd8\u2cdcrr;\u6903rie;\uc000\u22b5\u20d2im;\uc000\u223c\u20d2\u0180Aan\u2cf0\u2cf4\u2d02rr;\u61d6r\u0100hr\u2cfa\u2cfdk;\u6923\u0100;o\u13e7\u13e5ear;\u6927\u1253\u1a95\0\0\0\0\0\0\0\0\0\0\0\0\0\u2d2d\0\u2d38\u2d48\u2d60\u2d65\u2d72\u2d84\u1b07\0\0\u2d8d\u2dab\0\u2dc8\u2dce\0\u2ddc\u2e19\u2e2b\u2e3e\u2e43\u0100cs\u2d31\u1a97ute\u803b\xf3\u40f3\u0100iy\u2d3c\u2d45r\u0100;c\u1a9e\u2d42\u803b\xf4\u40f4;\u443e\u0280abios\u1aa0\u2d52\u2d57\u01c8\u2d5alac;\u4151v;\u6a38old;\u69bclig;\u4153\u0100cr\u2d69\u2d6dir;\u69bf;\uc000\ud835\udd2c\u036f\u2d79\0\0\u2d7c\0\u2d82n;\u42dbave\u803b\xf2\u40f2;\u69c1\u0100bm\u2d88\u0df4ar;\u69b5\u0200acit\u2d95\u2d98\u2da5\u2da8r\xf2\u1a80\u0100ir\u2d9d\u2da0r;\u69beoss;\u69bbn\xe5\u0e52;\u69c0\u0180aei\u2db1\u2db5\u2db9cr;\u414dga;\u43c9\u0180cdn\u2dc0\u2dc5\u01cdron;\u43bf;\u69b6pf;\uc000\ud835\udd60\u0180ael\u2dd4\u2dd7\u01d2r;\u69b7rp;\u69b9\u0380;adiosv\u2dea\u2deb\u2dee\u2e08\u2e0d\u2e10\u2e16\u6228r\xf2\u1a86\u0200;efm\u2df7\u2df8\u2e02\u2e05\u6a5dr\u0100;o\u2dfe\u2dff\u6134f\xbb\u2dff\u803b\xaa\u40aa\u803b\xba\u40bagof;\u62b6r;\u6a56lope;\u6a57;\u6a5b\u0180clo\u2e1f\u2e21\u2e27\xf2\u2e01ash\u803b\xf8\u40f8l;\u6298i\u016c\u2e2f\u2e34de\u803b\xf5\u40f5es\u0100;a\u01db\u2e3as;\u6a36ml\u803b\xf6\u40f6bar;\u633d\u0ae1\u2e5e\0\u2e7d\0\u2e80\u2e9d\0\u2ea2\u2eb9\0\0\u2ecb\u0e9c\0\u2f13\0\0\u2f2b\u2fbc\0\u2fc8r\u0200;ast\u0403\u2e67\u2e72\u0e85\u8100\xb6;l\u2e6d\u2e6e\u40b6le\xec\u0403\u0269\u2e78\0\0\u2e7bm;\u6af3;\u6afdy;\u443fr\u0280cimpt\u2e8b\u2e8f\u2e93\u1865\u2e97nt;\u4025od;\u402eil;\u6030enk;\u6031r;\uc000\ud835\udd2d\u0180imo\u2ea8\u2eb0\u2eb4\u0100;v\u2ead\u2eae\u43c6;\u43d5ma\xf4\u0a76ne;\u660e\u0180;tv\u2ebf\u2ec0\u2ec8\u43c0chfork\xbb\u1ffd;\u43d6\u0100au\u2ecf\u2edfn\u0100ck\u2ed5\u2eddk\u0100;h\u21f4\u2edb;\u610e\xf6\u21f4s\u0480;abcdemst\u2ef3\u2ef4\u1908\u2ef9\u2efd\u2f04\u2f06\u2f0a\u2f0e\u402bcir;\u6a23ir;\u6a22\u0100ou\u1d40\u2f02;\u6a25;\u6a72n\u80bb\xb1\u0e9dim;\u6a26wo;\u6a27\u0180ipu\u2f19\u2f20\u2f25ntint;\u6a15f;\uc000\ud835\udd61nd\u803b\xa3\u40a3\u0500;Eaceinosu\u0ec8\u2f3f\u2f41\u2f44\u2f47\u2f81\u2f89\u2f92\u2f7e\u2fb6;\u6ab3p;\u6ab7u\xe5\u0ed9\u0100;c\u0ece\u2f4c\u0300;acens\u0ec8\u2f59\u2f5f\u2f66\u2f68\u2f7eppro\xf8\u2f43urlye\xf1\u0ed9\xf1\u0ece\u0180aes\u2f6f\u2f76\u2f7approx;\u6ab9qq;\u6ab5im;\u62e8i\xed\u0edfme\u0100;s\u2f88\u0eae\u6032\u0180Eas\u2f78\u2f90\u2f7a\xf0\u2f75\u0180dfp\u0eec\u2f99\u2faf\u0180als\u2fa0\u2fa5\u2faalar;\u632eine;\u6312urf;\u6313\u0100;t\u0efb\u2fb4\xef\u0efbrel;\u62b0\u0100ci\u2fc0\u2fc5r;\uc000\ud835\udcc5;\u43c8ncsp;\u6008\u0300fiopsu\u2fda\u22e2\u2fdf\u2fe5\u2feb\u2ff1r;\uc000\ud835\udd2epf;\uc000\ud835\udd62rime;\u6057cr;\uc000\ud835\udcc6\u0180aeo\u2ff8\u3009\u3013t\u0100ei\u2ffe\u3005rnion\xf3\u06b0nt;\u6a16st\u0100;e\u3010\u3011\u403f\xf1\u1f19\xf4\u0f14\u0a80ABHabcdefhilmnoprstux\u3040\u3051\u3055\u3059\u30e0\u310e\u312b\u3147\u3162\u3172\u318e\u3206\u3215\u3224\u3229\u3258\u326e\u3272\u3290\u32b0\u32b7\u0180art\u3047\u304a\u304cr\xf2\u10b3\xf2\u03ddail;\u691car\xf2\u1c65ar;\u6964\u0380cdenqrt\u3068\u3075\u3078\u307f\u308f\u3094\u30cc\u0100eu\u306d\u3071;\uc000\u223d\u0331te;\u4155i\xe3\u116emptyv;\u69b3g\u0200;del\u0fd1\u3089\u308b\u308d;\u6992;\u69a5\xe5\u0fd1uo\u803b\xbb\u40bbr\u0580;abcfhlpstw\u0fdc\u30ac\u30af\u30b7\u30b9\u30bc\u30be\u30c0\u30c3\u30c7\u30cap;\u6975\u0100;f\u0fe0\u30b4s;\u6920;\u6933s;\u691e\xeb\u225d\xf0\u272el;\u6945im;\u6974l;\u61a3;\u619d\u0100ai\u30d1\u30d5il;\u691ao\u0100;n\u30db\u30dc\u6236al\xf3\u0f1e\u0180abr\u30e7\u30ea\u30eer\xf2\u17e5rk;\u6773\u0100ak\u30f3\u30fdc\u0100ek\u30f9\u30fb;\u407d;\u405d\u0100es\u3102\u3104;\u698cl\u0100du\u310a\u310c;\u698e;\u6990\u0200aeuy\u3117\u311c\u3127\u3129ron;\u4159\u0100di\u3121\u3125il;\u4157\xec\u0ff2\xe2\u30fa;\u4440\u0200clqs\u3134\u3137\u313d\u3144a;\u6937dhar;\u6969uo\u0100;r\u020e\u020dh;\u61b3\u0180acg\u314e\u315f\u0f44l\u0200;ips\u0f78\u3158\u315b\u109cn\xe5\u10bbar\xf4\u0fa9t;\u65ad\u0180ilr\u3169\u1023\u316esht;\u697d;\uc000\ud835\udd2f\u0100ao\u3177\u3186r\u0100du\u317d\u317f\xbb\u047b\u0100;l\u1091\u3184;\u696c\u0100;v\u318b\u318c\u43c1;\u43f1\u0180gns\u3195\u31f9\u31fcht\u0300ahlrst\u31a4\u31b0\u31c2\u31d8\u31e4\u31eerrow\u0100;t\u0fdc\u31ada\xe9\u30c8arpoon\u0100du\u31bb\u31bfow\xee\u317ep\xbb\u1092eft\u0100ah\u31ca\u31d0rrow\xf3\u0feaarpoon\xf3\u0551ightarrows;\u61c9quigarro\xf7\u30cbhreetimes;\u62ccg;\u42daingdotse\xf1\u1f32\u0180ahm\u320d\u3210\u3213r\xf2\u0feaa\xf2\u0551;\u600foust\u0100;a\u321e\u321f\u63b1che\xbb\u321fmid;\u6aee\u0200abpt\u3232\u323d\u3240\u3252\u0100nr\u3237\u323ag;\u67edr;\u61fer\xeb\u1003\u0180afl\u3247\u324a\u324er;\u6986;\uc000\ud835\udd63us;\u6a2eimes;\u6a35\u0100ap\u325d\u3267r\u0100;g\u3263\u3264\u4029t;\u6994olint;\u6a12ar\xf2\u31e3\u0200achq\u327b\u3280\u10bc\u3285quo;\u603ar;\uc000\ud835\udcc7\u0100bu\u30fb\u328ao\u0100;r\u0214\u0213\u0180hir\u3297\u329b\u32a0re\xe5\u31f8mes;\u62cai\u0200;efl\u32aa\u1059\u1821\u32ab\u65b9tri;\u69celuhar;\u6968;\u611e\u0d61\u32d5\u32db\u32df\u332c\u3338\u3371\0\u337a\u33a4\0\0\u33ec\u33f0\0\u3428\u3448\u345a\u34ad\u34b1\u34ca\u34f1\0\u3616\0\0\u3633cute;\u415bqu\xef\u27ba\u0500;Eaceinpsy\u11ed\u32f3\u32f5\u32ff\u3302\u330b\u330f\u331f\u3326\u3329;\u6ab4\u01f0\u32fa\0\u32fc;\u6ab8on;\u4161u\xe5\u11fe\u0100;d\u11f3\u3307il;\u415frc;\u415d\u0180Eas\u3316\u3318\u331b;\u6ab6p;\u6abaim;\u62e9olint;\u6a13i\xed\u1204;\u4441ot\u0180;be\u3334\u1d47\u3335\u62c5;\u6a66\u0380Aacmstx\u3346\u334a\u3357\u335b\u335e\u3363\u336drr;\u61d8r\u0100hr\u3350\u3352\xeb\u2228\u0100;o\u0a36\u0a34t\u803b\xa7\u40a7i;\u403bwar;\u6929m\u0100in\u3369\xf0nu\xf3\xf1t;\u6736r\u0100;o\u3376\u2055\uc000\ud835\udd30\u0200acoy\u3382\u3386\u3391\u33a0rp;\u666f\u0100hy\u338b\u338fcy;\u4449;\u4448rt\u026d\u3399\0\0\u339ci\xe4\u1464ara\xec\u2e6f\u803b\xad\u40ad\u0100gm\u33a8\u33b4ma\u0180;fv\u33b1\u33b2\u33b2\u43c3;\u43c2\u0400;deglnpr\u12ab\u33c5\u33c9\u33ce\u33d6\u33de\u33e1\u33e6ot;\u6a6a\u0100;q\u12b1\u12b0\u0100;E\u33d3\u33d4\u6a9e;\u6aa0\u0100;E\u33db\u33dc\u6a9d;\u6a9fe;\u6246lus;\u6a24arr;\u6972ar\xf2\u113d\u0200aeit\u33f8\u3408\u340f\u3417\u0100ls\u33fd\u3404lsetm\xe9\u336ahp;\u6a33parsl;\u69e4\u0100dl\u1463\u3414e;\u6323\u0100;e\u341c\u341d\u6aaa\u0100;s\u3422\u3423\u6aac;\uc000\u2aac\ufe00\u0180flp\u342e\u3433\u3442tcy;\u444c\u0100;b\u3438\u3439\u402f\u0100;a\u343e\u343f\u69c4r;\u633ff;\uc000\ud835\udd64a\u0100dr\u344d\u0402es\u0100;u\u3454\u3455\u6660it\xbb\u3455\u0180csu\u3460\u3479\u349f\u0100au\u3465\u346fp\u0100;s\u1188\u346b;\uc000\u2293\ufe00p\u0100;s\u11b4\u3475;\uc000\u2294\ufe00u\u0100bp\u347f\u348f\u0180;es\u1197\u119c\u3486et\u0100;e\u1197\u348d\xf1\u119d\u0180;es\u11a8\u11ad\u3496et\u0100;e\u11a8\u349d\xf1\u11ae\u0180;af\u117b\u34a6\u05b0r\u0165\u34ab\u05b1\xbb\u117car\xf2\u1148\u0200cemt\u34b9\u34be\u34c2\u34c5r;\uc000\ud835\udcc8tm\xee\xf1i\xec\u3415ar\xe6\u11be\u0100ar\u34ce\u34d5r\u0100;f\u34d4\u17bf\u6606\u0100an\u34da\u34edight\u0100ep\u34e3\u34eapsilo\xee\u1ee0h\xe9\u2eafs\xbb\u2852\u0280bcmnp\u34fb\u355e\u1209\u358b\u358e\u0480;Edemnprs\u350e\u350f\u3511\u3515\u351e\u3523\u352c\u3531\u3536\u6282;\u6ac5ot;\u6abd\u0100;d\u11da\u351aot;\u6ac3ult;\u6ac1\u0100Ee\u3528\u352a;\u6acb;\u628alus;\u6abfarr;\u6979\u0180eiu\u353d\u3552\u3555t\u0180;en\u350e\u3545\u354bq\u0100;q\u11da\u350feq\u0100;q\u352b\u3528m;\u6ac7\u0100bp\u355a\u355c;\u6ad5;\u6ad3c\u0300;acens\u11ed\u356c\u3572\u3579\u357b\u3326ppro\xf8\u32faurlye\xf1\u11fe\xf1\u11f3\u0180aes\u3582\u3588\u331bppro\xf8\u331aq\xf1\u3317g;\u666a\u0680123;Edehlmnps\u35a9\u35ac\u35af\u121c\u35b2\u35b4\u35c0\u35c9\u35d5\u35da\u35df\u35e8\u35ed\u803b\xb9\u40b9\u803b\xb2\u40b2\u803b\xb3\u40b3;\u6ac6\u0100os\u35b9\u35bct;\u6abeub;\u6ad8\u0100;d\u1222\u35c5ot;\u6ac4s\u0100ou\u35cf\u35d2l;\u67c9b;\u6ad7arr;\u697bult;\u6ac2\u0100Ee\u35e4\u35e6;\u6acc;\u628blus;\u6ac0\u0180eiu\u35f4\u3609\u360ct\u0180;en\u121c\u35fc\u3602q\u0100;q\u1222\u35b2eq\u0100;q\u35e7\u35e4m;\u6ac8\u0100bp\u3611\u3613;\u6ad4;\u6ad6\u0180Aan\u361c\u3620\u362drr;\u61d9r\u0100hr\u3626\u3628\xeb\u222e\u0100;o\u0a2b\u0a29war;\u692alig\u803b\xdf\u40df\u0be1\u3651\u365d\u3660\u12ce\u3673\u3679\0\u367e\u36c2\0\0\0\0\0\u36db\u3703\0\u3709\u376c\0\0\0\u3787\u0272\u3656\0\0\u365bget;\u6316;\u43c4r\xeb\u0e5f\u0180aey\u3666\u366b\u3670ron;\u4165dil;\u4163;\u4442lrec;\u6315r;\uc000\ud835\udd31\u0200eiko\u3686\u369d\u36b5\u36bc\u01f2\u368b\0\u3691e\u01004f\u1284\u1281a\u0180;sv\u3698\u3699\u369b\u43b8ym;\u43d1\u0100cn\u36a2\u36b2k\u0100as\u36a8\u36aeppro\xf8\u12c1im\xbb\u12acs\xf0\u129e\u0100as\u36ba\u36ae\xf0\u12c1rn\u803b\xfe\u40fe\u01ec\u031f\u36c6\u22e7es\u8180\xd7;bd\u36cf\u36d0\u36d8\u40d7\u0100;a\u190f\u36d5r;\u6a31;\u6a30\u0180eps\u36e1\u36e3\u3700\xe1\u2a4d\u0200;bcf\u0486\u36ec\u36f0\u36f4ot;\u6336ir;\u6af1\u0100;o\u36f9\u36fc\uc000\ud835\udd65rk;\u6ada\xe1\u3362rime;\u6034\u0180aip\u370f\u3712\u3764d\xe5\u1248\u0380adempst\u3721\u374d\u3740\u3751\u3757\u375c\u375fngle\u0280;dlqr\u3730\u3731\u3736\u3740\u3742\u65b5own\xbb\u1dbbeft\u0100;e\u2800\u373e\xf1\u092e;\u625cight\u0100;e\u32aa\u374b\xf1\u105aot;\u65ecinus;\u6a3alus;\u6a39b;\u69cdime;\u6a3bezium;\u63e2\u0180cht\u3772\u377d\u3781\u0100ry\u3777\u377b;\uc000\ud835\udcc9;\u4446cy;\u445brok;\u4167\u0100io\u378b\u378ex\xf4\u1777head\u0100lr\u3797\u37a0eftarro\xf7\u084fightarrow\xbb\u0f5d\u0900AHabcdfghlmoprstuw\u37d0\u37d3\u37d7\u37e4\u37f0\u37fc\u380e\u381c\u3823\u3834\u3851\u385d\u386b\u38a9\u38cc\u38d2\u38ea\u38f6r\xf2\u03edar;\u6963\u0100cr\u37dc\u37e2ute\u803b\xfa\u40fa\xf2\u1150r\u01e3\u37ea\0\u37edy;\u445eve;\u416d\u0100iy\u37f5\u37farc\u803b\xfb\u40fb;\u4443\u0180abh\u3803\u3806\u380br\xf2\u13adlac;\u4171a\xf2\u13c3\u0100ir\u3813\u3818sht;\u697e;\uc000\ud835\udd32rave\u803b\xf9\u40f9\u0161\u3827\u3831r\u0100lr\u382c\u382e\xbb\u0957\xbb\u1083lk;\u6580\u0100ct\u3839\u384d\u026f\u383f\0\0\u384arn\u0100;e\u3845\u3846\u631cr\xbb\u3846op;\u630fri;\u65f8\u0100al\u3856\u385acr;\u416b\u80bb\xa8\u0349\u0100gp\u3862\u3866on;\u4173f;\uc000\ud835\udd66\u0300adhlsu\u114b\u3878\u387d\u1372\u3891\u38a0own\xe1\u13b3arpoon\u0100lr\u3888\u388cef\xf4\u382digh\xf4\u382fi\u0180;hl\u3899\u389a\u389c\u43c5\xbb\u13faon\xbb\u389aparrows;\u61c8\u0180cit\u38b0\u38c4\u38c8\u026f\u38b6\0\0\u38c1rn\u0100;e\u38bc\u38bd\u631dr\xbb\u38bdop;\u630eng;\u416fri;\u65f9cr;\uc000\ud835\udcca\u0180dir\u38d9\u38dd\u38e2ot;\u62f0lde;\u4169i\u0100;f\u3730\u38e8\xbb\u1813\u0100am\u38ef\u38f2r\xf2\u38a8l\u803b\xfc\u40fcangle;\u69a7\u0780ABDacdeflnoprsz\u391c\u391f\u3929\u392d\u39b5\u39b8\u39bd\u39df\u39e4\u39e8\u39f3\u39f9\u39fd\u3a01\u3a20r\xf2\u03f7ar\u0100;v\u3926\u3927\u6ae8;\u6ae9as\xe8\u03e1\u0100nr\u3932\u3937grt;\u699c\u0380eknprst\u34e3\u3946\u394b\u3952\u395d\u3964\u3996app\xe1\u2415othin\xe7\u1e96\u0180hir\u34eb\u2ec8\u3959op\xf4\u2fb5\u0100;h\u13b7\u3962\xef\u318d\u0100iu\u3969\u396dgm\xe1\u33b3\u0100bp\u3972\u3984setneq\u0100;q\u397d\u3980\uc000\u228a\ufe00;\uc000\u2acb\ufe00setneq\u0100;q\u398f\u3992\uc000\u228b\ufe00;\uc000\u2acc\ufe00\u0100hr\u399b\u399fet\xe1\u369ciangle\u0100lr\u39aa\u39afeft\xbb\u0925ight\xbb\u1051y;\u4432ash\xbb\u1036\u0180elr\u39c4\u39d2\u39d7\u0180;be\u2dea\u39cb\u39cfar;\u62bbq;\u625alip;\u62ee\u0100bt\u39dc\u1468a\xf2\u1469r;\uc000\ud835\udd33tr\xe9\u39aesu\u0100bp\u39ef\u39f1\xbb\u0d1c\xbb\u0d59pf;\uc000\ud835\udd67ro\xf0\u0efbtr\xe9\u39b4\u0100cu\u3a06\u3a0br;\uc000\ud835\udccb\u0100bp\u3a10\u3a18n\u0100Ee\u3980\u3a16\xbb\u397en\u0100Ee\u3992\u3a1e\xbb\u3990igzag;\u699a\u0380cefoprs\u3a36\u3a3b\u3a56\u3a5b\u3a54\u3a61\u3a6airc;\u4175\u0100di\u3a40\u3a51\u0100bg\u3a45\u3a49ar;\u6a5fe\u0100;q\u15fa\u3a4f;\u6259erp;\u6118r;\uc000\ud835\udd34pf;\uc000\ud835\udd68\u0100;e\u1479\u3a66at\xe8\u1479cr;\uc000\ud835\udccc\u0ae3\u178e\u3a87\0\u3a8b\0\u3a90\u3a9b\0\0\u3a9d\u3aa8\u3aab\u3aaf\0\0\u3ac3\u3ace\0\u3ad8\u17dc\u17dftr\xe9\u17d1r;\uc000\ud835\udd35\u0100Aa\u3a94\u3a97r\xf2\u03c3r\xf2\u09f6;\u43be\u0100Aa\u3aa1\u3aa4r\xf2\u03b8r\xf2\u09eba\xf0\u2713is;\u62fb\u0180dpt\u17a4\u3ab5\u3abe\u0100fl\u3aba\u17a9;\uc000\ud835\udd69im\xe5\u17b2\u0100Aa\u3ac7\u3acar\xf2\u03cer\xf2\u0a01\u0100cq\u3ad2\u17b8r;\uc000\ud835\udccd\u0100pt\u17d6\u3adcr\xe9\u17d4\u0400acefiosu\u3af0\u3afd\u3b08\u3b0c\u3b11\u3b15\u3b1b\u3b21c\u0100uy\u3af6\u3afbte\u803b\xfd\u40fd;\u444f\u0100iy\u3b02\u3b06rc;\u4177;\u444bn\u803b\xa5\u40a5r;\uc000\ud835\udd36cy;\u4457pf;\uc000\ud835\udd6acr;\uc000\ud835\udcce\u0100cm\u3b26\u3b29y;\u444el\u803b\xff\u40ff\u0500acdefhiosw\u3b42\u3b48\u3b54\u3b58\u3b64\u3b69\u3b6d\u3b74\u3b7a\u3b80cute;\u417a\u0100ay\u3b4d\u3b52ron;\u417e;\u4437ot;\u417c\u0100et\u3b5d\u3b61tr\xe6\u155fa;\u43b6r;\uc000\ud835\udd37cy;\u4436grarr;\u61ddpf;\uc000\ud835\udd6bcr;\uc000\ud835\udccf\u0100jn\u3b85\u3b87;\u600dj;\u600c"
       .split("")
       .map((c) => c.charCodeAt(0)));
 
   // Adapted from https://github.com/mathiasbynens/he/blob/36afe179392226cf1b6ccdb16ebbb7a5a844d93a/src/he.js#L106-L134
-  var _a;
   const decodeMap = new Map([
       [0, 65533],
       // C1 Unicode control character reference replacements
@@ -44507,29 +46163,15 @@
       [159, 376],
   ]);
   /**
-   * Polyfill for `String.fromCodePoint`. It is used to create a string from a Unicode code point.
-   */
-  const fromCodePoint = 
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, node/no-unsupported-features/es-builtins
-  (_a = String.fromCodePoint) !== null && _a !== void 0 ? _a : function (codePoint) {
-      let output = "";
-      if (codePoint > 0xffff) {
-          codePoint -= 0x10000;
-          output += String.fromCharCode(((codePoint >>> 10) & 0x3ff) | 0xd800);
-          codePoint = 0xdc00 | (codePoint & 0x3ff);
-      }
-      output += String.fromCharCode(codePoint);
-      return output;
-  };
-  /**
    * Replace the given code point with a replacement character if it is a
    * surrogate or is outside the valid range. Otherwise return the code
    * point unchanged.
    */
   function replaceCodePoint(codePoint) {
       var _a;
-      if ((codePoint >= 0xd800 && codePoint <= 0xdfff) || codePoint > 0x10ffff) {
-          return 0xfffd;
+      if ((codePoint >= 55296 && codePoint <= 57343) ||
+          codePoint > 1114111) {
+          return 65533;
       }
       return (_a = decodeMap.get(codePoint)) !== null && _a !== void 0 ? _a : codePoint;
   }
@@ -44550,7 +46192,7 @@
       CharCodes[CharCodes["UPPER_Z"] = 90] = "UPPER_Z";
   })(CharCodes || (CharCodes = {}));
   /** Bit that needs to be set to convert an upper case ASCII character to lower case */
-  const TO_LOWER_BIT = 0b100000;
+  const TO_LOWER_BIT = 32;
   var BinTrieFlags;
   (function (BinTrieFlags) {
       BinTrieFlags[BinTrieFlags["VALUE_LENGTH"] = 49152] = "VALUE_LENGTH";
@@ -44575,7 +46217,7 @@
    * Attribute values that aren't terminated properly aren't parsed, and shouldn't lead to a parser error.
    * See the example in https://html.spec.whatwg.org/multipage/parsing.html#named-character-reference-state
    */
-  function isEntityInAttributeInvalidEnd$1(code) {
+  function isEntityInAttributeInvalidEnd(code) {
       return code === CharCodes.EQUALS || isAsciiAlphaNumeric$1(code);
   }
   var EntityDecoderState;
@@ -44651,32 +46293,32 @@
        * Mirrors the implementation of `getDecoder`, but with the ability to stop decoding if the
        * entity is incomplete, and resume when the next string is written.
        *
-       * @param string The string containing the entity (or a continuation of the entity).
+       * @param input The string containing the entity (or a continuation of the entity).
        * @param offset The offset at which the entity begins. Should be 0 if this is not the first call.
        * @returns The number of characters that were consumed, or -1 if the entity is incomplete.
        */
-      write(str, offset) {
+      write(input, offset) {
           switch (this.state) {
               case EntityDecoderState.EntityStart: {
-                  if (str.charCodeAt(offset) === CharCodes.NUM) {
+                  if (input.charCodeAt(offset) === CharCodes.NUM) {
                       this.state = EntityDecoderState.NumericStart;
                       this.consumed += 1;
-                      return this.stateNumericStart(str, offset + 1);
+                      return this.stateNumericStart(input, offset + 1);
                   }
                   this.state = EntityDecoderState.NamedEntity;
-                  return this.stateNamedEntity(str, offset);
+                  return this.stateNamedEntity(input, offset);
               }
               case EntityDecoderState.NumericStart: {
-                  return this.stateNumericStart(str, offset);
+                  return this.stateNumericStart(input, offset);
               }
               case EntityDecoderState.NumericDecimal: {
-                  return this.stateNumericDecimal(str, offset);
+                  return this.stateNumericDecimal(input, offset);
               }
               case EntityDecoderState.NumericHex: {
-                  return this.stateNumericHex(str, offset);
+                  return this.stateNumericHex(input, offset);
               }
               case EntityDecoderState.NamedEntity: {
-                  return this.stateNamedEntity(str, offset);
+                  return this.stateNamedEntity(input, offset);
               }
           }
       }
@@ -44685,28 +46327,28 @@
        *
        * Equivalent to the `Numeric character reference state` in the HTML spec.
        *
-       * @param str The string containing the entity (or a continuation of the entity).
+       * @param input The string containing the entity (or a continuation of the entity).
        * @param offset The current offset.
        * @returns The number of characters that were consumed, or -1 if the entity is incomplete.
        */
-      stateNumericStart(str, offset) {
-          if (offset >= str.length) {
+      stateNumericStart(input, offset) {
+          if (offset >= input.length) {
               return -1;
           }
-          if ((str.charCodeAt(offset) | TO_LOWER_BIT) === CharCodes.LOWER_X) {
+          if ((input.charCodeAt(offset) | TO_LOWER_BIT) === CharCodes.LOWER_X) {
               this.state = EntityDecoderState.NumericHex;
               this.consumed += 1;
-              return this.stateNumericHex(str, offset + 1);
+              return this.stateNumericHex(input, offset + 1);
           }
           this.state = EntityDecoderState.NumericDecimal;
-          return this.stateNumericDecimal(str, offset);
+          return this.stateNumericDecimal(input, offset);
       }
-      addToNumericResult(str, start, end, base) {
+      addToNumericResult(input, start, end, base) {
           if (start !== end) {
               const digitCount = end - start;
               this.result =
                   this.result * Math.pow(base, digitCount) +
-                      parseInt(str.substr(start, digitCount), base);
+                      Number.parseInt(input.substr(start, digitCount), base);
               this.consumed += digitCount;
           }
       }
@@ -44715,23 +46357,23 @@
        *
        * Equivalent to the `Hexademical character reference state` in the HTML spec.
        *
-       * @param str The string containing the entity (or a continuation of the entity).
+       * @param input The string containing the entity (or a continuation of the entity).
        * @param offset The current offset.
        * @returns The number of characters that were consumed, or -1 if the entity is incomplete.
        */
-      stateNumericHex(str, offset) {
-          const startIdx = offset;
-          while (offset < str.length) {
-              const char = str.charCodeAt(offset);
+      stateNumericHex(input, offset) {
+          const startIndex = offset;
+          while (offset < input.length) {
+              const char = input.charCodeAt(offset);
               if (isNumber(char) || isHexadecimalCharacter(char)) {
                   offset += 1;
               }
               else {
-                  this.addToNumericResult(str, startIdx, offset, 16);
+                  this.addToNumericResult(input, startIndex, offset, 16);
                   return this.emitNumericEntity(char, 3);
               }
           }
-          this.addToNumericResult(str, startIdx, offset, 16);
+          this.addToNumericResult(input, startIndex, offset, 16);
           return -1;
       }
       /**
@@ -44739,23 +46381,23 @@
        *
        * Equivalent to the `Decimal character reference state` in the HTML spec.
        *
-       * @param str The string containing the entity (or a continuation of the entity).
+       * @param input The string containing the entity (or a continuation of the entity).
        * @param offset The current offset.
        * @returns The number of characters that were consumed, or -1 if the entity is incomplete.
        */
-      stateNumericDecimal(str, offset) {
-          const startIdx = offset;
-          while (offset < str.length) {
-              const char = str.charCodeAt(offset);
+      stateNumericDecimal(input, offset) {
+          const startIndex = offset;
+          while (offset < input.length) {
+              const char = input.charCodeAt(offset);
               if (isNumber(char)) {
                   offset += 1;
               }
               else {
-                  this.addToNumericResult(str, startIdx, offset, 10);
+                  this.addToNumericResult(input, startIndex, offset, 10);
                   return this.emitNumericEntity(char, 2);
               }
           }
-          this.addToNumericResult(str, startIdx, offset, 10);
+          this.addToNumericResult(input, startIndex, offset, 10);
           return -1;
       }
       /**
@@ -44799,17 +46441,17 @@
        *
        * Equivalent to the `Named character reference state` in the HTML spec.
        *
-       * @param str The string containing the entity (or a continuation of the entity).
+       * @param input The string containing the entity (or a continuation of the entity).
        * @param offset The current offset.
        * @returns The number of characters that were consumed, or -1 if the entity is incomplete.
        */
-      stateNamedEntity(str, offset) {
+      stateNamedEntity(input, offset) {
           const { decodeTree } = this;
           let current = decodeTree[this.treeIndex];
           // The mask is the number of bytes of the value, including the current byte.
           let valueLength = (current & BinTrieFlags.VALUE_LENGTH) >> 14;
-          for (; offset < str.length; offset++, this.excess++) {
-              const char = str.charCodeAt(offset);
+          for (; offset < input.length; offset++, this.excess++) {
+              const char = input.charCodeAt(offset);
               this.treeIndex = determineBranch(decodeTree, current, this.treeIndex + Math.max(1, valueLength), char);
               if (this.treeIndex < 0) {
                   return this.result === 0 ||
@@ -44818,7 +46460,7 @@
                           // We shouldn't have consumed any characters after the entity,
                           (valueLength === 0 ||
                               // And there should be no invalid characters.
-                              isEntityInAttributeInvalidEnd$1(char)))
+                              isEntityInAttributeInvalidEnd(char)))
                       ? 0
                       : this.emitNotTerminatedNamedEntity();
               }
@@ -44910,38 +46552,6 @@
       }
   }
   /**
-   * Creates a function that decodes entities in a string.
-   *
-   * @param decodeTree The decode tree.
-   * @returns A function that decodes entities in a string.
-   */
-  function getDecoder(decodeTree) {
-      let ret = "";
-      const decoder = new EntityDecoder(decodeTree, (str) => (ret += fromCodePoint(str)));
-      return function decodeWithTrie(str, decodeMode) {
-          let lastIndex = 0;
-          let offset = 0;
-          while ((offset = str.indexOf("&", offset)) >= 0) {
-              ret += str.slice(lastIndex, offset);
-              decoder.startEntity(decodeMode);
-              const len = decoder.write(str, 
-              // Skip the "&"
-              offset + 1);
-              if (len < 0) {
-                  lastIndex = offset + decoder.end();
-                  break;
-              }
-              lastIndex = offset + len;
-              // If `len` is 0, skip the current `&` and continue.
-              offset = len === 0 ? lastIndex + 1 : lastIndex;
-          }
-          const result = ret + str.slice(lastIndex);
-          // Make sure we don't keep a reference to the final string.
-          ret = "";
-          return result;
-      };
-  }
-  /**
    * Determines the branch of the current node that is taken given the current
    * character. This function is used to traverse the trie.
    *
@@ -44951,31 +46561,31 @@
    * @param char The current character.
    * @returns The index of the next node, or -1 if no branch is taken.
    */
-  function determineBranch(decodeTree, current, nodeIdx, char) {
+  function determineBranch(decodeTree, current, nodeIndex, char) {
       const branchCount = (current & BinTrieFlags.BRANCH_LENGTH) >> 7;
       const jumpOffset = current & BinTrieFlags.JUMP_TABLE;
       // Case 1: Single branch encoded in jump offset
       if (branchCount === 0) {
-          return jumpOffset !== 0 && char === jumpOffset ? nodeIdx : -1;
+          return jumpOffset !== 0 && char === jumpOffset ? nodeIndex : -1;
       }
       // Case 2: Multiple branches encoded in jump table
       if (jumpOffset) {
           const value = char - jumpOffset;
           return value < 0 || value >= branchCount
               ? -1
-              : decodeTree[nodeIdx + value] - 1;
+              : decodeTree[nodeIndex + value] - 1;
       }
       // Case 3: Multiple branches encoded in dictionary
       // Binary search for the character.
-      let lo = nodeIdx;
+      let lo = nodeIndex;
       let hi = lo + branchCount - 1;
       while (lo <= hi) {
           const mid = (lo + hi) >>> 1;
-          const midVal = decodeTree[mid];
-          if (midVal < char) {
+          const midValue = decodeTree[mid];
+          if (midValue < char) {
               lo = mid + 1;
           }
-          else if (midVal > char) {
+          else if (midValue > char) {
               hi = mid - 1;
           }
           else {
@@ -44984,8 +46594,6 @@
       }
       return -1;
   }
-  getDecoder(htmlDecodeTree);
-  getDecoder(xmlDecodeTree);
 
   /** All valid namespaces in HTML. */
   var NS;
@@ -44996,7 +46604,7 @@
       NS["XLINK"] = "http://www.w3.org/1999/xlink";
       NS["XML"] = "http://www.w3.org/XML/1998/namespace";
       NS["XMLNS"] = "http://www.w3.org/2000/xmlns/";
-  })(NS = NS || (NS = {}));
+  })(NS || (NS = {}));
   var ATTRS;
   (function (ATTRS) {
       ATTRS["TYPE"] = "type";
@@ -45007,7 +46615,7 @@
       ATTRS["COLOR"] = "color";
       ATTRS["FACE"] = "face";
       ATTRS["SIZE"] = "size";
-  })(ATTRS = ATTRS || (ATTRS = {}));
+  })(ATTRS || (ATTRS = {}));
   /**
    * The mode of the document.
    *
@@ -45018,7 +46626,7 @@
       DOCUMENT_MODE["NO_QUIRKS"] = "no-quirks";
       DOCUMENT_MODE["QUIRKS"] = "quirks";
       DOCUMENT_MODE["LIMITED_QUIRKS"] = "limited-quirks";
-  })(DOCUMENT_MODE = DOCUMENT_MODE || (DOCUMENT_MODE = {}));
+  })(DOCUMENT_MODE || (DOCUMENT_MODE = {}));
   var TAG_NAMES;
   (function (TAG_NAMES) {
       TAG_NAMES["A"] = "a";
@@ -45114,6 +46722,7 @@
       TAG_NAMES["RUBY"] = "ruby";
       TAG_NAMES["S"] = "s";
       TAG_NAMES["SCRIPT"] = "script";
+      TAG_NAMES["SEARCH"] = "search";
       TAG_NAMES["SECTION"] = "section";
       TAG_NAMES["SELECT"] = "select";
       TAG_NAMES["SOURCE"] = "source";
@@ -45143,7 +46752,7 @@
       TAG_NAMES["VAR"] = "var";
       TAG_NAMES["WBR"] = "wbr";
       TAG_NAMES["XMP"] = "xmp";
-  })(TAG_NAMES = TAG_NAMES || (TAG_NAMES = {}));
+  })(TAG_NAMES || (TAG_NAMES = {}));
   /**
    * Tag IDs are numeric IDs for known tag names.
    *
@@ -45245,36 +46854,37 @@
       TAG_ID[TAG_ID["RUBY"] = 91] = "RUBY";
       TAG_ID[TAG_ID["S"] = 92] = "S";
       TAG_ID[TAG_ID["SCRIPT"] = 93] = "SCRIPT";
-      TAG_ID[TAG_ID["SECTION"] = 94] = "SECTION";
-      TAG_ID[TAG_ID["SELECT"] = 95] = "SELECT";
-      TAG_ID[TAG_ID["SOURCE"] = 96] = "SOURCE";
-      TAG_ID[TAG_ID["SMALL"] = 97] = "SMALL";
-      TAG_ID[TAG_ID["SPAN"] = 98] = "SPAN";
-      TAG_ID[TAG_ID["STRIKE"] = 99] = "STRIKE";
-      TAG_ID[TAG_ID["STRONG"] = 100] = "STRONG";
-      TAG_ID[TAG_ID["STYLE"] = 101] = "STYLE";
-      TAG_ID[TAG_ID["SUB"] = 102] = "SUB";
-      TAG_ID[TAG_ID["SUMMARY"] = 103] = "SUMMARY";
-      TAG_ID[TAG_ID["SUP"] = 104] = "SUP";
-      TAG_ID[TAG_ID["TABLE"] = 105] = "TABLE";
-      TAG_ID[TAG_ID["TBODY"] = 106] = "TBODY";
-      TAG_ID[TAG_ID["TEMPLATE"] = 107] = "TEMPLATE";
-      TAG_ID[TAG_ID["TEXTAREA"] = 108] = "TEXTAREA";
-      TAG_ID[TAG_ID["TFOOT"] = 109] = "TFOOT";
-      TAG_ID[TAG_ID["TD"] = 110] = "TD";
-      TAG_ID[TAG_ID["TH"] = 111] = "TH";
-      TAG_ID[TAG_ID["THEAD"] = 112] = "THEAD";
-      TAG_ID[TAG_ID["TITLE"] = 113] = "TITLE";
-      TAG_ID[TAG_ID["TR"] = 114] = "TR";
-      TAG_ID[TAG_ID["TRACK"] = 115] = "TRACK";
-      TAG_ID[TAG_ID["TT"] = 116] = "TT";
-      TAG_ID[TAG_ID["U"] = 117] = "U";
-      TAG_ID[TAG_ID["UL"] = 118] = "UL";
-      TAG_ID[TAG_ID["SVG"] = 119] = "SVG";
-      TAG_ID[TAG_ID["VAR"] = 120] = "VAR";
-      TAG_ID[TAG_ID["WBR"] = 121] = "WBR";
-      TAG_ID[TAG_ID["XMP"] = 122] = "XMP";
-  })(TAG_ID = TAG_ID || (TAG_ID = {}));
+      TAG_ID[TAG_ID["SEARCH"] = 94] = "SEARCH";
+      TAG_ID[TAG_ID["SECTION"] = 95] = "SECTION";
+      TAG_ID[TAG_ID["SELECT"] = 96] = "SELECT";
+      TAG_ID[TAG_ID["SOURCE"] = 97] = "SOURCE";
+      TAG_ID[TAG_ID["SMALL"] = 98] = "SMALL";
+      TAG_ID[TAG_ID["SPAN"] = 99] = "SPAN";
+      TAG_ID[TAG_ID["STRIKE"] = 100] = "STRIKE";
+      TAG_ID[TAG_ID["STRONG"] = 101] = "STRONG";
+      TAG_ID[TAG_ID["STYLE"] = 102] = "STYLE";
+      TAG_ID[TAG_ID["SUB"] = 103] = "SUB";
+      TAG_ID[TAG_ID["SUMMARY"] = 104] = "SUMMARY";
+      TAG_ID[TAG_ID["SUP"] = 105] = "SUP";
+      TAG_ID[TAG_ID["TABLE"] = 106] = "TABLE";
+      TAG_ID[TAG_ID["TBODY"] = 107] = "TBODY";
+      TAG_ID[TAG_ID["TEMPLATE"] = 108] = "TEMPLATE";
+      TAG_ID[TAG_ID["TEXTAREA"] = 109] = "TEXTAREA";
+      TAG_ID[TAG_ID["TFOOT"] = 110] = "TFOOT";
+      TAG_ID[TAG_ID["TD"] = 111] = "TD";
+      TAG_ID[TAG_ID["TH"] = 112] = "TH";
+      TAG_ID[TAG_ID["THEAD"] = 113] = "THEAD";
+      TAG_ID[TAG_ID["TITLE"] = 114] = "TITLE";
+      TAG_ID[TAG_ID["TR"] = 115] = "TR";
+      TAG_ID[TAG_ID["TRACK"] = 116] = "TRACK";
+      TAG_ID[TAG_ID["TT"] = 117] = "TT";
+      TAG_ID[TAG_ID["U"] = 118] = "U";
+      TAG_ID[TAG_ID["UL"] = 119] = "UL";
+      TAG_ID[TAG_ID["SVG"] = 120] = "SVG";
+      TAG_ID[TAG_ID["VAR"] = 121] = "VAR";
+      TAG_ID[TAG_ID["WBR"] = 122] = "WBR";
+      TAG_ID[TAG_ID["XMP"] = 123] = "XMP";
+  })(TAG_ID || (TAG_ID = {}));
   const TAG_NAME_TO_ID = new Map([
       [TAG_NAMES.A, TAG_ID.A],
       [TAG_NAMES.ADDRESS, TAG_ID.ADDRESS],
@@ -45369,6 +46979,7 @@
       [TAG_NAMES.RUBY, TAG_ID.RUBY],
       [TAG_NAMES.S, TAG_ID.S],
       [TAG_NAMES.SCRIPT, TAG_ID.SCRIPT],
+      [TAG_NAMES.SEARCH, TAG_ID.SEARCH],
       [TAG_NAMES.SECTION, TAG_ID.SECTION],
       [TAG_NAMES.SELECT, TAG_ID.SELECT],
       [TAG_NAMES.SOURCE, TAG_ID.SOURCE],
@@ -45494,9 +47105,7 @@
       [NS.XML]: new Set(),
       [NS.XMLNS]: new Set(),
   };
-  function isNumberedHeader(tn) {
-      return tn === $.H1 || tn === $.H2 || tn === $.H3 || tn === $.H4 || tn === $.H5 || tn === $.H6;
-  }
+  const NUMBERED_HEADERS = new Set([$.H1, $.H2, $.H3, $.H4, $.H5, $.H6]);
   new Set([
       TAG_NAMES.STYLE,
       TAG_NAMES.SCRIPT,
@@ -45507,36 +47116,6 @@
       TAG_NAMES.PLAINTEXT,
   ]);
 
-  //C1 Unicode control character reference replacements
-  const C1_CONTROLS_REFERENCE_REPLACEMENTS = new Map([
-      [0x80, 8364],
-      [0x82, 8218],
-      [0x83, 402],
-      [0x84, 8222],
-      [0x85, 8230],
-      [0x86, 8224],
-      [0x87, 8225],
-      [0x88, 710],
-      [0x89, 8240],
-      [0x8a, 352],
-      [0x8b, 8249],
-      [0x8c, 338],
-      [0x8e, 381],
-      [0x91, 8216],
-      [0x92, 8217],
-      [0x93, 8220],
-      [0x94, 8221],
-      [0x95, 8226],
-      [0x96, 8211],
-      [0x97, 8212],
-      [0x98, 732],
-      [0x99, 8482],
-      [0x9a, 353],
-      [0x9b, 8250],
-      [0x9c, 339],
-      [0x9e, 382],
-      [0x9f, 376],
-  ]);
   //States
   var State;
   (function (State) {
@@ -45612,13 +47191,7 @@
       State[State["CDATA_SECTION_BRACKET"] = 69] = "CDATA_SECTION_BRACKET";
       State[State["CDATA_SECTION_END"] = 70] = "CDATA_SECTION_END";
       State[State["CHARACTER_REFERENCE"] = 71] = "CHARACTER_REFERENCE";
-      State[State["NAMED_CHARACTER_REFERENCE"] = 72] = "NAMED_CHARACTER_REFERENCE";
-      State[State["AMBIGUOUS_AMPERSAND"] = 73] = "AMBIGUOUS_AMPERSAND";
-      State[State["NUMERIC_CHARACTER_REFERENCE"] = 74] = "NUMERIC_CHARACTER_REFERENCE";
-      State[State["HEXADEMICAL_CHARACTER_REFERENCE_START"] = 75] = "HEXADEMICAL_CHARACTER_REFERENCE_START";
-      State[State["HEXADEMICAL_CHARACTER_REFERENCE"] = 76] = "HEXADEMICAL_CHARACTER_REFERENCE";
-      State[State["DECIMAL_CHARACTER_REFERENCE"] = 77] = "DECIMAL_CHARACTER_REFERENCE";
-      State[State["NUMERIC_CHARACTER_REFERENCE_END"] = 78] = "NUMERIC_CHARACTER_REFERENCE_END";
+      State[State["AMBIGUOUS_AMPERSAND"] = 72] = "AMBIGUOUS_AMPERSAND";
   })(State || (State = {}));
   //Tokenizer initial states for different modes
   const TokenizerMode = {
@@ -45648,26 +47221,32 @@
   function isAsciiAlphaNumeric(cp) {
       return isAsciiLetter(cp) || isAsciiDigit(cp);
   }
-  function isAsciiUpperHexDigit(cp) {
-      return cp >= CODE_POINTS.LATIN_CAPITAL_A && cp <= CODE_POINTS.LATIN_CAPITAL_F;
-  }
-  function isAsciiLowerHexDigit(cp) {
-      return cp >= CODE_POINTS.LATIN_SMALL_A && cp <= CODE_POINTS.LATIN_SMALL_F;
-  }
-  function isAsciiHexDigit(cp) {
-      return isAsciiDigit(cp) || isAsciiUpperHexDigit(cp) || isAsciiLowerHexDigit(cp);
-  }
   function toAsciiLower(cp) {
       return cp + 32;
   }
   function isWhitespace(cp) {
       return cp === CODE_POINTS.SPACE || cp === CODE_POINTS.LINE_FEED || cp === CODE_POINTS.TABULATION || cp === CODE_POINTS.FORM_FEED;
   }
-  function isEntityInAttributeInvalidEnd(nextCp) {
-      return nextCp === CODE_POINTS.EQUALS_SIGN || isAsciiAlphaNumeric(nextCp);
-  }
   function isScriptDataDoubleEscapeSequenceEnd(cp) {
       return isWhitespace(cp) || cp === CODE_POINTS.SOLIDUS || cp === CODE_POINTS.GREATER_THAN_SIGN;
+  }
+  function getErrorForNumericCharacterReference(code) {
+      if (code === CODE_POINTS.NULL) {
+          return ERR.nullCharacterReference;
+      }
+      else if (code > 1114111) {
+          return ERR.characterReferenceOutsideUnicodeRange;
+      }
+      else if (isSurrogate(code)) {
+          return ERR.surrogateCharacterReference;
+      }
+      else if (isUndefinedCodePoint(code)) {
+          return ERR.noncharacterCharacterReference;
+      }
+      else if (isControlCodePoint(code) || code === CODE_POINTS.CARRIAGE_RETURN) {
+          return ERR.controlCharacterReference;
+      }
+      return null;
   }
   //Tokenizer
   class Tokenizer {
@@ -45688,18 +47267,38 @@
           this.active = false;
           this.state = State.DATA;
           this.returnState = State.DATA;
-          this.charRefCode = -1;
+          this.entityStartPos = 0;
           this.consumedAfterSnapshot = -1;
           this.currentCharacterToken = null;
           this.currentToken = null;
           this.currentAttr = { name: '', value: '' };
           this.preprocessor = new Preprocessor(handler);
           this.currentLocation = this.getCurrentLocation(-1);
+          this.entityDecoder = new EntityDecoder(htmlDecodeTree, (cp, consumed) => {
+              // Note: Set `pos` _before_ flushing, as flushing might drop
+              // the current chunk and invalidate `entityStartPos`.
+              this.preprocessor.pos = this.entityStartPos + consumed - 1;
+              this._flushCodePointConsumedAsCharacterReference(cp);
+          }, handler.onParseError
+              ? {
+                  missingSemicolonAfterCharacterReference: () => {
+                      this._err(ERR.missingSemicolonAfterCharacterReference, 1);
+                  },
+                  absenceOfDigitsInNumericCharacterReference: (consumed) => {
+                      this._err(ERR.absenceOfDigitsInNumericCharacterReference, this.entityStartPos - this.preprocessor.pos + consumed);
+                  },
+                  validateNumericCharacterReference: (code) => {
+                      const error = getErrorForNumericCharacterReference(code);
+                      if (error)
+                          this._err(error, 1);
+                  },
+              }
+              : undefined);
       }
       //Errors
-      _err(code) {
+      _err(code, cpOffset = 0) {
           var _a, _b;
-          (_b = (_a = this.handler).onParseError) === null || _b === void 0 ? void 0 : _b.call(_a, this.preprocessor.getError(code));
+          (_b = (_a = this.handler).onParseError) === null || _b === void 0 ? void 0 : _b.call(_a, this.preprocessor.getError(code, cpOffset));
       }
       // NOTE: `offset` may never run across line boundaries.
       getCurrentLocation(offset) {
@@ -45761,7 +47360,8 @@
       //Hibernation
       _ensureHibernation() {
           if (this.preprocessor.endOfChunkHit) {
-              this._unconsume(this.consumedAfterSnapshot);
+              this.preprocessor.retreat(this.consumedAfterSnapshot);
+              this.consumedAfterSnapshot = 0;
               this.active = false;
               return true;
           }
@@ -45771,14 +47371,6 @@
       _consume() {
           this.consumedAfterSnapshot++;
           return this.preprocessor.advance();
-      }
-      _unconsume(count) {
-          this.consumedAfterSnapshot -= count;
-          this.preprocessor.retreat(count);
-      }
-      _reconsumeInState(state, cp) {
-          this.state = state;
-          this._callState(cp);
       }
       _advanceBy(count) {
           this.consumedAfterSnapshot += count;
@@ -45951,7 +47543,7 @@
           this.active = false;
       }
       //Characters emission
-      //OPTIMIZATION: specification uses only one type of character tokens (one token per character).
+      //OPTIMIZATION: The specification uses only one type of character token (one token per character).
       //This causes a huge memory overhead and a lot of unnecessary parser loops. parse5 uses 3 groups of characters.
       //If we have a sequence of characters that belong to the same group, the parser can process it
       //as a single solid character token.
@@ -45961,14 +47553,14 @@
       //3)TokenType.CHARACTER - any character sequence which don't belong to groups 1 and 2 (e.g. 'abcdef1234@@#$%^')
       _appendCharToCurrentCharacterToken(type, ch) {
           if (this.currentCharacterToken) {
-              if (this.currentCharacterToken.type !== type) {
+              if (this.currentCharacterToken.type === type) {
+                  this.currentCharacterToken.chars += ch;
+                  return;
+              }
+              else {
                   this.currentLocation = this.getCurrentLocation(0);
                   this._emitCurrentCharacterToken(this.currentLocation);
                   this.preprocessor.dropParsedChunk();
-              }
-              else {
-                  this.currentCharacterToken.chars += ch;
-                  return;
               }
           }
           this._createCharacterToken(type, ch);
@@ -45987,59 +47579,11 @@
           this._appendCharToCurrentCharacterToken(TokenType.CHARACTER, ch);
       }
       // Character reference helpers
-      _matchNamedCharacterReference(cp) {
-          let result = null;
-          let excess = 0;
-          let withoutSemicolon = false;
-          for (let i = 0, current = htmlDecodeTree[0]; i >= 0; cp = this._consume()) {
-              i = determineBranch(htmlDecodeTree, current, i + 1, cp);
-              if (i < 0)
-                  break;
-              excess += 1;
-              current = htmlDecodeTree[i];
-              const masked = current & BinTrieFlags.VALUE_LENGTH;
-              // If the branch is a value, store it and continue
-              if (masked) {
-                  // The mask is the number of bytes of the value, including the current byte.
-                  const valueLength = (masked >> 14) - 1;
-                  // Attribute values that aren't terminated properly aren't parsed, and shouldn't lead to a parser error.
-                  // See the example in https://html.spec.whatwg.org/multipage/parsing.html#named-character-reference-state
-                  if (cp !== CODE_POINTS.SEMICOLON &&
-                      this._isCharacterReferenceInAttribute() &&
-                      isEntityInAttributeInvalidEnd(this.preprocessor.peek(1))) {
-                      //NOTE: we don't flush all consumed code points here, and instead switch back to the original state after
-                      //emitting an ampersand. This is fine, as alphanumeric characters won't be parsed differently in attributes.
-                      result = [CODE_POINTS.AMPERSAND];
-                      // Skip over the value.
-                      i += valueLength;
-                  }
-                  else {
-                      // If this is a surrogate pair, consume the next two bytes.
-                      result =
-                          valueLength === 0
-                              ? [htmlDecodeTree[i] & ~BinTrieFlags.VALUE_LENGTH]
-                              : valueLength === 1
-                                  ? [htmlDecodeTree[++i]]
-                                  : [htmlDecodeTree[++i], htmlDecodeTree[++i]];
-                      excess = 0;
-                      withoutSemicolon = cp !== CODE_POINTS.SEMICOLON;
-                  }
-                  if (valueLength === 0) {
-                      // If the value is zero-length, we're done.
-                      this._consume();
-                      break;
-                  }
-              }
-          }
-          this._unconsume(excess);
-          if (withoutSemicolon && !this.preprocessor.endOfChunkHit) {
-              this._err(ERR.missingSemicolonAfterCharacterReference);
-          }
-          // We want to emit the error above on the code point after the entity.
-          // We always consume one code point too many in the loop, and we wait to
-          // unconsume it until after the error is emitted.
-          this._unconsume(1);
-          return result;
+      _startCharacterReference() {
+          this.returnState = this.state;
+          this.state = State.CHARACTER_REFERENCE;
+          this.entityStartPos = this.preprocessor.pos;
+          this.entityDecoder.startEntity(this._isCharacterReferenceInAttribute() ? DecodingMode.Attribute : DecodingMode.Legacy);
       }
       _isCharacterReferenceInAttribute() {
           return (this.returnState === State.ATTRIBUTE_VALUE_DOUBLE_QUOTED ||
@@ -46342,35 +47886,11 @@
                   break;
               }
               case State.CHARACTER_REFERENCE: {
-                  this._stateCharacterReference(cp);
-                  break;
-              }
-              case State.NAMED_CHARACTER_REFERENCE: {
-                  this._stateNamedCharacterReference(cp);
+                  this._stateCharacterReference();
                   break;
               }
               case State.AMBIGUOUS_AMPERSAND: {
                   this._stateAmbiguousAmpersand(cp);
-                  break;
-              }
-              case State.NUMERIC_CHARACTER_REFERENCE: {
-                  this._stateNumericCharacterReference(cp);
-                  break;
-              }
-              case State.HEXADEMICAL_CHARACTER_REFERENCE_START: {
-                  this._stateHexademicalCharacterReferenceStart(cp);
-                  break;
-              }
-              case State.HEXADEMICAL_CHARACTER_REFERENCE: {
-                  this._stateHexademicalCharacterReference(cp);
-                  break;
-              }
-              case State.DECIMAL_CHARACTER_REFERENCE: {
-                  this._stateDecimalCharacterReference(cp);
-                  break;
-              }
-              case State.NUMERIC_CHARACTER_REFERENCE_END: {
-                  this._stateNumericCharacterReferenceEnd(cp);
                   break;
               }
               default: {
@@ -46388,8 +47908,7 @@
                   break;
               }
               case CODE_POINTS.AMPERSAND: {
-                  this.returnState = State.DATA;
-                  this.state = State.CHARACTER_REFERENCE;
+                  this._startCharacterReference();
                   break;
               }
               case CODE_POINTS.NULL: {
@@ -46411,8 +47930,7 @@
       _stateRcdata(cp) {
           switch (cp) {
               case CODE_POINTS.AMPERSAND: {
-                  this.returnState = State.RCDATA;
-                  this.state = State.CHARACTER_REFERENCE;
+                  this._startCharacterReference();
                   break;
               }
               case CODE_POINTS.LESS_THAN_SIGN: {
@@ -47181,8 +48699,7 @@
                   break;
               }
               case CODE_POINTS.AMPERSAND: {
-                  this.returnState = State.ATTRIBUTE_VALUE_DOUBLE_QUOTED;
-                  this.state = State.CHARACTER_REFERENCE;
+                  this._startCharacterReference();
                   break;
               }
               case CODE_POINTS.NULL: {
@@ -47209,8 +48726,7 @@
                   break;
               }
               case CODE_POINTS.AMPERSAND: {
-                  this.returnState = State.ATTRIBUTE_VALUE_SINGLE_QUOTED;
-                  this.state = State.CHARACTER_REFERENCE;
+                  this._startCharacterReference();
                   break;
               }
               case CODE_POINTS.NULL: {
@@ -47241,8 +48757,7 @@
                   break;
               }
               case CODE_POINTS.AMPERSAND: {
-                  this.returnState = State.ATTRIBUTE_VALUE_UNQUOTED;
-                  this.state = State.CHARACTER_REFERENCE;
+                  this._startCharacterReference();
                   break;
               }
               case CODE_POINTS.GREATER_THAN_SIGN: {
@@ -48258,35 +49773,35 @@
       }
       // Character reference state
       //------------------------------------------------------------------
-      _stateCharacterReference(cp) {
-          if (cp === CODE_POINTS.NUMBER_SIGN) {
-              this.state = State.NUMERIC_CHARACTER_REFERENCE;
-          }
-          else if (isAsciiAlphaNumeric(cp)) {
-              this.state = State.NAMED_CHARACTER_REFERENCE;
-              this._stateNamedCharacterReference(cp);
-          }
-          else {
-              this._flushCodePointConsumedAsCharacterReference(CODE_POINTS.AMPERSAND);
-              this._reconsumeInState(this.returnState, cp);
-          }
-      }
-      // Named character reference state
-      //------------------------------------------------------------------
-      _stateNamedCharacterReference(cp) {
-          const matchResult = this._matchNamedCharacterReference(cp);
-          //NOTE: Matching can be abrupted by hibernation. In that case, match
-          //results are no longer valid and we will need to start over.
-          if (this._ensureHibernation()) ;
-          else if (matchResult) {
-              for (let i = 0; i < matchResult.length; i++) {
-                  this._flushCodePointConsumedAsCharacterReference(matchResult[i]);
+      _stateCharacterReference() {
+          let length = this.entityDecoder.write(this.preprocessor.html, this.preprocessor.pos);
+          if (length < 0) {
+              if (this.preprocessor.lastChunkWritten) {
+                  length = this.entityDecoder.end();
               }
-              this.state = this.returnState;
+              else {
+                  // Wait for the rest of the entity.
+                  this.active = false;
+                  // Mark the entire buffer as read.
+                  this.preprocessor.pos = this.preprocessor.html.length - 1;
+                  this.consumedAfterSnapshot = 0;
+                  this.preprocessor.endOfChunkHit = true;
+                  return;
+              }
+          }
+          if (length === 0) {
+              // This was not a valid entity. Go back to the beginning, and
+              // figure out what to do.
+              this.preprocessor.pos = this.entityStartPos;
+              this._flushCodePointConsumedAsCharacterReference(CODE_POINTS.AMPERSAND);
+              this.state =
+                  !this._isCharacterReferenceInAttribute() && isAsciiAlphaNumeric(this.preprocessor.peek(1))
+                      ? State.AMBIGUOUS_AMPERSAND
+                      : this.returnState;
           }
           else {
-              this._flushCodePointConsumedAsCharacterReference(CODE_POINTS.AMPERSAND);
-              this.state = State.AMBIGUOUS_AMPERSAND;
+              // We successfully parsed an entity. Switch to the return state.
+              this.state = this.returnState;
           }
       }
       // Ambiguos ampersand state
@@ -48299,106 +49814,9 @@
               if (cp === CODE_POINTS.SEMICOLON) {
                   this._err(ERR.unknownNamedCharacterReference);
               }
-              this._reconsumeInState(this.returnState, cp);
-          }
-      }
-      // Numeric character reference state
-      //------------------------------------------------------------------
-      _stateNumericCharacterReference(cp) {
-          this.charRefCode = 0;
-          if (cp === CODE_POINTS.LATIN_SMALL_X || cp === CODE_POINTS.LATIN_CAPITAL_X) {
-              this.state = State.HEXADEMICAL_CHARACTER_REFERENCE_START;
-          }
-          // Inlined decimal character reference start state
-          else if (isAsciiDigit(cp)) {
-              this.state = State.DECIMAL_CHARACTER_REFERENCE;
-              this._stateDecimalCharacterReference(cp);
-          }
-          else {
-              this._err(ERR.absenceOfDigitsInNumericCharacterReference);
-              this._flushCodePointConsumedAsCharacterReference(CODE_POINTS.AMPERSAND);
-              this._flushCodePointConsumedAsCharacterReference(CODE_POINTS.NUMBER_SIGN);
-              this._reconsumeInState(this.returnState, cp);
-          }
-      }
-      // Hexademical character reference start state
-      //------------------------------------------------------------------
-      _stateHexademicalCharacterReferenceStart(cp) {
-          if (isAsciiHexDigit(cp)) {
-              this.state = State.HEXADEMICAL_CHARACTER_REFERENCE;
-              this._stateHexademicalCharacterReference(cp);
-          }
-          else {
-              this._err(ERR.absenceOfDigitsInNumericCharacterReference);
-              this._flushCodePointConsumedAsCharacterReference(CODE_POINTS.AMPERSAND);
-              this._flushCodePointConsumedAsCharacterReference(CODE_POINTS.NUMBER_SIGN);
-              this._unconsume(2);
               this.state = this.returnState;
+              this._callState(cp);
           }
-      }
-      // Hexademical character reference state
-      //------------------------------------------------------------------
-      _stateHexademicalCharacterReference(cp) {
-          if (isAsciiUpperHexDigit(cp)) {
-              this.charRefCode = this.charRefCode * 16 + cp - 0x37;
-          }
-          else if (isAsciiLowerHexDigit(cp)) {
-              this.charRefCode = this.charRefCode * 16 + cp - 0x57;
-          }
-          else if (isAsciiDigit(cp)) {
-              this.charRefCode = this.charRefCode * 16 + cp - 0x30;
-          }
-          else if (cp === CODE_POINTS.SEMICOLON) {
-              this.state = State.NUMERIC_CHARACTER_REFERENCE_END;
-          }
-          else {
-              this._err(ERR.missingSemicolonAfterCharacterReference);
-              this.state = State.NUMERIC_CHARACTER_REFERENCE_END;
-              this._stateNumericCharacterReferenceEnd(cp);
-          }
-      }
-      // Decimal character reference state
-      //------------------------------------------------------------------
-      _stateDecimalCharacterReference(cp) {
-          if (isAsciiDigit(cp)) {
-              this.charRefCode = this.charRefCode * 10 + cp - 0x30;
-          }
-          else if (cp === CODE_POINTS.SEMICOLON) {
-              this.state = State.NUMERIC_CHARACTER_REFERENCE_END;
-          }
-          else {
-              this._err(ERR.missingSemicolonAfterCharacterReference);
-              this.state = State.NUMERIC_CHARACTER_REFERENCE_END;
-              this._stateNumericCharacterReferenceEnd(cp);
-          }
-      }
-      // Numeric character reference end state
-      //------------------------------------------------------------------
-      _stateNumericCharacterReferenceEnd(cp) {
-          if (this.charRefCode === CODE_POINTS.NULL) {
-              this._err(ERR.nullCharacterReference);
-              this.charRefCode = CODE_POINTS.REPLACEMENT_CHARACTER;
-          }
-          else if (this.charRefCode > 1114111) {
-              this._err(ERR.characterReferenceOutsideUnicodeRange);
-              this.charRefCode = CODE_POINTS.REPLACEMENT_CHARACTER;
-          }
-          else if (isSurrogate(this.charRefCode)) {
-              this._err(ERR.surrogateCharacterReference);
-              this.charRefCode = CODE_POINTS.REPLACEMENT_CHARACTER;
-          }
-          else if (isUndefinedCodePoint(this.charRefCode)) {
-              this._err(ERR.noncharacterCharacterReference);
-          }
-          else if (isControlCodePoint(this.charRefCode) || this.charRefCode === CODE_POINTS.CARRIAGE_RETURN) {
-              this._err(ERR.controlCharacterReference);
-              const replacement = C1_CONTROLS_REFERENCE_REPLACEMENTS.get(this.charRefCode);
-              if (replacement !== undefined) {
-                  this.charRefCode = replacement;
-              }
-          }
-          this._flushCodePointConsumedAsCharacterReference(this.charRefCode);
-          this._reconsumeInState(this.returnState, cp);
       }
   }
 
@@ -48415,31 +49833,25 @@
       TAG_ID.THEAD,
       TAG_ID.TR,
   ]);
-  const SCOPING_ELEMENT_NS = new Map([
-      [TAG_ID.APPLET, NS.HTML],
-      [TAG_ID.CAPTION, NS.HTML],
-      [TAG_ID.HTML, NS.HTML],
-      [TAG_ID.MARQUEE, NS.HTML],
-      [TAG_ID.OBJECT, NS.HTML],
-      [TAG_ID.TABLE, NS.HTML],
-      [TAG_ID.TD, NS.HTML],
-      [TAG_ID.TEMPLATE, NS.HTML],
-      [TAG_ID.TH, NS.HTML],
-      [TAG_ID.ANNOTATION_XML, NS.MATHML],
-      [TAG_ID.MI, NS.MATHML],
-      [TAG_ID.MN, NS.MATHML],
-      [TAG_ID.MO, NS.MATHML],
-      [TAG_ID.MS, NS.MATHML],
-      [TAG_ID.MTEXT, NS.MATHML],
-      [TAG_ID.DESC, NS.SVG],
-      [TAG_ID.FOREIGN_OBJECT, NS.SVG],
-      [TAG_ID.TITLE, NS.SVG],
+  const SCOPING_ELEMENTS_HTML = new Set([
+      TAG_ID.APPLET,
+      TAG_ID.CAPTION,
+      TAG_ID.HTML,
+      TAG_ID.MARQUEE,
+      TAG_ID.OBJECT,
+      TAG_ID.TABLE,
+      TAG_ID.TD,
+      TAG_ID.TEMPLATE,
+      TAG_ID.TH,
   ]);
-  const NAMED_HEADERS = [TAG_ID.H1, TAG_ID.H2, TAG_ID.H3, TAG_ID.H4, TAG_ID.H5, TAG_ID.H6];
-  const TABLE_ROW_CONTEXT = [TAG_ID.TR, TAG_ID.TEMPLATE, TAG_ID.HTML];
-  const TABLE_BODY_CONTEXT = [TAG_ID.TBODY, TAG_ID.TFOOT, TAG_ID.THEAD, TAG_ID.TEMPLATE, TAG_ID.HTML];
-  const TABLE_CONTEXT = [TAG_ID.TABLE, TAG_ID.TEMPLATE, TAG_ID.HTML];
-  const TABLE_CELLS = [TAG_ID.TD, TAG_ID.TH];
+  const SCOPING_ELEMENTS_HTML_LIST = new Set([...SCOPING_ELEMENTS_HTML, TAG_ID.OL, TAG_ID.UL]);
+  const SCOPING_ELEMENTS_HTML_BUTTON = new Set([...SCOPING_ELEMENTS_HTML, TAG_ID.BUTTON]);
+  const SCOPING_ELEMENTS_MATHML = new Set([TAG_ID.ANNOTATION_XML, TAG_ID.MI, TAG_ID.MN, TAG_ID.MO, TAG_ID.MS, TAG_ID.MTEXT]);
+  const SCOPING_ELEMENTS_SVG = new Set([TAG_ID.DESC, TAG_ID.FOREIGN_OBJECT, TAG_ID.TITLE]);
+  const TABLE_ROW_CONTEXT = new Set([TAG_ID.TR, TAG_ID.TEMPLATE, TAG_ID.HTML]);
+  const TABLE_BODY_CONTEXT = new Set([TAG_ID.TBODY, TAG_ID.TFOOT, TAG_ID.THEAD, TAG_ID.TEMPLATE, TAG_ID.HTML]);
+  const TABLE_CONTEXT = new Set([TAG_ID.TABLE, TAG_ID.TEMPLATE, TAG_ID.HTML]);
+  const TABLE_CELLS = new Set([TAG_ID.TD, TAG_ID.TH]);
   //Stack of open elements
   class OpenElementStack {
       get currentTmplContentOrNode() {
@@ -48503,14 +49915,16 @@
           if (insertionIdx === this.stackTop) {
               this._updateCurrentElement();
           }
-          this.handler.onItemPush(this.current, this.currentTagId, insertionIdx === this.stackTop);
+          if (this.current && this.currentTagId !== undefined) {
+              this.handler.onItemPush(this.current, this.currentTagId, insertionIdx === this.stackTop);
+          }
       }
       popUntilTagNamePopped(tagName) {
           let targetIdx = this.stackTop + 1;
           do {
               targetIdx = this.tagIDs.lastIndexOf(tagName, targetIdx - 1);
           } while (targetIdx > 0 && this.treeAdapter.getNamespaceURI(this.items[targetIdx]) !== NS.HTML);
-          this.shortenToLength(targetIdx < 0 ? 0 : targetIdx);
+          this.shortenToLength(Math.max(targetIdx, 0));
       }
       shortenToLength(idx) {
           while (this.stackTop >= idx) {
@@ -48525,14 +49939,14 @@
       }
       popUntilElementPopped(element) {
           const idx = this._indexOf(element);
-          this.shortenToLength(idx < 0 ? 0 : idx);
+          this.shortenToLength(Math.max(idx, 0));
       }
       popUntilPopped(tagNames, targetNS) {
           const idx = this._indexOfTagNames(tagNames, targetNS);
-          this.shortenToLength(idx < 0 ? 0 : idx);
+          this.shortenToLength(Math.max(idx, 0));
       }
       popUntilNumberedHeaderPopped() {
-          this.popUntilPopped(NAMED_HEADERS, NS.HTML);
+          this.popUntilPopped(NUMBERED_HEADERS, NS.HTML);
       }
       popUntilTableCellPopped() {
           this.popUntilPopped(TABLE_CELLS, NS.HTML);
@@ -48545,7 +49959,7 @@
       }
       _indexOfTagNames(tagNames, namespace) {
           for (let i = this.stackTop; i >= 0; i--) {
-              if (tagNames.includes(this.tagIDs[i]) && this.treeAdapter.getNamespaceURI(this.items[i]) === namespace) {
+              if (tagNames.has(this.tagIDs[i]) && this.treeAdapter.getNamespaceURI(this.items[i]) === namespace) {
                   return i;
               }
           }
@@ -48595,119 +50009,136 @@
           return this.stackTop === 0 && this.tagIDs[0] === TAG_ID.HTML;
       }
       //Element in scope
-      hasInScope(tagName) {
+      hasInDynamicScope(tagName, htmlScope) {
           for (let i = this.stackTop; i >= 0; i--) {
               const tn = this.tagIDs[i];
-              const ns = this.treeAdapter.getNamespaceURI(this.items[i]);
-              if (tn === tagName && ns === NS.HTML) {
-                  return true;
-              }
-              if (SCOPING_ELEMENT_NS.get(tn) === ns) {
-                  return false;
+              switch (this.treeAdapter.getNamespaceURI(this.items[i])) {
+                  case NS.HTML: {
+                      if (tn === tagName)
+                          return true;
+                      if (htmlScope.has(tn))
+                          return false;
+                      break;
+                  }
+                  case NS.SVG: {
+                      if (SCOPING_ELEMENTS_SVG.has(tn))
+                          return false;
+                      break;
+                  }
+                  case NS.MATHML: {
+                      if (SCOPING_ELEMENTS_MATHML.has(tn))
+                          return false;
+                      break;
+                  }
               }
           }
           return true;
+      }
+      hasInScope(tagName) {
+          return this.hasInDynamicScope(tagName, SCOPING_ELEMENTS_HTML);
+      }
+      hasInListItemScope(tagName) {
+          return this.hasInDynamicScope(tagName, SCOPING_ELEMENTS_HTML_LIST);
+      }
+      hasInButtonScope(tagName) {
+          return this.hasInDynamicScope(tagName, SCOPING_ELEMENTS_HTML_BUTTON);
       }
       hasNumberedHeaderInScope() {
           for (let i = this.stackTop; i >= 0; i--) {
               const tn = this.tagIDs[i];
-              const ns = this.treeAdapter.getNamespaceURI(this.items[i]);
-              if (isNumberedHeader(tn) && ns === NS.HTML) {
-                  return true;
-              }
-              if (SCOPING_ELEMENT_NS.get(tn) === ns) {
-                  return false;
-              }
-          }
-          return true;
-      }
-      hasInListItemScope(tagName) {
-          for (let i = this.stackTop; i >= 0; i--) {
-              const tn = this.tagIDs[i];
-              const ns = this.treeAdapter.getNamespaceURI(this.items[i]);
-              if (tn === tagName && ns === NS.HTML) {
-                  return true;
-              }
-              if (((tn === TAG_ID.UL || tn === TAG_ID.OL) && ns === NS.HTML) || SCOPING_ELEMENT_NS.get(tn) === ns) {
-                  return false;
-              }
-          }
-          return true;
-      }
-      hasInButtonScope(tagName) {
-          for (let i = this.stackTop; i >= 0; i--) {
-              const tn = this.tagIDs[i];
-              const ns = this.treeAdapter.getNamespaceURI(this.items[i]);
-              if (tn === tagName && ns === NS.HTML) {
-                  return true;
-              }
-              if ((tn === TAG_ID.BUTTON && ns === NS.HTML) || SCOPING_ELEMENT_NS.get(tn) === ns) {
-                  return false;
+              switch (this.treeAdapter.getNamespaceURI(this.items[i])) {
+                  case NS.HTML: {
+                      if (NUMBERED_HEADERS.has(tn))
+                          return true;
+                      if (SCOPING_ELEMENTS_HTML.has(tn))
+                          return false;
+                      break;
+                  }
+                  case NS.SVG: {
+                      if (SCOPING_ELEMENTS_SVG.has(tn))
+                          return false;
+                      break;
+                  }
+                  case NS.MATHML: {
+                      if (SCOPING_ELEMENTS_MATHML.has(tn))
+                          return false;
+                      break;
+                  }
               }
           }
           return true;
       }
       hasInTableScope(tagName) {
           for (let i = this.stackTop; i >= 0; i--) {
-              const tn = this.tagIDs[i];
-              const ns = this.treeAdapter.getNamespaceURI(this.items[i]);
-              if (ns !== NS.HTML) {
+              if (this.treeAdapter.getNamespaceURI(this.items[i]) !== NS.HTML) {
                   continue;
               }
-              if (tn === tagName) {
-                  return true;
-              }
-              if (tn === TAG_ID.TABLE || tn === TAG_ID.TEMPLATE || tn === TAG_ID.HTML) {
-                  return false;
+              switch (this.tagIDs[i]) {
+                  case tagName: {
+                      return true;
+                  }
+                  case TAG_ID.TABLE:
+                  case TAG_ID.HTML: {
+                      return false;
+                  }
               }
           }
           return true;
       }
       hasTableBodyContextInTableScope() {
           for (let i = this.stackTop; i >= 0; i--) {
-              const tn = this.tagIDs[i];
-              const ns = this.treeAdapter.getNamespaceURI(this.items[i]);
-              if (ns !== NS.HTML) {
+              if (this.treeAdapter.getNamespaceURI(this.items[i]) !== NS.HTML) {
                   continue;
               }
-              if (tn === TAG_ID.TBODY || tn === TAG_ID.THEAD || tn === TAG_ID.TFOOT) {
-                  return true;
-              }
-              if (tn === TAG_ID.TABLE || tn === TAG_ID.HTML) {
-                  return false;
+              switch (this.tagIDs[i]) {
+                  case TAG_ID.TBODY:
+                  case TAG_ID.THEAD:
+                  case TAG_ID.TFOOT: {
+                      return true;
+                  }
+                  case TAG_ID.TABLE:
+                  case TAG_ID.HTML: {
+                      return false;
+                  }
               }
           }
           return true;
       }
       hasInSelectScope(tagName) {
           for (let i = this.stackTop; i >= 0; i--) {
-              const tn = this.tagIDs[i];
-              const ns = this.treeAdapter.getNamespaceURI(this.items[i]);
-              if (ns !== NS.HTML) {
+              if (this.treeAdapter.getNamespaceURI(this.items[i]) !== NS.HTML) {
                   continue;
               }
-              if (tn === tagName) {
-                  return true;
-              }
-              if (tn !== TAG_ID.OPTION && tn !== TAG_ID.OPTGROUP) {
-                  return false;
+              switch (this.tagIDs[i]) {
+                  case tagName: {
+                      return true;
+                  }
+                  case TAG_ID.OPTION:
+                  case TAG_ID.OPTGROUP: {
+                      break;
+                  }
+                  default: {
+                      return false;
+                  }
               }
           }
           return true;
       }
       //Implied end tags
       generateImpliedEndTags() {
-          while (IMPLICIT_END_TAG_REQUIRED.has(this.currentTagId)) {
+          while (this.currentTagId !== undefined && IMPLICIT_END_TAG_REQUIRED.has(this.currentTagId)) {
               this.pop();
           }
       }
       generateImpliedEndTagsThoroughly() {
-          while (IMPLICIT_END_TAG_REQUIRED_THOROUGHLY.has(this.currentTagId)) {
+          while (this.currentTagId !== undefined && IMPLICIT_END_TAG_REQUIRED_THOROUGHLY.has(this.currentTagId)) {
               this.pop();
           }
       }
       generateImpliedEndTagsWithExclusion(exclusionId) {
-          while (this.currentTagId !== exclusionId && IMPLICIT_END_TAG_REQUIRED_THOROUGHLY.has(this.currentTagId)) {
+          while (this.currentTagId !== undefined &&
+              this.currentTagId !== exclusionId &&
+              IMPLICIT_END_TAG_REQUIRED_THOROUGHLY.has(this.currentTagId)) {
               this.pop();
           }
       }
@@ -48719,7 +50150,7 @@
   (function (EntryType) {
       EntryType[EntryType["Marker"] = 0] = "Marker";
       EntryType[EntryType["Element"] = 1] = "Element";
-  })(EntryType = EntryType || (EntryType = {}));
+  })(EntryType || (EntryType = {}));
   const MARKER = { type: EntryType.Marker };
   //List of formatting elements
   class FormattingElementList {
@@ -48796,7 +50227,7 @@
       }
       removeEntry(entry) {
           const entryIndex = this.entries.indexOf(entry);
-          if (entryIndex >= 0) {
+          if (entryIndex !== -1) {
               this.entries.splice(entryIndex, 1);
           }
       }
@@ -48807,11 +50238,11 @@
        */
       clearToLastMarker() {
           const markerIdx = this.entries.indexOf(MARKER);
-          if (markerIdx >= 0) {
-              this.entries.splice(0, markerIdx + 1);
+          if (markerIdx === -1) {
+              this.entries.length = 0;
           }
           else {
-              this.entries.length = 0;
+              this.entries.splice(0, markerIdx + 1);
           }
       }
       //Search
@@ -48824,13 +50255,6 @@
       }
   }
 
-  function createTextNode(value) {
-      return {
-          nodeName: '#text',
-          value,
-          parentNode: null,
-      };
-  }
   const defaultTreeAdapter = {
       //Node construction
       createDocument() {
@@ -48860,6 +50284,13 @@
           return {
               nodeName: '#comment',
               data,
+              parentNode: null,
+          };
+      },
+      createTextNode(value) {
+          return {
+              nodeName: '#text',
+              value,
               parentNode: null,
           };
       },
@@ -48918,7 +50349,7 @@
                   return;
               }
           }
-          defaultTreeAdapter.appendChild(parentNode, createTextNode(text));
+          defaultTreeAdapter.appendChild(parentNode, defaultTreeAdapter.createTextNode(text));
       },
       insertTextBefore(parentNode, text, referenceNode) {
           const prevNode = parentNode.childNodes[parentNode.childNodes.indexOf(referenceNode) - 1];
@@ -48926,7 +50357,7 @@
               prevNode.value += text;
           }
           else {
-              defaultTreeAdapter.insertBefore(parentNode, createTextNode(text), referenceNode);
+              defaultTreeAdapter.insertBefore(parentNode, defaultTreeAdapter.createTextNode(text), referenceNode);
           }
       },
       adoptAttributes(recipient, attrs) {
@@ -49187,7 +50618,6 @@
       ['xlink:show', { prefix: 'xlink', name: 'show', namespace: NS.XLINK }],
       ['xlink:title', { prefix: 'xlink', name: 'title', namespace: NS.XLINK }],
       ['xlink:type', { prefix: 'xlink', name: 'type', namespace: NS.XLINK }],
-      ['xml:base', { prefix: 'xml', name: 'base', namespace: NS.XML }],
       ['xml:lang', { prefix: 'xml', name: 'lang', namespace: NS.XML }],
       ['xml:space', { prefix: 'xml', name: 'space', namespace: NS.XML }],
       ['xmlns', { prefix: '', name: 'xmlns', namespace: NS.XMLNS }],
@@ -49389,26 +50819,41 @@
   };
   //Parser
   class Parser {
-      constructor(options, document, fragmentContext = null, scriptHandler = null) {
+      constructor(options, document, 
+      /** @internal */
+      fragmentContext = null, 
+      /** @internal */
+      scriptHandler = null) {
           this.fragmentContext = fragmentContext;
           this.scriptHandler = scriptHandler;
           this.currentToken = null;
           this.stopped = false;
+          /** @internal */
           this.insertionMode = InsertionMode.INITIAL;
+          /** @internal */
           this.originalInsertionMode = InsertionMode.INITIAL;
+          /** @internal */
           this.headElement = null;
+          /** @internal */
           this.formElement = null;
           /** Indicates that the current node is not an element in the HTML namespace */
           this.currentNotInHTML = false;
           /**
            * The template insertion mode stack is maintained from the left.
            * Ie. the topmost element will always have index 0.
+           *
+           * @internal
            */
           this.tmplInsertionModeStack = [];
+          /** @internal */
           this.pendingCharacterTokens = [];
+          /** @internal */
           this.hasNonWhitespacePendingCharacterToken = false;
+          /** @internal */
           this.framesetOk = true;
+          /** @internal */
           this.skipNextNewLine = false;
+          /** @internal */
           this.fosterParentingEnabled = false;
           this.options = {
               ...defaultParserOptions,
@@ -49462,6 +50907,7 @@
           return fragment;
       }
       //Errors
+      /** @internal */
       _err(token, code, beforeToken) {
           var _a;
           if (!this.onParseError)
@@ -49479,12 +50925,14 @@
           this.onParseError(err);
       }
       //Stack events
+      /** @internal */
       onItemPush(node, tid, isTop) {
           var _a, _b;
           (_b = (_a = this.treeAdapter).onItemPush) === null || _b === void 0 ? void 0 : _b.call(_a, node);
           if (isTop && this.openElements.stackTop > 0)
               this._setContextModes(node, tid);
       }
+      /** @internal */
       onItemPop(node, isTop) {
           var _a, _b;
           if (this.options.sourceCodeLocationInfo) {
@@ -49505,10 +50953,12 @@
           }
       }
       _setContextModes(current, tid) {
-          const isHTML = current === this.document || this.treeAdapter.getNamespaceURI(current) === NS.HTML;
+          const isHTML = current === this.document || (current && this.treeAdapter.getNamespaceURI(current) === NS.HTML);
           this.currentNotInHTML = !isHTML;
-          this.tokenizer.inForeignNode = !isHTML && !this._isIntegrationPoint(tid, current);
+          this.tokenizer.inForeignNode =
+              !isHTML && current !== undefined && tid !== undefined && !this._isIntegrationPoint(tid, current);
       }
+      /** @protected */
       _switchToTextParsing(currentToken, nextTokenizerState) {
           this._insertElement(currentToken, NS.HTML);
           this.tokenizer.state = nextTokenizerState;
@@ -49521,11 +50971,13 @@
           this.tokenizer.state = TokenizerMode.PLAINTEXT;
       }
       //Fragment parsing
+      /** @protected */
       _getAdjustedCurrentElement() {
           return this.openElements.stackTop === 0 && this.fragmentContext
               ? this.fragmentContext
               : this.openElements.current;
       }
+      /** @protected */
       _findFormInFragmentContext() {
           let node = this.fragmentContext;
           while (node) {
@@ -49567,6 +51019,7 @@
           }
       }
       //Tree mutation
+      /** @protected */
       _setDocumentType(token) {
           const name = token.name || '';
           const publicId = token.publicId || '';
@@ -49580,6 +51033,7 @@
               }
           }
       }
+      /** @protected */
       _attachElementToTree(element, location) {
           if (this.options.sourceCodeLocationInfo) {
               const loc = location && {
@@ -49593,23 +51047,31 @@
           }
           else {
               const parent = this.openElements.currentTmplContentOrNode;
-              this.treeAdapter.appendChild(parent, element);
+              this.treeAdapter.appendChild(parent !== null && parent !== void 0 ? parent : this.document, element);
           }
       }
+      /**
+       * For self-closing tags. Add an element to the tree, but skip adding it
+       * to the stack.
+       */
+      /** @protected */
       _appendElement(token, namespaceURI) {
           const element = this.treeAdapter.createElement(token.tagName, namespaceURI, token.attrs);
           this._attachElementToTree(element, token.location);
       }
+      /** @protected */
       _insertElement(token, namespaceURI) {
           const element = this.treeAdapter.createElement(token.tagName, namespaceURI, token.attrs);
           this._attachElementToTree(element, token.location);
           this.openElements.push(element, token.tagID);
       }
+      /** @protected */
       _insertFakeElement(tagName, tagID) {
           const element = this.treeAdapter.createElement(tagName, NS.HTML, []);
           this._attachElementToTree(element, null);
           this.openElements.push(element, tagID);
       }
+      /** @protected */
       _insertTemplate(token) {
           const tmpl = this.treeAdapter.createElement(token.tagName, NS.HTML, token.attrs);
           const content = this.treeAdapter.createDocumentFragment();
@@ -49619,6 +51081,7 @@
           if (this.options.sourceCodeLocationInfo)
               this.treeAdapter.setNodeSourceCodeLocation(content, null);
       }
+      /** @protected */
       _insertFakeRootElement() {
           const element = this.treeAdapter.createElement(TAG_NAMES.HTML, NS.HTML, []);
           if (this.options.sourceCodeLocationInfo)
@@ -49626,6 +51089,7 @@
           this.treeAdapter.appendChild(this.openElements.current, element);
           this.openElements.push(element, TAG_ID.HTML);
       }
+      /** @protected */
       _appendCommentNode(token, parent) {
           const commentNode = this.treeAdapter.createCommentNode(token.data);
           this.treeAdapter.appendChild(parent, commentNode);
@@ -49633,6 +51097,7 @@
               this.treeAdapter.setNodeSourceCodeLocation(commentNode, token.location);
           }
       }
+      /** @protected */
       _insertCharacters(token) {
           let parent;
           let beforeElement;
@@ -49664,12 +51129,14 @@
               this.treeAdapter.setNodeSourceCodeLocation(textNode, token.location);
           }
       }
+      /** @protected */
       _adoptNodes(donor, recipient) {
           for (let child = this.treeAdapter.getFirstChild(donor); child; child = this.treeAdapter.getFirstChild(donor)) {
               this.treeAdapter.detachNode(child);
               this.treeAdapter.appendChild(recipient, child);
           }
       }
+      /** @protected */
       _setEndLocation(element, closingToken) {
           if (this.treeAdapter.getNodeSourceCodeLocation(element) && closingToken.location) {
               const ctLoc = closingToken.location;
@@ -49717,8 +51184,10 @@
               // If it _is_ an integration point, then we might have to check that it is not an HTML
               // integration point.
               ((token.tagID === TAG_ID.MGLYPH || token.tagID === TAG_ID.MALIGNMARK) &&
+                  currentTagId !== undefined &&
                   !this._isIntegrationPoint(currentTagId, current, NS.HTML)));
       }
+      /** @protected */
       _processToken(token) {
           switch (token.type) {
               case TokenType.CHARACTER: {
@@ -49756,17 +51225,19 @@
           }
       }
       //Integration points
+      /** @protected */
       _isIntegrationPoint(tid, element, foreignNS) {
           const ns = this.treeAdapter.getNamespaceURI(element);
           const attrs = this.treeAdapter.getAttrList(element);
           return isIntegrationPoint(tid, ns, attrs, foreignNS);
       }
       //Active formatting elements reconstruction
+      /** @protected */
       _reconstructActiveFormattingElements() {
           const listLength = this.activeFormattingElements.entries.length;
           if (listLength) {
               const endIndex = this.activeFormattingElements.entries.findIndex((entry) => entry.type === EntryType.Marker || this.openElements.contains(entry.element));
-              const unopenIdx = endIndex < 0 ? listLength - 1 : endIndex - 1;
+              const unopenIdx = endIndex === -1 ? listLength - 1 : endIndex - 1;
               for (let i = unopenIdx; i >= 0; i--) {
                   const entry = this.activeFormattingElements.entries[i];
                   this._insertElement(entry.token, this.treeAdapter.getNamespaceURI(entry.element));
@@ -49775,17 +51246,20 @@
           }
       }
       //Close elements
+      /** @protected */
       _closeTableCell() {
           this.openElements.generateImpliedEndTags();
           this.openElements.popUntilTableCellPopped();
           this.activeFormattingElements.clearToLastMarker();
           this.insertionMode = InsertionMode.IN_ROW;
       }
+      /** @protected */
       _closePElement() {
           this.openElements.generateImpliedEndTagsWithExclusion(TAG_ID.P);
           this.openElements.popUntilTagNamePopped(TAG_ID.P);
       }
       //Insertion modes
+      /** @protected */
       _resetInsertionMode() {
           for (let i = this.openElements.stackTop; i >= 0; i--) {
               //Insertion mode reset map
@@ -49851,6 +51325,7 @@
           }
           this.insertionMode = InsertionMode.IN_BODY;
       }
+      /** @protected */
       _resetInsertionModeForSelect(selectIdx) {
           if (selectIdx > 0) {
               for (let i = selectIdx - 1; i > 0; i--) {
@@ -49867,12 +51342,17 @@
           this.insertionMode = InsertionMode.IN_SELECT;
       }
       //Foster parenting
+      /** @protected */
       _isElementCausesFosterParenting(tn) {
           return TABLE_STRUCTURE_TAGS.has(tn);
       }
+      /** @protected */
       _shouldFosterParentOnInsertion() {
-          return this.fosterParentingEnabled && this._isElementCausesFosterParenting(this.openElements.currentTagId);
+          return (this.fosterParentingEnabled &&
+              this.openElements.currentTagId !== undefined &&
+              this._isElementCausesFosterParenting(this.openElements.currentTagId));
       }
+      /** @protected */
       _findFosterParentingLocation() {
           for (let i = this.openElements.stackTop; i >= 0; i--) {
               const openElement = this.openElements.items[i];
@@ -49895,6 +51375,7 @@
           }
           return { parent: this.openElements.items[0], beforeElement: null };
       }
+      /** @protected */
       _fosterParentElement(element) {
           const location = this._findFosterParentingLocation();
           if (location.beforeElement) {
@@ -49905,10 +51386,12 @@
           }
       }
       //Special elements
+      /** @protected */
       _isSpecialElement(element, id) {
           const ns = this.treeAdapter.getNamespaceURI(element);
           return SPECIAL_ELEMENTS[ns].has(id);
       }
+      /** @internal */
       onCharacter(token) {
           this.skipNextNewLine = false;
           if (this.tokenizer.inForeignNode) {
@@ -49978,6 +51461,7 @@
               // Do nothing
           }
       }
+      /** @internal */
       onNullCharacter(token) {
           this.skipNextNewLine = false;
           if (this.tokenizer.inForeignNode) {
@@ -50034,6 +51518,7 @@
               // Do nothing
           }
       }
+      /** @internal */
       onComment(token) {
           this.skipNextNewLine = false;
           if (this.currentNotInHTML) {
@@ -50078,6 +51563,7 @@
               // Do nothing
           }
       }
+      /** @internal */
       onDoctype(token) {
           this.skipNextNewLine = false;
           switch (this.insertionMode) {
@@ -50099,6 +51585,7 @@
               // Do nothing
           }
       }
+      /** @internal */
       onStartTag(token) {
           this.skipNextNewLine = false;
           this.currentToken = token;
@@ -50116,6 +51603,7 @@
        * for nested calls.
        *
        * @param token The token to process.
+       * @protected
        */
       _processStartTag(token) {
           if (this.shouldProcessStartTagTokenInForeignContent(token)) {
@@ -50125,6 +51613,7 @@
               this._startTagOutsideForeignContent(token);
           }
       }
+      /** @protected */
       _startTagOutsideForeignContent(token) {
           switch (this.insertionMode) {
               case InsertionMode.INITIAL: {
@@ -50218,6 +51707,7 @@
               // Do nothing
           }
       }
+      /** @internal */
       onEndTag(token) {
           this.skipNextNewLine = false;
           this.currentToken = token;
@@ -50228,6 +51718,7 @@
               this._endTagOutsideForeignContent(token);
           }
       }
+      /** @protected */
       _endTagOutsideForeignContent(token) {
           switch (this.insertionMode) {
               case InsertionMode.INITIAL: {
@@ -50321,6 +51812,7 @@
               // Do nothing
           }
       }
+      /** @internal */
       onEof(token) {
           switch (this.insertionMode) {
               case InsertionMode.INITIAL: {
@@ -50382,6 +51874,7 @@
               // Do nothing
           }
       }
+      /** @internal */
       onWhitespaceCharacter(token) {
           if (this.skipNextNewLine) {
               this.skipNextNewLine = false;
@@ -50467,7 +51960,7 @@
           }
       }
       if (!furthestBlock) {
-          p.openElements.shortenToLength(idx < 0 ? 0 : idx);
+          p.openElements.shortenToLength(Math.max(idx, 0));
           p.activeFormattingElements.removeEntry(formattingElementEntry);
       }
       return furthestBlock;
@@ -50952,7 +52445,7 @@
       if (p.openElements.hasInButtonScope(TAG_ID.P)) {
           p._closePElement();
       }
-      if (isNumberedHeader(p.openElements.currentTagId)) {
+      if (p.openElements.currentTagId !== undefined && NUMBERED_HEADERS.has(p.openElements.currentTagId)) {
           p.openElements.pop();
       }
       p._insertElement(token, NS.HTML);
@@ -51114,9 +52607,9 @@
       p.framesetOk = false;
       p._switchToTextParsing(token, TokenizerMode.RAWTEXT);
   }
-  //NOTE: here we assume that we always act as an user agent with enabled plugins, so we parse
-  //<noembed> as rawtext.
-  function noembedStartTagInBody(p, token) {
+  //NOTE: here we assume that we always act as a user agent with enabled plugins/frames, so we parse
+  //<noembed>/<noframes> as rawtext.
+  function rawTextStartTagInBody(p, token) {
       p._switchToTextParsing(token, TokenizerMode.RAWTEXT);
   }
   function selectStartTagInBody(p, token) {
@@ -51228,6 +52721,7 @@
           case TAG_ID.DETAILS:
           case TAG_ID.ADDRESS:
           case TAG_ID.ARTICLE:
+          case TAG_ID.SEARCH:
           case TAG_ID.SECTION:
           case TAG_ID.SUMMARY:
           case TAG_ID.FIELDSET:
@@ -51351,8 +52845,9 @@
               optgroupStartTagInBody(p, token);
               break;
           }
-          case TAG_ID.NOEMBED: {
-              noembedStartTagInBody(p, token);
+          case TAG_ID.NOEMBED:
+          case TAG_ID.NOFRAMES: {
+              rawTextStartTagInBody(p, token);
               break;
           }
           case TAG_ID.FRAMESET: {
@@ -51365,7 +52860,7 @@
           }
           case TAG_ID.NOSCRIPT: {
               if (p.options.scriptingEnabled) {
-                  noembedStartTagInBody(p, token);
+                  rawTextStartTagInBody(p, token);
               }
               else {
                   genericStartTagInBody(p, token);
@@ -51537,6 +53032,7 @@
           case TAG_ID.ADDRESS:
           case TAG_ID.ARTICLE:
           case TAG_ID.DETAILS:
+          case TAG_ID.SEARCH:
           case TAG_ID.SECTION:
           case TAG_ID.SUMMARY:
           case TAG_ID.LISTING:
@@ -51622,7 +53118,7 @@
   // The "in table" insertion mode
   //------------------------------------------------------------------
   function characterInTable(p, token) {
-      if (TABLE_STRUCTURE_TAGS.has(p.openElements.currentTagId)) {
+      if (p.openElements.currentTagId !== undefined && TABLE_STRUCTURE_TAGS.has(p.openElements.currentTagId)) {
           p.pendingCharacterTokens.length = 0;
           p.hasNonWhitespacePendingCharacterToken = false;
           p.originalInsertionMode = p.insertionMode;
@@ -52137,6 +53633,17 @@
               p._insertElement(token, NS.HTML);
               break;
           }
+          case TAG_ID.HR: {
+              if (p.openElements.currentTagId === TAG_ID.OPTION) {
+                  p.openElements.pop();
+              }
+              if (p.openElements.currentTagId === TAG_ID.OPTGROUP) {
+                  p.openElements.pop();
+              }
+              p._appendElement(token, NS.HTML);
+              token.ackSelfClosing = true;
+              break;
+          }
           case TAG_ID.INPUT:
           case TAG_ID.KEYGEN:
           case TAG_ID.TEXTAREA:
@@ -52431,6 +53938,7 @@
   }
   function popUntilHtmlOrIntegrationPoint(p) {
       while (p.treeAdapter.getNamespaceURI(p.openElements.current) !== NS.HTML &&
+          p.openElements.currentTagId !== undefined &&
           !p._isIntegrationPoint(p.openElements.currentTagId, p.openElements.current)) {
           p.openElements.pop();
       }
@@ -52505,29 +54013,16 @@
   ]);
 
   /**
-   * @typedef {import('hast').Comment} Comment
-   * @typedef {import('hast').Doctype} Doctype
-   * @typedef {import('hast').Element} Element
-   * @typedef {import('hast').Nodes} Nodes
-   * @typedef {import('hast').Root} Root
-   * @typedef {import('hast').RootContent} RootContent
-   * @typedef {import('hast').Text} Text
-   *
-   * @typedef {import('hast-util-raw').Options} Options
-   *
-   * @typedef {import('mdast-util-to-hast').Raw} Raw
-   *
-   * @typedef {import('parse5').DefaultTreeAdapterMap} DefaultTreeAdapterMap
-   * @typedef {import('parse5').ParserOptions<DefaultTreeAdapterMap>} ParserOptions
-   * @typedef {import('parse5').Token.CharacterToken} CharacterToken
-   * @typedef {import('parse5').Token.CommentToken} CommentToken
-   * @typedef {import('parse5').Token.DoctypeToken} DoctypeToken
-   * @typedef {import('parse5').Token.Location} Location
-   * @typedef {import('parse5').Token.TagToken} TagToken
-   *
-   * @typedef {import('unist').Point} Point
+   * @import {Options} from 'hast-util-raw'
+   * @import {Comment, Doctype, Element, Nodes, RootContent, Root, Text} from 'hast'
+   * @import {Raw} from 'mdast-util-to-hast'
+   * @import {DefaultTreeAdapterMap, ParserOptions} from 'parse5'
+   * @import {Point} from 'unist'
    */
 
+
+  const gfmTagfilterExpression =
+    /<(\/?)(iframe|noembed|noframes|plaintext|script|style|textarea|title|xmp)(?=[\t\n\f\r />])/gi;
 
   // Node types associated with MDX.
   // <https://github.com/mdx-js/mdx/blob/8a56312/packages/mdx/lib/node-types.js>
@@ -52539,7 +54034,7 @@
     'mdxjsEsm'
   ]);
 
-  /** @type {ParserOptions} */
+  /** @type {ParserOptions<DefaultTreeAdapterMap>} */
   const parseOptions = {sourceCodeLocationInfo: true, scriptingEnabled: false};
 
   /**
@@ -52680,7 +54175,7 @@
       state.parser.tokenizer.state = 0;
     }
 
-    /** @type {CharacterToken} */
+    /** @type {Token.CharacterToken} */
     const token = {
       type: TokenType.CHARACTER,
       chars: node.value,
@@ -52689,10 +54184,8 @@
 
     resetTokenizer(state, pointStart(node));
     // @ts-expect-error: private.
-    // type-coverage:ignore-next-line
     state.parser.currentToken = token;
     // @ts-expect-error: private.
-    // type-coverage:ignore-next-line
     state.parser._processToken(state.parser.currentToken);
   }
 
@@ -52707,7 +54200,7 @@
    *   Nothing.
    */
   function doctype$1(node, state) {
-    /** @type {DoctypeToken} */
+    /** @type {Token.DoctypeToken} */
     const token = {
       type: TokenType.DOCTYPE,
       name: 'html',
@@ -52719,10 +54212,8 @@
 
     resetTokenizer(state, pointStart(node));
     // @ts-expect-error: private.
-    // type-coverage:ignore-next-line
     state.parser.currentToken = token;
     // @ts-expect-error: private.
-    // type-coverage:ignore-next-line
     state.parser._processToken(state.parser.currentToken);
   }
 
@@ -52774,7 +54265,7 @@
     // @ts-expect-error: we pass stitches through.
     const data = node.value;
 
-    /** @type {CommentToken} */
+    /** @type {Token.CommentToken} */
     const token = {
       type: TokenType.COMMENT,
       data,
@@ -52782,10 +54273,8 @@
     };
     resetTokenizer(state, pointStart(node));
     // @ts-expect-error: private.
-    // type-coverage:ignore-next-line
     state.parser.currentToken = token;
     // @ts-expect-error: private.
-    // type-coverage:ignore-next-line
     state.parser._processToken(state.parser.currentToken);
   }
 
@@ -52803,8 +54292,6 @@
     // Reset preprocessor:
     // See: <https://github.com/inikulin/parse5/blob/6f7ca60/packages/parse5/lib/tokenizer/preprocessor.ts#L18-L31>.
     state.parser.tokenizer.preprocessor.html = '';
-    // @ts-expect-error: private.
-    // type-coverage:ignore-next-line
     state.parser.tokenizer.preprocessor.pos = -1;
     // @ts-expect-error: private.
     // type-coverage:ignore-next-line
@@ -52815,8 +54302,6 @@
     // @ts-expect-error: private.
     // type-coverage:ignore-next-line
     state.parser.tokenizer.preprocessor.skipNextNewLine = false;
-    // @ts-expect-error: private.
-    // type-coverage:ignore-next-line
     state.parser.tokenizer.preprocessor.lastChunkWritten = false;
     state.parser.tokenizer.preprocessor.endOfChunkHit = false;
     // @ts-expect-error: private.
@@ -52825,9 +54310,14 @@
 
     // Now pass `node.value`.
     setPoint(state, pointStart(node));
-    state.parser.tokenizer.write(node.value, false);
+
+    state.parser.tokenizer.write(
+      state.options.tagfilter
+        ? node.value.replace(gfmTagfilterExpression, '&lt;$1$2')
+        : node.value,
+      false
+    );
     // @ts-expect-error: private.
-    // type-coverage:ignore-next-line
     state.parser.tokenizer._runParsingLoop();
 
     // Character references hang, so if we ended there, we need to flush
@@ -52840,19 +54330,18 @@
     // See: <https://github.com/inikulin/parse5/blob/46cba43/packages/parse5/lib/tokenizer/index.ts#L58>
     // Note: a change to `parse5`, which breaks this, was merged but not released.
     // Investigate when it is.
+    // To do: remove next major.
+    /* c8 ignore next 12 -- removed in <https://github.com/inikulin/parse5/pull/897> */
     if (
       state.parser.tokenizer.state === 72 /* NAMED_CHARACTER_REFERENCE */ ||
+      // @ts-expect-error: removed.
       state.parser.tokenizer.state === 78 /* NUMERIC_CHARACTER_REFERENCE_END */
     ) {
-      // @ts-expect-error: private.
-      // type-coverage:ignore-next-line
       state.parser.tokenizer.preprocessor.lastChunkWritten = true;
       /** @type {number} */
       // @ts-expect-error: private.
-      // type-coverage:ignore-next-line
       const cp = state.parser.tokenizer._consume();
       // @ts-expect-error: private.
-      // type-coverage:ignore-next-line
       state.parser.tokenizer._callState(cp);
     }
   }
@@ -52901,9 +54390,8 @@
     setPoint(state, point);
 
     // Process final characters if they’re still there after hibernating.
-    /** @type {CharacterToken} */
+    /** @type {Token.CharacterToken} */
     // @ts-expect-error: private.
-    // type-coverage:ignore-next-line
     const token = state.parser.tokenizer.currentCharacterToken;
 
     if (token && token.location) {
@@ -52911,10 +54399,8 @@
       token.location.endCol = state.parser.tokenizer.preprocessor.col + 1;
       token.location.endOffset = state.parser.tokenizer.preprocessor.offset + 1;
       // @ts-expect-error: private.
-      // type-coverage:ignore-next-line
       state.parser.currentToken = token;
       // @ts-expect-error: private.
-      // type-coverage:ignore-next-line
       state.parser._processToken(state.parser.currentToken);
     }
 
@@ -52926,35 +54412,26 @@
     // But also if broken HTML is in `raw`, and then a correct element is given.
     // See GH-11.
     // @ts-expect-error: private.
-    // type-coverage:ignore-next-line
     state.parser.tokenizer.paused = false;
     // @ts-expect-error: private.
-    // type-coverage:ignore-next-line
     state.parser.tokenizer.inLoop = false;
 
     // Note: don’t reset `state`, `inForeignNode`, or `lastStartTagName`, we
     // manually update those when needed.
     state.parser.tokenizer.active = false;
     // @ts-expect-error: private.
-    // type-coverage:ignore-next-line
     state.parser.tokenizer.returnState = TokenizerMode.DATA;
     // @ts-expect-error: private.
-    // type-coverage:ignore-next-line
     state.parser.tokenizer.charRefCode = -1;
     // @ts-expect-error: private.
-    // type-coverage:ignore-next-line
     state.parser.tokenizer.consumedAfterSnapshot = -1;
     // @ts-expect-error: private.
-    // type-coverage:ignore-next-line
     state.parser.tokenizer.currentLocation = null;
     // @ts-expect-error: private.
-    // type-coverage:ignore-next-line
     state.parser.tokenizer.currentCharacterToken = null;
     // @ts-expect-error: private.
-    // type-coverage:ignore-next-line
     state.parser.tokenizer.currentToken = null;
     // @ts-expect-error: private.
-    // type-coverage:ignore-next-line
     state.parser.tokenizer.currentAttr = {name: '', value: ''};
   }
 
@@ -52970,7 +54447,7 @@
    */
   function setPoint(state, point) {
     if (point && point.offset !== undefined) {
-      /** @type {Location} */
+      /** @type {Token.Location} */
       const location = {
         startLine: point.line,
         startCol: point.column,
@@ -52986,7 +54463,6 @@
       state.parser.tokenizer.preprocessor.droppedBufferSize = point.offset;
       state.parser.tokenizer.preprocessor.line = point.line;
       // @ts-expect-error: private.
-      // type-coverage:ignore-next-line
       state.parser.tokenizer.currentLocation = location;
     }
   }
@@ -53022,7 +54498,7 @@
       {space: ns === webNamespaces.svg ? 'svg' : 'html'}
     );
 
-    /** @type {TagToken} */
+    /** @type {Token.TagToken} */
     const tag = {
       type: TokenType.START_TAG,
       tagName,
@@ -53042,10 +54518,8 @@
     // So we act *as if* the tokenizer emits tokens:
 
     // @ts-expect-error: private.
-    // type-coverage:ignore-next-line
     state.parser.currentToken = tag;
     // @ts-expect-error: private.
-    // type-coverage:ignore-next-line
     state.parser._processToken(state.parser.currentToken);
 
     // …but then we still need a bunch of work that the tokenizer would normally
@@ -53082,7 +54556,7 @@
 
     resetTokenizer(state, pointEnd(node));
 
-    /** @type {TagToken} */
+    /** @type {Token.TagToken} */
     const tag = {
       type: TokenType.END_TAG,
       tagName,
@@ -53099,10 +54573,8 @@
     // So we act *as if* the tokenizer emits tokens:
 
     // @ts-expect-error: private.
-    // type-coverage:ignore-next-line
     state.parser.currentToken = tag;
     // @ts-expect-error: private.
-    // type-coverage:ignore-next-line
     state.parser._processToken(state.parser.currentToken);
 
     // …but then we still need a bunch of work that the tokenizer would normally
@@ -53115,10 +54587,11 @@
       tagName === state.parser.tokenizer.lastStartTagName &&
       // `<textarea>` and `<title>`
       (state.parser.tokenizer.state === TokenizerMode.RCDATA ||
-        // `<iframe>`, `<noembed>`, `<style>`, `<xmp>`
+        // `<iframe>`, `<noembed>`, `<noframes>`, `<style>`, `<xmp>`
         state.parser.tokenizer.state === TokenizerMode.RAWTEXT ||
         // `<script>`
         state.parser.tokenizer.state === TokenizerMode.SCRIPT_DATA)
+      // Note: `<plaintext>` not needed, as it’s the last element.
     ) {
       state.parser.tokenizer.state = TokenizerMode.DATA;
     }
@@ -53146,7 +54619,7 @@
    *
    * @param {Nodes | Stitch} node
    *   hast node.
-   * @returns {Location}
+   * @returns {Token.Location}
    *   `parse5` location.
    */
   function createParse5Location(node) {
@@ -53161,7 +54634,7 @@
       offset: undefined
     };
 
-    /** @type {Record<keyof Location, number | undefined>} */
+    /** @type {Record<keyof Token.Location, number | undefined>} */
     const location = {
       startLine: start.line,
       startCol: start.column,
@@ -53322,8 +54795,8 @@
       return result;
   }
 
-  var __assign$1 = (undefined && undefined.__assign) || function () {
-      __assign$1 = Object.assign || function(t) {
+  var __assign = (undefined && undefined.__assign) || function () {
+      __assign = Object.assign || function(t) {
           for (var s, i = 1, n = arguments.length; i < n; i++) {
               s = arguments[i];
               for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
@@ -53331,7 +54804,7 @@
           }
           return t;
       };
-      return __assign$1.apply(this, arguments);
+      return __assign.apply(this, arguments);
   };
   var emptyXmlOptions = {};
   var defaultXmlOptions = { wildcard: true };
@@ -53376,9 +54849,12 @@
           if (typeof extension !== 'object' || extension === null) {
               throw new Error("Unexpected syntax definition extension type: ".concat(extension, "."));
           }
-          var result = __assign$1({}, base);
+          var result = __assign({}, base);
           for (var _i = 0, _a = Object.entries(extension); _i < _a.length; _i++) {
               var _b = _a[_i], key = _b[0], value = _b[1];
+              if (key === 'latest') {
+                  continue;
+              }
               var mergeSchema = values[key];
               result[key] = mergeSchema(base[key], value);
           }
@@ -53407,7 +54883,7 @@
       if (!base) {
           return extension;
       }
-      var result = __assign$1({}, base);
+      var result = __assign({}, base);
       for (var _i = 0, _a = Object.entries(extension); _i < _a.length; _i++) {
           var _b = _a[_i], key = _b[0], value = _b[1];
           if (!value) {
@@ -53425,6 +54901,7 @@
   }
   var extendSyntaxDefinition = withNoNegative(mergeSection({
       baseSyntax: replaceValueIfSpecified,
+      modules: concatArray,
       tag: withPositive(defaultXmlOptions, mergeSection({
           wildcard: replaceValueIfSpecified
       })),
@@ -53544,16 +55021,125 @@
                   'required',
                   'optional',
                   'blank',
-                  'user-invalid'
+                  'user-invalid',
+                  'playing',
+                  'paused',
+                  'autofill',
+                  'modal',
+                  'fullscreen',
+                  'picture-in-picture',
+                  'defined',
+                  'loading',
+                  'popover-open'
               ],
               Formula: ['nth-col', 'nth-last-col'],
               String: ['dir'],
               FormulaOfSelector: ['nth-child', 'nth-last-child'],
-              Selector: ['current', 'is', 'where', 'has']
+              Selector: ['current', 'is', 'where', 'has', 'state']
+          }
+      },
+      pseudoElements: {
+          definitions: {
+              NoArgument: ['marker']
           }
       }
   });
-  var progressiveSyntaxDefinition = extendSyntaxDefinition(selectors4SyntaxDefinition, {
+  /**
+   * CSS Modules with their syntax definitions.
+   * These can be used to extend the parser with specific CSS modules.
+   *
+   * @example
+   * // Using the css-position-3 module
+   * createParser({ modules: ['css-position-3'] })
+   */
+  var cssModules = {
+      'css-position-1': {
+          latest: false,
+          pseudoClasses: {
+              definitions: {
+                  NoArgument: ['static', 'relative', 'absolute']
+              }
+          }
+      },
+      'css-position-2': {
+          latest: false,
+          pseudoClasses: {
+              definitions: {
+                  NoArgument: ['static', 'relative', 'absolute', 'fixed']
+              }
+          }
+      },
+      'css-position-3': {
+          latest: false,
+          pseudoClasses: {
+              definitions: {
+                  NoArgument: ['sticky', 'fixed', 'absolute', 'relative', 'static']
+              }
+          }
+      },
+      'css-position-4': {
+          latest: true,
+          pseudoClasses: {
+              definitions: {
+                  NoArgument: ['sticky', 'fixed', 'absolute', 'relative', 'static', 'initial']
+              }
+          }
+      },
+      'css-scoping-1': {
+          latest: true,
+          pseudoClasses: {
+              definitions: {
+                  NoArgument: ['host', 'host-context'],
+                  Selector: ['host', 'host-context']
+              }
+          },
+          pseudoElements: {
+              definitions: {
+                  Selector: ['slotted']
+              }
+          }
+      },
+      'css-pseudo-4': {
+          latest: true,
+          pseudoElements: {
+              definitions: {
+                  NoArgument: [
+                      'marker',
+                      'selection',
+                      'target-text',
+                      'search-text',
+                      'spelling-error',
+                      'grammar-error',
+                      'backdrop',
+                      'file-selector-button',
+                      'prefix',
+                      'postfix',
+                      'placeholder',
+                      'details-content'
+                  ],
+                  String: ['highlight']
+              }
+          }
+      },
+      'css-shadow-parts-1': {
+          latest: true,
+          pseudoElements: {
+              definitions: {
+                  String: ['part']
+              }
+          }
+      }
+  };
+  var latestSyntaxDefinition = __assign(__assign({}, selectors4SyntaxDefinition), { modules: Object.entries(cssModules)
+          .filter(function (_a) {
+          var latest = _a[1].latest;
+          return latest;
+      })
+          .map(function (_a) {
+          var name = _a[0];
+          return name;
+      }) });
+  var progressiveSyntaxDefinition = extendSyntaxDefinition(latestSyntaxDefinition, {
       pseudoElements: {
           unknown: 'accept'
       },
@@ -53570,9 +55156,130 @@
       css3: selectors3SyntaxDefinition,
       'selectors-3': selectors3SyntaxDefinition,
       'selectors-4': selectors4SyntaxDefinition,
-      latest: selectors4SyntaxDefinition,
+      latest: latestSyntaxDefinition,
       progressive: progressiveSyntaxDefinition
   };
+  /**
+   * Builds an index of where each pseudo-class and pseudo-element is defined
+   * (in which CSS Level or CSS Module)
+   */
+  function buildPseudoLocationIndex() {
+      var index = {
+          pseudoClasses: {},
+          pseudoElements: {}
+      };
+      // Add CSS Levels (excluding 'latest' and 'progressive')
+      var cssLevels = ['css1', 'css2', 'css3', 'selectors-3', 'selectors-4'];
+      for (var _i = 0, cssLevels_1 = cssLevels; _i < cssLevels_1.length; _i++) {
+          var level = cssLevels_1[_i];
+          var syntax = cssSyntaxDefinitions[level];
+          // Process pseudo-classes
+          if (syntax.pseudoClasses && typeof syntax.pseudoClasses === 'object') {
+              var definitions = syntax.pseudoClasses.definitions;
+              if (definitions) {
+                  for (var _a = 0, _b = Object.entries(definitions); _a < _b.length; _a++) {
+                      var _c = _b[_a], names = _c[1];
+                      for (var _d = 0, names_1 = names; _d < names_1.length; _d++) {
+                          var name_1 = names_1[_d];
+                          if (!index.pseudoClasses[name_1]) {
+                              index.pseudoClasses[name_1] = [];
+                          }
+                          if (!index.pseudoClasses[name_1].includes(level)) {
+                              index.pseudoClasses[name_1].push(level);
+                          }
+                      }
+                  }
+              }
+          }
+          // Process pseudo-elements
+          if (syntax.pseudoElements && typeof syntax.pseudoElements === 'object') {
+              var definitions = syntax.pseudoElements.definitions;
+              if (definitions) {
+                  if (Array.isArray(definitions)) {
+                      for (var _e = 0, definitions_1 = definitions; _e < definitions_1.length; _e++) {
+                          var name_2 = definitions_1[_e];
+                          if (!index.pseudoElements[name_2]) {
+                              index.pseudoElements[name_2] = [];
+                          }
+                          if (!index.pseudoElements[name_2].includes(level)) {
+                              index.pseudoElements[name_2].push(level);
+                          }
+                      }
+                  }
+                  else {
+                      for (var _f = 0, _g = Object.values(definitions); _f < _g.length; _f++) {
+                          var names = _g[_f];
+                          for (var _h = 0, names_2 = names; _h < names_2.length; _h++) {
+                              var name_3 = names_2[_h];
+                              if (!index.pseudoElements[name_3]) {
+                                  index.pseudoElements[name_3] = [];
+                              }
+                              if (!index.pseudoElements[name_3].includes(level)) {
+                                  index.pseudoElements[name_3].push(level);
+                              }
+                          }
+                      }
+                  }
+              }
+          }
+      }
+      // Add CSS Modules
+      for (var _j = 0, _k = Object.entries(cssModules); _j < _k.length; _j++) {
+          var _l = _k[_j], moduleName = _l[0], moduleSyntax = _l[1];
+          // Process pseudo-classes
+          if (moduleSyntax.pseudoClasses && typeof moduleSyntax.pseudoClasses === 'object') {
+              var definitions = moduleSyntax.pseudoClasses.definitions;
+              if (definitions) {
+                  for (var _m = 0, _o = Object.values(definitions); _m < _o.length; _m++) {
+                      var names = _o[_m];
+                      for (var _p = 0, names_3 = names; _p < names_3.length; _p++) {
+                          var name_4 = names_3[_p];
+                          if (!index.pseudoClasses[name_4]) {
+                              index.pseudoClasses[name_4] = [];
+                          }
+                          if (!index.pseudoClasses[name_4].includes(moduleName)) {
+                              index.pseudoClasses[name_4].push(moduleName);
+                          }
+                      }
+                  }
+              }
+          }
+          // Process pseudo-elements
+          if (moduleSyntax.pseudoElements && typeof moduleSyntax.pseudoElements === 'object') {
+              var definitions = moduleSyntax.pseudoElements.definitions;
+              if (definitions) {
+                  if (Array.isArray(definitions)) {
+                      for (var _q = 0, definitions_2 = definitions; _q < definitions_2.length; _q++) {
+                          var name_5 = definitions_2[_q];
+                          if (!index.pseudoElements[name_5]) {
+                              index.pseudoElements[name_5] = [];
+                          }
+                          if (!index.pseudoElements[name_5].includes(moduleName)) {
+                              index.pseudoElements[name_5].push(moduleName);
+                          }
+                      }
+                  }
+                  else {
+                      for (var _r = 0, _s = Object.values(definitions); _r < _s.length; _r++) {
+                          var names = _s[_r];
+                          for (var _t = 0, names_4 = names; _t < names_4.length; _t++) {
+                              var name_6 = names_4[_t];
+                              if (!index.pseudoElements[name_6]) {
+                                  index.pseudoElements[name_6] = [];
+                              }
+                              if (!index.pseudoElements[name_6].includes(moduleName)) {
+                                  index.pseudoElements[name_6].push(moduleName);
+                              }
+                          }
+                      }
+                  }
+              }
+          }
+      }
+      return index;
+  }
+  // Pre-build the index for faster lookup
+  var pseudoLocationIndex = buildPseudoLocationIndex();
 
   function isIdentStart(c) {
       return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c === '-' || c === '_' || c === '\\' || c >= '\u00a0';
@@ -53619,14 +55326,34 @@
    */
   function createParser(options) {
       if (options === void 0) { options = {}; }
-      var _a = options.syntax, syntax = _a === void 0 ? 'latest' : _a, substitutes = options.substitutes, _b = options.strict, strict = _b === void 0 ? true : _b;
+      var _a = options.syntax, syntax = _a === void 0 ? 'latest' : _a, substitutes = options.substitutes, _b = options.strict, strict = _b === void 0 ? true : _b, modules = options.modules;
       var syntaxDefinition = typeof syntax === 'object' ? syntax : cssSyntaxDefinitions[syntax];
       if (syntaxDefinition.baseSyntax) {
           syntaxDefinition = extendSyntaxDefinition(cssSyntaxDefinitions[syntaxDefinition.baseSyntax], syntaxDefinition);
       }
-      var _c = syntaxDefinition.tag
+      // Apply modules from syntax definition
+      if (syntaxDefinition.modules && syntaxDefinition.modules.length > 0) {
+          for (var _i = 0, _c = syntaxDefinition.modules; _i < _c.length; _i++) {
+              var module_1 = _c[_i];
+              var moduleSyntax = cssModules[module_1];
+              if (moduleSyntax) {
+                  syntaxDefinition = extendSyntaxDefinition(moduleSyntax, syntaxDefinition);
+              }
+          }
+      }
+      // Apply additional modules if specified from options
+      if (modules && modules.length > 0) {
+          for (var _d = 0, modules_1 = modules; _d < modules_1.length; _d++) {
+              var module_2 = modules_1[_d];
+              var moduleSyntax = cssModules[module_2];
+              if (moduleSyntax) {
+                  syntaxDefinition = extendSyntaxDefinition(moduleSyntax, syntaxDefinition);
+              }
+          }
+      }
+      var _e = syntaxDefinition.tag
           ? [true, Boolean(getXmlOptions(syntaxDefinition.tag).wildcard)]
-          : [false, false], tagNameEnabled = _c[0], tagNameWildcardEnabled = _c[1];
+          : [false, false], tagNameEnabled = _e[0], tagNameWildcardEnabled = _e[1];
       var idEnabled = Boolean(syntaxDefinition.ids);
       var classNamesEnabled = Boolean(syntaxDefinition.classNames);
       var namespaceEnabled = Boolean(syntaxDefinition.namespace);
@@ -53639,7 +55366,7 @@
       var combinatorsIndex = syntaxDefinition.combinators
           ? createMulticharIndex(syntaxDefinition.combinators)
           : emptyMulticharIndex;
-      var _d = syntaxDefinition.attributes
+      var _f = syntaxDefinition.attributes
           ? [
               true,
               syntaxDefinition.attributes.operators
@@ -53650,9 +55377,9 @@
                   : emptyRegularIndex,
               syntaxDefinition.attributes.unknownCaseSensitivityModifiers === 'accept'
           ]
-          : [false, emptyMulticharIndex, emptyRegularIndex, false], attributesEnabled = _d[0], attributesOperatorsIndex = _d[1], attributesCaseSensitivityModifiers = _d[2], attributesAcceptUnknownCaseSensitivityModifiers = _d[3];
+          : [false, emptyMulticharIndex, emptyRegularIndex, false], attributesEnabled = _f[0], attributesOperatorsIndex = _f[1], attributesCaseSensitivityModifiers = _f[2], attributesAcceptUnknownCaseSensitivityModifiers = _f[3];
       var attributesCaseSensitivityModifiersEnabled = attributesAcceptUnknownCaseSensitivityModifiers || Object.keys(attributesCaseSensitivityModifiers).length > 0;
-      var _e = syntaxDefinition.pseudoClasses
+      var _g = syntaxDefinition.pseudoClasses
           ? [
               true,
               syntaxDefinition.pseudoClasses.definitions
@@ -53660,8 +55387,8 @@
                   : emptyPseudoSignatures,
               syntaxDefinition.pseudoClasses.unknown === 'accept'
           ]
-          : [false, emptyPseudoSignatures, false], pseudoClassesEnabled = _e[0], pseudoClassesDefinitions = _e[1], pseudoClassesAcceptUnknown = _e[2];
-      var _f = syntaxDefinition.pseudoElements
+          : [false, emptyPseudoSignatures, false], pseudoClassesEnabled = _g[0], pseudoClassesDefinitions = _g[1], pseudoClassesAcceptUnknown = _g[2];
+      var _h = syntaxDefinition.pseudoElements
           ? [
               true,
               syntaxDefinition.pseudoElements.notation === 'singleColon' ||
@@ -53676,7 +55403,7 @@
                   : emptyPseudoSignatures,
               syntaxDefinition.pseudoElements.unknown === 'accept'
           ]
-          : [false, false, false, emptyPseudoSignatures, false], pseudoElementsEnabled = _f[0], pseudoElementsSingleColonNotationEnabled = _f[1], pseudoElementsDoubleColonNotationEnabled = _f[2], pseudoElementsDefinitions = _f[3], pseudoElementsAcceptUnknown = _f[4];
+          : [false, false, false, emptyPseudoSignatures, false], pseudoElementsEnabled = _h[0], pseudoElementsSingleColonNotationEnabled = _h[1], pseudoElementsDoubleColonNotationEnabled = _h[2], pseudoElementsDefinitions = _h[3], pseudoElementsAcceptUnknown = _h[4];
       var str = '';
       var l = str.length;
       var pos = 0;
@@ -54261,9 +55988,18 @@
                   assert(isDoubleColon || pseudoName, 'Expected pseudo-class name.');
                   assert(!isDoubleColon || pseudoName, 'Expected pseudo-element name.');
                   assert(pseudoName, 'Expected pseudo-class name.');
-                  assert(!isDoubleColon ||
+                  if (!isDoubleColon ||
                       pseudoElementsAcceptUnknown ||
-                      Object.prototype.hasOwnProperty.call(pseudoElementsDefinitions, pseudoName), "Unknown pseudo-element \"".concat(pseudoName, "\"."));
+                      Object.prototype.hasOwnProperty.call(pseudoElementsDefinitions, pseudoName)) ;
+                  else {
+                      // Generate a helpful error message with location information
+                      var locations = pseudoLocationIndex.pseudoElements[pseudoName];
+                      var errorMessage = "Unknown pseudo-element \"".concat(pseudoName, "\"");
+                      if (locations && locations.length > 0) {
+                          errorMessage += ". It is defined in: ".concat(locations.join(', '));
+                      }
+                      fail(errorMessage + '.');
+                  }
                   isPseudoElement =
                       pseudoElementsEnabled &&
                           (isDoubleColon ||
@@ -54286,7 +56022,16 @@
                   else {
                       assert(pseudoClassesEnabled, 'Pseudo-classes are not enabled.');
                       var signature = (_b = pseudoClassesDefinitions[pseudoName]) !== null && _b !== void 0 ? _b : (pseudoClassesAcceptUnknown && defaultPseudoSignature);
-                      assert(signature, "Unknown pseudo-class: \"".concat(pseudoName, "\"."));
+                      if (signature) ;
+                      else {
+                          // Generate a helpful error message with location information
+                          var locations = pseudoLocationIndex.pseudoClasses[pseudoName];
+                          var errorMessage = "Unknown pseudo-class: \"".concat(pseudoName, "\"");
+                          if (locations && locations.length > 0) {
+                              errorMessage += ". It is defined in: ".concat(locations.join(', '));
+                          }
+                          fail(errorMessage + '.');
+                      }
                       var argument = parsePseudoArgument(pseudoName, 'pseudo-class', signature);
                       var pseudoClass = {
                           type: 'PseudoClass',
@@ -54332,66 +56077,8 @@
       };
   }
 
-  var __assign = (undefined && undefined.__assign) || function () {
-      __assign = Object.assign || function(t) {
-          for (var s, i = 1, n = arguments.length; i < n; i++) {
-              s = arguments[i];
-              for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                  t[p] = s[p];
-          }
-          return t;
-      };
-      return __assign.apply(this, arguments);
-  };
-  function astMethods(type) {
-      return function (generatorName, checkerName) {
-          var _a;
-          return (_a = {},
-              _a[generatorName] = function (props) { return (__assign({ type: type }, props)); },
-              _a[checkerName] = function (entity) {
-                  return typeof entity === 'object' && entity !== null && entity.type === type;
-              },
-              _a);
-      };
-  }
   /**
-   * AST structure generators and matchers.
-   * For instance, `ast.selector({rules: [...]})` creates AstSelector and `ast.isSelector(...)` checks if
-   * AstSelector was specified.
-   *
-   * @example
-   *
-   * // Represents CSS selector: ns|div#user-34.user.user-active[role="button"]:lang(en)::before > *
-   * const selector = ast.selector({
-   *     rules: [
-   *         ast.rule({
-   *             items: [
-   *                 ast.tagName({name: 'div', namespace: ast.namespaceName({name: 'ns'})}),
-   *                 ast.id({name: 'user-34'}),
-   *                 ast.className({name: 'user'}),
-   *                 ast.className({name: 'user-active'}),
-   *                 ast.attribute({
-   *                     name: 'role',
-   *                     operator: '=',
-   *                     value: ast.string({value: 'button'})
-   *                 }),
-   *                 ast.pseudoClass({
-   *                     name: 'lang',
-   *                     argument: ast.string({value: 'en'})
-   *                 }),
-   *                 ast.pseudoElement({name: 'before'})
-   *             ],
-   *             nestedRule: ast.rule({combinator: '>', items: [ast.wildcardTag()]})
-   *         })
-   *     ]
-   * });
-   * console.log(ast.isSelector(selector)); // prints true
-   * console.log(ast.isRule(selector)); // prints false
-   */
-  __assign(__assign(__assign(__assign(__assign(__assign(__assign(__assign(__assign(__assign(__assign(__assign(__assign(__assign(__assign(__assign({}, astMethods('Selector')('selector', 'isSelector')), astMethods('Rule')('rule', 'isRule')), astMethods('TagName')('tagName', 'isTagName')), astMethods('Id')('id', 'isId')), astMethods('ClassName')('className', 'isClassName')), astMethods('WildcardTag')('wildcardTag', 'isWildcardTag')), astMethods('NamespaceName')('namespaceName', 'isNamespaceName')), astMethods('WildcardNamespace')('wildcardNamespace', 'isWildcardNamespace')), astMethods('NoNamespace')('noNamespace', 'isNoNamespace')), astMethods('Attribute')('attribute', 'isAttribute')), astMethods('PseudoClass')('pseudoClass', 'isPseudoClass')), astMethods('PseudoElement')('pseudoElement', 'isPseudoElement')), astMethods('String')('string', 'isString')), astMethods('Formula')('formula', 'isFormula')), astMethods('FormulaOfSelector')('formulaOfSelector', 'isFormulaOfSelector')), astMethods('Substitution')('substitution', 'isSubstitution'));
-
-  /**
-   * @typedef {import('css-selector-parser').AstSelector} AstSelector
+   * @import {AstSelector} from 'css-selector-parser'
    */
 
 
@@ -54434,8 +56121,7 @@
   }
 
   /**
-   * @typedef {import('hast').Nodes} Nodes
-   * @typedef {import('hast').Parents} Parents
+   * @import {Nodes, Parents} from 'hast'
    */
 
   /**
@@ -54490,13 +56176,9 @@
   }
 
   /**
-   * @typedef {import('hast').ElementContent} ElementContent
-   * @typedef {import('hast').Nodes} Nodes
-   *
-   * @typedef {import('unist-util-visit').Visitor<ElementContent>} Visitor
-   *
-   * @typedef {import('./index.js').Direction} Direction
-   * @typedef {import('./index.js').State} State
+   * @import {Visitor} from 'unist-util-visit'
+   * @import {ElementContent, Nodes} from 'hast'
+   * @import {Direction, State} from './index.js'
    */
 
 
@@ -54521,12 +56203,12 @@
     const currentDirection = state.direction;
     const editableOrEditingHost = state.editableOrEditingHost;
     /** @type {Direction | undefined} */
-    let dirInferred;
+    let directionInferred;
 
     if (node.type === 'element') {
       const lang = node.properties.xmlLang || node.properties.lang;
       const type = node.properties.type || 'text';
-      const dir = dirProperty(node);
+      const direction = directionProperty(node);
 
       if (lang !== null && lang !== undefined) {
         state.language = String(lang);
@@ -54538,27 +56220,27 @@
         }
 
         if (node.tagName === 'svg') {
-          state.schema = svg;
+          state.schema = svg$3;
         }
 
         // See: <https://html.spec.whatwg.org/#the-directionality>.
         // Explicit `[dir=rtl]`.
-        if (dir === 'rtl') {
-          dirInferred = dir;
+        if (direction === 'rtl') {
+          directionInferred = direction;
         } else if (
           // Explicit `[dir=ltr]`.
-          dir === 'ltr' ||
+          direction === 'ltr' ||
           // HTML with an invalid or no `[dir]`.
-          (dir !== 'auto' && node.tagName === 'html') ||
+          (direction !== 'auto' && node.tagName === 'html') ||
           // `input[type=tel]` with an invalid or no `[dir]`.
-          (dir !== 'auto' && node.tagName === 'input' && type === 'tel')
+          (direction !== 'auto' && node.tagName === 'input' && type === 'tel')
         ) {
-          dirInferred = 'ltr';
+          directionInferred = 'ltr';
           // `[dir=auto]` or `bdi` with an invalid or no `[dir]`.
-        } else if (dir === 'auto' || node.tagName === 'bdi') {
+        } else if (direction === 'auto' || node.tagName === 'bdi') {
           if (node.tagName === 'textarea') {
             // Check contents of `<textarea>`.
-            dirInferred = dirBidi(toString(node));
+            directionInferred = directionBidi(toString(node));
           } else if (
             node.tagName === 'input' &&
             (type === 'email' ||
@@ -54567,8 +56249,8 @@
               type === 'text')
           ) {
             // Check value of `<input>`.
-            dirInferred = node.properties.value
-              ? dirBidi(String(node.properties.value))
+            directionInferred = node.properties.value
+              ? directionBidi(String(node.properties.value))
               : 'ltr';
           } else {
             // Check text nodes in `node`.
@@ -54576,8 +56258,8 @@
           }
         }
 
-        if (dirInferred) {
-          state.direction = dirInferred;
+        if (directionInferred) {
+          state.direction = directionInferred;
         }
       }
       // Turn off editing mode in non-HTML spaces.
@@ -54599,11 +56281,11 @@
       state.editableOrEditingHost = editableOrEditingHost;
     }
 
-    /** @type {Visitor} */
+    /** @type {Visitor<ElementContent>} */
     function inferDirectionality(child) {
       if (child.type === 'text') {
-        dirInferred = dirBidi(child.value);
-        return dirInferred ? EXIT : undefined
+        directionInferred = directionBidi(child.value);
+        return directionInferred ? EXIT : undefined
       }
 
       if (
@@ -54613,7 +56295,7 @@
           child.tagName === 'script' ||
           child.tagName === 'style' ||
           child.tagName === 'textare' ||
-          dirProperty(child))
+          directionProperty(child))
       ) {
         return SKIP
       }
@@ -54628,7 +56310,7 @@
    * @returns {Exclude<Direction, 'auto'> | undefined}
    *   Directionality.
    */
-  function dirBidi(value) {
+  function directionBidi(value) {
     const result = direction(value);
     return result === 'neutral' ? undefined : result
   }
@@ -54639,7 +56321,7 @@
    * @returns {Direction | undefined}
    *   Directionality.
    */
-  function dirProperty(node) {
+  function directionProperty(node) {
     const value =
       node.type === 'element' && typeof node.properties.dir === 'string'
         ? node.properties.dir.toLowerCase()
@@ -54651,13 +56333,9 @@
   }
 
   /**
-   * @typedef {import('css-selector-parser').AstAttribute} AstAttribute
-   *
-   * @typedef {import('hast').Element} Element
-   * @typedef {import('hast').Properties} Properties
-   *
-   * @typedef {import('property-information').Info} Info
-   * @typedef {import('property-information').Schema} Schema
+   * @import {AstAttribute} from 'css-selector-parser'
+   * @import {Element, Properties} from 'hast'
+   * @import {Info, Schema} from 'property-information'
    */
 
 
@@ -54672,7 +56350,7 @@
    *   Whether `element` matches `query`.
    */
   function attribute(query, element, schema) {
-    const info = find(schema, query.name);
+    const info = find$2(schema, query.name);
     const propertyValue = element.properties[info.property];
     let value = normalizeValue(propertyValue, info);
 
@@ -54764,8 +56442,8 @@
   }
 
   /**
-   * @typedef {import('css-selector-parser').AstClassName} AstClassName
-   * @typedef {import('hast').Element} Element
+   * @import {AstClassName} from 'css-selector-parser'
+   * @import {Element} from 'hast'
    */
 
   /** @type {Array<never>} */
@@ -54791,11 +56469,9 @@
   }
 
   /**
-   * @typedef {import('css-selector-parser').AstId} AstId
-   *
-   * @typedef {import('hast').Element} Element
+   * @import {AstId} from 'css-selector-parser'
+   * @import {Element} from 'hast'
    */
-
 
   /**
    * Check whether an element has an ID.
@@ -54812,11 +56488,9 @@
   }
 
   /**
-   * @typedef {import('css-selector-parser').AstTagName} AstTagName
-   *
-   * @typedef {import('hast').Element} Element
+   * @import {AstTagName} from 'css-selector-parser'
+   * @import {Element} from 'hast'
    */
-
 
   /**
    * Check whether an element has a tag name.
@@ -55028,7 +56702,7 @@
    * @typedef {import('hast').Nodes} Nodes
    */
 
-  const own$5 = {}.hasOwnProperty;
+  const own$6 = {}.hasOwnProperty;
 
   /**
    * Check if `node` is an element and has a `name` property.
@@ -55047,7 +56721,7 @@
   function hasProperty(node, name) {
     const value =
       node.type === 'element' &&
-      own$5.call(node.properties, name) &&
+      own$6.call(node.properties, name) &&
       node.properties[name];
 
     return value !== null && value !== undefined && value !== false
@@ -55161,16 +56835,25 @@
       }
   }
 
-  var boolbase = {
-  	trueFunc: function trueFunc(){
-  		return true;
-  	},
-  	falseFunc: function falseFunc(){
-  		return false;
-  	}
-  };
+  var boolbase$1;
+  var hasRequiredBoolbase;
 
-  var boolbase$1 = /*@__PURE__*/getDefaultExportFromCjs(boolbase);
+  function requireBoolbase () {
+  	if (hasRequiredBoolbase) return boolbase$1;
+  	hasRequiredBoolbase = 1;
+  	boolbase$1 = {
+  		trueFunc: function trueFunc(){
+  			return true;
+  		},
+  		falseFunc: function falseFunc(){
+  			return false;
+  		}
+  	};
+  	return boolbase$1;
+  }
+
+  var boolbaseExports = requireBoolbase();
+  var boolbase = /*@__PURE__*/getDefaultExportFromCjs(boolbaseExports);
 
   /**
    * Returns a function that checks if an elements index matches the given rule
@@ -55204,7 +56887,7 @@
        * `b < 0` here as we subtracted 1 from `b` above.
        */
       if (b < 0 && a <= 0)
-          return boolbase$1.falseFunc;
+          return boolbase.falseFunc;
       // When `a` is in the range -1..1, it matches any element (so only `b` is checked).
       if (a === -1)
           return (index) => index <= b;
@@ -55212,7 +56895,7 @@
           return (index) => index === b;
       // When `b <= 0` and `a === 1`, they match any element.
       if (a === 1)
-          return b < 0 ? boolbase$1.trueFunc : (index) => index >= b;
+          return b < 0 ? boolbase.trueFunc : (index) => index >= b;
       /*
        * Otherwise, modulo can be used to check if there is a match.
        *
@@ -55254,17 +56937,14 @@
   }
 
   /**
-   * @typedef {import('css-selector-parser').AstPseudoClass} AstPseudoClass
-   *
-   * @typedef {import('hast').Element} Element
-   * @typedef {import('hast').ElementContent} ElementContent
-   * @typedef {import('hast').Parents} Parents
-   *
-   * @typedef {import('./index.js').State} State
+   * @import {AstPseudoClass} from 'css-selector-parser'
+   * @import {default as NthCheck} from 'nth-check'
+   * @import {ElementContent, Element, Parents} from 'hast'
+   * @import {State} from './index.js'
    */
 
 
-  /** @type {import('nth-check').default} */
+  /** @type {NthCheck} */
   // @ts-expect-error: types are broken.
   const nthCheck = nthCheck$1.default || nthCheck$1;
 
@@ -55400,6 +57080,7 @@
    * @returns {boolean}
    *   Whether `element` matches `query`.
    */
+  // eslint-disable-next-line unicorn/prevent-abbreviations
   function dir(query, _1, _2, _3, state) {
     ok$1(query.argument);
     ok$1(query.argument.type === 'String');
@@ -55517,9 +57198,9 @@
   function getCachedNthCheck(query) {
     /** @type {(value: number) => boolean} */
     // @ts-expect-error: cache.
-    let fn = query._cachedFn;
+    let cachedFunction = query._cachedFn;
 
-    if (!fn) {
+    if (!cachedFunction) {
       const value = query.argument;
 
       if (value.type !== 'Formula') {
@@ -55528,12 +57209,12 @@
         )
       }
 
-      fn = nthCheck(value.a + 'n+' + value.b);
+      cachedFunction = nthCheck(value.a + 'n+' + value.b);
       // @ts-expect-error: cache.
-      query._cachedFn = fn;
+      query._cachedFn = cachedFunction;
     }
 
-    return fn
+    return cachedFunction
   }
 
   /**
@@ -55729,9 +57410,11 @@
    *   Whether `element` matches `query`.
    */
   function nthChild(query, _1, _2, _3, state) {
-    const fn = getCachedNthCheck(query);
+    const cachedFunction = getCachedNthCheck(query);
     assertDeep(state, query);
-    return typeof state.elementIndex === 'number' && fn(state.elementIndex)
+    return (
+      typeof state.elementIndex === 'number' && cachedFunction(state.elementIndex)
+    )
   }
 
   /**
@@ -55751,12 +57434,12 @@
    *   Whether `element` matches `query`.
    */
   function nthLastChild(query, _1, _2, _3, state) {
-    const fn = getCachedNthCheck(query);
+    const cachedFunction = getCachedNthCheck(query);
     assertDeep(state, query);
     return Boolean(
       typeof state.elementCount === 'number' &&
         typeof state.elementIndex === 'number' &&
-        fn(state.elementCount - state.elementIndex - 1)
+        cachedFunction(state.elementCount - state.elementIndex - 1)
     )
   }
 
@@ -55777,12 +57460,12 @@
    *   Whether `element` matches `query`.
    */
   function nthLastOfType(query, _1, _2, _3, state) {
-    const fn = getCachedNthCheck(query);
+    const cachedFunction = getCachedNthCheck(query);
     assertDeep(state, query);
     return (
       typeof state.typeCount === 'number' &&
       typeof state.typeIndex === 'number' &&
-      fn(state.typeCount - 1 - state.typeIndex)
+      cachedFunction(state.typeCount - 1 - state.typeIndex)
     )
   }
 
@@ -55803,9 +57486,9 @@
    *   Whether `element` matches `query`.
    */
   function nthOfType(query, _1, _2, _3, state) {
-    const fn = getCachedNthCheck(query);
+    const cachedFunction = getCachedNthCheck(query);
     assertDeep(state, query);
-    return typeof state.typeIndex === 'number' && fn(state.typeIndex)
+    return typeof state.typeIndex === 'number' && cachedFunction(state.typeIndex)
   }
 
   /**
@@ -56006,12 +57689,9 @@
   }
 
   /**
-   * @typedef {import('css-selector-parser').AstRule} AstRule
-   *
-   * @typedef {import('hast').Element} Element
-   * @typedef {import('hast').Parents} Parents
-   *
-   * @typedef {import('./index.js').State} State
+   * @import {AstRule} from 'css-selector-parser'
+   * @import {Element, Parents} from 'hast'
+   * @import {State} from './index.js'
    */
 
 
@@ -56053,13 +57733,9 @@
   }
 
   /**
-   * @typedef {import('css-selector-parser').AstRule} AstRule
-   *
-   * @typedef {import('hast').Element} Element
-   * @typedef {import('hast').Nodes} Nodes
-   * @typedef {import('hast').Parents} Parents
-   *
-   * @typedef {import('./index.js').State} State
+   * @import {AstRule} from 'css-selector-parser'
+   * @import {Element, Nodes, Parents} from 'hast'
+   * @import {State} from './index.js'
    */
 
 
@@ -56224,10 +57900,10 @@
             nest.combinator === '+'
               ? 'adjacentSibling'
               : nest.combinator === '~'
-              ? 'generalSibling'
-              : nest.combinator === '>'
-              ? 'directChild'
-              : 'descendant';
+                ? 'generalSibling'
+                : nest.combinator === '>'
+                  ? 'directChild'
+                  : 'descendant';
           add(nestResult, label, nest);
         } else {
           // We have a match!
@@ -56269,10 +57945,10 @@
     return left && right && left.length > 0 && right.length > 0
       ? [...left, ...right]
       : left && left.length > 0
-      ? left
-      : right && right.length > 0
-      ? right
-      : empty
+        ? left
+        : right && right.length > 0
+          ? right
+          : empty
   }
 
   /**
@@ -56361,13 +58037,9 @@
   }
 
   /**
-   * @typedef {import('css-selector-parser').AstSelector} AstSelector
-   *
-   * @typedef {import('hast').Element} Element
-   * @typedef {import('hast').Nodes} Nodes
-   * @typedef {import('hast').RootContent} RootContent
-   *
-   * @typedef {import('property-information').Schema} Schema
+   * @import {AstSelector} from 'css-selector-parser'
+   * @import {Element, Nodes, RootContent} from 'hast'
+   * @import {Schema} from 'property-information'
    */
 
 
@@ -56413,7 +58085,7 @@
       // State of the query.
       results: [],
       rootQuery: parse$1(selector),
-      schema: html$2,
+      schema: html$6,
       scopeElements: tree ? (tree.type === 'root' ? tree.children : [tree]) : [],
       shallow: false,
       typeIndex: undefined,
@@ -56996,7 +58668,7 @@
     'times'
   ];
 
-  const own$4 = {}.hasOwnProperty;
+  const own$5 = {}.hasOwnProperty;
 
   /**
    * `characterEntitiesHtml4` but inverted.
@@ -57009,7 +58681,7 @@
   let key;
 
   for (key in characterEntitiesHtml4) {
-    if (own$4.call(characterEntitiesHtml4, key)) {
+    if (own$5.call(characterEntitiesHtml4, key)) {
       characters[characterEntitiesHtml4[key]] = key;
     }
   }
@@ -57028,7 +58700,7 @@
   function toNamed(code, next, omit, attribute) {
     const character = String.fromCharCode(code);
 
-    if (own$4.call(characters, character)) {
+    if (own$5.call(characters, character)) {
       const name = characters[character];
       const value = '&' + name;
 
@@ -57285,7 +58957,7 @@
    *
    */
 
-  const own$3 = {}.hasOwnProperty;
+  const own$4 = {}.hasOwnProperty;
 
   /**
    * Factory to check if a given node can have a tag omitted.
@@ -57306,7 +58978,7 @@
      */
     function omit(node, index, parent) {
       return (
-        own$3.call(handlers, node.tagName) &&
+        own$4.call(handlers, node.tagName) &&
         handlers[node.tagName](node, index, parent)
       )
     }
@@ -57324,7 +58996,7 @@
     dd,
     dt,
     head: headOrColgroupOrCaption,
-    html: html$1,
+    html: html$3,
     li,
     optgroup,
     option,
@@ -57372,7 +59044,7 @@
    * @returns {boolean}
    *   Whether the closing tag can be omitted.
    */
-  function html$1(_, index, parent) {
+  function html$3(_, index, parent) {
     const next = siblingAfter(parent, index);
     return !next || next.type !== 'comment'
   }
@@ -57677,7 +59349,7 @@
     body,
     colgroup,
     head,
-    html,
+    html: html$2,
     tbody
   });
 
@@ -57689,7 +59361,7 @@
    * @returns {boolean}
    *   Whether the opening tag can be omitted.
    */
-  function html(node) {
+  function html$2(node) {
     const head = siblingAfter(node, -1);
     return !head || head.type !== 'comment'
   }
@@ -57878,7 +59550,7 @@
     let last;
 
     if (schema.space === 'html' && node.tagName === 'svg') {
-      state.schema = svg;
+      state.schema = svg$3;
     }
 
     const attributes = serializeAttributes(state, node.properties);
@@ -57970,7 +59642,7 @@
    * @returns {string}
    */
   function serializeAttribute(state, key, value) {
-    const info = find(state.schema, key);
+    const info = find$2(state.schema, key);
     const x =
       state.settings.allowParseErrors && state.schema.space === 'html' ? 0 : 1;
     const y = state.settings.allowDangerousCharacters ? 0 : 1;
@@ -57981,8 +59653,8 @@
     if (info.overloadedBoolean && (value === info.attribute || value === '')) {
       value = true;
     } else if (
-      info.boolean ||
-      (info.overloadedBoolean && typeof value !== 'string')
+      (info.boolean || info.overloadedBoolean) &&
+      (typeof value !== 'string' || value === info.attribute || value === '')
     ) {
       value = Boolean(value);
     }
@@ -58260,7 +59932,7 @@
         closeSelfClosing: options_.closeSelfClosing || false,
         closeEmptyElements: options_.closeEmptyElements || false
       },
-      schema: options_.space === 'svg' ? svg : html$2,
+      schema: options_.space === 'svg' ? svg$3 : html$6,
       quote,
       alternative
     };
@@ -58313,9 +59985,9 @@
   }
 
   /**
-   * @typedef {import('hast').Root} Root
-   * @typedef {import('hast-util-to-html').Options} Options
-   * @typedef {import('unified').Compiler<Root, string>} Compiler
+   * @import {Root} from 'hast'
+   * @import {Options} from 'hast-util-to-html'
+   * @import {Compiler, Processor} from 'unified'
    */
 
 
@@ -58328,7 +60000,7 @@
    *   Nothing.
    */
   function rehypeStringify(options) {
-    /** @type {import('unified').Processor<undefined, undefined, undefined, Root, string>} */
+    /** @type {Processor<undefined, undefined, undefined, Root, string>} */
     // @ts-expect-error: TS in JSDoc generates wrong types if `this` is typed regularly.
     const self = this;
     const settings = {...self.data('settings'), ...options};
@@ -58336,7 +60008,7 @@
     self.compiler = compiler;
 
     /**
-     * @type {Compiler}
+     * @type {Compiler<Root, string>}
      */
     function compiler(tree) {
       return toHtml(tree, settings)
@@ -58356,7 +60028,7 @@
    */
 
 
-  const own$2 = {}.hasOwnProperty;
+  const own$3 = {}.hasOwnProperty;
 
   /**
    * Create a new `tree` of copies of all nodes that pass `test`.
@@ -58446,7 +60118,7 @@
       let key;
 
       for (key in node) {
-        if (own$2.call(node, key)) {
+        if (own$3.call(node, key)) {
           // @ts-expect-error: Looks like a record.
           next[key] = key === 'children' ? children : node[key];
         }
@@ -58471,49 +60143,59 @@
    * @returns {Array<number>}  Returns an energetic array.
    */
 
-  (function (module, exports) {
-  	function parsePart(string) {
-  	  let res = [];
-  	  let m;
+  var hasRequiredParseNumericRange;
 
-  	  for (let str of string.split(",").map((str) => str.trim())) {
-  	    // just a number
-  	    if (/^-?\d+$/.test(str)) {
-  	      res.push(parseInt(str, 10));
-  	    } else if (
-  	      (m = str.match(/^(-?\d+)(-|\.\.\.?|\u2025|\u2026|\u22EF)(-?\d+)$/))
-  	    ) {
-  	      // 1-5 or 1..5 (equivalent) or 1...5 (doesn't include 5)
-  	      let [_, lhs, sep, rhs] = m;
+  function requireParseNumericRange () {
+  	if (hasRequiredParseNumericRange) return parseNumericRange.exports;
+  	hasRequiredParseNumericRange = 1;
+  	(function (module, exports) {
+  		function parsePart(string) {
+  		  let res = [];
+  		  let m;
 
-  	      if (lhs && rhs) {
-  	        lhs = parseInt(lhs);
-  	        rhs = parseInt(rhs);
-  	        const incr = lhs < rhs ? 1 : -1;
+  		  for (let str of string.split(",").map((str) => str.trim())) {
+  		    // just a number
+  		    if (/^-?\d+$/.test(str)) {
+  		      res.push(parseInt(str, 10));
+  		    } else if (
+  		      (m = str.match(/^(-?\d+)(-|\.\.\.?|\u2025|\u2026|\u22EF)(-?\d+)$/))
+  		    ) {
+  		      // 1-5 or 1..5 (equivalent) or 1...5 (doesn't include 5)
+  		      let [_, lhs, sep, rhs] = m;
 
-  	        // Make it inclusive by moving the right 'stop-point' away by one.
-  	        if (sep === "-" || sep === ".." || sep === "\u2025") rhs += incr;
+  		      if (lhs && rhs) {
+  		        lhs = parseInt(lhs);
+  		        rhs = parseInt(rhs);
+  		        const incr = lhs < rhs ? 1 : -1;
 
-  	        for (let i = lhs; i !== rhs; i += incr) res.push(i);
-  	      }
-  	    }
-  	  }
+  		        // Make it inclusive by moving the right 'stop-point' away by one.
+  		        if (sep === "-" || sep === ".." || sep === "\u2025") rhs += incr;
 
-  	  return res;
-  	}
+  		        for (let i = lhs; i !== rhs; i += incr) res.push(i);
+  		      }
+  		    }
+  		  }
 
-  	exports.default = parsePart;
-  	module.exports = parsePart; 
-  } (parseNumericRange, parseNumericRange.exports));
+  		  return res;
+  		}
 
-  var parseNumericRangeExports = parseNumericRange.exports;
+  		exports.default = parsePart;
+  		module.exports = parsePart; 
+  	} (parseNumericRange, parseNumericRange.exports));
+  	return parseNumericRange.exports;
+  }
+
+  var parseNumericRangeExports = requireParseNumericRange();
   var n = /*@__PURE__*/getDefaultExportFromCjs(parseNumericRangeExports);
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   clike.displayName = 'clike';
   clike.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function clike(Prism) {
     Prism.languages.clike = {
       comment: [
@@ -58551,10 +60233,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   c$1.displayName = 'c';
   c$1.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function c$1(Prism) {
     Prism.register(clike);
     Prism.languages.c = Prism.languages.extend('clike', {
@@ -58642,10 +60327,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   cpp.displayName = 'cpp';
   cpp.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function cpp(Prism) {
     Prism.register(c$1)
     ;(function (Prism) {
@@ -58767,10 +60455,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   arduino.displayName = 'arduino';
   arduino.aliases = ['ino'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function arduino(Prism) {
     Prism.register(cpp);
     Prism.languages.arduino = Prism.languages.extend('cpp', {
@@ -58785,10 +60476,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   bash.displayName = 'bash';
   bash.aliases = ['sh', 'shell'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function bash(Prism) {
   (function (Prism) {
       // $ set | grep '^[A-Z][^[:space:]]*=' | cut -d= -f1 | tr '\n' '|'
@@ -58804,7 +60498,6 @@
         // this looks reasonably well in all themes
         inside: null // see below
       };
-
       var insideString = {
         bash: commandAfterHeredoc,
         environment: {
@@ -59034,10 +60727,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   csharp.displayName = 'csharp';
   csharp.aliases = ['cs', 'dotnet'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function csharp(Prism) {
     Prism.register(clike)
     ;(function (Prism) {
@@ -59517,10 +61213,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   markup.displayName = 'markup';
   markup.aliases = ['atom', 'html', 'mathml', 'rss', 'ssml', 'svg', 'xml'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function markup(Prism) {
     Prism.languages.markup = {
       comment: {
@@ -59543,7 +61242,6 @@
             greedy: true,
             inside: null // see below
           },
-
           string: {
             pattern: /"[^"]*"|'[^']*'/,
             greedy: true
@@ -59718,10 +61416,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   css.displayName = 'css';
   css.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function css(Prism) {
   (function (Prism) {
       var string =
@@ -59752,7 +61453,6 @@
             // See rest below
           }
         },
-
         url: {
           // https://drafts.csswg.org/css-values-3/#urls
           pattern: RegExp(
@@ -59807,10 +61507,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   diff.displayName = 'diff';
   diff.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function diff(Prism) {
   (function (Prism) {
       Prism.languages.diff = {
@@ -59878,10 +61581,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   go.displayName = 'go';
   go.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function go(Prism) {
     Prism.register(clike);
     Prism.languages.go = Prism.languages.extend('clike', {
@@ -59916,10 +61622,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   ini.displayName = 'ini';
   ini.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function ini(Prism) {
     Prism.languages.ini = {
       /**
@@ -59966,10 +61675,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   java.displayName = 'java';
   java.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function java(Prism) {
     Prism.register(clike)
     ;(function (Prism) {
@@ -60126,10 +61838,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   regex.displayName = 'regex';
   regex.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function regex(Prism) {
   (function (Prism) {
       var specialEscape = {
@@ -60236,10 +61951,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   javascript.displayName = 'javascript';
   javascript.aliases = ['js'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function javascript(Prism) {
     Prism.register(clike);
     Prism.languages.javascript = Prism.languages.extend('clike', {
@@ -60428,10 +62146,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   json.displayName = 'json';
   json.aliases = ['webmanifest'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function json(Prism) {
     // https://www.json.org/json-en.html
     Prism.languages.json = {
@@ -60462,10 +62183,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   kotlin.displayName = 'kotlin';
   kotlin.aliases = ['kt', 'kts'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function kotlin(Prism) {
     Prism.register(clike)
     ;(function (Prism) {
@@ -60555,10 +62279,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   less.displayName = 'less';
   less.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function less(Prism) {
     Prism.register(css);
     /* FIXME :
@@ -60617,10 +62344,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   lua.displayName = 'lua';
   lua.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function lua(Prism) {
     Prism.languages.lua = {
       comment: /^#!.+|--(?:\[(=*)\[[\s\S]*?\]\1\]|.*)/m,
@@ -60648,10 +62378,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   makefile.displayName = 'makefile';
   makefile.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function makefile(Prism) {
     Prism.languages.makefile = {
       comment: {
@@ -60688,10 +62421,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   yaml.displayName = 'yaml';
   yaml.aliases = ['yml'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function yaml(Prism) {
   (function (Prism) {
       // https://yaml.org/spec/1.2/spec.html#c-ns-anchor-property
@@ -60815,10 +62551,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   markdown$1.displayName = 'markdown';
   markdown$1.aliases = ['md'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function markdown$1(Prism) {
     Prism.register(markup)
     ;(function (Prism) {
@@ -61016,7 +62755,6 @@
               lookbehind: true,
               inside: {} // see below
             },
-
             punctuation: /\*\*|__/
           }
         },
@@ -61037,7 +62775,6 @@
               lookbehind: true,
               inside: {} // see below
             },
-
             punctuation: /[*_]/
           }
         },
@@ -61054,7 +62791,6 @@
               lookbehind: true,
               inside: {} // see below
             },
-
             punctuation: /~~?/
           }
         },
@@ -61084,7 +62820,6 @@
               lookbehind: true,
               inside: {} // see below
             },
-
             variable: {
               pattern: /(^\][ \t]?\[)[^\]]+(?=\]$)/,
               lookbehind: true
@@ -61101,14 +62836,14 @@
         }
       })
       ;['url', 'bold', 'italic', 'strike'].forEach(function (token) {
-  ['url', 'bold', 'italic', 'strike', 'code-snippet'].forEach(function (
-          inside
-        ) {
-          if (token !== inside) {
-            Prism.languages.markdown[token].inside.content.inside[inside] =
-              Prism.languages.markdown[inside];
+  ['url', 'bold', 'italic', 'strike', 'code-snippet'].forEach(
+          function (inside) {
+            if (token !== inside) {
+              Prism.languages.markdown[token].inside.content.inside[inside] =
+                Prism.languages.markdown[inside];
+            }
           }
-        });
+        );
       });
       Prism.hooks.add('after-tokenize', function (env) {
         if (env.language !== 'markdown' && env.language !== 'md') {
@@ -61214,10 +62949,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   objectivec.displayName = 'objectivec';
   objectivec.aliases = ['objc'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function objectivec(Prism) {
     Prism.register(c$1);
     Prism.languages.objectivec = Prism.languages.extend('c', {
@@ -61234,10 +62972,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   perl.displayName = 'perl';
   perl.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function perl(Prism) {
   (function (Prism) {
       var brackets =
@@ -61392,10 +63133,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   markupTemplating.displayName = 'markup-templating';
   markupTemplating.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function markupTemplating(Prism) {
     Prism.register(markup)
     ;(function (Prism) {
@@ -61523,10 +63267,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   php.displayName = 'php';
   php.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function php(Prism) {
     Prism.register(markupTemplating)
     /**
@@ -61881,10 +63628,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   python.displayName = 'python';
   python.aliases = ['py'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function python(Prism) {
     Prism.languages.python = {
       comment: {
@@ -61959,10 +63709,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   r.displayName = 'r';
   r.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function r(Prism) {
     Prism.languages.r = {
       comment: /#.*/,
@@ -61990,10 +63743,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   ruby.displayName = 'ruby';
   ruby.aliases = ['rb'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function ruby(Prism) {
     Prism.register(clike)
     /**
@@ -62193,10 +63949,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   rust.displayName = 'rust';
   rust.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function rust(Prism) {
   (function (Prism) {
       var multilineComment = /\/\*(?:[^*/]|\*(?!\/)|\/(?!\*)|<self>)*\*\//.source;
@@ -62239,7 +63998,6 @@
             string: null // see below
           }
         },
-
         // Closure params should not be confused with bitwise OR |
         'closure-params': {
           pattern: /([=(,:]\s*|\bmove\s*)\|[^|]*\||\|[^|]*\|(?=\s*(?:\{|->))/,
@@ -62253,7 +64011,6 @@
             rest: null // see below
           }
         },
-
         'lifetime-annotation': {
           pattern: /'\w+/,
           alias: 'symbol'
@@ -62327,10 +64084,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   sass.displayName = 'sass';
   sass.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function sass(Prism) {
     Prism.register(css)
     ;(function (Prism) {
@@ -62409,10 +64169,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   scss.displayName = 'scss';
   scss.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function scss(Prism) {
     Prism.register(css);
     Prism.languages.scss = Prism.languages.extend('css', {
@@ -62427,7 +64190,6 @@
           // See rest below
         }
       },
-
       // url, compassified
       url: /(?:[-a-z]+-)?url(?=\()/i,
       // CSS selector regex is not appropriate for Sass
@@ -62497,10 +64259,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   sql.displayName = 'sql';
   sql.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function sql(Prism) {
     Prism.languages.sql = {
       comment: {
@@ -62541,10 +64306,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   swift.displayName = 'swift';
   swift.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function swift(Prism) {
     Prism.languages.swift = {
       comment: {
@@ -62578,7 +64346,6 @@
               lookbehind: true,
               inside: null // see below
             },
-
             'interpolation-punctuation': {
               pattern: /^\)|\\\($/,
               alias: 'punctuation'
@@ -62608,7 +64375,6 @@
               lookbehind: true,
               inside: null // see below
             },
-
             'interpolation-punctuation': {
               pattern: /^\)|\\#+\($/,
               alias: 'punctuation'
@@ -62698,10 +64464,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   typescript.displayName = 'typescript';
   typescript.aliases = ['ts'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function typescript(Prism) {
     Prism.register(javascript)
     ;(function (Prism) {
@@ -62713,7 +64482,6 @@
           greedy: true,
           inside: null // see below
         },
-
         builtin:
           /\b(?:Array|Function|Promise|any|boolean|console|never|number|string|symbol|unknown)\b/
       });
@@ -62767,10 +64535,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   basic.displayName = 'basic';
   basic.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function basic(Prism) {
     Prism.languages.basic = {
       comment: {
@@ -62794,10 +64565,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   vbnet.displayName = 'vbnet';
   vbnet.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function vbnet(Prism) {
     Prism.register(basic);
     Prism.languages.vbnet = Prism.languages.extend('basic', {
@@ -62824,6 +64598,1268 @@
       punctuation: /[,;:(){}]/
     });
   }
+
+  /**
+   * @typedef {import('./info.js').Info} Info
+   * @typedef {Record<string, Info>} Properties
+   * @typedef {Record<string, string>} Normal
+   */
+
+  class Schema {
+    /**
+     * @constructor
+     * @param {Properties} property
+     * @param {Normal} normal
+     * @param {string} [space]
+     */
+    constructor(property, normal, space) {
+      this.property = property;
+      this.normal = normal;
+      if (space) {
+        this.space = space;
+      }
+    }
+  }
+
+  /** @type {Properties} */
+  Schema.prototype.property = {};
+  /** @type {Normal} */
+  Schema.prototype.normal = {};
+  /** @type {string|null} */
+  Schema.prototype.space = null;
+
+  /**
+   * @typedef {import('./schema.js').Properties} Properties
+   * @typedef {import('./schema.js').Normal} Normal
+   */
+
+
+  /**
+   * @param {Schema[]} definitions
+   * @param {string} [space]
+   * @returns {Schema}
+   */
+  function merge(definitions, space) {
+    /** @type {Properties} */
+    const property = {};
+    /** @type {Normal} */
+    const normal = {};
+    let index = -1;
+
+    while (++index < definitions.length) {
+      Object.assign(property, definitions[index].property);
+      Object.assign(normal, definitions[index].normal);
+    }
+
+    return new Schema(property, normal, space)
+  }
+
+  /**
+   * @param {string} value
+   * @returns {string}
+   */
+  function normalize(value) {
+    return value.toLowerCase()
+  }
+
+  class Info {
+    /**
+     * @constructor
+     * @param {string} property
+     * @param {string} attribute
+     */
+    constructor(property, attribute) {
+      /** @type {string} */
+      this.property = property;
+      /** @type {string} */
+      this.attribute = attribute;
+    }
+  }
+
+  /** @type {string|null} */
+  Info.prototype.space = null;
+  Info.prototype.boolean = false;
+  Info.prototype.booleanish = false;
+  Info.prototype.overloadedBoolean = false;
+  Info.prototype.number = false;
+  Info.prototype.commaSeparated = false;
+  Info.prototype.spaceSeparated = false;
+  Info.prototype.commaOrSpaceSeparated = false;
+  Info.prototype.mustUseProperty = false;
+  Info.prototype.defined = false;
+
+  let powers = 0;
+
+  const boolean = increment();
+  const booleanish = increment();
+  const overloadedBoolean = increment();
+  const number = increment();
+  const spaceSeparated = increment();
+  const commaSeparated = increment();
+  const commaOrSpaceSeparated = increment();
+
+  function increment() {
+    return 2 ** ++powers
+  }
+
+  var types = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    boolean: boolean,
+    booleanish: booleanish,
+    commaOrSpaceSeparated: commaOrSpaceSeparated,
+    commaSeparated: commaSeparated,
+    number: number,
+    overloadedBoolean: overloadedBoolean,
+    spaceSeparated: spaceSeparated
+  });
+
+  /** @type {Array<keyof types>} */
+  // @ts-expect-error: hush.
+  const checks = Object.keys(types);
+
+  class DefinedInfo extends Info {
+    /**
+     * @constructor
+     * @param {string} property
+     * @param {string} attribute
+     * @param {number|null} [mask]
+     * @param {string} [space]
+     */
+    constructor(property, attribute, mask, space) {
+      let index = -1;
+
+      super(property, attribute);
+
+      mark(this, 'space', space);
+
+      if (typeof mask === 'number') {
+        while (++index < checks.length) {
+          const check = checks[index];
+          mark(this, checks[index], (mask & types[check]) === types[check]);
+        }
+      }
+    }
+  }
+
+  DefinedInfo.prototype.defined = true;
+
+  /**
+   * @param {DefinedInfo} values
+   * @param {string} key
+   * @param {unknown} value
+   */
+  function mark(values, key, value) {
+    if (value) {
+      // @ts-expect-error: assume `value` matches the expected value of `key`.
+      values[key] = value;
+    }
+  }
+
+  /**
+   * @typedef {import('./schema.js').Properties} Properties
+   * @typedef {import('./schema.js').Normal} Normal
+   *
+   * @typedef {Record<string, string>} Attributes
+   *
+   * @typedef {Object} Definition
+   * @property {Record<string, number|null>} properties
+   * @property {(attributes: Attributes, property: string) => string} transform
+   * @property {string} [space]
+   * @property {Attributes} [attributes]
+   * @property {Array<string>} [mustUseProperty]
+   */
+
+
+  const own$2 = {}.hasOwnProperty;
+
+  /**
+   * @param {Definition} definition
+   * @returns {Schema}
+   */
+  function create(definition) {
+    /** @type {Properties} */
+    const property = {};
+    /** @type {Normal} */
+    const normal = {};
+    /** @type {string} */
+    let prop;
+
+    for (prop in definition.properties) {
+      if (own$2.call(definition.properties, prop)) {
+        const value = definition.properties[prop];
+        const info = new DefinedInfo(
+          prop,
+          definition.transform(definition.attributes || {}, prop),
+          value,
+          definition.space
+        );
+
+        if (
+          definition.mustUseProperty &&
+          definition.mustUseProperty.includes(prop)
+        ) {
+          info.mustUseProperty = true;
+        }
+
+        property[prop] = info;
+
+        normal[normalize(prop)] = prop;
+        normal[normalize(info.attribute)] = prop;
+      }
+    }
+
+    return new Schema(property, normal, definition.space)
+  }
+
+  const xlink = create({
+    space: 'xlink',
+    transform(_, prop) {
+      return 'xlink:' + prop.slice(5).toLowerCase()
+    },
+    properties: {
+      xLinkActuate: null,
+      xLinkArcRole: null,
+      xLinkHref: null,
+      xLinkRole: null,
+      xLinkShow: null,
+      xLinkTitle: null,
+      xLinkType: null
+    }
+  });
+
+  const xml = create({
+    space: 'xml',
+    transform(_, prop) {
+      return 'xml:' + prop.slice(3).toLowerCase()
+    },
+    properties: {xmlLang: null, xmlBase: null, xmlSpace: null}
+  });
+
+  /**
+   * @param {Record<string, string>} attributes
+   * @param {string} attribute
+   * @returns {string}
+   */
+  function caseSensitiveTransform(attributes, attribute) {
+    return attribute in attributes ? attributes[attribute] : attribute
+  }
+
+  /**
+   * @param {Record<string, string>} attributes
+   * @param {string} property
+   * @returns {string}
+   */
+  function caseInsensitiveTransform(attributes, property) {
+    return caseSensitiveTransform(attributes, property.toLowerCase())
+  }
+
+  const xmlns = create({
+    space: 'xmlns',
+    attributes: {xmlnsxlink: 'xmlns:xlink'},
+    transform: caseInsensitiveTransform,
+    properties: {xmlns: null, xmlnsXLink: null}
+  });
+
+  const aria = create({
+    transform(_, prop) {
+      return prop === 'role' ? prop : 'aria-' + prop.slice(4).toLowerCase()
+    },
+    properties: {
+      ariaActiveDescendant: null,
+      ariaAtomic: booleanish,
+      ariaAutoComplete: null,
+      ariaBusy: booleanish,
+      ariaChecked: booleanish,
+      ariaColCount: number,
+      ariaColIndex: number,
+      ariaColSpan: number,
+      ariaControls: spaceSeparated,
+      ariaCurrent: null,
+      ariaDescribedBy: spaceSeparated,
+      ariaDetails: null,
+      ariaDisabled: booleanish,
+      ariaDropEffect: spaceSeparated,
+      ariaErrorMessage: null,
+      ariaExpanded: booleanish,
+      ariaFlowTo: spaceSeparated,
+      ariaGrabbed: booleanish,
+      ariaHasPopup: null,
+      ariaHidden: booleanish,
+      ariaInvalid: null,
+      ariaKeyShortcuts: null,
+      ariaLabel: null,
+      ariaLabelledBy: spaceSeparated,
+      ariaLevel: number,
+      ariaLive: null,
+      ariaModal: booleanish,
+      ariaMultiLine: booleanish,
+      ariaMultiSelectable: booleanish,
+      ariaOrientation: null,
+      ariaOwns: spaceSeparated,
+      ariaPlaceholder: null,
+      ariaPosInSet: number,
+      ariaPressed: booleanish,
+      ariaReadOnly: booleanish,
+      ariaRelevant: null,
+      ariaRequired: booleanish,
+      ariaRoleDescription: spaceSeparated,
+      ariaRowCount: number,
+      ariaRowIndex: number,
+      ariaRowSpan: number,
+      ariaSelected: booleanish,
+      ariaSetSize: number,
+      ariaSort: null,
+      ariaValueMax: number,
+      ariaValueMin: number,
+      ariaValueNow: number,
+      ariaValueText: null,
+      role: null
+    }
+  });
+
+  const html$1 = create({
+    space: 'html',
+    attributes: {
+      acceptcharset: 'accept-charset',
+      classname: 'class',
+      htmlfor: 'for',
+      httpequiv: 'http-equiv'
+    },
+    transform: caseInsensitiveTransform,
+    mustUseProperty: ['checked', 'multiple', 'muted', 'selected'],
+    properties: {
+      // Standard Properties.
+      abbr: null,
+      accept: commaSeparated,
+      acceptCharset: spaceSeparated,
+      accessKey: spaceSeparated,
+      action: null,
+      allow: null,
+      allowFullScreen: boolean,
+      allowPaymentRequest: boolean,
+      allowUserMedia: boolean,
+      alt: null,
+      as: null,
+      async: boolean,
+      autoCapitalize: null,
+      autoComplete: spaceSeparated,
+      autoFocus: boolean,
+      autoPlay: boolean,
+      blocking: spaceSeparated,
+      capture: null,
+      charSet: null,
+      checked: boolean,
+      cite: null,
+      className: spaceSeparated,
+      cols: number,
+      colSpan: null,
+      content: null,
+      contentEditable: booleanish,
+      controls: boolean,
+      controlsList: spaceSeparated,
+      coords: number | commaSeparated,
+      crossOrigin: null,
+      data: null,
+      dateTime: null,
+      decoding: null,
+      default: boolean,
+      defer: boolean,
+      dir: null,
+      dirName: null,
+      disabled: boolean,
+      download: overloadedBoolean,
+      draggable: booleanish,
+      encType: null,
+      enterKeyHint: null,
+      fetchPriority: null,
+      form: null,
+      formAction: null,
+      formEncType: null,
+      formMethod: null,
+      formNoValidate: boolean,
+      formTarget: null,
+      headers: spaceSeparated,
+      height: number,
+      hidden: boolean,
+      high: number,
+      href: null,
+      hrefLang: null,
+      htmlFor: spaceSeparated,
+      httpEquiv: spaceSeparated,
+      id: null,
+      imageSizes: null,
+      imageSrcSet: null,
+      inert: boolean,
+      inputMode: null,
+      integrity: null,
+      is: null,
+      isMap: boolean,
+      itemId: null,
+      itemProp: spaceSeparated,
+      itemRef: spaceSeparated,
+      itemScope: boolean,
+      itemType: spaceSeparated,
+      kind: null,
+      label: null,
+      lang: null,
+      language: null,
+      list: null,
+      loading: null,
+      loop: boolean,
+      low: number,
+      manifest: null,
+      max: null,
+      maxLength: number,
+      media: null,
+      method: null,
+      min: null,
+      minLength: number,
+      multiple: boolean,
+      muted: boolean,
+      name: null,
+      nonce: null,
+      noModule: boolean,
+      noValidate: boolean,
+      onAbort: null,
+      onAfterPrint: null,
+      onAuxClick: null,
+      onBeforeMatch: null,
+      onBeforePrint: null,
+      onBeforeToggle: null,
+      onBeforeUnload: null,
+      onBlur: null,
+      onCancel: null,
+      onCanPlay: null,
+      onCanPlayThrough: null,
+      onChange: null,
+      onClick: null,
+      onClose: null,
+      onContextLost: null,
+      onContextMenu: null,
+      onContextRestored: null,
+      onCopy: null,
+      onCueChange: null,
+      onCut: null,
+      onDblClick: null,
+      onDrag: null,
+      onDragEnd: null,
+      onDragEnter: null,
+      onDragExit: null,
+      onDragLeave: null,
+      onDragOver: null,
+      onDragStart: null,
+      onDrop: null,
+      onDurationChange: null,
+      onEmptied: null,
+      onEnded: null,
+      onError: null,
+      onFocus: null,
+      onFormData: null,
+      onHashChange: null,
+      onInput: null,
+      onInvalid: null,
+      onKeyDown: null,
+      onKeyPress: null,
+      onKeyUp: null,
+      onLanguageChange: null,
+      onLoad: null,
+      onLoadedData: null,
+      onLoadedMetadata: null,
+      onLoadEnd: null,
+      onLoadStart: null,
+      onMessage: null,
+      onMessageError: null,
+      onMouseDown: null,
+      onMouseEnter: null,
+      onMouseLeave: null,
+      onMouseMove: null,
+      onMouseOut: null,
+      onMouseOver: null,
+      onMouseUp: null,
+      onOffline: null,
+      onOnline: null,
+      onPageHide: null,
+      onPageShow: null,
+      onPaste: null,
+      onPause: null,
+      onPlay: null,
+      onPlaying: null,
+      onPopState: null,
+      onProgress: null,
+      onRateChange: null,
+      onRejectionHandled: null,
+      onReset: null,
+      onResize: null,
+      onScroll: null,
+      onScrollEnd: null,
+      onSecurityPolicyViolation: null,
+      onSeeked: null,
+      onSeeking: null,
+      onSelect: null,
+      onSlotChange: null,
+      onStalled: null,
+      onStorage: null,
+      onSubmit: null,
+      onSuspend: null,
+      onTimeUpdate: null,
+      onToggle: null,
+      onUnhandledRejection: null,
+      onUnload: null,
+      onVolumeChange: null,
+      onWaiting: null,
+      onWheel: null,
+      open: boolean,
+      optimum: number,
+      pattern: null,
+      ping: spaceSeparated,
+      placeholder: null,
+      playsInline: boolean,
+      popover: null,
+      popoverTarget: null,
+      popoverTargetAction: null,
+      poster: null,
+      preload: null,
+      readOnly: boolean,
+      referrerPolicy: null,
+      rel: spaceSeparated,
+      required: boolean,
+      reversed: boolean,
+      rows: number,
+      rowSpan: number,
+      sandbox: spaceSeparated,
+      scope: null,
+      scoped: boolean,
+      seamless: boolean,
+      selected: boolean,
+      shadowRootClonable: boolean,
+      shadowRootDelegatesFocus: boolean,
+      shadowRootMode: null,
+      shape: null,
+      size: number,
+      sizes: null,
+      slot: null,
+      span: number,
+      spellCheck: booleanish,
+      src: null,
+      srcDoc: null,
+      srcLang: null,
+      srcSet: null,
+      start: number,
+      step: null,
+      style: null,
+      tabIndex: number,
+      target: null,
+      title: null,
+      translate: null,
+      type: null,
+      typeMustMatch: boolean,
+      useMap: null,
+      value: booleanish,
+      width: number,
+      wrap: null,
+      writingSuggestions: null,
+
+      // Legacy.
+      // See: https://html.spec.whatwg.org/#other-elements,-attributes-and-apis
+      align: null, // Several. Use CSS `text-align` instead,
+      aLink: null, // `<body>`. Use CSS `a:active {color}` instead
+      archive: spaceSeparated, // `<object>`. List of URIs to archives
+      axis: null, // `<td>` and `<th>`. Use `scope` on `<th>`
+      background: null, // `<body>`. Use CSS `background-image` instead
+      bgColor: null, // `<body>` and table elements. Use CSS `background-color` instead
+      border: number, // `<table>`. Use CSS `border-width` instead,
+      borderColor: null, // `<table>`. Use CSS `border-color` instead,
+      bottomMargin: number, // `<body>`
+      cellPadding: null, // `<table>`
+      cellSpacing: null, // `<table>`
+      char: null, // Several table elements. When `align=char`, sets the character to align on
+      charOff: null, // Several table elements. When `char`, offsets the alignment
+      classId: null, // `<object>`
+      clear: null, // `<br>`. Use CSS `clear` instead
+      code: null, // `<object>`
+      codeBase: null, // `<object>`
+      codeType: null, // `<object>`
+      color: null, // `<font>` and `<hr>`. Use CSS instead
+      compact: boolean, // Lists. Use CSS to reduce space between items instead
+      declare: boolean, // `<object>`
+      event: null, // `<script>`
+      face: null, // `<font>`. Use CSS instead
+      frame: null, // `<table>`
+      frameBorder: null, // `<iframe>`. Use CSS `border` instead
+      hSpace: number, // `<img>` and `<object>`
+      leftMargin: number, // `<body>`
+      link: null, // `<body>`. Use CSS `a:link {color: *}` instead
+      longDesc: null, // `<frame>`, `<iframe>`, and `<img>`. Use an `<a>`
+      lowSrc: null, // `<img>`. Use a `<picture>`
+      marginHeight: number, // `<body>`
+      marginWidth: number, // `<body>`
+      noResize: boolean, // `<frame>`
+      noHref: boolean, // `<area>`. Use no href instead of an explicit `nohref`
+      noShade: boolean, // `<hr>`. Use background-color and height instead of borders
+      noWrap: boolean, // `<td>` and `<th>`
+      object: null, // `<applet>`
+      profile: null, // `<head>`
+      prompt: null, // `<isindex>`
+      rev: null, // `<link>`
+      rightMargin: number, // `<body>`
+      rules: null, // `<table>`
+      scheme: null, // `<meta>`
+      scrolling: booleanish, // `<frame>`. Use overflow in the child context
+      standby: null, // `<object>`
+      summary: null, // `<table>`
+      text: null, // `<body>`. Use CSS `color` instead
+      topMargin: number, // `<body>`
+      valueType: null, // `<param>`
+      version: null, // `<html>`. Use a doctype.
+      vAlign: null, // Several. Use CSS `vertical-align` instead
+      vLink: null, // `<body>`. Use CSS `a:visited {color}` instead
+      vSpace: number, // `<img>` and `<object>`
+
+      // Non-standard Properties.
+      allowTransparency: null,
+      autoCorrect: null,
+      autoSave: null,
+      disablePictureInPicture: boolean,
+      disableRemotePlayback: boolean,
+      prefix: null,
+      property: null,
+      results: number,
+      security: null,
+      unselectable: null
+    }
+  });
+
+  const svg = create({
+    space: 'svg',
+    attributes: {
+      accentHeight: 'accent-height',
+      alignmentBaseline: 'alignment-baseline',
+      arabicForm: 'arabic-form',
+      baselineShift: 'baseline-shift',
+      capHeight: 'cap-height',
+      className: 'class',
+      clipPath: 'clip-path',
+      clipRule: 'clip-rule',
+      colorInterpolation: 'color-interpolation',
+      colorInterpolationFilters: 'color-interpolation-filters',
+      colorProfile: 'color-profile',
+      colorRendering: 'color-rendering',
+      crossOrigin: 'crossorigin',
+      dataType: 'datatype',
+      dominantBaseline: 'dominant-baseline',
+      enableBackground: 'enable-background',
+      fillOpacity: 'fill-opacity',
+      fillRule: 'fill-rule',
+      floodColor: 'flood-color',
+      floodOpacity: 'flood-opacity',
+      fontFamily: 'font-family',
+      fontSize: 'font-size',
+      fontSizeAdjust: 'font-size-adjust',
+      fontStretch: 'font-stretch',
+      fontStyle: 'font-style',
+      fontVariant: 'font-variant',
+      fontWeight: 'font-weight',
+      glyphName: 'glyph-name',
+      glyphOrientationHorizontal: 'glyph-orientation-horizontal',
+      glyphOrientationVertical: 'glyph-orientation-vertical',
+      hrefLang: 'hreflang',
+      horizAdvX: 'horiz-adv-x',
+      horizOriginX: 'horiz-origin-x',
+      horizOriginY: 'horiz-origin-y',
+      imageRendering: 'image-rendering',
+      letterSpacing: 'letter-spacing',
+      lightingColor: 'lighting-color',
+      markerEnd: 'marker-end',
+      markerMid: 'marker-mid',
+      markerStart: 'marker-start',
+      navDown: 'nav-down',
+      navDownLeft: 'nav-down-left',
+      navDownRight: 'nav-down-right',
+      navLeft: 'nav-left',
+      navNext: 'nav-next',
+      navPrev: 'nav-prev',
+      navRight: 'nav-right',
+      navUp: 'nav-up',
+      navUpLeft: 'nav-up-left',
+      navUpRight: 'nav-up-right',
+      onAbort: 'onabort',
+      onActivate: 'onactivate',
+      onAfterPrint: 'onafterprint',
+      onBeforePrint: 'onbeforeprint',
+      onBegin: 'onbegin',
+      onCancel: 'oncancel',
+      onCanPlay: 'oncanplay',
+      onCanPlayThrough: 'oncanplaythrough',
+      onChange: 'onchange',
+      onClick: 'onclick',
+      onClose: 'onclose',
+      onCopy: 'oncopy',
+      onCueChange: 'oncuechange',
+      onCut: 'oncut',
+      onDblClick: 'ondblclick',
+      onDrag: 'ondrag',
+      onDragEnd: 'ondragend',
+      onDragEnter: 'ondragenter',
+      onDragExit: 'ondragexit',
+      onDragLeave: 'ondragleave',
+      onDragOver: 'ondragover',
+      onDragStart: 'ondragstart',
+      onDrop: 'ondrop',
+      onDurationChange: 'ondurationchange',
+      onEmptied: 'onemptied',
+      onEnd: 'onend',
+      onEnded: 'onended',
+      onError: 'onerror',
+      onFocus: 'onfocus',
+      onFocusIn: 'onfocusin',
+      onFocusOut: 'onfocusout',
+      onHashChange: 'onhashchange',
+      onInput: 'oninput',
+      onInvalid: 'oninvalid',
+      onKeyDown: 'onkeydown',
+      onKeyPress: 'onkeypress',
+      onKeyUp: 'onkeyup',
+      onLoad: 'onload',
+      onLoadedData: 'onloadeddata',
+      onLoadedMetadata: 'onloadedmetadata',
+      onLoadStart: 'onloadstart',
+      onMessage: 'onmessage',
+      onMouseDown: 'onmousedown',
+      onMouseEnter: 'onmouseenter',
+      onMouseLeave: 'onmouseleave',
+      onMouseMove: 'onmousemove',
+      onMouseOut: 'onmouseout',
+      onMouseOver: 'onmouseover',
+      onMouseUp: 'onmouseup',
+      onMouseWheel: 'onmousewheel',
+      onOffline: 'onoffline',
+      onOnline: 'ononline',
+      onPageHide: 'onpagehide',
+      onPageShow: 'onpageshow',
+      onPaste: 'onpaste',
+      onPause: 'onpause',
+      onPlay: 'onplay',
+      onPlaying: 'onplaying',
+      onPopState: 'onpopstate',
+      onProgress: 'onprogress',
+      onRateChange: 'onratechange',
+      onRepeat: 'onrepeat',
+      onReset: 'onreset',
+      onResize: 'onresize',
+      onScroll: 'onscroll',
+      onSeeked: 'onseeked',
+      onSeeking: 'onseeking',
+      onSelect: 'onselect',
+      onShow: 'onshow',
+      onStalled: 'onstalled',
+      onStorage: 'onstorage',
+      onSubmit: 'onsubmit',
+      onSuspend: 'onsuspend',
+      onTimeUpdate: 'ontimeupdate',
+      onToggle: 'ontoggle',
+      onUnload: 'onunload',
+      onVolumeChange: 'onvolumechange',
+      onWaiting: 'onwaiting',
+      onZoom: 'onzoom',
+      overlinePosition: 'overline-position',
+      overlineThickness: 'overline-thickness',
+      paintOrder: 'paint-order',
+      panose1: 'panose-1',
+      pointerEvents: 'pointer-events',
+      referrerPolicy: 'referrerpolicy',
+      renderingIntent: 'rendering-intent',
+      shapeRendering: 'shape-rendering',
+      stopColor: 'stop-color',
+      stopOpacity: 'stop-opacity',
+      strikethroughPosition: 'strikethrough-position',
+      strikethroughThickness: 'strikethrough-thickness',
+      strokeDashArray: 'stroke-dasharray',
+      strokeDashOffset: 'stroke-dashoffset',
+      strokeLineCap: 'stroke-linecap',
+      strokeLineJoin: 'stroke-linejoin',
+      strokeMiterLimit: 'stroke-miterlimit',
+      strokeOpacity: 'stroke-opacity',
+      strokeWidth: 'stroke-width',
+      tabIndex: 'tabindex',
+      textAnchor: 'text-anchor',
+      textDecoration: 'text-decoration',
+      textRendering: 'text-rendering',
+      transformOrigin: 'transform-origin',
+      typeOf: 'typeof',
+      underlinePosition: 'underline-position',
+      underlineThickness: 'underline-thickness',
+      unicodeBidi: 'unicode-bidi',
+      unicodeRange: 'unicode-range',
+      unitsPerEm: 'units-per-em',
+      vAlphabetic: 'v-alphabetic',
+      vHanging: 'v-hanging',
+      vIdeographic: 'v-ideographic',
+      vMathematical: 'v-mathematical',
+      vectorEffect: 'vector-effect',
+      vertAdvY: 'vert-adv-y',
+      vertOriginX: 'vert-origin-x',
+      vertOriginY: 'vert-origin-y',
+      wordSpacing: 'word-spacing',
+      writingMode: 'writing-mode',
+      xHeight: 'x-height',
+      // These were camelcased in Tiny. Now lowercased in SVG 2
+      playbackOrder: 'playbackorder',
+      timelineBegin: 'timelinebegin'
+    },
+    transform: caseSensitiveTransform,
+    properties: {
+      about: commaOrSpaceSeparated,
+      accentHeight: number,
+      accumulate: null,
+      additive: null,
+      alignmentBaseline: null,
+      alphabetic: number,
+      amplitude: number,
+      arabicForm: null,
+      ascent: number,
+      attributeName: null,
+      attributeType: null,
+      azimuth: number,
+      bandwidth: null,
+      baselineShift: null,
+      baseFrequency: null,
+      baseProfile: null,
+      bbox: null,
+      begin: null,
+      bias: number,
+      by: null,
+      calcMode: null,
+      capHeight: number,
+      className: spaceSeparated,
+      clip: null,
+      clipPath: null,
+      clipPathUnits: null,
+      clipRule: null,
+      color: null,
+      colorInterpolation: null,
+      colorInterpolationFilters: null,
+      colorProfile: null,
+      colorRendering: null,
+      content: null,
+      contentScriptType: null,
+      contentStyleType: null,
+      crossOrigin: null,
+      cursor: null,
+      cx: null,
+      cy: null,
+      d: null,
+      dataType: null,
+      defaultAction: null,
+      descent: number,
+      diffuseConstant: number,
+      direction: null,
+      display: null,
+      dur: null,
+      divisor: number,
+      dominantBaseline: null,
+      download: boolean,
+      dx: null,
+      dy: null,
+      edgeMode: null,
+      editable: null,
+      elevation: number,
+      enableBackground: null,
+      end: null,
+      event: null,
+      exponent: number,
+      externalResourcesRequired: null,
+      fill: null,
+      fillOpacity: number,
+      fillRule: null,
+      filter: null,
+      filterRes: null,
+      filterUnits: null,
+      floodColor: null,
+      floodOpacity: null,
+      focusable: null,
+      focusHighlight: null,
+      fontFamily: null,
+      fontSize: null,
+      fontSizeAdjust: null,
+      fontStretch: null,
+      fontStyle: null,
+      fontVariant: null,
+      fontWeight: null,
+      format: null,
+      fr: null,
+      from: null,
+      fx: null,
+      fy: null,
+      g1: commaSeparated,
+      g2: commaSeparated,
+      glyphName: commaSeparated,
+      glyphOrientationHorizontal: null,
+      glyphOrientationVertical: null,
+      glyphRef: null,
+      gradientTransform: null,
+      gradientUnits: null,
+      handler: null,
+      hanging: number,
+      hatchContentUnits: null,
+      hatchUnits: null,
+      height: null,
+      href: null,
+      hrefLang: null,
+      horizAdvX: number,
+      horizOriginX: number,
+      horizOriginY: number,
+      id: null,
+      ideographic: number,
+      imageRendering: null,
+      initialVisibility: null,
+      in: null,
+      in2: null,
+      intercept: number,
+      k: number,
+      k1: number,
+      k2: number,
+      k3: number,
+      k4: number,
+      kernelMatrix: commaOrSpaceSeparated,
+      kernelUnitLength: null,
+      keyPoints: null, // SEMI_COLON_SEPARATED
+      keySplines: null, // SEMI_COLON_SEPARATED
+      keyTimes: null, // SEMI_COLON_SEPARATED
+      kerning: null,
+      lang: null,
+      lengthAdjust: null,
+      letterSpacing: null,
+      lightingColor: null,
+      limitingConeAngle: number,
+      local: null,
+      markerEnd: null,
+      markerMid: null,
+      markerStart: null,
+      markerHeight: null,
+      markerUnits: null,
+      markerWidth: null,
+      mask: null,
+      maskContentUnits: null,
+      maskUnits: null,
+      mathematical: null,
+      max: null,
+      media: null,
+      mediaCharacterEncoding: null,
+      mediaContentEncodings: null,
+      mediaSize: number,
+      mediaTime: null,
+      method: null,
+      min: null,
+      mode: null,
+      name: null,
+      navDown: null,
+      navDownLeft: null,
+      navDownRight: null,
+      navLeft: null,
+      navNext: null,
+      navPrev: null,
+      navRight: null,
+      navUp: null,
+      navUpLeft: null,
+      navUpRight: null,
+      numOctaves: null,
+      observer: null,
+      offset: null,
+      onAbort: null,
+      onActivate: null,
+      onAfterPrint: null,
+      onBeforePrint: null,
+      onBegin: null,
+      onCancel: null,
+      onCanPlay: null,
+      onCanPlayThrough: null,
+      onChange: null,
+      onClick: null,
+      onClose: null,
+      onCopy: null,
+      onCueChange: null,
+      onCut: null,
+      onDblClick: null,
+      onDrag: null,
+      onDragEnd: null,
+      onDragEnter: null,
+      onDragExit: null,
+      onDragLeave: null,
+      onDragOver: null,
+      onDragStart: null,
+      onDrop: null,
+      onDurationChange: null,
+      onEmptied: null,
+      onEnd: null,
+      onEnded: null,
+      onError: null,
+      onFocus: null,
+      onFocusIn: null,
+      onFocusOut: null,
+      onHashChange: null,
+      onInput: null,
+      onInvalid: null,
+      onKeyDown: null,
+      onKeyPress: null,
+      onKeyUp: null,
+      onLoad: null,
+      onLoadedData: null,
+      onLoadedMetadata: null,
+      onLoadStart: null,
+      onMessage: null,
+      onMouseDown: null,
+      onMouseEnter: null,
+      onMouseLeave: null,
+      onMouseMove: null,
+      onMouseOut: null,
+      onMouseOver: null,
+      onMouseUp: null,
+      onMouseWheel: null,
+      onOffline: null,
+      onOnline: null,
+      onPageHide: null,
+      onPageShow: null,
+      onPaste: null,
+      onPause: null,
+      onPlay: null,
+      onPlaying: null,
+      onPopState: null,
+      onProgress: null,
+      onRateChange: null,
+      onRepeat: null,
+      onReset: null,
+      onResize: null,
+      onScroll: null,
+      onSeeked: null,
+      onSeeking: null,
+      onSelect: null,
+      onShow: null,
+      onStalled: null,
+      onStorage: null,
+      onSubmit: null,
+      onSuspend: null,
+      onTimeUpdate: null,
+      onToggle: null,
+      onUnload: null,
+      onVolumeChange: null,
+      onWaiting: null,
+      onZoom: null,
+      opacity: null,
+      operator: null,
+      order: null,
+      orient: null,
+      orientation: null,
+      origin: null,
+      overflow: null,
+      overlay: null,
+      overlinePosition: number,
+      overlineThickness: number,
+      paintOrder: null,
+      panose1: null,
+      path: null,
+      pathLength: number,
+      patternContentUnits: null,
+      patternTransform: null,
+      patternUnits: null,
+      phase: null,
+      ping: spaceSeparated,
+      pitch: null,
+      playbackOrder: null,
+      pointerEvents: null,
+      points: null,
+      pointsAtX: number,
+      pointsAtY: number,
+      pointsAtZ: number,
+      preserveAlpha: null,
+      preserveAspectRatio: null,
+      primitiveUnits: null,
+      propagate: null,
+      property: commaOrSpaceSeparated,
+      r: null,
+      radius: null,
+      referrerPolicy: null,
+      refX: null,
+      refY: null,
+      rel: commaOrSpaceSeparated,
+      rev: commaOrSpaceSeparated,
+      renderingIntent: null,
+      repeatCount: null,
+      repeatDur: null,
+      requiredExtensions: commaOrSpaceSeparated,
+      requiredFeatures: commaOrSpaceSeparated,
+      requiredFonts: commaOrSpaceSeparated,
+      requiredFormats: commaOrSpaceSeparated,
+      resource: null,
+      restart: null,
+      result: null,
+      rotate: null,
+      rx: null,
+      ry: null,
+      scale: null,
+      seed: null,
+      shapeRendering: null,
+      side: null,
+      slope: null,
+      snapshotTime: null,
+      specularConstant: number,
+      specularExponent: number,
+      spreadMethod: null,
+      spacing: null,
+      startOffset: null,
+      stdDeviation: null,
+      stemh: null,
+      stemv: null,
+      stitchTiles: null,
+      stopColor: null,
+      stopOpacity: null,
+      strikethroughPosition: number,
+      strikethroughThickness: number,
+      string: null,
+      stroke: null,
+      strokeDashArray: commaOrSpaceSeparated,
+      strokeDashOffset: null,
+      strokeLineCap: null,
+      strokeLineJoin: null,
+      strokeMiterLimit: number,
+      strokeOpacity: number,
+      strokeWidth: null,
+      style: null,
+      surfaceScale: number,
+      syncBehavior: null,
+      syncBehaviorDefault: null,
+      syncMaster: null,
+      syncTolerance: null,
+      syncToleranceDefault: null,
+      systemLanguage: commaOrSpaceSeparated,
+      tabIndex: number,
+      tableValues: null,
+      target: null,
+      targetX: number,
+      targetY: number,
+      textAnchor: null,
+      textDecoration: null,
+      textRendering: null,
+      textLength: null,
+      timelineBegin: null,
+      title: null,
+      transformBehavior: null,
+      type: null,
+      typeOf: commaOrSpaceSeparated,
+      to: null,
+      transform: null,
+      transformOrigin: null,
+      u1: null,
+      u2: null,
+      underlinePosition: number,
+      underlineThickness: number,
+      unicode: null,
+      unicodeBidi: null,
+      unicodeRange: null,
+      unitsPerEm: number,
+      values: null,
+      vAlphabetic: number,
+      vMathematical: number,
+      vectorEffect: null,
+      vHanging: number,
+      vIdeographic: number,
+      version: null,
+      vertAdvY: number,
+      vertOriginX: number,
+      vertOriginY: number,
+      viewBox: null,
+      viewTarget: null,
+      visibility: null,
+      width: null,
+      widths: null,
+      wordSpacing: null,
+      writingMode: null,
+      x: null,
+      x1: null,
+      x2: null,
+      xChannelSelector: null,
+      xHeight: number,
+      y: null,
+      y1: null,
+      y2: null,
+      yChannelSelector: null,
+      z: null,
+      zoomAndPan: null
+    }
+  });
+
+  /**
+   * @typedef {import('./util/schema.js').Schema} Schema
+   */
+
+
+  const valid = /^data[-\w.:]+$/i;
+  const dash = /-[a-z]/g;
+  const cap = /[A-Z]/g;
+
+  /**
+   * @param {Schema} schema
+   * @param {string} value
+   * @returns {Info}
+   */
+  function find(schema, value) {
+    const normal = normalize(value);
+    let prop = value;
+    let Type = Info;
+
+    if (normal in schema.normal) {
+      return schema.property[schema.normal[normal]]
+    }
+
+    if (normal.length > 4 && normal.slice(0, 4) === 'data' && valid.test(value)) {
+      // Attribute or property.
+      if (value.charAt(4) === '-') {
+        // Turn it into a property.
+        const rest = value.slice(5).replace(dash, camelcase);
+        prop = 'data' + rest.charAt(0).toUpperCase() + rest.slice(1);
+      } else {
+        // Turn it into an attribute.
+        const rest = value.slice(4);
+
+        if (!dash.test(rest)) {
+          let dashes = rest.replace(cap, kebab);
+
+          if (dashes.charAt(0) !== '-') {
+            dashes = '-' + dashes;
+          }
+
+          value = 'data' + dashes;
+        }
+      }
+
+      Type = DefinedInfo;
+    }
+
+    return new Type(prop, value)
+  }
+
+  /**
+   * @param {string} $0
+   * @returns {string}
+   */
+  function kebab($0) {
+    return '-' + $0.toLowerCase()
+  }
+
+  /**
+   * @param {string} $0
+   * @returns {string}
+   */
+  function camelcase($0) {
+    return $0.charAt(1).toUpperCase()
+  }
+
+  /**
+   * @typedef {import('./lib/util/info.js').Info} Info
+   * @typedef {import('./lib/util/schema.js').Schema} Schema
+   */
+
+  const html = merge([xml, xlink, xmlns, aria, html$1], 'html');
+  merge([xml, xlink, xmlns, aria, svg], 'svg');
 
   /**
    * @typedef {import('hast').Properties} Properties
@@ -63162,7 +66198,7 @@
    */
 
 
-  const h = core(html$2, 'div');
+  const h = core(html, 'div');
 
   /**
    * Map of invalid numeric character references to their replacements, according to HTML.
@@ -63261,12 +66297,10 @@
   }
 
   /**
-   * @typedef {import('unist').Point} Point
-   * @typedef {import('unist').Position} Position
+   * @import {Point} from 'unist'
+   * @import {Options} from '../index.js'
    */
 
-
-  const fromCharCode = String.fromCharCode;
 
   // Warning messages.
   const messages = [
@@ -63291,31 +66325,32 @@
    * Parse HTML character references.
    *
    * @param {string} value
-   * @param {import('../index.js').Options} [options={}]
+   * @param {Readonly<Options> | null | undefined} [options]
    */
-  function parseEntities(value, options = {}) {
+  function parseEntities(value, options) {
+    const settings = {};
     const additional =
-      typeof options.additional === 'string'
-        ? options.additional.charCodeAt(0)
-        : options.additional;
+      typeof settings.additional === 'string'
+        ? settings.additional.charCodeAt(0)
+        : settings.additional;
     /** @type {Array<string>} */
     const result = [];
     let index = 0;
     let lines = -1;
     let queue = '';
-    /** @type {Point|undefined} */
+    /** @type {Point | undefined} */
     let point;
     /** @type {Array<number>|undefined} */
     let indent;
 
-    if (options.position) {
-      if ('start' in options.position || 'indent' in options.position) {
+    if (settings.position) {
+      if ('start' in settings.position || 'indent' in settings.position) {
         // @ts-expect-error: points don’t have indent.
-        indent = options.position.indent;
+        indent = settings.position.indent;
         // @ts-expect-error: points don’t have indent.
-        point = options.position.start;
+        point = settings.position.start;
       } else {
-        point = options.position;
+        point = settings.position;
       }
     }
 
@@ -63355,7 +66390,7 @@
           // Not a character reference.
           // No characters are consumed, and nothing is returned.
           // This is not an error, either.
-          queue += fromCharCode(character);
+          queue += String.fromCharCode(character);
           column++;
           continue
         }
@@ -63396,8 +66431,8 @@
           type === 'named'
             ? isAlphanumerical
             : type === 'decimal'
-            ? isDecimal
-            : isHexadecimal;
+              ? isDecimal
+              : isHexadecimal;
 
         end--;
 
@@ -63408,7 +66443,7 @@
             break
           }
 
-          characters += fromCharCode(following);
+          characters += String.fromCharCode(following);
 
           // Check if we can match a legacy named reference.
           // If so, we cache that as the last viable named reference.
@@ -63437,7 +66472,7 @@
         let diff = 1 + end - start;
         let reference = '';
 
-        if (!terminated && options.nonTerminated === false) ; else if (!characters) {
+        if (!terminated && settings.nonTerminated === false) ; else if (!characters) {
           // An empty (possible) reference is valid, unless it’s numeric (thus an
           // ampersand followed by an octothorp).
           if (type !== 'named') {
@@ -63463,7 +66498,7 @@
                 ? 1 /* Non terminated (named) */
                 : 3; /* Empty (named) */
 
-              if (options.attribute) {
+              if (settings.attribute) {
                 const following = value.charCodeAt(end);
 
                 if (following === 61 /* `=` */) {
@@ -63499,7 +66534,7 @@
           // replacement character.
           if (prohibited(referenceCode)) {
             warning(7 /* Prohibited (numeric) */, diff);
-            reference = fromCharCode(65533 /* `�` */);
+            reference = String.fromCharCode(65533 /* `�` */);
           } else if (referenceCode in characterReferenceInvalid) {
             // Emit a warning when the parsed number is disallowed, and replace by
             // an alternative.
@@ -63517,11 +66552,13 @@
             // Serialize the number.
             if (referenceCode > 0xffff) {
               referenceCode -= 0x10000;
-              output += fromCharCode((referenceCode >>> (10 & 0x3ff)) | 0xd800);
+              output += String.fromCharCode(
+                (referenceCode >>> (10 & 0x3ff)) | 0xd800
+              );
               referenceCode = 0xdc00 | (referenceCode & 0x3ff);
             }
 
-            reference = output + fromCharCode(referenceCode);
+            reference = output + String.fromCharCode(referenceCode);
           }
         }
 
@@ -63537,9 +66574,9 @@
           const next = now();
           next.offset++;
 
-          if (options.reference) {
-            options.reference.call(
-              options.referenceContext,
+          if (settings.reference) {
+            settings.reference.call(
+              settings.referenceContext || undefined,
               reference,
               {start: previous, end: next},
               value.slice(start - 1, end)
@@ -63568,7 +66605,7 @@
         if (Number.isNaN(character)) {
           flush();
         } else {
-          queue += fromCharCode(character);
+          queue += String.fromCharCode(character);
           column++;
         }
       }
@@ -63596,13 +66633,13 @@
       /** @type {ReturnType<now>} */
       let position;
 
-      if (options.warning) {
+      if (settings.warning) {
         position = now();
         position.column += offset;
         position.offset += offset;
 
-        options.warning.call(
-          options.warningContext,
+        settings.warning.call(
+          settings.warningContext || undefined,
           messages[code],
           position,
           code
@@ -63619,8 +66656,8 @@
       if (queue) {
         result.push(queue);
 
-        if (options.text) {
-          options.text.call(options.textContext, queue, {
+        if (settings.text) {
+          settings.text.call(settings.textContext || undefined, queue, {
             start: previous,
             end: now()
           });
@@ -63748,11 +66785,13 @@
               return visited[id]
             }
             clone = [];
-            visited[id] = clone;
+            visited[id] = clone
 
-            o.forEach(function (v, i) {
-              clone[i] = deepClone(v, visited);
-            });
+            ;/** @type {Array} */ (/** @type {any} */ (o)).forEach(
+              function (v, i) {
+                clone[i] = deepClone(v, visited);
+              }
+            );
 
             return /** @type {any} */ (clone)
 
@@ -64421,90 +67460,13 @@
 
   const Prism = _;
 
-  // some additional documentation/types
-
   /**
-   * The expansion of a simple `RegExp` literal to support additional properties.
-   *
-   * @typedef GrammarToken
-   * @property {RegExp} pattern The regular expression of the token.
-   * @property {boolean} [lookbehind=false] If `true`, then the first capturing group of `pattern` will (effectively)
-   * behave as a lookbehind group meaning that the captured text will not be part of the matched text of the new token.
-   * @property {boolean} [greedy=false] Whether the token is greedy.
-   * @property {string|string[]} [alias] An optional alias or list of aliases.
-   * @property {Grammar} [inside] The nested grammar of this token.
-   *
-   * The `inside` grammar will be used to tokenize the text value of each token of this kind.
-   *
-   * This can be used to make nested and even recursive language definitions.
-   *
-   * Note: This can cause infinite recursion. Be careful when you embed different languages or even the same language into
-   * each another.
-   * @global
-   * @public
-   */
-
-  /**
-   * @typedef Grammar
-   * @type {Object<string, RegExp | GrammarToken | Array<RegExp | GrammarToken>>}
-   * @property {Grammar} [rest] An optional grammar object that will be appended to this grammar.
-   * @global
-   * @public
-   */
-
-  /**
-   * A function which will invoked after an element was successfully highlighted.
-   *
-   * @callback HighlightCallback
-   * @param {Element} element The element successfully highlighted.
-   * @returns {void}
-   * @global
-   * @public
-   */
-
-  /**
-   * @callback HookCallback
-   * @param {Object<string, any>} env The environment variables of the hook.
-   * @returns {void}
-   * @global
-   * @public
-   */
-
-  /**
-   * @typedef _Token A hidden Prism token
-   * @property {string} type
-   * @property {string} content
-   * @property {string} alias
-   * @property {number} length
-   *
-   * @typedef _Env A hidden Prism environment
-   * @property {string} type
-   * @property {string} tag
-   * @property {Text|RefractorElement|Array<Text|RefractorElement>} content
-   * @property {Array<string>} classes
-   * @property {Record<string, string>} attributes
-   * @property {string} language
-   *
-   * @typedef {import('hast').Root} Root
-   * @typedef {import('hast').Element} Element
-   * @typedef {import('hast').Text} Text
-   * @typedef {Omit<Element, 'children'> & {children: Array<RefractorElement|Text>}} RefractorElement
-   * @typedef {Omit<Root, 'children'> & {children: Array<RefractorElement|Text>}} RefractorRoot
-   *
-   * @typedef {import('prismjs').Languages} Languages
-   * @typedef {import('prismjs').Grammar} Grammar Whatever this is, Prism handles it.
-   * @typedef {((prism: unknown) => void) & {displayName: string, aliases?: Array<string>}} Syntax A refractor syntax function
-   *
-   * @typedef Refractor Virtual syntax highlighting
-   * @property {highlight} highlight
-   * @property {alias} alias
-   * @property {register} register
-   * @property {registered} registered
-   * @property {listLanguages} listLanguages
-   * @property {Languages} languages
+   * @import {Element, Root, Text} from 'hast'
+   * @import {Grammar, Languages} from 'prismjs'
    */
 
 
+  // To do: next major, use `Object.hasOwn`.
   const own = {}.hasOwnProperty;
 
   // Inherit.
@@ -64533,7 +67495,7 @@
    *
    * @param {string} value
    *   Code to highlight.
-   * @param {string|Grammar} language
+   * @param {Grammar | string} language
    *   Programming language name, alias, or grammar.
    * @returns {RefractorRoot}
    *   Node representing highlighted code.
@@ -64545,7 +67507,7 @@
 
     /** @type {Grammar} */
     let grammar;
-    /** @type {string|undefined} */
+    /** @type {string | undefined} */
     let name;
 
     // `name` is a grammar object.
@@ -64580,7 +67542,8 @@
    * @param {Syntax} syntax
    *   Language function made for refractor, as in, the files in
    *   `refractor/lang/*.js`.
-   * @returns {void}
+   * @returns {undefined}
+   *   Nothing.
    */
   function register(syntax) {
     if (typeof syntax !== 'function' || !syntax.displayName) {
@@ -64596,13 +67559,16 @@
   /**
    * Register aliases for already registered languages.
    *
-   * @param {Record<string, string|Array<string>>|string} language
-   * @param {string|Array<string>} [alias]
-   * @returns {void}
+   * @param {Record<string, ReadonlyArray<string> | string> | string} language
+   *   Language to alias.
+   * @param {ReadonlyArray<string> | string | null | undefined} [alias]
+   *   Aliases.
+   * @returns {undefined}
+   *   Nothing.
    */
   function alias(language, alias) {
     const languages = refractor.languages;
-    /** @type {Record<string, string|Array<string>>} */
+    /** @type {Record<string, ReadonlyArray<string> | string>} */
     let map = {};
 
     if (typeof language === 'string') {
@@ -64633,7 +67599,9 @@
    * Check whether an `alias` or `language` is registered.
    *
    * @param {string} aliasOrLanguage
+   *   Language or alias to check.
    * @returns {boolean}
+   *   Whether the language is registered.
    */
   function registered(aliasOrLanguage) {
     if (typeof aliasOrLanguage !== 'string') {
@@ -64649,6 +67617,7 @@
    * List all registered languages (names and aliases).
    *
    * @returns {Array<string>}
+   *   List of language names.
    */
   function listLanguages() {
     const languages = refractor.languages;
@@ -64670,9 +67639,12 @@
   }
 
   /**
-   * @param {string|_Token|Array<string|_Token>} value
+   * @param {Array<_Token | string> | _Token | string} value
+   *   Token to stringify.
    * @param {string} language
-   * @returns {Text|RefractorElement|Array<Text|RefractorElement>}
+   *   Language of the token.
+   * @returns {Array<RefractorElement | Text> | RefractorElement | Text}
+   *   Node representing the token.
    */
   function stringify(value, language) {
     if (typeof value === 'string') {
@@ -64680,15 +67652,15 @@
     }
 
     if (Array.isArray(value)) {
-      /** @type {Array<Text|RefractorElement>} */
+      /** @type {Array<RefractorElement | Text>} */
       const result = [];
       let index = -1;
 
       while (++index < value.length) {
         if (
-          value[index] !== '' &&
           value[index] !== null &&
-          value[index] !== undefined
+          value[index] !== undefined &&
+          value[index] !== ''
         ) {
           // @ts-expect-error Assume no sub-arrays.
           result.push(stringify(value[index], language));
@@ -64700,12 +67672,12 @@
 
     /** @type {_Env} */
     const env = {
-      type: value.type,
-      content: stringify(value.content, language),
-      tag: 'span',
-      classes: ['token', value.type],
       attributes: {},
-      language
+      classes: ['token', value.type],
+      content: stringify(value.content, language),
+      language,
+      tag: 'span',
+      type: value.type
     };
 
     if (value.alias) {
@@ -64727,36 +67699,43 @@
 
   /**
    * @template {unknown} T
+   *   Tokens.
    * @param {T} tokens
+   *   Input.
    * @returns {T}
+   *   Output, same as input.
    */
   function encode(tokens) {
     return tokens
   }
 
   /**
-   * @param {Record<string, string>} attrs
+   * @param {Record<string, string>} record
+   *   Attributes.
    * @returns {Record<string, string>}
+   *   Attributes.
    */
-  function attributes(attrs) {
+  function attributes(record) {
     /** @type {string} */
     let key;
 
-    for (key in attrs) {
-      if (own.call(attrs, key)) {
-        attrs[key] = parseEntities(attrs[key]);
+    for (key in record) {
+      if (own.call(record, key)) {
+        record[key] = parseEntities(record[key]);
       }
     }
 
-    return attrs
+    return record
   }
 
   /**
-   * @typedef {import('./core.js').RefractorRoot} RefractorRoot
-   * @typedef {import('./core.js').RefractorElement} RefractorElement
-   * @typedef {import('./core.js').Text} Text
-   * @typedef {import('./core.js').Grammar} Grammar
-   * @typedef {import('./core.js').Syntax} Syntax
+   * @import {
+   *   Grammar,
+   *   RefractorElement,
+   *   RefractorRoot,
+   *   Syntax,
+   *   Text
+   * } from './core.js'
    */
 
   refractor.register(clike);
@@ -64797,10 +67776,13 @@
   refractor.register(vbnet);
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   abap.displayName = 'abap';
   abap.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function abap(Prism) {
     Prism.languages.abap = {
       comment: /^\*.*/m,
@@ -64857,10 +67839,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   abnf.displayName = 'abnf';
   abnf.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function abnf(Prism) {
   (function (Prism) {
       var coreRules =
@@ -64921,10 +67906,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   actionscript.displayName = 'actionscript';
   actionscript.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function actionscript(Prism) {
     Prism.register(javascript);
     Prism.languages.actionscript = Prism.languages.extend('javascript', {
@@ -64950,10 +67938,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   ada.displayName = 'ada';
   ada.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function ada(Prism) {
     Prism.languages.ada = {
       comment: /--.*/,
@@ -64982,10 +67973,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   agda.displayName = 'agda';
   agda.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function agda(Prism) {
   (function (Prism) {
       Prism.languages.agda = {
@@ -65014,10 +68008,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   al.displayName = 'al';
   al.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function al(Prism) {
     // based on https://github.com/microsoft/AL/blob/master/grammar/alsyntax.tmlanguage
 
@@ -65050,10 +68047,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   antlr4.displayName = 'antlr4';
   antlr4.aliases = ['g4'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function antlr4(Prism) {
     Prism.languages.antlr4 = {
       comment: /\/\/.*|\/\*[\s\S]*?(?:\*\/|$)/,
@@ -65125,10 +68125,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   apacheconf.displayName = 'apacheconf';
   apacheconf.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function apacheconf(Prism) {
     Prism.languages.apacheconf = {
       comment: /#.*/,
@@ -65182,10 +68185,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   apex.displayName = 'apex';
   apex.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function apex(Prism) {
     Prism.register(clike);
     Prism.register(sql)
@@ -65266,10 +68272,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   apl.displayName = 'apl';
   apl.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function apl(Prism) {
     Prism.languages.apl = {
       comment: /(?:⍝|#[! ]).*$/m,
@@ -65285,7 +68294,8 @@
         alias: 'function'
       },
       constant: /[⍬⌾#⎕⍞]/,
-      function: /[-+×÷⌈⌊∣|⍳⍸?*⍟○!⌹<≤=>≥≠≡≢∊⍷∪∩~∨∧⍱⍲⍴,⍪⌽⊖⍉↑↓⊂⊃⊆⊇⌷⍋⍒⊤⊥⍕⍎⊣⊢⍁⍂≈⍯↗¤→]/,
+      function:
+        /[-+×÷⌈⌊∣|⍳⍸?*⍟○!⌹<≤=>≥≠≡≢∊⍷∪∩~∨∧⍱⍲⍴,⍪⌽⊖⍉↑↓⊂⊃⊆⊇⌷⍋⍒⊤⊥⍕⍎⊣⊢⍁⍂≈⍯↗¤→]/,
       'monadic-operator': {
         pattern: /[\\\/⌿⍀¨⍨⌶&∥]/,
         alias: 'operator'
@@ -65307,10 +68317,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   applescript.displayName = 'applescript';
   applescript.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function applescript(Prism) {
     Prism.languages.applescript = {
       comment: [
@@ -65334,10 +68347,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   aql.displayName = 'aql';
   aql.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function aql(Prism) {
     Prism.languages.aql = {
       comment: /\/\/.*|\/\*[\s\S]*?\*\//,
@@ -65392,10 +68408,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   arff.displayName = 'arff';
   arff.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function arff(Prism) {
     Prism.languages.arff = {
       comment: /%.*/,
@@ -65410,10 +68429,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   armasm.displayName = 'armasm';
   armasm.aliases = ['arm-asm'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function armasm(Prism) {
     Prism.languages.armasm = {
       comment: {
@@ -65465,10 +68487,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   arturo.displayName = 'arturo';
   arturo.aliases = ['art'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function arturo(Prism) {
   (function (Prism) {
       /**
@@ -65565,10 +68590,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   asciidoc.displayName = 'asciidoc';
   asciidoc.aliases = ['adoc'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function asciidoc(Prism) {
   (function (Prism) {
       var attributes = {
@@ -65589,7 +68617,6 @@
               // See rest below
             }
           },
-
           string: /"(?:[^"\\]|\\.)*"/,
           variable: /\w+(?==)/,
           punctuation: /^\[|\]$|,/,
@@ -65618,7 +68645,6 @@
             // See rest below
           }
         },
-
         'passthrough-block': {
           pattern: /^(\+{4,})$[\s\S]*?^\1$/m,
           inside: {
@@ -65626,7 +68652,6 @@
             // See rest below
           }
         },
-
         // Literal blocks and listing blocks
         'literal-block': {
           pattern: /^(-{4,}|\.{4,})$[\s\S]*?^\1$/m,
@@ -65635,7 +68660,6 @@
             // See rest below
           }
         },
-
         // Sidebar blocks, quote blocks, example blocks and open blocks
         'other-block': {
           pattern: /^(--|\*{4,}|_{4,}|={4,})$[\s\S]*?^\1$/m,
@@ -65644,7 +68668,6 @@
             // See rest below
           }
         },
-
         // list-punctuation and list-label must appear before indented-block
         'list-punctuation': {
           pattern:
@@ -65671,7 +68694,6 @@
             // See rest below
           }
         },
-
         'attribute-entry': {
           pattern: /^:[^:\r\n]+:(?: .*?(?: \+(?:\r?\n|\r).*?)*)?$/m,
           alias: 'tag'
@@ -65810,10 +68832,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   aspnet.displayName = 'aspnet';
   aspnet.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function aspnet(Prism) {
     Prism.register(csharp);
     Prism.register(markup);
@@ -65879,10 +68904,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   asm6502.displayName = 'asm6502';
   asm6502.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function asm6502(Prism) {
     Prism.languages.asm6502 = {
       comment: /;.*/,
@@ -65917,10 +68945,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   asmatmel.displayName = 'asmatmel';
   asmatmel.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function asmatmel(Prism) {
     Prism.languages.asmatmel = {
       comment: {
@@ -65967,10 +68998,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   autohotkey.displayName = 'autohotkey';
   autohotkey.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function autohotkey(Prism) {
     // NOTES - follows first-first highlight method, block is locked after highlight, different from SyntaxHl
     Prism.languages.autohotkey = {
@@ -66020,10 +69054,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   autoit.displayName = 'autoit';
   autoit.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function autoit(Prism) {
     Prism.languages.autoit = {
       comment: [
@@ -66064,10 +69101,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   avisynth.displayName = 'avisynth';
   avisynth.aliases = ['avs'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function avisynth(Prism) {
   (function (Prism) {
       function replace(pattern, replacements) {
@@ -66261,10 +69301,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   avroIdl.displayName = 'avro-idl';
   avroIdl.aliases = ['avdl'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function avroIdl(Prism) {
     // GitHub: https://github.com/apache/avro
     // Docs: https://avro.apache.org/docs/current/idl.html
@@ -66316,10 +69359,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   awk.displayName = 'awk';
   awk.aliases = ['gawk'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function awk(Prism) {
     Prism.languages.awk = {
       hashbang: {
@@ -66353,10 +69399,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   batch.displayName = 'batch';
   batch.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function batch(Prism) {
   (function (Prism) {
       var variable = /%%?[~:\w]+%?|!\S+!/;
@@ -66461,10 +69510,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   bbcode.displayName = 'bbcode';
   bbcode.aliases = ['shortcode'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function bbcode(Prism) {
     Prism.languages.bbcode = {
       tag: {
@@ -66498,10 +69550,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   bbj.displayName = 'bbj';
   bbj.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function bbj(Prism) {
   (function (Prism) {
       Prism.languages.bbj = {
@@ -66526,10 +69581,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   bicep.displayName = 'bicep';
   bicep.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function bicep(Prism) {
     // based loosely upon: https://github.com/Azure/bicep/blob/main/src/textmate/bicep.tmlanguage
     Prism.languages.bicep = {
@@ -66609,10 +69667,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   birb.displayName = 'birb';
   birb.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function birb(Prism) {
     Prism.register(clike);
     Prism.languages.birb = Prism.languages.extend('clike', {
@@ -66640,10 +69701,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   bison.displayName = 'bison';
   bison.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function bison(Prism) {
     Prism.register(c$1);
     Prism.languages.bison = Prism.languages.extend('c', {});
@@ -66687,10 +69751,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   bnf.displayName = 'bnf';
   bnf.aliases = ['rbnf'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function bnf(Prism) {
     Prism.languages.bnf = {
       string: {
@@ -66715,10 +69782,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   bqn.displayName = 'bqn';
   bqn.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function bqn(Prism) {
     Prism.languages.bqn = {
       shebang: {
@@ -66787,10 +69857,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   brainfuck.displayName = 'brainfuck';
   brainfuck.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function brainfuck(Prism) {
     Prism.languages.brainfuck = {
       pointer: {
@@ -66815,10 +69888,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   brightscript.displayName = 'brightscript';
   brightscript.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function brightscript(Prism) {
     Prism.languages.brightscript = {
       comment: /(?:\brem|').*/i,
@@ -66841,7 +69917,6 @@
           }
         }
       },
-
       property: {
         pattern:
           /([\r\n{,][\t ]*)(?:(?!\d)\w+|"(?:[^"\r\n]|"")*"(?!"))(?=[ \t]*:)/,
@@ -66871,10 +69946,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   bro.displayName = 'bro';
   bro.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function bro(Prism) {
     Prism.languages.bro = {
       comment: {
@@ -66908,10 +69986,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   bsl.displayName = 'bsl';
   bsl.aliases = ['oscript'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function bsl(Prism) {
     /* eslint-disable no-misleading-character-class */
 
@@ -66994,10 +70075,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   cfscript.displayName = 'cfscript';
   cfscript.aliases = ['cfc'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function cfscript(Prism) {
     Prism.register(clike);
     // https://cfdocs.org/script
@@ -67049,10 +70133,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   chaiscript.displayName = 'chaiscript';
   chaiscript.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function chaiscript(Prism) {
     Prism.register(clike);
     Prism.register(cpp);
@@ -67118,10 +70205,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   cil.displayName = 'cil';
   cil.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function cil(Prism) {
     Prism.languages.cil = {
       comment: /\/\/.*/,
@@ -67147,10 +70237,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   cilkc.displayName = 'cilkc';
   cilkc.aliases = ['cilk-c'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function cilkc(Prism) {
     Prism.register(c$1);
     Prism.languages.cilkc = Prism.languages.insertBefore('c', 'function', {
@@ -67163,10 +70256,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   cilkcpp.displayName = 'cilkcpp';
   cilkcpp.aliases = ['cilk', 'cilk-cpp'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function cilkcpp(Prism) {
     Prism.register(cpp);
     Prism.languages.cilkcpp = Prism.languages.insertBefore('cpp', 'function', {
@@ -67180,10 +70276,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   clojure.displayName = 'clojure';
   clojure.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function clojure(Prism) {
     // Copied from https://github.com/jeluard/prism-clojure
     Prism.languages.clojure = {
@@ -67221,10 +70320,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   cmake.displayName = 'cmake';
   cmake.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function cmake(Prism) {
     Prism.languages.cmake = {
       comment: /#.*/,
@@ -67263,10 +70365,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   cobol.displayName = 'cobol';
   cobol.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function cobol(Prism) {
     Prism.languages.cobol = {
       comment: {
@@ -67323,10 +70428,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   coffeescript.displayName = 'coffeescript';
   coffeescript.aliases = ['coffee'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function coffeescript(Prism) {
     Prism.register(javascript)
     ;(function (Prism) {
@@ -67417,10 +70525,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   concurnas.displayName = 'concurnas';
   concurnas.aliases = ['conc'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function concurnas(Prism) {
     Prism.languages.concurnas = {
       comment: {
@@ -67489,10 +70600,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   csp.displayName = 'csp';
   csp.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function csp(Prism) {
   (function (Prism) {
       /**
@@ -67563,10 +70677,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   cooklang.displayName = 'cooklang';
   cooklang.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function cooklang(Prism) {
   (function (Prism) {
       // see https://github.com/cooklang/spec/blob/main/EBNF.md
@@ -67709,10 +70826,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   coq.displayName = 'coq';
   coq.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function coq(Prism) {
   (function (Prism) {
       // https://github.com/coq/coq
@@ -67774,10 +70894,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   crystal.displayName = 'crystal';
   crystal.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function crystal(Prism) {
     Prism.register(ruby)
     ;(function (Prism) {
@@ -67837,10 +70960,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   cssExtras.displayName = 'css-extras';
   cssExtras.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function cssExtras(Prism) {
     Prism.register(css)
     ;(function (Prism) {
@@ -67963,10 +71089,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   csv.displayName = 'csv';
   csv.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function csv(Prism) {
     // https://tools.ietf.org/html/rfc4180
 
@@ -67977,10 +71106,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   cue.displayName = 'cue';
   cue.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function cue(Prism) {
   (function (Prism) {
       // https://cuelang.org/docs/references/spec/
@@ -68073,10 +71205,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   cypher.displayName = 'cypher';
   cypher.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function cypher(Prism) {
     Prism.languages.cypher = {
       // https://neo4j.com/docs/cypher-manual/current/syntax/comments/
@@ -68115,10 +71250,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   d.displayName = 'd';
   d.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function d(Prism) {
     Prism.register(clike);
     Prism.languages.d = Prism.languages.extend('clike', {
@@ -68210,10 +71348,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   dart.displayName = 'dart';
   dart.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function dart(Prism) {
     Prism.register(clike)
     ;(function (Prism) {
@@ -68301,10 +71442,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   dataweave.displayName = 'dataweave';
   dataweave.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function dataweave(Prism) {
   (function (Prism) {
       Prism.languages.dataweave = {
@@ -68351,10 +71495,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   dax.displayName = 'dax';
   dax.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function dax(Prism) {
     Prism.languages.dax = {
       comment: {
@@ -68389,10 +71536,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   dhall.displayName = 'dhall';
   dhall.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function dhall(Prism) {
     // ABNF grammar:
     // https://github.com/dhall-lang/dhall-lang/blob/master/standard/dhall.abnf
@@ -68416,7 +71566,6 @@
                 alias: 'language-dhall',
                 inside: null // see blow
               },
-
               punctuation: /\$\{|\}/
             }
           }
@@ -68469,10 +71618,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   django.displayName = 'django';
   django.aliases = ['jinja2'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function django(Prism) {
     Prism.register(markupTemplating)
     // Django/Jinja2 syntax definition for Prism.js <http://prismjs.com> syntax highlighter.
@@ -68534,10 +71686,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   dnsZoneFile.displayName = 'dns-zone-file';
   dnsZoneFile.aliases = ['dns-zone'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function dnsZoneFile(Prism) {
     Prism.languages['dns-zone-file'] = {
       comment: /;.*/,
@@ -68575,10 +71730,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   docker.displayName = 'docker';
   docker.aliases = ['dockerfile'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function docker(Prism) {
   (function (Prism) {
       // Many of the following regexes will contain negated lookaheads like `[ \t]+(?![ \t])`. This is a trick to ensure
@@ -68702,10 +71860,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   dot.displayName = 'dot';
   dot.aliases = ['gv'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function dot(Prism) {
   (function (Prism) {
       var ID =
@@ -68791,10 +71952,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   ebnf.displayName = 'ebnf';
   ebnf.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function ebnf(Prism) {
     Prism.languages.ebnf = {
       comment: /\(\*[\s\S]*?\*\)/,
@@ -68819,10 +71983,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   editorconfig.displayName = 'editorconfig';
   editorconfig.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function editorconfig(Prism) {
     Prism.languages.editorconfig = {
       // https://editorconfig-specification.readthedocs.io
@@ -68854,10 +72021,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   eiffel.displayName = 'eiffel';
   eiffel.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function eiffel(Prism) {
     Prism.languages.eiffel = {
       comment: /--.*/,
@@ -68897,10 +72067,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   ejs.displayName = 'ejs';
   ejs.aliases = ['eta'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function ejs(Prism) {
     Prism.register(javascript);
     Prism.register(markupTemplating)
@@ -68932,10 +72105,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   elixir.displayName = 'elixir';
   elixir.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function elixir(Prism) {
     Prism.languages.elixir = {
       doc: {
@@ -69041,10 +72217,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   elm.displayName = 'elm';
   elm.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function elm(Prism) {
     Prism.languages.elm = {
       comment: /--.*|\{-[\s\S]*?-\}/,
@@ -69098,10 +72277,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   etlua.displayName = 'etlua';
   etlua.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function etlua(Prism) {
     Prism.register(lua);
     Prism.register(markupTemplating)
@@ -69131,10 +72313,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   erb.displayName = 'erb';
   erb.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function erb(Prism) {
     Prism.register(markupTemplating);
     Prism.register(ruby)
@@ -69167,10 +72352,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   erlang.displayName = 'erlang';
   erlang.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function erlang(Prism) {
     Prism.languages.erlang = {
       comment: /%.+/,
@@ -69218,10 +72406,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   excelFormula.displayName = 'excel-formula';
   excelFormula.aliases = ['xls', 'xlsx'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function excelFormula(Prism) {
     Prism.languages['excel-formula'] = {
       comment: {
@@ -69294,10 +72485,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   fsharp.displayName = 'fsharp';
   fsharp.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function fsharp(Prism) {
     Prism.register(clike);
     Prism.languages.fsharp = Prism.languages.extend('clike', {
@@ -69382,10 +72576,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   factor.displayName = 'factor';
   factor.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function factor(Prism) {
   (function (Prism) {
       var comment_inside = {
@@ -70085,7 +73282,6 @@
         ]
         // that's all for now
       };
-
       Object.keys(builtins).forEach(function (k) {
         factor[k].pattern = arrToWordsRegExp(builtins[k]);
       });
@@ -70312,17 +73508,19 @@
         'output>sequence'
         // tafn
       ];
-
       factor.combinators.pattern = arrToWordsRegExp(combinators);
       Prism.languages.factor = factor;
     })(Prism);
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   $false.displayName = 'false';
   $false.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function $false(Prism) {
   (function (Prism) {
       /**
@@ -70359,10 +73557,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   firestoreSecurityRules.displayName = 'firestore-security-rules';
   firestoreSecurityRules.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function firestoreSecurityRules(Prism) {
     Prism.register(clike);
     Prism.languages['firestore-security-rules'] = Prism.languages.extend(
@@ -70406,10 +73607,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   flow.displayName = 'flow';
   flow.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function flow(Prism) {
     Prism.register(javascript)
     ;(function (Prism) {
@@ -70450,10 +73654,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   fortran.displayName = 'fortran';
   fortran.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function fortran(Prism) {
     Prism.languages.fortran = {
       'quoted-number': {
@@ -70499,10 +73706,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   ftl.displayName = 'ftl';
   ftl.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function ftl(Prism) {
     Prism.register(markupTemplating)
     ;(function (Prism) {
@@ -70630,10 +73840,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   gml.displayName = 'gml';
   gml.aliases = ['gamemakerlanguage'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function gml(Prism) {
     Prism.register(clike);
     Prism.languages.gamemakerlanguage = Prism.languages.gml =
@@ -70652,10 +73865,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   gap.displayName = 'gap';
   gap.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function gap(Prism) {
     // https://www.gap-system.org/Manuals/doc/ref/chap4.html
     // https://www.gap-system.org/Manuals/doc/ref/chap27.html
@@ -70670,7 +73886,6 @@
             lookbehind: true,
             inside: null // see below
           },
-
           punctuation: /^gap>/
         }
       },
@@ -70712,10 +73927,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   gcode.displayName = 'gcode';
   gcode.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function gcode(Prism) {
     Prism.languages.gcode = {
       comment: /;.*|\B\(.*?\)\B/,
@@ -70736,10 +73954,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   gdscript.displayName = 'gdscript';
   gdscript.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function gdscript(Prism) {
     Prism.languages.gdscript = {
       comment: /#.*/,
@@ -70774,10 +73995,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   gedcom.displayName = 'gedcom';
   gedcom.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function gedcom(Prism) {
     Prism.languages.gedcom = {
       'line-value': {
@@ -70812,10 +74036,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   gettext.displayName = 'gettext';
   gettext.aliases = ['po'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function gettext(Prism) {
     Prism.languages.gettext = {
       comment: [
@@ -70862,10 +74089,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   gherkin.displayName = 'gherkin';
   gherkin.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function gherkin(Prism) {
   (function (Prism) {
       var tableRow = /(?:\r?\n|\r)[ \t]*\|.+\|(?:(?!\|).)*/.source;
@@ -70955,10 +74185,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   git.displayName = 'git';
   git.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function git(Prism) {
     Prism.languages.git = {
       /*
@@ -71026,10 +74259,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   glsl.displayName = 'glsl';
   glsl.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function glsl(Prism) {
     Prism.register(c$1);
     Prism.languages.glsl = Prism.languages.extend('c', {
@@ -71039,10 +74275,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   gn.displayName = 'gn';
   gn.aliases = ['gni'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function gn(Prism) {
     // https://gn.googlesource.com/gn/+/refs/heads/main/docs/reference.md#grammar
 
@@ -71073,7 +74312,6 @@
               }
             }
           },
-
           string: /[\s\S]+/
         }
       },
@@ -71099,10 +74337,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   linkerScript.displayName = 'linker-script';
   linkerScript.aliases = ['ld'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function linkerScript(Prism) {
     Prism.languages['linker-script'] = {
       comment: {
@@ -71132,10 +74373,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   goModule.displayName = 'go-module';
   goModule.aliases = ['go-mod'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function goModule(Prism) {
     // https://go.dev/ref/mod#go-mod-file-module
 
@@ -71164,10 +74408,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   gradle.displayName = 'gradle';
   gradle.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function gradle(Prism) {
     Prism.register(clike)
     ;(function (Prism) {
@@ -71232,10 +74479,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   graphql.displayName = 'graphql';
   graphql.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function graphql(Prism) {
     Prism.languages.graphql = {
       comment: /#.*/,
@@ -71456,10 +74706,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   groovy.displayName = 'groovy';
   groovy.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function groovy(Prism) {
     Prism.register(clike)
     ;(function (Prism) {
@@ -71477,7 +74730,6 @@
           }
         }
       };
-
       Prism.languages.groovy = Prism.languages.extend('clike', {
         string: {
           // https://groovy-lang.org/syntax.html#_dollar_slashy_string
@@ -71528,10 +74780,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   textile.displayName = 'textile';
   textile.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function textile(Prism) {
     Prism.register(markup)
     ;(function (Prism) {
@@ -71829,10 +75084,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   haml.displayName = 'haml';
   haml.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function haml(Prism) {
     Prism.register(ruby)
     /* TODO
@@ -71999,10 +75257,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   handlebars.displayName = 'handlebars';
   handlebars.aliases = ['hbs', 'mustache'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function handlebars(Prism) {
     Prism.register(markupTemplating)
     ;(function (Prism) {
@@ -72050,10 +75311,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   haskell.displayName = 'haskell';
   haskell.aliases = ['hs'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function haskell(Prism) {
     Prism.languages.haskell = {
       comment: {
@@ -72128,10 +75392,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   haxe.displayName = 'haxe';
   haxe.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function haxe(Prism) {
     Prism.register(clike);
     Prism.languages.haxe = Prism.languages.extend('clike', {
@@ -72214,10 +75481,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   hcl.displayName = 'hcl';
   hcl.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function hcl(Prism) {
     Prism.languages.hcl = {
       comment: /(?:\/\/|#).*|\/\*[\s\S]*?(?:\*\/|$)/,
@@ -72287,10 +75557,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   hlsl.displayName = 'hlsl';
   hlsl.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function hlsl(Prism) {
     Prism.register(c$1);
     Prism.languages.hlsl = Prism.languages.extend('c', {
@@ -72316,10 +75589,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   hoon.displayName = 'hoon';
   hoon.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function hoon(Prism) {
     Prism.languages.hoon = {
       comment: {
@@ -72339,10 +75615,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   hpkp.displayName = 'hpkp';
   hpkp.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function hpkp(Prism) {
     /**
      * Original by Scott Helme.
@@ -72362,10 +75641,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   hsts.displayName = 'hsts';
   hsts.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function hsts(Prism) {
     /**
      * Original by Scott Helme.
@@ -72384,10 +75666,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   uri.displayName = 'uri';
   uri.aliases = ['url'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function uri(Prism) {
     // https://tools.ietf.org/html/rfc3986#appendix-A
 
@@ -72487,10 +75772,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   http.displayName = 'http';
   http.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function http(Prism) {
   (function (Prism) {
       /**
@@ -72649,10 +75937,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   ichigojam.displayName = 'ichigojam';
   ichigojam.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function ichigojam(Prism) {
     // according to the offical reference (EN)
     // https://ichigojam.net/IchigoJam-en.html
@@ -72674,10 +75965,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   icon.displayName = 'icon';
   icon.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function icon(Prism) {
     Prism.languages.icon = {
       comment: /#.*/,
@@ -72705,10 +75999,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   icuMessageFormat.displayName = 'icu-message-format';
   icuMessageFormat.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function icuMessageFormat(Prism) {
   (function (Prism) {
       /**
@@ -72755,7 +76052,6 @@
             lookbehind: true,
             inside: null // see below
           },
-
           'message-delimiter': {
             pattern: /./,
             alias: 'punctuation'
@@ -72792,7 +76088,6 @@
                     rest: null // see below
                   }
                 },
-
                 'plural-style': {
                   // https://unicode-org.github.io/icu-docs/apidoc/released/icu4j/com/ibm/icu/text/PluralFormat.html#:~:text=Patterns%20and%20Their%20Interpretation
                   pattern:
@@ -72866,10 +76161,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   idris.displayName = 'idris';
   idris.aliases = ['idr'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function idris(Prism) {
     Prism.register(haskell);
     Prism.languages.idris = Prism.languages.extend('haskell', {
@@ -72893,10 +76191,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   ignore.displayName = 'ignore';
   ignore.aliases = ['gitignore', 'hgignore', 'npmignore'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function ignore(Prism) {
   (function (Prism) {
       Prism.languages.ignore = {
@@ -72922,10 +76223,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   inform7.displayName = 'inform7';
   inform7.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function inform7(Prism) {
     Prism.languages.inform7 = {
       string: {
@@ -72943,7 +76247,6 @@
           }
         }
       },
-
       comment: {
         pattern: /\[[^\[\]]+\]/,
         greedy: true
@@ -72998,10 +76301,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   io.displayName = 'io';
   io.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function io(Prism) {
     Prism.languages.io = {
       comment: {
@@ -73031,10 +76337,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   j.displayName = 'j';
   j.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function j(Prism) {
     Prism.languages.j = {
       comment: {
@@ -73070,10 +76379,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   javadoclike.displayName = 'javadoclike';
   javadoclike.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function javadoclike(Prism) {
   (function (Prism) {
       var javaDocLike = (Prism.languages.javadoclike = {
@@ -73162,10 +76474,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   scala.displayName = 'scala';
   scala.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function scala(Prism) {
     Prism.register(java);
     Prism.languages.scala = Prism.languages.extend('java', {
@@ -73223,10 +76538,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   javadoc.displayName = 'javadoc';
   javadoc.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function javadoc(Prism) {
     Prism.register(java);
     Prism.register(javadoclike);
@@ -73326,10 +76644,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   javastacktrace.displayName = 'javastacktrace';
   javastacktrace.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function javastacktrace(Prism) {
     // Specification:
     // https://docs.oracle.com/en/java/javase/13/docs/api/java.base/java/lang/Throwable.html#printStackTrace()
@@ -73473,10 +76794,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   jexl.displayName = 'jexl';
   jexl.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function jexl(Prism) {
     Prism.languages.jexl = {
       string: /(["'])(?:\\[\s\S]|(?!\1)[^\\])*\1/,
@@ -73497,10 +76821,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   jolie.displayName = 'jolie';
   jolie.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function jolie(Prism) {
     Prism.register(clike);
     Prism.languages.jolie = Prism.languages.extend('clike', {
@@ -73552,10 +76879,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   jq.displayName = 'jq';
   jq.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function jq(Prism) {
   (function (Prism) {
       var interpolation = /\\\((?:[^()]|\([^()]*\))*\)/.source;
@@ -73577,7 +76907,6 @@
               lookbehind: true,
               inside: null // see below
             },
-
             punctuation: /^\\\(|\)$/
           }
         }
@@ -73631,10 +76960,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   jsTemplates.displayName = 'js-templates';
   jsTemplates.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function jsTemplates(Prism) {
     Prism.register(javascript)
     ;(function (Prism) {
@@ -73994,10 +77326,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   jsdoc.displayName = 'jsdoc';
   jsdoc.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function jsdoc(Prism) {
     Prism.register(javadoclike);
     Prism.register(javascript);
@@ -74091,10 +77426,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   n4js.displayName = 'n4js';
   n4js.aliases = ['n4jsd'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function n4js(Prism) {
     Prism.register(javascript);
     Prism.languages.n4js = Prism.languages.extend('javascript', {
@@ -74113,10 +77451,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   jsExtras.displayName = 'js-extras';
   jsExtras.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function jsExtras(Prism) {
     Prism.register(javascript)
     ;(function (Prism) {
@@ -74270,10 +77611,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   json5.displayName = 'json5';
   json5.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function json5(Prism) {
     Prism.register(json)
     ;(function (Prism) {
@@ -74301,10 +77645,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   jsonp.displayName = 'jsonp';
   jsonp.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function jsonp(Prism) {
     Prism.register(json);
     Prism.languages.jsonp = Prism.languages.extend('json', {
@@ -74316,10 +77663,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   jsstacktrace.displayName = 'jsstacktrace';
   jsstacktrace.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function jsstacktrace(Prism) {
     Prism.languages.jsstacktrace = {
       'error-message': {
@@ -74367,10 +77717,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   julia.displayName = 'julia';
   julia.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function julia(Prism) {
     Prism.languages.julia = {
       comment: {
@@ -74415,10 +77768,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   keepalived.displayName = 'keepalived';
   keepalived.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function keepalived(Prism) {
     Prism.languages.keepalived = {
       comment: {
@@ -74476,10 +77832,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   keyman.displayName = 'keyman';
   keyman.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function keyman(Prism) {
     Prism.languages.keyman = {
       comment: {
@@ -74496,19 +77855,16 @@
         greedy: true,
         alias: 'function' // alias for styles
       },
-
       // https://help.keyman.com/developer/language/guide/headers
       'header-keyword': {
         pattern: /&\w+/,
         alias: 'bold' // alias for styles
       },
-
       'header-statement': {
         pattern:
           /\b(?:bitmap|bitmaps|caps always off|caps on only|copyright|hotkey|language|layout|message|name|shift frees caps|version)\b/i,
         alias: 'bold' // alias for styles
       },
-
       'rule-keyword': {
         pattern:
           /\b(?:any|baselayout|beep|call|context|deadkey|dk|if|index|layer|notany|nul|outs|platform|reset|return|save|set|store|use)\b/i,
@@ -74531,10 +77887,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   kumir.displayName = 'kumir';
   kumir.aliases = ['kum'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function kumir(Prism) {
   (function (Prism) {
       /**
@@ -74644,10 +78003,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   kusto.displayName = 'kusto';
   kusto.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function kusto(Prism) {
     Prism.languages.kusto = {
       comment: {
@@ -74696,10 +78058,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   latex.displayName = 'latex';
   latex.aliases = ['context', 'tex'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function latex(Prism) {
   (function (Prism) {
       var funcPattern = /\\(?:[^a-z()[\]]|[a-z*]+)/i;
@@ -74771,10 +78136,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   latte.displayName = 'latte';
   latte.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function latte(Prism) {
     Prism.register(clike);
     Prism.register(markupTemplating);
@@ -74851,10 +78219,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   scheme.displayName = 'scheme';
   scheme.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function scheme(Prism) {
   (function (Prism) {
       Prism.languages.scheme = {
@@ -74992,10 +78363,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   lilypond.displayName = 'lilypond';
   lilypond.aliases = ['ly'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function lilypond(Prism) {
     Prism.register(scheme)
     ;(function (Prism) {
@@ -75043,7 +78417,6 @@
                     }
                   }
                 },
-
                 rest: Prism.languages.scheme
               }
             },
@@ -75080,10 +78453,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   liquid.displayName = 'liquid';
   liquid.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function liquid(Prism) {
     Prism.register(markupTemplating);
     Prism.languages.liquid = {
@@ -75159,10 +78535,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   lisp.displayName = 'lisp';
   lisp.aliases = ['elisp', 'emacs', 'emacs-lisp'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function lisp(Prism) {
   (function (Prism) {
       /**
@@ -75380,10 +78759,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   livescript.displayName = 'livescript';
   livescript.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function livescript(Prism) {
     Prism.languages.livescript = {
       comment: [
@@ -75418,7 +78800,6 @@
               // See rest below
             }
           },
-
           string: /[\s\S]+/
         }
       },
@@ -75511,10 +78892,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   llvm.displayName = 'llvm';
   llvm.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function llvm(Prism) {
   (function (Prism) {
       Prism.languages.llvm = {
@@ -75540,10 +78924,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   log.displayName = 'log';
   log.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function log(Prism) {
     // This is a language definition for generic log files.
     // Since there is no one log format, this language definition has to support all formats to some degree.
@@ -75667,10 +79054,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   lolcode.displayName = 'lolcode';
   lolcode.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function lolcode(Prism) {
     Prism.languages.lolcode = {
       comment: [/\bOBTW\s[\s\S]*?\sTLDR\b/, /\bBTW.+/],
@@ -75725,10 +79115,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   magma.displayName = 'magma';
   magma.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function magma(Prism) {
     Prism.languages.magma = {
       output: {
@@ -75766,10 +79159,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   mata.displayName = 'mata';
   mata.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function mata(Prism) {
   (function (Prism) {
       var orgType = /\b(?:(?:col|row)?vector|matrix|scalar)\b/.source;
@@ -75821,10 +79217,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   matlab.displayName = 'matlab';
   matlab.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function matlab(Prism) {
     Prism.languages.matlab = {
       comment: [/%\{[\s\S]*?\}%/, /%.+/],
@@ -75843,10 +79242,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   maxscript.displayName = 'maxscript';
   maxscript.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function maxscript(Prism) {
   (function (Prism) {
       var keywords =
@@ -75939,10 +79341,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   mel.displayName = 'mel';
   mel.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function mel(Prism) {
     Prism.languages.mel = {
       comment: {
@@ -75964,7 +79369,6 @@
           }
         }
       },
-
       string: {
         pattern: /"(?:\\.|[^\\"\r\n])*"/,
         greedy: true
@@ -75994,10 +79398,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   mermaid.displayName = 'mermaid';
   mermaid.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function mermaid(Prism) {
     Prism.languages.mermaid = {
       comment: {
@@ -76114,10 +79521,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   metafont.displayName = 'metafont';
   metafont.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function metafont(Prism) {
     Prism.languages.metafont = {
       // Syntax of METAFONT with the added (public) elements of PlainMETAFONT. Except for internal quantities they are expected to be rarely redefined. Freely inspired by the syntax of Christophe Grandsire for the Crimson Editor.
@@ -76214,10 +79624,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   mizar.displayName = 'mizar';
   mizar.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function mizar(Prism) {
     Prism.languages.mizar = {
       comment: /::.+/,
@@ -76235,10 +79648,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   mongodb.displayName = 'mongodb';
   mongodb.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function mongodb(Prism) {
     Prism.register(javascript)
     ;(function (Prism) {
@@ -76539,10 +79955,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   monkey.displayName = 'monkey';
   monkey.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function monkey(Prism) {
     Prism.languages.monkey = {
       comment: {
@@ -76578,10 +79997,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   moonscript.displayName = 'moonscript';
   moonscript.aliases = ['moon'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function moonscript(Prism) {
     Prism.languages.moonscript = {
       comment: /--.*/,
@@ -76602,7 +80024,6 @@
                   lookbehind: true,
                   inside: null // see beow
                 },
-
                 'interpolation-punctuation': {
                   pattern: /#\{|\}/,
                   alias: 'punctuation'
@@ -76647,10 +80068,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   n1ql.displayName = 'n1ql';
   n1ql.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function n1ql(Prism) {
     // https://docs.couchbase.com/server/current/n1ql/n1ql-language-reference/index.html
 
@@ -76681,10 +80105,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   nand2tetrisHdl.displayName = 'nand2tetris-hdl';
   nand2tetrisHdl.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function nand2tetrisHdl(Prism) {
     Prism.languages['nand2tetris-hdl'] = {
       comment: /\/\/.*|\/\*[\s\S]*?(?:\*\/|$)/,
@@ -76698,10 +80125,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   naniscript.displayName = 'naniscript';
   naniscript.aliases = ['nani'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function naniscript(Prism) {
   (function (Prism) {
       var expressionDef = /\{[^\r\n\[\]{}]*\}/;
@@ -76872,10 +80302,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   nasm.displayName = 'nasm';
   nasm.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function nasm(Prism) {
     Prism.languages.nasm = {
       comment: /;.*$/m,
@@ -76906,10 +80339,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   neon.displayName = 'neon';
   neon.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function neon(Prism) {
     Prism.languages.neon = {
       comment: {
@@ -76958,10 +80394,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   nevod.displayName = 'nevod';
   nevod.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function nevod(Prism) {
     Prism.languages.nevod = {
       comment: /\/\/.*|(?:\/\*[\s\S]*?(?:\*\/|$))/,
@@ -77095,10 +80534,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   nginx.displayName = 'nginx';
   nginx.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function nginx(Prism) {
   (function (Prism) {
       var variable =
@@ -77156,10 +80598,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   nim.displayName = 'nim';
   nim.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function nim(Prism) {
     Prism.languages.nim = {
       comment: {
@@ -77211,10 +80656,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   nix.displayName = 'nix';
   nix.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function nix(Prism) {
     Prism.languages.nix = {
       comment: {
@@ -77233,7 +80681,6 @@
           }
         }
       },
-
       url: [
         /\b(?:[a-z]{3,7}:\/\/)[\w\-+%~\/.:#=?&]+/,
         {
@@ -77258,10 +80705,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   nsis.displayName = 'nsis';
   nsis.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function nsis(Prism) {
     /**
      * Original by Jan T. Sott (http://github.com/idleberg)
@@ -77299,10 +80749,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   ocaml.displayName = 'ocaml';
   ocaml.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function ocaml(Prism) {
     // https://ocaml.org/manual/lex.html
 
@@ -77366,10 +80819,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   odin.displayName = 'odin';
   odin.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function odin(Prism) {
   (function (Prism) {
       var escapes =
@@ -77462,10 +80918,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   opencl.displayName = 'opencl';
   opencl.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function opencl(Prism) {
     Prism.register(c$1)
     ;(function (Prism) {
@@ -77537,10 +80996,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   openqasm.displayName = 'openqasm';
   openqasm.aliases = ['qasm'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function openqasm(Prism) {
     // https://qiskit.github.io/openqasm/grammar/index.html
 
@@ -77568,10 +81030,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   oz.displayName = 'oz';
   oz.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function oz(Prism) {
     Prism.languages.oz = {
       comment: {
@@ -77607,10 +81072,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   parigp.displayName = 'parigp';
   parigp.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function parigp(Prism) {
     Prism.languages.parigp = {
       comment: /\/\*[\s\S]*?\*\/|\\\\.*/,
@@ -77668,10 +81136,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   parser.displayName = 'parser';
   parser.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function parser(Prism) {
     Prism.register(markup)
     ;(function (Prism) {
@@ -77753,10 +81224,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   pascal.displayName = 'pascal';
   pascal.aliases = ['objectpascal'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function pascal(Prism) {
     // Based on Free Pascal
 
@@ -77784,7 +81258,6 @@
         greedy: true,
         inside: null // see below
       },
-
       keyword: [
         {
           // Turbo Pascal
@@ -77835,10 +81308,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   pascaligo.displayName = 'pascaligo';
   pascaligo.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function pascaligo(Prism) {
   (function (Prism) {
       // Pascaligo is a layer 2 smart contract language for the tezos blockchain
@@ -77889,7 +81365,6 @@
             inside: null // see below
           }
         ],
-
         keyword: {
           pattern:
             /(^|[^&])\b(?:begin|block|case|const|else|end|fail|for|from|function|if|is|nil|of|remove|return|skip|then|type|var|while|with)\b/i,
@@ -77931,10 +81406,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   psl.displayName = 'psl';
   psl.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function psl(Prism) {
     Prism.languages.psl = {
       comment: {
@@ -77978,10 +81456,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   pcaxis.displayName = 'pcaxis';
   pcaxis.aliases = ['px'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function pcaxis(Prism) {
     Prism.languages.pcaxis = {
       string: /"[^"]*"/,
@@ -78040,10 +81521,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   peoplecode.displayName = 'peoplecode';
   peoplecode.aliases = ['pcode'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function peoplecode(Prism) {
     Prism.languages.peoplecode = {
       comment: RegExp(
@@ -78092,10 +81576,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   phpdoc.displayName = 'phpdoc';
   phpdoc.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function phpdoc(Prism) {
     Prism.register(javadoclike);
     Prism.register(php)
@@ -78132,10 +81619,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   phpExtras.displayName = 'php-extras';
   phpExtras.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function phpExtras(Prism) {
     Prism.register(php);
     Prism.languages.insertBefore('php', 'variable', {
@@ -78156,10 +81646,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   plantUml.displayName = 'plant-uml';
   plantUml.aliases = ['plantuml'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function plantUml(Prism) {
   (function (Prism) {
       var variable = /\$\w+|%[a-z]+%/;
@@ -78230,7 +81723,6 @@
               lookbehind: true,
               inside: null // see below
             },
-
             punctuation: /\[(?=$|\])|^\]/
           }
         },
@@ -78278,10 +81770,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   plsql.displayName = 'plsql';
   plsql.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function plsql(Prism) {
     Prism.register(sql);
     Prism.languages.plsql = Prism.languages.extend('sql', {
@@ -78304,10 +81799,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   powerquery.displayName = 'powerquery';
   powerquery.aliases = ['mscript', 'pq'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function powerquery(Prism) {
     // https://docs.microsoft.com/en-us/powerquery-m/power-query-m-language-specification
 
@@ -78369,10 +81867,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   powershell.displayName = 'powershell';
   powershell.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function powershell(Prism) {
   (function (Prism) {
       var powershell = (Prism.languages.powershell = {
@@ -78435,10 +81936,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   processing.displayName = 'processing';
   processing.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function processing(Prism) {
     Prism.register(clike);
     Prism.languages.processing = Prism.languages.extend('clike', {
@@ -78459,10 +81963,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   prolog.displayName = 'prolog';
   prolog.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function prolog(Prism) {
     Prism.languages.prolog = {
       // Syntax depends on the implementation
@@ -78486,10 +81993,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   promql.displayName = 'promql';
   promql.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function promql(Prism) {
   (function (Prism) {
       // PromQL Aggregation Operators
@@ -78593,10 +82103,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   properties.displayName = 'properties';
   properties.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function properties(Prism) {
     Prism.languages.properties = {
       comment: /^[ \t]*[#!].*$/m,
@@ -78615,10 +82128,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   protobuf.displayName = 'protobuf';
   protobuf.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function protobuf(Prism) {
     Prism.register(clike)
     ;(function (Prism) {
@@ -78667,10 +82183,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   stylus.displayName = 'stylus';
   stylus.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function stylus(Prism) {
   (function (Prism) {
       var unit = {
@@ -78815,10 +82334,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   twig.displayName = 'twig';
   twig.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function twig(Prism) {
     Prism.register(markupTemplating);
     Prism.languages.twig = {
@@ -78864,10 +82386,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   pug.displayName = 'pug';
   pug.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function pug(Prism) {
     Prism.register(javascript);
     Prism.register(markup)
@@ -79080,10 +82605,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   puppet.displayName = 'puppet';
   puppet.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function puppet(Prism) {
   (function (Prism) {
       Prism.languages.puppet = {
@@ -79233,10 +82761,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   pure.displayName = 'pure';
   pure.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function pure(Prism) {
   (function (Prism) {
       // https://agraef.github.io/pure-docs/pure.html#lexical-matters
@@ -79337,10 +82868,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   purebasic.displayName = 'purebasic';
   purebasic.aliases = ['pbfasm'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function purebasic(Prism) {
     Prism.register(clike);
     /*
@@ -79416,10 +82950,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   purescript.displayName = 'purescript';
   purescript.aliases = ['purs'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function purescript(Prism) {
     Prism.register(haskell);
     Prism.languages.purescript = Prism.languages.extend('haskell', {
@@ -79455,10 +82992,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   qsharp.displayName = 'qsharp';
   qsharp.aliases = ['qs'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function qsharp(Prism) {
     Prism.register(clike)
     ;(function (Prism) {
@@ -79603,10 +83143,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   q.displayName = 'q';
   q.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function q(Prism) {
     Prism.languages.q = {
       string: /"(?:\\.|[^"\\\r\n])*"/,
@@ -79665,10 +83208,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   qml.displayName = 'qml';
   qml.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function qml(Prism) {
     Prism.register(javascript)
     ;(function (Prism) {
@@ -79755,10 +83301,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   qore.displayName = 'qore';
   qore.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function qore(Prism) {
     Prism.register(clike);
     Prism.languages.qore = Prism.languages.extend('clike', {
@@ -79787,10 +83336,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   racket.displayName = 'racket';
   racket.aliases = ['rkt'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function racket(Prism) {
     Prism.register(scheme);
     Prism.languages.racket = Prism.languages.extend('scheme', {
@@ -79812,10 +83364,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   cshtml.displayName = 'cshtml';
   cshtml.aliases = ['razor'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function cshtml(Prism) {
     Prism.register(csharp);
     Prism.register(markup)
@@ -80076,10 +83631,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   jsx.displayName = 'jsx';
   jsx.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function jsx(Prism) {
     Prism.register(javascript);
     Prism.register(markup)
@@ -80263,10 +83821,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   tsx.displayName = 'tsx';
   tsx.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function tsx(Prism) {
     Prism.register(jsx);
     Prism.register(typescript)
@@ -80291,10 +83852,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   reason.displayName = 'reason';
   reason.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function reason(Prism) {
     Prism.register(clike);
     Prism.languages.reason = Prism.languages.extend('clike', {
@@ -80327,10 +83891,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   rego.displayName = 'rego';
   rego.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function rego(Prism) {
     // https://www.openpolicyagent.org/docs/latest/policy-reference/
 
@@ -80364,10 +83931,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   renpy.displayName = 'renpy';
   renpy.aliases = ['rpy'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function renpy(Prism) {
     Prism.languages.renpy = {
       comment: {
@@ -80396,10 +83966,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   rescript.displayName = 'rescript';
   rescript.aliases = ['res'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function rescript(Prism) {
     Prism.languages.rescript = {
       comment: {
@@ -80470,10 +84043,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   rest.displayName = 'rest';
   rest.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function rest(Prism) {
     Prism.languages.rest = {
       table: [
@@ -80689,10 +84265,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   rip.displayName = 'rip';
   rip.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function rip(Prism) {
     Prism.languages.rip = {
       comment: {
@@ -80728,10 +84307,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   roboconf.displayName = 'roboconf';
   roboconf.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function roboconf(Prism) {
     Prism.languages.roboconf = {
       comment: /#.*/,
@@ -80764,10 +84346,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   robotframework.displayName = 'robotframework';
   robotframework.aliases = ['robot'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function robotframework(Prism) {
   (function (Prism) {
       var comment = {
@@ -80873,10 +84458,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   sas.displayName = 'sas';
   sas.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function sas(Prism) {
   (function (Prism) {
       var stringPattern = /(?:"(?:""|[^"])*"(?!")|'(?:''|[^'])*'(?!'))/.source;
@@ -81239,10 +84827,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   shellSession.displayName = 'shell-session';
   shellSession.aliases = ['sh-session', 'shellsession'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function shellSession(Prism) {
     Prism.register(bash)
     ;(function (Prism) {
@@ -81318,10 +84909,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   smali.displayName = 'smali';
   smali.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function smali(Prism) {
     // Test files for the parser itself:
     // https://github.com/JesusFreke/smali/tree/master/smali/src/test/resources/LexerTest
@@ -81411,10 +85005,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   smalltalk.displayName = 'smalltalk';
   smalltalk.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function smalltalk(Prism) {
     Prism.languages.smalltalk = {
       comment: {
@@ -81457,10 +85054,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   smarty.displayName = 'smarty';
   smarty.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function smarty(Prism) {
     Prism.register(markupTemplating)
     ;(function (Prism) {
@@ -81477,7 +85077,6 @@
               pattern: /^\{php\}|\{\/php\}$/,
               inside: null // see below
             },
-
             php: {
               pattern: /[\s\S]+/,
               alias: 'language-php',
@@ -81503,7 +85102,6 @@
                   }
                 }
               },
-
               variable: /\$\w+/
             }
           },
@@ -81603,10 +85201,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   sml.displayName = 'sml';
   sml.aliases = ['smlnj'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function sml(Prism) {
   (function (Prism) {
       var keywords =
@@ -81678,10 +85279,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   solidity.displayName = 'solidity';
   solidity.aliases = ['sol'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function solidity(Prism) {
     Prism.register(clike);
     Prism.languages.solidity = Prism.languages.extend('clike', {
@@ -81709,10 +85313,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   solutionFile.displayName = 'solution-file';
   solutionFile.aliases = ['sln'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function solutionFile(Prism) {
   (function (Prism) {
       var guid = {
@@ -81765,10 +85372,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   soy.displayName = 'soy';
   soy.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function soy(Prism) {
     Prism.register(markupTemplating)
     ;(function (Prism) {
@@ -81872,10 +85482,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   turtle.displayName = 'turtle';
   turtle.aliases = ['trig'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function turtle(Prism) {
     Prism.languages.turtle = {
       comment: {
@@ -81934,10 +85547,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   sparql.displayName = 'sparql';
   sparql.aliases = ['rq'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function sparql(Prism) {
     Prism.register(turtle);
     Prism.languages.sparql = Prism.languages.extend('turtle', {
@@ -81958,10 +85574,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   splunkSpl.displayName = 'splunk-spl';
   splunkSpl.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function splunkSpl(Prism) {
     Prism.languages['splunk-spl'] = {
       comment: /`comment\("(?:\\.|[^\\"])*"\)`/,
@@ -81991,10 +85610,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   sqf.displayName = 'sqf';
   sqf.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function sqf(Prism) {
     Prism.register(clike);
     Prism.languages.sqf = Prism.languages.extend('clike', {
@@ -82036,10 +85658,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   squirrel.displayName = 'squirrel';
   squirrel.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function squirrel(Prism) {
     Prism.register(clike);
     Prism.languages.squirrel = Prism.languages.extend('clike', {
@@ -82089,10 +85714,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   stan.displayName = 'stan';
   stan.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function stan(Prism) {
   (function (Prism) {
       // https://mc-stan.org/docs/2_28/reference-manual/bnf-grammars.html
@@ -82132,7 +85760,6 @@
               lookbehind: true,
               inside: null // see below
             },
-
             property: /\b[a-z]\w*(?=\s*=)/i,
             operator: /=/,
             punctuation: /^<|>$|,/
@@ -82161,10 +85788,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   stata.displayName = 'stata';
   stata.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function stata(Prism) {
     Prism.register(java);
     Prism.register(mata);
@@ -82199,7 +85829,6 @@
               }
             }
           },
-
           string: /[\s\S]+/
         }
       },
@@ -82246,10 +85875,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   iecst.displayName = 'iecst';
   iecst.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function iecst(Prism) {
     Prism.languages.iecst = {
       comment: [
@@ -82290,10 +85922,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   supercollider.displayName = 'supercollider';
   supercollider.aliases = ['sclang'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function supercollider(Prism) {
     Prism.languages.supercollider = {
       comment: {
@@ -82332,10 +85967,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   systemd.displayName = 'systemd';
   systemd.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function systemd(Prism) {
   (function (Prism) {
       var comment = {
@@ -82409,10 +86047,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   t4Templating.displayName = 't4-templating';
   t4Templating.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function t4Templating(Prism) {
   (function (Prism) {
       function createBlock(prefix, inside, contentAlias) {
@@ -82463,10 +86104,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   t4Cs.displayName = 't4-cs';
   t4Cs.aliases = ['t4'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function t4Cs(Prism) {
     Prism.register(csharp);
     Prism.register(t4Templating);
@@ -82475,10 +86119,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   t4Vb.displayName = 't4-vb';
   t4Vb.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function t4Vb(Prism) {
     Prism.register(t4Templating);
     Prism.register(vbnet);
@@ -82486,10 +86133,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   tap.displayName = 'tap';
   tap.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function tap(Prism) {
     Prism.register(yaml);
     // https://en.wikipedia.org/wiki/Test_Anything_Protocol
@@ -82517,10 +86167,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   tcl.displayName = 'tcl';
   tcl.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function tcl(Prism) {
     Prism.languages.tcl = {
       comment: {
@@ -82574,10 +86227,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   tt2.displayName = 'tt2';
   tt2.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function tt2(Prism) {
     Prism.register(clike);
     Prism.register(markupTemplating)
@@ -82635,10 +86291,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   toml.displayName = 'toml';
   toml.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function toml(Prism) {
   (function (Prism) {
       var key = /(?:[\w-]+|'[^'\n\r]*'|"(?:\\.|[^\\"\r\n])*")/.source;
@@ -82703,10 +86362,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   tremor.displayName = 'tremor';
   tremor.aliases = ['trickle', 'troy'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function tremor(Prism) {
   (function (Prism) {
       Prism.languages.tremor = {
@@ -82787,10 +86449,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   typoscript.displayName = 'typoscript';
   typoscript.aliases = ['tsconfig'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function typoscript(Prism) {
   (function (Prism) {
       var keywords =
@@ -82874,10 +86539,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   unrealscript.displayName = 'unrealscript';
   unrealscript.aliases = ['uc', 'uscript'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function unrealscript(Prism) {
     Prism.languages.unrealscript = {
       comment: /\/\/.*|\/\*[\s\S]*?\*\//,
@@ -82925,10 +86593,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   uorazor.displayName = 'uorazor';
   uorazor.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function uorazor(Prism) {
     Prism.languages.uorazor = {
       'comment-hash': {
@@ -82986,10 +86657,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   v.displayName = 'v';
   v.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function v(Prism) {
     Prism.register(clike)
     ;(function (Prism) {
@@ -83078,10 +86752,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   vala.displayName = 'vala';
   vala.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function vala(Prism) {
     Prism.register(clike);
     Prism.languages.vala = Prism.languages.extend('clike', {
@@ -83175,10 +86852,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   velocity.displayName = 'velocity';
   velocity.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function velocity(Prism) {
     Prism.register(markup)
     ;(function (Prism) {
@@ -83190,7 +86870,6 @@
           lookbehind: true,
           inside: {} // See below
         },
-
         string: {
           pattern: /"[^"]*"|'[^']*'/,
           greedy: true
@@ -83256,10 +86935,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   verilog.displayName = 'verilog';
   verilog.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function verilog(Prism) {
     Prism.languages.verilog = {
       comment: {
@@ -83292,10 +86974,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   vhdl.displayName = 'vhdl';
   vhdl.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function vhdl(Prism) {
     Prism.languages.vhdl = {
       comment: /--.+/,
@@ -83328,10 +87013,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   vim.displayName = 'vim';
   vim.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function vim(Prism) {
     Prism.languages.vim = {
       string: /"(?:[^"\\\r\n]|\\.)*"|'(?:[^'\r\n]|'')*'/,
@@ -83349,10 +87037,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   visualBasic.displayName = 'visual-basic';
   visualBasic.aliases = ['vb', 'vba'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function visualBasic(Prism) {
     Prism.languages['visual-basic'] = {
       comment: {
@@ -83389,10 +87080,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   warpscript.displayName = 'warpscript';
   warpscript.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function warpscript(Prism) {
     Prism.languages.warpscript = {
       comment: /#.*|\/\/.*|\/\*[\s\S]*?\*\//,
@@ -83422,10 +87116,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   wasm.displayName = 'wasm';
   wasm.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function wasm(Prism) {
     Prism.languages.wasm = {
       comment: [
@@ -83463,10 +87160,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   webIdl.displayName = 'web-idl';
   webIdl.aliases = ['webidl'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function webIdl(Prism) {
   (function (Prism) {
       var id = /(?:\B-|\b_|\b)[A-Za-z][\w-]*(?![\w-])/.source;
@@ -83581,10 +87281,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   wgsl.displayName = 'wgsl';
   wgsl.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function wgsl(Prism) {
     Prism.languages.wgsl = {
       comment: {
@@ -83691,10 +87394,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   wiki.displayName = 'wiki';
   wiki.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function wiki(Prism) {
     Prism.register(markup);
     Prism.languages.wiki = Prism.languages.extend('markup', {
@@ -83778,10 +87484,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   wolfram.displayName = 'wolfram';
   wolfram.aliases = ['mathematica', 'nb', 'wl'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function wolfram(Prism) {
     Prism.languages.wolfram = {
       comment:
@@ -83818,10 +87527,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   wren.displayName = 'wren';
   wren.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function wren(Prism) {
     // https://wren.io/
 
@@ -83921,10 +87633,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   xeora.displayName = 'xeora';
   xeora.aliases = ['xeoracube'];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function xeora(Prism) {
     Prism.register(markup)
     ;(function (Prism) {
@@ -84049,10 +87764,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   xmlDoc.displayName = 'xml-doc';
   xmlDoc.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function xmlDoc(Prism) {
     Prism.register(markup)
     ;(function (Prism) {
@@ -84093,10 +87811,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   xojo.displayName = 'xojo';
   xojo.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function xojo(Prism) {
     Prism.languages.xojo = {
       comment: {
@@ -84121,10 +87842,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   xquery.displayName = 'xquery';
   xquery.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function xquery(Prism) {
     Prism.register(markup)
     ;(function (Prism) {
@@ -84321,10 +88045,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   yang.displayName = 'yang';
   yang.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function yang(Prism) {
     Prism.languages.yang = {
       // https://tools.ietf.org/html/rfc6020#page-34
@@ -84349,10 +88076,13 @@
   }
 
   // @ts-nocheck
+  /**
+   * @import {Syntax} from '../core.js'
+   */
   zig.displayName = 'zig';
   zig.aliases = [];
 
-  /** @type {import('../core.js').Syntax} */
+  /** @type {Syntax} */
   function zig(Prism) {
   (function (Prism) {
       function literal(str) {
@@ -84455,7 +88185,6 @@
             inside: null // see below
           }
         ],
-
         'builtin-type': {
           pattern:
             /\b(?:anyerror|bool|c_u?(?:int|long|longlong|short)|c_longdouble|c_void|comptime_(?:float|int)|f(?:16|32|64|128)|[iu](?:8|16|32|64|128|size)|noreturn|type|void)\b/,
@@ -84479,11 +88208,13 @@
   }
 
   /**
-   * @typedef {import('./core.js').RefractorRoot} RefractorRoot
-   * @typedef {import('./core.js').RefractorElement} RefractorElement
-   * @typedef {import('./core.js').Text} Text
-   * @typedef {import('./core.js').Grammar} Grammar
-   * @typedef {import('./core.js').Syntax} Syntax
+   * @import {
+   *   Grammar,
+   *   RefractorElement,
+   *   RefractorRoot,
+   *   Syntax,
+   *   Text
+   * } from './core.js'
    */
 
   refractor.register(markup);
@@ -84784,7 +88515,7 @@
   refractor.register(yang);
   refractor.register(zig);
 
-  function a(){a=function(e,r){return new t(e,void 0,r)};var e=RegExp.prototype,r=new WeakMap;function t(e,n,i){var o=new RegExp(e,n);return r.set(o,i||r.get(e)),l(o,t.prototype)}function n(e,t){var n=r.get(t);return Object.keys(n).reduce(function(r,t){var i=n[t];if("number"==typeof i)r[t]=e[i];else {for(var o=0;void 0===e[i[o]]&&o+1<i.length;)o++;r[t]=e[i[o]];}return r},Object.create(null))}return function(e,r){if("function"!=typeof r&&null!==r)throw new TypeError("Super expression must either be null or a function");e.prototype=Object.create(r&&r.prototype,{constructor:{value:e,writable:!0,configurable:!0}}),Object.defineProperty(e,"prototype",{writable:!1}),r&&l(e,r);}(t,RegExp),t.prototype.exec=function(r){var t=e.exec.call(this,r);if(t){t.groups=n(t,this);var i=t.indices;i&&(i.groups=n(i,this));}return t},t.prototype[Symbol.replace]=function(t,i){if("string"==typeof i){var o=r.get(this);return e[Symbol.replace].call(this,t,i.replace(/\$<([^>]+)>/g,function(e,r){var t=o[r];return "$"+(Array.isArray(t)?t.join("$"):t)}))}if("function"==typeof i){var a=this;return e[Symbol.replace].call(this,t,function(){var e=arguments;return "object"!=typeof e[e.length-1]&&(e=[].slice.call(e)).push(n(e,a)),i.apply(this,e)})}return e[Symbol.replace].call(this,t,i)},a.apply(this,arguments)}function l(e,r){return l=Object.setPrototypeOf?Object.setPrototypeOf.bind():function(e,r){return e.__proto__=r,e},l(e,r)}function s(e,r){(null==r||r>e.length)&&(r=e.length);for(var t=0,n=new Array(r);t<r;t++)n[t]=e[t];return n}function u(e,r){var t="undefined"!=typeof Symbol&&e[Symbol.iterator]||e["@@iterator"];if(t)return (t=t.call(e)).next.bind(t);if(Array.isArray(e)||(t=function(e,r){if(e){if("string"==typeof e)return s(e,r);var t=Object.prototype.toString.call(e).slice(8,-1);return "Object"===t&&e.constructor&&(t=e.constructor.name),"Map"===t||"Set"===t?Array.from(e):"Arguments"===t||/^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t)?s(e,r):void 0}}(e))||r){t&&(e=t);var n=0;return function(){return n>=e.length?{done:!0}:{done:!1,value:e[n++]}}}throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}var c=function(i){return function(o){return void 0===o&&(o={}),function(e,r){if(r&&!e.registered(r))throw new Error('The default language "'+r+'" is not registered with refractor.')}(i,o.defaultLanguage),function(r){visit(r,"element",l);};function l(e,l,s){var c,p;if(s&&"pre"===s.tagName&&"code"===e.tagName){var f=(null==e||null==(c=e.data)?void 0:c.meta)||(null==e||null==(p=e.properties)?void 0:p.metastring)||"";e.properties.className?"boolean"==typeof e.properties.className?e.properties.className=[]:Array.isArray(e.properties.className)||(e.properties.className=[e.properties.className]):e.properties.className=[];var m,h,d=function(e){for(var r,t=u(e.properties.className);!(r=t()).done;){var n=r.value;if("language-"===n.slice(0,9))return n.slice(9).toLowerCase()}return null}(e);if(!d&&o.defaultLanguage&&e.properties.className.push("language-"+(d=o.defaultLanguage)),e.properties.className.push("code-highlight"),d)try{var g,v;v=null!=(g=d)&&g.includes("diff-")?d.split("-")[1]:d,m=i.highlight(toString(e),v),s.properties.className=(s.properties.className||[]).concat("language-"+v);}catch(r){if(!o.ignoreMissing||!/Unknown language/.test(r.message))throw r;m=e;}else m=e;m.children=(h=1,function e(r){return r.reduce(function(r,t){if("text"===t.type){var n=t.value,i=(n.match(/\n/g)||"").length;if(0===i)t.position={start:{line:h,column:1},end:{line:h,column:1}},r.push(t);else for(var o,a=n.split("\n"),l=u(a.entries());!(o=l()).done;){var s=o.value,c=s[0],p=s[1];r.push({type:"text",value:c===a.length-1?p:p+"\n",position:{start:{line:h+c,column:1},end:{line:h+c,column:1}}});}return h+=i,r}if(Object.prototype.hasOwnProperty.call(t,"children")){var f=h;return t.children=e(t.children),r.push(t),t.position={start:{line:f,column:1},end:{line:h,column:1}},r}return r.push(t),r},[])})(m.children),m.position=m.children.length>0?{start:{line:m.children[0].position.start.line,column:0},end:{line:m.children[m.children.length-1].position.end.line,column:0}}:{start:{line:0,column:0},end:{line:0,column:0}};for(var y,b=function(e){var r=/{([\d,-]+)}/,t=e.split(",").map(function(e){return e.trim()}).join();if(r.test(t)){var i=r.exec(t)[1],o=n(i);return function(e){return o.includes(e+1)}}return function(){return !1}}(f),w=function(e){var r=/*#__PURE__*/a(/showLineNumbers=(\d+)/i,{lines:1});if(r.test(e)){var t=r.exec(e);return Number(t.groups.lines)}return 1}(f),N=function(e){for(var r=new Array(e),t=0;t<e;t++)r[t]={type:"element",tagName:"span",properties:{className:[]},children:[]};return r}(m.position.end.line),j=["showlinenumbers=false",'showlinenumbers="false"',"showlinenumbers={false}"],x=function(){var e,n,i=y.value,a=i[0],l=i[1];l.properties.className=["code-line"];var s=filter(m,function(e){return e.position.start.line<=a+1&&e.position.end.line>=a+1});l.children=s.children,!f.toLowerCase().includes("showLineNumbers".toLowerCase())&&!o.showLineNumbers||j.some(function(e){return f.toLowerCase().includes(e)})||(l.properties.line=[(a+w).toString()],l.properties.className.push("line-number")),b(a)&&l.properties.className.push("highlight-line"),("diff"===d||null!=(e=d)&&e.includes("diff-"))&&"-"===toString(l).substring(0,1)?l.properties.className.push("deleted"):("diff"===d||null!=(n=d)&&n.includes("diff-"))&&"+"===toString(l).substring(0,1)&&l.properties.className.push("inserted");},O=u(N.entries());!(y=O()).done;)x();N.length>0&&""===toString(N[N.length-1]).trim()&&N.pop(),e.children=N;}}}},f=c(refractor);
+  function a(){a=function(e,r){return new t(e,void 0,r)};var e=RegExp.prototype,r=new WeakMap;function t(e,n,i){var o=new RegExp(e,n);return r.set(o,i||r.get(e)),l(o,t.prototype)}function n(e,t){var n=r.get(t);return Object.keys(n).reduce(function(r,t){var i=n[t];if("number"==typeof i)r[t]=e[i];else {for(var o=0;void 0===e[i[o]]&&o+1<i.length;)o++;r[t]=e[i[o]];}return r},Object.create(null))}return function(e,r){if("function"!=typeof r&&null!==r)throw new TypeError("Super expression must either be null or a function");e.prototype=Object.create(r&&r.prototype,{constructor:{value:e,writable:true,configurable:true}}),Object.defineProperty(e,"prototype",{writable:false}),r&&l(e,r);}(t,RegExp),t.prototype.exec=function(r){var t=e.exec.call(this,r);if(t){t.groups=n(t,this);var i=t.indices;i&&(i.groups=n(i,this));}return t},t.prototype[Symbol.replace]=function(t,i){if("string"==typeof i){var o=r.get(this);return e[Symbol.replace].call(this,t,i.replace(/\$<([^>]+)>/g,function(e,r){var t=o[r];return "$"+(Array.isArray(t)?t.join("$"):t)}))}if("function"==typeof i){var a=this;return e[Symbol.replace].call(this,t,function(){var e=arguments;return "object"!=typeof e[e.length-1]&&(e=[].slice.call(e)).push(n(e,a)),i.apply(this,e)})}return e[Symbol.replace].call(this,t,i)},a.apply(this,arguments)}function l(e,r){return l=Object.setPrototypeOf?Object.setPrototypeOf.bind():function(e,r){return e.__proto__=r,e},l(e,r)}function s(e,r){(null==r||r>e.length)&&(r=e.length);for(var t=0,n=new Array(r);t<r;t++)n[t]=e[t];return n}function u(e,r){var t="undefined"!=typeof Symbol&&e[Symbol.iterator]||e["@@iterator"];if(t)return (t=t.call(e)).next.bind(t);if(Array.isArray(e)||(t=function(e,r){if(e){if("string"==typeof e)return s(e,r);var t=Object.prototype.toString.call(e).slice(8,-1);return "Object"===t&&e.constructor&&(t=e.constructor.name),"Map"===t||"Set"===t?Array.from(e):"Arguments"===t||/^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t)?s(e,r):void 0}}(e))||r){t&&(e=t);var n=0;return function(){return n>=e.length?{done:true}:{done:false,value:e[n++]}}}throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}var c=function(i){return function(o){return void 0===o&&(o={}),function(e,r){if(r&&!e.registered(r))throw new Error('The default language "'+r+'" is not registered with refractor.')}(i,o.defaultLanguage),function(r){visit(r,"element",l);};function l(e,l,s){var c,p;if(s&&"pre"===s.tagName&&"code"===e.tagName){var f=(null==e||null==(c=e.data)?void 0:c.meta)||(null==e||null==(p=e.properties)?void 0:p.metastring)||"";e.properties.className?"boolean"==typeof e.properties.className?e.properties.className=[]:Array.isArray(e.properties.className)||(e.properties.className=[e.properties.className]):e.properties.className=[];var m,h,d=function(e){for(var r,t=u(e.properties.className);!(r=t()).done;){var n=r.value;if("language-"===n.slice(0,9))return n.slice(9).toLowerCase()}return null}(e);if(!d&&o.defaultLanguage&&e.properties.className.push("language-"+(d=o.defaultLanguage)),e.properties.className.push("code-highlight"),d)try{var g,v;v=null!=(g=d)&&g.includes("diff-")?d.split("-")[1]:d,m=i.highlight(toString(e),v),s.properties.className=(s.properties.className||[]).concat("language-"+v);}catch(r){if(!o.ignoreMissing||!/Unknown language/.test(r.message))throw r;m=e;}else m=e;m.children=(h=1,function e(r){return r.reduce(function(r,t){if("text"===t.type){var n=t.value,i=(n.match(/\n/g)||"").length;if(0===i)t.position={start:{line:h,column:1},end:{line:h,column:1}},r.push(t);else for(var o,a=n.split("\n"),l=u(a.entries());!(o=l()).done;){var s=o.value,c=s[0],p=s[1];r.push({type:"text",value:c===a.length-1?p:p+"\n",position:{start:{line:h+c,column:1},end:{line:h+c,column:1}}});}return h+=i,r}if(Object.prototype.hasOwnProperty.call(t,"children")){var f=h;return t.children=e(t.children),r.push(t),t.position={start:{line:f,column:1},end:{line:h,column:1}},r}return r.push(t),r},[])})(m.children),m.position=m.children.length>0?{start:{line:m.children[0].position.start.line,column:0},end:{line:m.children[m.children.length-1].position.end.line,column:0}}:{start:{line:0,column:0},end:{line:0,column:0}};for(var y,b=function(e){var r=/{([\d,-]+)}/,t=e.split(",").map(function(e){return e.trim()}).join();if(r.test(t)){var i=r.exec(t)[1],o=n(i);return function(e){return o.includes(e+1)}}return function(){return  false}}(f),w=function(e){var r=/*#__PURE__*/a(/showLineNumbers=(\d+)/i,{lines:1});if(r.test(e)){var t=r.exec(e);return Number(t.groups.lines)}return 1}(f),N=function(e){for(var r=new Array(e),t=0;t<e;t++)r[t]={type:"element",tagName:"span",properties:{className:[]},children:[]};return r}(m.position.end.line),j=["showlinenumbers=false",'showlinenumbers="false"',"showlinenumbers={false}"],x=function(){var e,n,i=y.value,a=i[0],l=i[1];l.properties.className=["code-line"];var s=filter(m,function(e){return e.position.start.line<=a+1&&e.position.end.line>=a+1});l.children=s.children,!f.toLowerCase().includes("showLineNumbers".toLowerCase())&&!o.showLineNumbers||j.some(function(e){return f.toLowerCase().includes(e)})||(l.properties.line=[(a+w).toString()],l.properties.className.push("line-number")),b(a)&&l.properties.className.push("highlight-line"),("diff"===d||null!=(e=d)&&e.includes("diff-"))&&"-"===toString(l).substring(0,1)?l.properties.className.push("deleted"):("diff"===d||null!=(n=d)&&n.includes("diff-"))&&"+"===toString(l).substring(0,1)&&l.properties.className.push("inserted");},O=u(N.entries());!(y=O()).done;)x();N.length>0&&""===toString(N[N.length-1]).trim()&&N.pop(),e.children=N;}}}},f=c(refractor);
 
   Object.defineProperty(f, 'name', {
       value: 'rehypePrism',
