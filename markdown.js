@@ -2,7 +2,7 @@
  * @wcj/markdown-to-html v3.0.5 
  * Converts markdown text to HTML. 
  * 
- * Copyright (c) 2025 kenny wang <wowohoo@qq.com> (https://github.com/jaywcjlove) 
+ * Copyright (c) 2026 kenny wang <wowohoo@qq.com> (https://github.com/jaywcjlove) 
  * https://github.com/jaywcjlove/markdown-to-html 
  * 
  * @website: https://github.com/jaywcjlove/markdown-to-html
@@ -684,7 +684,7 @@
       }
     }
 
-    return joined === undefined ? '.' : normalize$3(joined)
+    return joined === undefined ? '.' : normalize$2(joined)
   }
 
   /**
@@ -697,7 +697,7 @@
    */
   // Note: `normalize` is not exposed as `path.normalize`, so some code is
   // manually removed from it.
-  function normalize$3(path) {
+  function normalize$2(path) {
     assertPath$1(path);
 
     const absolute = path.codePointAt(0) === 47; /* `/` */
@@ -2001,7 +2001,7 @@
   // `parse` is called.
   // Currently, we allow directly setting `processor.parser`, which is untyped.
 
-  const own$d = {}.hasOwnProperty;
+  const own$c = {}.hasOwnProperty;
 
   /**
    * @template {Node | undefined} [ParseTree=undefined]
@@ -2222,7 +2222,7 @@
         }
 
         // Get `key`.
-        return (own$d.call(this.namespace, key) && this.namespace[key]) || undefined
+        return (own$c.call(this.namespace, key) && this.namespace[key]) || undefined
       }
 
       // Set space.
@@ -4887,7 +4887,7 @@
    *   Handlers to use.
    */
 
-  const own$c = {}.hasOwnProperty;
+  const own$b = {}.hasOwnProperty;
 
   /**
    * Handle values based on a field.
@@ -4937,11 +4937,11 @@
       let fn = one.invalid;
       const handlers = one.handlers;
 
-      if (value && own$c.call(value, key)) {
+      if (value && own$b.call(value, key)) {
         // @ts-expect-error Indexable.
         const id = String(value[key]);
         // @ts-expect-error Indexable.
-        fn = own$c.call(handlers, id) ? handlers[id] : one.unknown;
+        fn = own$b.call(handlers, id) ? handlers[id] : one.unknown;
       }
 
       if (fn) {
@@ -5832,13 +5832,13 @@
    * @import {Html} from 'mdast'
    */
 
-  html$9.peek = htmlPeek;
+  html$7.peek = htmlPeek;
 
   /**
    * @param {Html} node
    * @returns {string}
    */
-  function html$9(node) {
+  function html$7(node) {
     return node.value || ''
   }
 
@@ -6814,7 +6814,7 @@
     emphasis: emphasis$1,
     hardBreak: hardBreak$1,
     heading: heading$1,
-    html: html$9,
+    html: html$7,
     image: image$1,
     imageReference: imageReference$1,
     inlineCode: inlineCode$1,
@@ -6851,8 +6851,6 @@
     // reference to decode was not a semicolon (`&semi;`), we can assume that the
     // matching was not complete.
     if (
-      // @ts-expect-error: TypeScript is wrong that `textContent` on elements can
-      // yield `null`.
       character.charCodeAt(character.length - 1) === 59 /* `;` */ &&
       value !== 'semi'
     ) {
@@ -6861,8 +6859,6 @@
 
     // If the decoded string is equal to the input, the character reference was
     // not valid.
-    // @ts-expect-error: TypeScript is wrong that `textContent` on elements can
-    // yield `null`.
     return character === characterReference ? false : character
   }
 
@@ -18556,7 +18552,7 @@
    * } from './types.js'
    */
 
-  const own$b = {}.hasOwnProperty;
+  const own$a = {}.hasOwnProperty;
 
   /**
    * Turn markdown into a syntax tree.
@@ -18743,7 +18739,7 @@
       index = -1;
       while (++index < events.length) {
         const handler = config[events[index][0]];
-        if (own$b.call(handler, events[index][1].type)) {
+        if (own$a.call(handler, events[index][1].type)) {
           handler[events[index][1].type].call(Object.assign({
             sliceSerialize: events[index][2].sliceSerialize
           }, context), events[index][1]);
@@ -19633,7 +19629,7 @@
     /** @type {keyof Extension} */
     let key;
     for (key in extension) {
-      if (own$b.call(extension, key)) {
+      if (own$a.call(extension, key)) {
         switch (key) {
           case 'canContainEols':
             {
@@ -19996,7 +19992,7 @@
    * @returns {Element | Raw | undefined}
    *   hast node.
    */
-  function html$8(state, node) {
+  function html$6(state, node) {
     if (state.options.allowDangerousHtml) {
       /** @type {Raw} */
       const result = {type: 'raw', value: node.value};
@@ -20884,7 +20880,7 @@
     emphasis,
     footnoteReference,
     heading,
-    html: html$8,
+    html: html$6,
     imageReference,
     image,
     inlineCode,
@@ -21401,7 +21397,7 @@
    */
 
 
-  const own$a = {}.hasOwnProperty;
+  const own$9 = {}.hasOwnProperty;
 
   /** @type {Options} */
   const emptyOptions$3 = {};
@@ -21474,7 +21470,7 @@
       const type = node.type;
       const handle = state.handlers[type];
 
-      if (own$a.call(state.handlers, type) && handle) {
+      if (own$9.call(state.handlers, type) && handle) {
         return handle(state, node, parent)
       }
 
@@ -21630,7 +21626,7 @@
     /** @type {HastElement | HastText} */
     const result =
       'value' in node &&
-      !(own$a.call(data, 'hProperties') || own$a.call(data, 'hChildren'))
+      !(own$9.call(data, 'hProperties') || own$9.call(data, 'hChildren'))
         ? {type: 'text', value: node.value}
         : {
             type: 'element',
@@ -22102,7 +22098,7 @@
    */
 
   /** @type {SchemaType} */
-  let Schema$2 = class Schema {
+  let Schema$1 = class Schema {
     /**
      * @param {SchemaType['property']} property
      *   Property.
@@ -22123,9 +22119,9 @@
     }
   };
 
-  Schema$2.prototype.normal = {};
-  Schema$2.prototype.property = {};
-  Schema$2.prototype.space = undefined;
+  Schema$1.prototype.normal = {};
+  Schema$1.prototype.property = {};
+  Schema$1.prototype.space = undefined;
 
   /**
    * @import {Info, Space} from 'property-information'
@@ -22140,7 +22136,7 @@
    * @returns {Schema}
    *   Schema.
    */
-  function merge$2(definitions, space) {
+  function merge$1(definitions, space) {
     /** @type {Record<string, Info>} */
     const property = {};
     /** @type {Record<string, string>} */
@@ -22151,7 +22147,7 @@
       Object.assign(normal, definition.normal);
     }
 
-    return new Schema$2(property, normal, space)
+    return new Schema$1(property, normal, space)
   }
 
   /**
@@ -22163,7 +22159,7 @@
    *   Value that can be used to look up the properly cased property on a
    *   `Schema`.
    */
-  function normalize$2(value) {
+  function normalize$1(value) {
     return value.toLowerCase()
   }
 
@@ -22172,7 +22168,7 @@
    */
 
   /** @type {InfoType} */
-  let Info$2 = class Info {
+  let Info$1 = class Info {
     /**
      * @param {string} property
      *   Property.
@@ -22187,42 +22183,42 @@
     }
   };
 
-  Info$2.prototype.attribute = '';
-  Info$2.prototype.booleanish = false;
-  Info$2.prototype.boolean = false;
-  Info$2.prototype.commaOrSpaceSeparated = false;
-  Info$2.prototype.commaSeparated = false;
-  Info$2.prototype.defined = false;
-  Info$2.prototype.mustUseProperty = false;
-  Info$2.prototype.number = false;
-  Info$2.prototype.overloadedBoolean = false;
-  Info$2.prototype.property = '';
-  Info$2.prototype.spaceSeparated = false;
-  Info$2.prototype.space = undefined;
+  Info$1.prototype.attribute = '';
+  Info$1.prototype.booleanish = false;
+  Info$1.prototype.boolean = false;
+  Info$1.prototype.commaOrSpaceSeparated = false;
+  Info$1.prototype.commaSeparated = false;
+  Info$1.prototype.defined = false;
+  Info$1.prototype.mustUseProperty = false;
+  Info$1.prototype.number = false;
+  Info$1.prototype.overloadedBoolean = false;
+  Info$1.prototype.property = '';
+  Info$1.prototype.spaceSeparated = false;
+  Info$1.prototype.space = undefined;
 
-  let powers$2 = 0;
+  let powers$1 = 0;
 
-  const boolean$2 = increment$2();
-  const booleanish$2 = increment$2();
-  const overloadedBoolean$2 = increment$2();
-  const number$2 = increment$2();
-  const spaceSeparated$2 = increment$2();
-  const commaSeparated$2 = increment$2();
-  const commaOrSpaceSeparated$2 = increment$2();
+  const boolean$1 = increment$1();
+  const booleanish$1 = increment$1();
+  const overloadedBoolean$1 = increment$1();
+  const number$1 = increment$1();
+  const spaceSeparated$1 = increment$1();
+  const commaSeparated$1 = increment$1();
+  const commaOrSpaceSeparated$1 = increment$1();
 
-  function increment$2() {
-    return 2 ** ++powers$2
+  function increment$1() {
+    return 2 ** ++powers$1
   }
 
-  var types$2 = /*#__PURE__*/Object.freeze({
+  var types$1 = /*#__PURE__*/Object.freeze({
     __proto__: null,
-    boolean: boolean$2,
-    booleanish: booleanish$2,
-    commaOrSpaceSeparated: commaOrSpaceSeparated$2,
-    commaSeparated: commaSeparated$2,
-    number: number$2,
-    overloadedBoolean: overloadedBoolean$2,
-    spaceSeparated: spaceSeparated$2
+    boolean: boolean$1,
+    booleanish: booleanish$1,
+    commaOrSpaceSeparated: commaOrSpaceSeparated$1,
+    commaSeparated: commaSeparated$1,
+    number: number$1,
+    overloadedBoolean: overloadedBoolean$1,
+    spaceSeparated: spaceSeparated$1
   });
 
   /**
@@ -22230,11 +22226,11 @@
    */
 
 
-  const checks$2 = /** @type {ReadonlyArray<keyof typeof types>} */ (
-    Object.keys(types$2)
+  const checks$1 = /** @type {ReadonlyArray<keyof typeof types>} */ (
+    Object.keys(types$1)
   );
 
-  let DefinedInfo$2 = class DefinedInfo extends Info$2 {
+  let DefinedInfo$1 = class DefinedInfo extends Info$1 {
     /**
      * @constructor
      * @param {string} property
@@ -22253,18 +22249,18 @@
 
       super(property, attribute);
 
-      mark$2(this, 'space', space);
+      mark$1(this, 'space', space);
 
       if (typeof mask === 'number') {
-        while (++index < checks$2.length) {
-          const check = checks$2[index];
-          mark$2(this, checks$2[index], (mask & types$2[check]) === types$2[check]);
+        while (++index < checks$1.length) {
+          const check = checks$1[index];
+          mark$1(this, checks$1[index], (mask & types$1[check]) === types$1[check]);
         }
       }
     }
   };
 
-  DefinedInfo$2.prototype.defined = true;
+  DefinedInfo$1.prototype.defined = true;
 
   /**
    * @template {keyof DefinedInfo} Key
@@ -22278,7 +22274,7 @@
    * @returns {undefined}
    *   Nothing.
    */
-  function mark$2(values, key, value) {
+  function mark$1(values, key, value) {
     if (value) {
       values[key] = value;
     }
@@ -22295,14 +22291,14 @@
    * @returns {Schema}
    *   Schema.
    */
-  function create$2(definition) {
+  function create$1(definition) {
     /** @type {Record<string, Info>} */
     const properties = {};
     /** @type {Record<string, string>} */
     const normals = {};
 
     for (const [property, value] of Object.entries(definition.properties)) {
-      const info = new DefinedInfo$2(
+      const info = new DefinedInfo$1(
         property,
         definition.transform(definition.attributes || {}, property),
         value,
@@ -22318,62 +22314,62 @@
 
       properties[property] = info;
 
-      normals[normalize$2(property)] = property;
-      normals[normalize$2(info.attribute)] = property;
+      normals[normalize$1(property)] = property;
+      normals[normalize$1(info.attribute)] = property;
     }
 
-    return new Schema$2(properties, normals, definition.space)
+    return new Schema$1(properties, normals, definition.space)
   }
 
-  const aria$2 = create$2({
+  const aria$1 = create$1({
     properties: {
       ariaActiveDescendant: null,
-      ariaAtomic: booleanish$2,
+      ariaAtomic: booleanish$1,
       ariaAutoComplete: null,
-      ariaBusy: booleanish$2,
-      ariaChecked: booleanish$2,
-      ariaColCount: number$2,
-      ariaColIndex: number$2,
-      ariaColSpan: number$2,
-      ariaControls: spaceSeparated$2,
+      ariaBusy: booleanish$1,
+      ariaChecked: booleanish$1,
+      ariaColCount: number$1,
+      ariaColIndex: number$1,
+      ariaColSpan: number$1,
+      ariaControls: spaceSeparated$1,
       ariaCurrent: null,
-      ariaDescribedBy: spaceSeparated$2,
+      ariaDescribedBy: spaceSeparated$1,
       ariaDetails: null,
-      ariaDisabled: booleanish$2,
-      ariaDropEffect: spaceSeparated$2,
+      ariaDisabled: booleanish$1,
+      ariaDropEffect: spaceSeparated$1,
       ariaErrorMessage: null,
-      ariaExpanded: booleanish$2,
-      ariaFlowTo: spaceSeparated$2,
-      ariaGrabbed: booleanish$2,
+      ariaExpanded: booleanish$1,
+      ariaFlowTo: spaceSeparated$1,
+      ariaGrabbed: booleanish$1,
       ariaHasPopup: null,
-      ariaHidden: booleanish$2,
+      ariaHidden: booleanish$1,
       ariaInvalid: null,
       ariaKeyShortcuts: null,
       ariaLabel: null,
-      ariaLabelledBy: spaceSeparated$2,
-      ariaLevel: number$2,
+      ariaLabelledBy: spaceSeparated$1,
+      ariaLevel: number$1,
       ariaLive: null,
-      ariaModal: booleanish$2,
-      ariaMultiLine: booleanish$2,
-      ariaMultiSelectable: booleanish$2,
+      ariaModal: booleanish$1,
+      ariaMultiLine: booleanish$1,
+      ariaMultiSelectable: booleanish$1,
       ariaOrientation: null,
-      ariaOwns: spaceSeparated$2,
+      ariaOwns: spaceSeparated$1,
       ariaPlaceholder: null,
-      ariaPosInSet: number$2,
-      ariaPressed: booleanish$2,
-      ariaReadOnly: booleanish$2,
+      ariaPosInSet: number$1,
+      ariaPressed: booleanish$1,
+      ariaReadOnly: booleanish$1,
       ariaRelevant: null,
-      ariaRequired: booleanish$2,
-      ariaRoleDescription: spaceSeparated$2,
-      ariaRowCount: number$2,
-      ariaRowIndex: number$2,
-      ariaRowSpan: number$2,
-      ariaSelected: booleanish$2,
-      ariaSetSize: number$2,
+      ariaRequired: booleanish$1,
+      ariaRoleDescription: spaceSeparated$1,
+      ariaRowCount: number$1,
+      ariaRowIndex: number$1,
+      ariaRowSpan: number$1,
+      ariaSelected: booleanish$1,
+      ariaSetSize: number$1,
       ariaSort: null,
-      ariaValueMax: number$2,
-      ariaValueMin: number$2,
-      ariaValueNow: number$2,
+      ariaValueMax: number$1,
+      ariaValueMin: number$1,
+      ariaValueNow: number$1,
       ariaValueText: null,
       role: null
     },
@@ -22392,7 +22388,7 @@
    * @returns {string}
    *   Transformed attribute.
    */
-  function caseSensitiveTransform$2(attributes, attribute) {
+  function caseSensitiveTransform$1(attributes, attribute) {
     return attribute in attributes ? attributes[attribute] : attribute
   }
 
@@ -22404,11 +22400,11 @@
    * @returns {string}
    *   Transformed property.
    */
-  function caseInsensitiveTransform$2(attributes, property) {
-    return caseSensitiveTransform$2(attributes, property.toLowerCase())
+  function caseInsensitiveTransform$1(attributes, property) {
+    return caseSensitiveTransform$1(attributes, property.toLowerCase())
   }
 
-  const html$7 = create$2({
+  const html$5 = create$1({
     attributes: {
       acceptcharset: 'accept-charset',
       classname: 'class',
@@ -22419,45 +22415,45 @@
     properties: {
       // Standard Properties.
       abbr: null,
-      accept: commaSeparated$2,
-      acceptCharset: spaceSeparated$2,
-      accessKey: spaceSeparated$2,
+      accept: commaSeparated$1,
+      acceptCharset: spaceSeparated$1,
+      accessKey: spaceSeparated$1,
       action: null,
       allow: null,
-      allowFullScreen: boolean$2,
-      allowPaymentRequest: boolean$2,
-      allowUserMedia: boolean$2,
+      allowFullScreen: boolean$1,
+      allowPaymentRequest: boolean$1,
+      allowUserMedia: boolean$1,
       alt: null,
       as: null,
-      async: boolean$2,
+      async: boolean$1,
       autoCapitalize: null,
-      autoComplete: spaceSeparated$2,
-      autoFocus: boolean$2,
-      autoPlay: boolean$2,
-      blocking: spaceSeparated$2,
+      autoComplete: spaceSeparated$1,
+      autoFocus: boolean$1,
+      autoPlay: boolean$1,
+      blocking: spaceSeparated$1,
       capture: null,
       charSet: null,
-      checked: boolean$2,
+      checked: boolean$1,
       cite: null,
-      className: spaceSeparated$2,
-      cols: number$2,
+      className: spaceSeparated$1,
+      cols: number$1,
       colSpan: null,
       content: null,
-      contentEditable: booleanish$2,
-      controls: boolean$2,
-      controlsList: spaceSeparated$2,
-      coords: number$2 | commaSeparated$2,
+      contentEditable: booleanish$1,
+      controls: boolean$1,
+      controlsList: spaceSeparated$1,
+      coords: number$1 | commaSeparated$1,
       crossOrigin: null,
       data: null,
       dateTime: null,
       decoding: null,
-      default: boolean$2,
-      defer: boolean$2,
+      default: boolean$1,
+      defer: boolean$1,
       dir: null,
       dirName: null,
-      disabled: boolean$2,
-      download: overloadedBoolean$2,
-      draggable: booleanish$2,
+      disabled: boolean$1,
+      download: overloadedBoolean$1,
+      draggable: booleanish$1,
       encType: null,
       enterKeyHint: null,
       fetchPriority: null,
@@ -22465,50 +22461,50 @@
       formAction: null,
       formEncType: null,
       formMethod: null,
-      formNoValidate: boolean$2,
+      formNoValidate: boolean$1,
       formTarget: null,
-      headers: spaceSeparated$2,
-      height: number$2,
-      hidden: overloadedBoolean$2,
-      high: number$2,
+      headers: spaceSeparated$1,
+      height: number$1,
+      hidden: overloadedBoolean$1,
+      high: number$1,
       href: null,
       hrefLang: null,
-      htmlFor: spaceSeparated$2,
-      httpEquiv: spaceSeparated$2,
+      htmlFor: spaceSeparated$1,
+      httpEquiv: spaceSeparated$1,
       id: null,
       imageSizes: null,
       imageSrcSet: null,
-      inert: boolean$2,
+      inert: boolean$1,
       inputMode: null,
       integrity: null,
       is: null,
-      isMap: boolean$2,
+      isMap: boolean$1,
       itemId: null,
-      itemProp: spaceSeparated$2,
-      itemRef: spaceSeparated$2,
-      itemScope: boolean$2,
-      itemType: spaceSeparated$2,
+      itemProp: spaceSeparated$1,
+      itemRef: spaceSeparated$1,
+      itemScope: boolean$1,
+      itemType: spaceSeparated$1,
       kind: null,
       label: null,
       lang: null,
       language: null,
       list: null,
       loading: null,
-      loop: boolean$2,
-      low: number$2,
+      loop: boolean$1,
+      low: number$1,
       manifest: null,
       max: null,
-      maxLength: number$2,
+      maxLength: number$1,
       media: null,
       method: null,
       min: null,
-      minLength: number$2,
-      multiple: boolean$2,
-      muted: boolean$2,
+      minLength: number$1,
+      multiple: boolean$1,
+      muted: boolean$1,
       name: null,
       nonce: null,
-      noModule: boolean$2,
-      noValidate: boolean$2,
+      noModule: boolean$1,
+      noValidate: boolean$1,
       onAbort: null,
       onAfterPrint: null,
       onAuxClick: null,
@@ -22597,54 +22593,54 @@
       onVolumeChange: null,
       onWaiting: null,
       onWheel: null,
-      open: boolean$2,
-      optimum: number$2,
+      open: boolean$1,
+      optimum: number$1,
       pattern: null,
-      ping: spaceSeparated$2,
+      ping: spaceSeparated$1,
       placeholder: null,
-      playsInline: boolean$2,
+      playsInline: boolean$1,
       popover: null,
       popoverTarget: null,
       popoverTargetAction: null,
       poster: null,
       preload: null,
-      readOnly: boolean$2,
+      readOnly: boolean$1,
       referrerPolicy: null,
-      rel: spaceSeparated$2,
-      required: boolean$2,
-      reversed: boolean$2,
-      rows: number$2,
-      rowSpan: number$2,
-      sandbox: spaceSeparated$2,
+      rel: spaceSeparated$1,
+      required: boolean$1,
+      reversed: boolean$1,
+      rows: number$1,
+      rowSpan: number$1,
+      sandbox: spaceSeparated$1,
       scope: null,
-      scoped: boolean$2,
-      seamless: boolean$2,
-      selected: boolean$2,
-      shadowRootClonable: boolean$2,
-      shadowRootDelegatesFocus: boolean$2,
+      scoped: boolean$1,
+      seamless: boolean$1,
+      selected: boolean$1,
+      shadowRootClonable: boolean$1,
+      shadowRootDelegatesFocus: boolean$1,
       shadowRootMode: null,
       shape: null,
-      size: number$2,
+      size: number$1,
       sizes: null,
       slot: null,
-      span: number$2,
-      spellCheck: booleanish$2,
+      span: number$1,
+      spellCheck: booleanish$1,
       src: null,
       srcDoc: null,
       srcLang: null,
       srcSet: null,
-      start: number$2,
+      start: number$1,
       step: null,
       style: null,
-      tabIndex: number$2,
+      tabIndex: number$1,
       target: null,
       title: null,
       translate: null,
       type: null,
-      typeMustMatch: boolean$2,
+      typeMustMatch: boolean$1,
       useMap: null,
-      value: booleanish$2,
-      width: number$2,
+      value: booleanish$1,
+      width: number$1,
       wrap: null,
       writingSuggestions: null,
 
@@ -22652,13 +22648,13 @@
       // See: https://html.spec.whatwg.org/#other-elements,-attributes-and-apis
       align: null, // Several. Use CSS `text-align` instead,
       aLink: null, // `<body>`. Use CSS `a:active {color}` instead
-      archive: spaceSeparated$2, // `<object>`. List of URIs to archives
+      archive: spaceSeparated$1, // `<object>`. List of URIs to archives
       axis: null, // `<td>` and `<th>`. Use `scope` on `<th>`
       background: null, // `<body>`. Use CSS `background-image` instead
       bgColor: null, // `<body>` and table elements. Use CSS `background-color` instead
-      border: number$2, // `<table>`. Use CSS `border-width` instead,
+      border: number$1, // `<table>`. Use CSS `border-width` instead,
       borderColor: null, // `<table>`. Use CSS `border-color` instead,
-      bottomMargin: number$2, // `<body>`
+      bottomMargin: number$1, // `<body>`
       cellPadding: null, // `<table>`
       cellSpacing: null, // `<table>`
       char: null, // Several table elements. When `align=char`, sets the character to align on
@@ -22669,58 +22665,58 @@
       codeBase: null, // `<object>`
       codeType: null, // `<object>`
       color: null, // `<font>` and `<hr>`. Use CSS instead
-      compact: boolean$2, // Lists. Use CSS to reduce space between items instead
-      declare: boolean$2, // `<object>`
+      compact: boolean$1, // Lists. Use CSS to reduce space between items instead
+      declare: boolean$1, // `<object>`
       event: null, // `<script>`
       face: null, // `<font>`. Use CSS instead
       frame: null, // `<table>`
       frameBorder: null, // `<iframe>`. Use CSS `border` instead
-      hSpace: number$2, // `<img>` and `<object>`
-      leftMargin: number$2, // `<body>`
+      hSpace: number$1, // `<img>` and `<object>`
+      leftMargin: number$1, // `<body>`
       link: null, // `<body>`. Use CSS `a:link {color: *}` instead
       longDesc: null, // `<frame>`, `<iframe>`, and `<img>`. Use an `<a>`
       lowSrc: null, // `<img>`. Use a `<picture>`
-      marginHeight: number$2, // `<body>`
-      marginWidth: number$2, // `<body>`
-      noResize: boolean$2, // `<frame>`
-      noHref: boolean$2, // `<area>`. Use no href instead of an explicit `nohref`
-      noShade: boolean$2, // `<hr>`. Use background-color and height instead of borders
-      noWrap: boolean$2, // `<td>` and `<th>`
+      marginHeight: number$1, // `<body>`
+      marginWidth: number$1, // `<body>`
+      noResize: boolean$1, // `<frame>`
+      noHref: boolean$1, // `<area>`. Use no href instead of an explicit `nohref`
+      noShade: boolean$1, // `<hr>`. Use background-color and height instead of borders
+      noWrap: boolean$1, // `<td>` and `<th>`
       object: null, // `<applet>`
       profile: null, // `<head>`
       prompt: null, // `<isindex>`
       rev: null, // `<link>`
-      rightMargin: number$2, // `<body>`
+      rightMargin: number$1, // `<body>`
       rules: null, // `<table>`
       scheme: null, // `<meta>`
-      scrolling: booleanish$2, // `<frame>`. Use overflow in the child context
+      scrolling: booleanish$1, // `<frame>`. Use overflow in the child context
       standby: null, // `<object>`
       summary: null, // `<table>`
       text: null, // `<body>`. Use CSS `color` instead
-      topMargin: number$2, // `<body>`
+      topMargin: number$1, // `<body>`
       valueType: null, // `<param>`
       version: null, // `<html>`. Use a doctype.
       vAlign: null, // Several. Use CSS `vertical-align` instead
       vLink: null, // `<body>`. Use CSS `a:visited {color}` instead
-      vSpace: number$2, // `<img>` and `<object>`
+      vSpace: number$1, // `<img>` and `<object>`
 
       // Non-standard Properties.
       allowTransparency: null,
       autoCorrect: null,
       autoSave: null,
-      disablePictureInPicture: boolean$2,
-      disableRemotePlayback: boolean$2,
+      disablePictureInPicture: boolean$1,
+      disableRemotePlayback: boolean$1,
       prefix: null,
       property: null,
-      results: number$2,
+      results: number$1,
       security: null,
       unselectable: null
     },
     space: 'html',
-    transform: caseInsensitiveTransform$2
+    transform: caseInsensitiveTransform$1
   });
 
-  const svg$4 = create$2({
+  const svg$2 = create$1({
     attributes: {
       accentHeight: 'accent-height',
       alignmentBaseline: 'alignment-baseline',
@@ -22897,29 +22893,29 @@
       timelineBegin: 'timelinebegin'
     },
     properties: {
-      about: commaOrSpaceSeparated$2,
-      accentHeight: number$2,
+      about: commaOrSpaceSeparated$1,
+      accentHeight: number$1,
       accumulate: null,
       additive: null,
       alignmentBaseline: null,
-      alphabetic: number$2,
-      amplitude: number$2,
+      alphabetic: number$1,
+      amplitude: number$1,
       arabicForm: null,
-      ascent: number$2,
+      ascent: number$1,
       attributeName: null,
       attributeType: null,
-      azimuth: number$2,
+      azimuth: number$1,
       bandwidth: null,
       baselineShift: null,
       baseFrequency: null,
       baseProfile: null,
       bbox: null,
       begin: null,
-      bias: number$2,
+      bias: number$1,
       by: null,
       calcMode: null,
-      capHeight: number$2,
-      className: spaceSeparated$2,
+      capHeight: number$1,
+      className: spaceSeparated$1,
       clip: null,
       clipPath: null,
       clipPathUnits: null,
@@ -22939,26 +22935,26 @@
       d: null,
       dataType: null,
       defaultAction: null,
-      descent: number$2,
-      diffuseConstant: number$2,
+      descent: number$1,
+      diffuseConstant: number$1,
       direction: null,
       display: null,
       dur: null,
-      divisor: number$2,
+      divisor: number$1,
       dominantBaseline: null,
-      download: boolean$2,
+      download: boolean$1,
       dx: null,
       dy: null,
       edgeMode: null,
       editable: null,
-      elevation: number$2,
+      elevation: number$1,
       enableBackground: null,
       end: null,
       event: null,
-      exponent: number$2,
+      exponent: number$1,
       externalResourcesRequired: null,
       fill: null,
-      fillOpacity: number$2,
+      fillOpacity: number$1,
       fillRule: null,
       filter: null,
       filterRes: null,
@@ -22979,37 +22975,37 @@
       from: null,
       fx: null,
       fy: null,
-      g1: commaSeparated$2,
-      g2: commaSeparated$2,
-      glyphName: commaSeparated$2,
+      g1: commaSeparated$1,
+      g2: commaSeparated$1,
+      glyphName: commaSeparated$1,
       glyphOrientationHorizontal: null,
       glyphOrientationVertical: null,
       glyphRef: null,
       gradientTransform: null,
       gradientUnits: null,
       handler: null,
-      hanging: number$2,
+      hanging: number$1,
       hatchContentUnits: null,
       hatchUnits: null,
       height: null,
       href: null,
       hrefLang: null,
-      horizAdvX: number$2,
-      horizOriginX: number$2,
-      horizOriginY: number$2,
+      horizAdvX: number$1,
+      horizOriginX: number$1,
+      horizOriginY: number$1,
       id: null,
-      ideographic: number$2,
+      ideographic: number$1,
       imageRendering: null,
       initialVisibility: null,
       in: null,
       in2: null,
-      intercept: number$2,
-      k: number$2,
-      k1: number$2,
-      k2: number$2,
-      k3: number$2,
-      k4: number$2,
-      kernelMatrix: commaOrSpaceSeparated$2,
+      intercept: number$1,
+      k: number$1,
+      k1: number$1,
+      k2: number$1,
+      k3: number$1,
+      k4: number$1,
+      kernelMatrix: commaOrSpaceSeparated$1,
       kernelUnitLength: null,
       keyPoints: null, // SEMI_COLON_SEPARATED
       keySplines: null, // SEMI_COLON_SEPARATED
@@ -23019,7 +23015,7 @@
       lengthAdjust: null,
       letterSpacing: null,
       lightingColor: null,
-      limitingConeAngle: number$2,
+      limitingConeAngle: number$1,
       local: null,
       markerEnd: null,
       markerMid: null,
@@ -23035,7 +23031,7 @@
       media: null,
       mediaCharacterEncoding: null,
       mediaContentEncodings: null,
-      mediaSize: number$2,
+      mediaSize: number$1,
       mediaTime: null,
       method: null,
       min: null,
@@ -23141,43 +23137,43 @@
       origin: null,
       overflow: null,
       overlay: null,
-      overlinePosition: number$2,
-      overlineThickness: number$2,
+      overlinePosition: number$1,
+      overlineThickness: number$1,
       paintOrder: null,
       panose1: null,
       path: null,
-      pathLength: number$2,
+      pathLength: number$1,
       patternContentUnits: null,
       patternTransform: null,
       patternUnits: null,
       phase: null,
-      ping: spaceSeparated$2,
+      ping: spaceSeparated$1,
       pitch: null,
       playbackOrder: null,
       pointerEvents: null,
       points: null,
-      pointsAtX: number$2,
-      pointsAtY: number$2,
-      pointsAtZ: number$2,
+      pointsAtX: number$1,
+      pointsAtY: number$1,
+      pointsAtZ: number$1,
       preserveAlpha: null,
       preserveAspectRatio: null,
       primitiveUnits: null,
       propagate: null,
-      property: commaOrSpaceSeparated$2,
+      property: commaOrSpaceSeparated$1,
       r: null,
       radius: null,
       referrerPolicy: null,
       refX: null,
       refY: null,
-      rel: commaOrSpaceSeparated$2,
-      rev: commaOrSpaceSeparated$2,
+      rel: commaOrSpaceSeparated$1,
+      rev: commaOrSpaceSeparated$1,
       renderingIntent: null,
       repeatCount: null,
       repeatDur: null,
-      requiredExtensions: commaOrSpaceSeparated$2,
-      requiredFeatures: commaOrSpaceSeparated$2,
-      requiredFonts: commaOrSpaceSeparated$2,
-      requiredFormats: commaOrSpaceSeparated$2,
+      requiredExtensions: commaOrSpaceSeparated$1,
+      requiredFeatures: commaOrSpaceSeparated$1,
+      requiredFonts: commaOrSpaceSeparated$1,
+      requiredFormats: commaOrSpaceSeparated$1,
       resource: null,
       restart: null,
       result: null,
@@ -23190,8 +23186,8 @@
       side: null,
       slope: null,
       snapshotTime: null,
-      specularConstant: number$2,
-      specularExponent: number$2,
+      specularConstant: number$1,
+      specularExponent: number$1,
       spreadMethod: null,
       spacing: null,
       startOffset: null,
@@ -23201,30 +23197,30 @@
       stitchTiles: null,
       stopColor: null,
       stopOpacity: null,
-      strikethroughPosition: number$2,
-      strikethroughThickness: number$2,
+      strikethroughPosition: number$1,
+      strikethroughThickness: number$1,
       string: null,
       stroke: null,
-      strokeDashArray: commaOrSpaceSeparated$2,
+      strokeDashArray: commaOrSpaceSeparated$1,
       strokeDashOffset: null,
       strokeLineCap: null,
       strokeLineJoin: null,
-      strokeMiterLimit: number$2,
-      strokeOpacity: number$2,
+      strokeMiterLimit: number$1,
+      strokeOpacity: number$1,
       strokeWidth: null,
       style: null,
-      surfaceScale: number$2,
+      surfaceScale: number$1,
       syncBehavior: null,
       syncBehaviorDefault: null,
       syncMaster: null,
       syncTolerance: null,
       syncToleranceDefault: null,
-      systemLanguage: commaOrSpaceSeparated$2,
-      tabIndex: number$2,
+      systemLanguage: commaOrSpaceSeparated$1,
+      tabIndex: number$1,
       tableValues: null,
       target: null,
-      targetX: number$2,
-      targetY: number$2,
+      targetX: number$1,
+      targetY: number$1,
       textAnchor: null,
       textDecoration: null,
       textRendering: null,
@@ -23233,28 +23229,28 @@
       title: null,
       transformBehavior: null,
       type: null,
-      typeOf: commaOrSpaceSeparated$2,
+      typeOf: commaOrSpaceSeparated$1,
       to: null,
       transform: null,
       transformOrigin: null,
       u1: null,
       u2: null,
-      underlinePosition: number$2,
-      underlineThickness: number$2,
+      underlinePosition: number$1,
+      underlineThickness: number$1,
       unicode: null,
       unicodeBidi: null,
       unicodeRange: null,
-      unitsPerEm: number$2,
+      unitsPerEm: number$1,
       values: null,
-      vAlphabetic: number$2,
-      vMathematical: number$2,
+      vAlphabetic: number$1,
+      vMathematical: number$1,
       vectorEffect: null,
-      vHanging: number$2,
-      vIdeographic: number$2,
+      vHanging: number$1,
+      vIdeographic: number$1,
       version: null,
-      vertAdvY: number$2,
-      vertOriginX: number$2,
-      vertOriginY: number$2,
+      vertAdvY: number$1,
+      vertOriginX: number$1,
+      vertOriginY: number$1,
       viewBox: null,
       viewTarget: null,
       visibility: null,
@@ -23266,7 +23262,7 @@
       x1: null,
       x2: null,
       xChannelSelector: null,
-      xHeight: number$2,
+      xHeight: number$1,
       y: null,
       y1: null,
       y2: null,
@@ -23275,10 +23271,10 @@
       zoomAndPan: null
     },
     space: 'svg',
-    transform: caseSensitiveTransform$2
+    transform: caseSensitiveTransform$1
   });
 
-  const xlink$2 = create$2({
+  const xlink$1 = create$1({
     properties: {
       xLinkActuate: null,
       xLinkArcRole: null,
@@ -23294,14 +23290,14 @@
     }
   });
 
-  const xmlns$2 = create$2({
+  const xmlns$1 = create$1({
     attributes: {xmlnsxlink: 'xmlns:xlink'},
     properties: {xmlnsXLink: null, xmlns: null},
     space: 'xmlns',
-    transform: caseInsensitiveTransform$2
+    transform: caseInsensitiveTransform$1
   });
 
-  const xml$2 = create$2({
+  const xml$1 = create$1({
     properties: {xmlBase: null, xmlLang: null, xmlSpace: null},
     space: 'xml',
     transform(_, property) {
@@ -23314,9 +23310,9 @@
    */
 
 
-  const cap$2 = /[A-Z]/g;
-  const dash$2 = /-[a-z]/g;
-  const valid$2 = /^data[-\w.:]+$/i;
+  const cap$1 = /[A-Z]/g;
+  const dash$1 = /-[a-z]/g;
+  const valid$1 = /^data[-\w.:]+$/i;
 
   /**
    * Look up info on a property.
@@ -23348,27 +23344,27 @@
    * @returns {Info}
    *   Info.
    */
-  function find$2(schema, value) {
-    const normal = normalize$2(value);
+  function find$1(schema, value) {
+    const normal = normalize$1(value);
     let property = value;
-    let Type = Info$2;
+    let Type = Info$1;
 
     if (normal in schema.normal) {
       return schema.property[schema.normal[normal]]
     }
 
-    if (normal.length > 4 && normal.slice(0, 4) === 'data' && valid$2.test(value)) {
+    if (normal.length > 4 && normal.slice(0, 4) === 'data' && valid$1.test(value)) {
       // Attribute or property.
       if (value.charAt(4) === '-') {
         // Turn it into a property.
-        const rest = value.slice(5).replace(dash$2, camelcase$2);
+        const rest = value.slice(5).replace(dash$1, camelcase$1);
         property = 'data' + rest.charAt(0).toUpperCase() + rest.slice(1);
       } else {
         // Turn it into an attribute.
         const rest = value.slice(4);
 
-        if (!dash$2.test(rest)) {
-          let dashes = rest.replace(cap$2, kebab$2);
+        if (!dash$1.test(rest)) {
+          let dashes = rest.replace(cap$1, kebab$1);
 
           if (dashes.charAt(0) !== '-') {
             dashes = '-' + dashes;
@@ -23378,7 +23374,7 @@
         }
       }
 
-      Type = DefinedInfo$2;
+      Type = DefinedInfo$1;
     }
 
     return new Type(property, value)
@@ -23390,7 +23386,7 @@
    * @returns {string}
    *   Kebab.
    */
-  function kebab$2($0) {
+  function kebab$1($0) {
     return '-' + $0.toLowerCase()
   }
 
@@ -23400,15 +23396,15 @@
    * @returns {string}
    *   Camel.
    */
-  function camelcase$2($0) {
+  function camelcase$1($0) {
     return $0.charAt(1).toUpperCase()
   }
 
   // Note: types exposed from `index.d.ts`.
 
-  const html$6 = merge$2([aria$2, html$7, xlink$2, xmlns$2, xml$2], 'html');
+  const html$4 = merge$1([aria$1, html$5, xlink$1, xmlns$1, xml$1], 'html');
 
-  const svg$3 = merge$2([aria$2, svg$4, xlink$2, xmlns$2, xml$2], 'svg');
+  const svg$1 = merge$1([aria$1, svg$2, xlink$1, xmlns$1, xml$1], 'svg');
 
   /**
    * @typedef Options
@@ -23749,7 +23745,7 @@
    *   Nothing.
    */
   function addProperty$1(schema, properties, key, value) {
-    const info = find$2(schema, key);
+    const info = find$1(schema, key);
     /** @type {PropertyValue} */
     let result;
 
@@ -23856,7 +23852,7 @@
 
       if (
         (info.boolean || info.overloadedBoolean) &&
-        (value === '' || normalize$2(value) === normalize$2(name))
+        (value === '' || normalize$1(value) === normalize$1(name))
       ) {
         return true
       }
@@ -23961,11 +23957,11 @@
 
   // Note: this explicit type is needed, otherwise TS creates broken types.
   /** @type {ReturnType<createH>} */
-  const h$1 = createH(html$6, 'div');
+  const h$1 = createH(html$4, 'div');
 
   // Note: this explicit type is needed, otherwise TS creates broken types.
   /** @type {ReturnType<createH>} */
-  const s$1 = createH(svg$3, 'g', svgCaseSensitiveTagNames);
+  const s$1 = createH(svg$1, 'g', svgCaseSensitiveTagNames);
 
   /**
    * Map of web namespaces.
@@ -37573,13 +37569,18 @@
             var data = value.split(",");
 
             for (var i = 0; i < data.length; i++) {
-              var keyVal = data[i].split("=");
+              var item = data[i];
+              var firstEquals = item.indexOf("=");
 
-              if (keyVal.length !== 2) {
-                throw new ParseError("Error parsing key-value for \\htmlData");
+              if (firstEquals < 0) {
+                throw new ParseError("\\htmlData key/value '" + item + "'" + " missing equals sign");
               }
 
-              attributes["data-" + keyVal[0].trim()] = keyVal[1].trim();
+              var key = item.slice(0, firstEquals);
+
+              var _value = item.slice(firstEquals + 1);
+
+              attributes["data-" + key.trim()] = _value;
             }
 
             trustContext = {
@@ -38460,7 +38461,8 @@
     type: "op",
     names: ["\\int", "\\iint", "\\iiint", "\\oint", "\\oiint", "\\oiiint", "\u222b", "\u222c", "\u222d", "\u222e", "\u222f", "\u2230"],
     props: {
-      numArgs: 0
+      numArgs: 0,
+      allowedInArgument: true
     },
 
     handler(_ref5) {
@@ -42373,7 +42375,7 @@
      * Parses an "expression", which is a list of atoms.
      *
      * `breakOnInfix`: Should the parsing stop when we hit infix nodes? This
-     *                 happens when functions have higher precedence han infix
+     *                 happens when functions have higher precedence than infix
      *                 nodes in implicit parses.
      *
      * `breakOnTokenText`: The text of the token that the expression should end
@@ -43466,7 +43468,7 @@
     }
   };
 
-  var version = "0.16.25";
+  var version = "0.16.28";
   var __domTree = {
     Span,
     Anchor,
@@ -43838,7 +43840,7 @@
    */
 
 
-  const own$9 = {}.hasOwnProperty;
+  const own$8 = {}.hasOwnProperty;
   /** @type {unknown} */
   // type-coverage:ignore-next-line
   const proto = Object.prototype;
@@ -43860,7 +43862,7 @@
       {
         file: settings.file || undefined,
         location: false,
-        schema: settings.space === 'svg' ? svg$3 : html$6,
+        schema: settings.space === 'svg' ? svg$1 : html$4,
         verbose: settings.verbose || false
       },
       tree
@@ -43981,7 +43983,7 @@
   function element$3(state, node) {
     const schema = state.schema;
 
-    state.schema = node.namespaceURI === webNamespaces.svg ? svg$3 : html$6;
+    state.schema = node.namespaceURI === webNamespaces.svg ? svg$1 : html$4;
 
     // Props.
     let index = -1;
@@ -43992,7 +43994,7 @@
       const attribute = node.attrs[index];
       const name =
         (attribute.prefix ? attribute.prefix + ':' : '') + attribute.name;
-      if (!own$9.call(proto, name)) {
+      if (!own$8.call(proto, name)) {
         properties[name] = attribute.value;
       }
     }
@@ -44085,8 +44087,8 @@
 
         if (location.attrs) {
           for (key in location.attrs) {
-            if (own$9.call(location.attrs, key)) {
-              properties[find$2(state.schema, key).property] = position(
+            if (own$8.call(location.attrs, key)) {
+              properties[find$1(state.schema, key).property] = position(
                 location.attrs[key]
               );
             }
@@ -44146,1287 +44148,9 @@
   }
 
   /**
-   * @typedef {import('./info.js').Info} Info
-   * @typedef {Record<string, Info>} Properties
-   * @typedef {Record<string, string>} Normal
-   */
-
-  let Schema$1 = class Schema {
-    /**
-     * @constructor
-     * @param {Properties} property
-     * @param {Normal} normal
-     * @param {string} [space]
-     */
-    constructor(property, normal, space) {
-      this.property = property;
-      this.normal = normal;
-      if (space) {
-        this.space = space;
-      }
-    }
-  };
-
-  /** @type {Properties} */
-  Schema$1.prototype.property = {};
-  /** @type {Normal} */
-  Schema$1.prototype.normal = {};
-  /** @type {string|null} */
-  Schema$1.prototype.space = null;
-
-  /**
-   * @typedef {import('./schema.js').Properties} Properties
-   * @typedef {import('./schema.js').Normal} Normal
-   */
-
-
-  /**
-   * @param {Schema[]} definitions
-   * @param {string} [space]
-   * @returns {Schema}
-   */
-  function merge$1(definitions, space) {
-    /** @type {Properties} */
-    const property = {};
-    /** @type {Normal} */
-    const normal = {};
-    let index = -1;
-
-    while (++index < definitions.length) {
-      Object.assign(property, definitions[index].property);
-      Object.assign(normal, definitions[index].normal);
-    }
-
-    return new Schema$1(property, normal, space)
-  }
-
-  /**
-   * @param {string} value
-   * @returns {string}
-   */
-  function normalize$1(value) {
-    return value.toLowerCase()
-  }
-
-  let Info$1 = class Info {
-    /**
-     * @constructor
-     * @param {string} property
-     * @param {string} attribute
-     */
-    constructor(property, attribute) {
-      /** @type {string} */
-      this.property = property;
-      /** @type {string} */
-      this.attribute = attribute;
-    }
-  };
-
-  /** @type {string|null} */
-  Info$1.prototype.space = null;
-  Info$1.prototype.boolean = false;
-  Info$1.prototype.booleanish = false;
-  Info$1.prototype.overloadedBoolean = false;
-  Info$1.prototype.number = false;
-  Info$1.prototype.commaSeparated = false;
-  Info$1.prototype.spaceSeparated = false;
-  Info$1.prototype.commaOrSpaceSeparated = false;
-  Info$1.prototype.mustUseProperty = false;
-  Info$1.prototype.defined = false;
-
-  let powers$1 = 0;
-
-  const boolean$1 = increment$1();
-  const booleanish$1 = increment$1();
-  const overloadedBoolean$1 = increment$1();
-  const number$1 = increment$1();
-  const spaceSeparated$1 = increment$1();
-  const commaSeparated$1 = increment$1();
-  const commaOrSpaceSeparated$1 = increment$1();
-
-  function increment$1() {
-    return 2 ** ++powers$1
-  }
-
-  var types$1 = /*#__PURE__*/Object.freeze({
-    __proto__: null,
-    boolean: boolean$1,
-    booleanish: booleanish$1,
-    commaOrSpaceSeparated: commaOrSpaceSeparated$1,
-    commaSeparated: commaSeparated$1,
-    number: number$1,
-    overloadedBoolean: overloadedBoolean$1,
-    spaceSeparated: spaceSeparated$1
-  });
-
-  /** @type {Array<keyof types>} */
-  // @ts-expect-error: hush.
-  const checks$1 = Object.keys(types$1);
-
-  let DefinedInfo$1 = class DefinedInfo extends Info$1 {
-    /**
-     * @constructor
-     * @param {string} property
-     * @param {string} attribute
-     * @param {number|null} [mask]
-     * @param {string} [space]
-     */
-    constructor(property, attribute, mask, space) {
-      let index = -1;
-
-      super(property, attribute);
-
-      mark$1(this, 'space', space);
-
-      if (typeof mask === 'number') {
-        while (++index < checks$1.length) {
-          const check = checks$1[index];
-          mark$1(this, checks$1[index], (mask & types$1[check]) === types$1[check]);
-        }
-      }
-    }
-  };
-
-  DefinedInfo$1.prototype.defined = true;
-
-  /**
-   * @param {DefinedInfo} values
-   * @param {string} key
-   * @param {unknown} value
-   */
-  function mark$1(values, key, value) {
-    if (value) {
-      // @ts-expect-error: assume `value` matches the expected value of `key`.
-      values[key] = value;
-    }
-  }
-
-  /**
-   * @typedef {import('./schema.js').Properties} Properties
-   * @typedef {import('./schema.js').Normal} Normal
-   *
-   * @typedef {Record<string, string>} Attributes
-   *
-   * @typedef {Object} Definition
-   * @property {Record<string, number|null>} properties
-   * @property {(attributes: Attributes, property: string) => string} transform
-   * @property {string} [space]
-   * @property {Attributes} [attributes]
-   * @property {Array<string>} [mustUseProperty]
-   */
-
-
-  const own$8 = {}.hasOwnProperty;
-
-  /**
-   * @param {Definition} definition
-   * @returns {Schema}
-   */
-  function create$1(definition) {
-    /** @type {Properties} */
-    const property = {};
-    /** @type {Normal} */
-    const normal = {};
-    /** @type {string} */
-    let prop;
-
-    for (prop in definition.properties) {
-      if (own$8.call(definition.properties, prop)) {
-        const value = definition.properties[prop];
-        const info = new DefinedInfo$1(
-          prop,
-          definition.transform(definition.attributes || {}, prop),
-          value,
-          definition.space
-        );
-
-        if (
-          definition.mustUseProperty &&
-          definition.mustUseProperty.includes(prop)
-        ) {
-          info.mustUseProperty = true;
-        }
-
-        property[prop] = info;
-
-        normal[normalize$1(prop)] = prop;
-        normal[normalize$1(info.attribute)] = prop;
-      }
-    }
-
-    return new Schema$1(property, normal, definition.space)
-  }
-
-  const xlink$1 = create$1({
-    space: 'xlink',
-    transform(_, prop) {
-      return 'xlink:' + prop.slice(5).toLowerCase()
-    },
-    properties: {
-      xLinkActuate: null,
-      xLinkArcRole: null,
-      xLinkHref: null,
-      xLinkRole: null,
-      xLinkShow: null,
-      xLinkTitle: null,
-      xLinkType: null
-    }
-  });
-
-  const xml$1 = create$1({
-    space: 'xml',
-    transform(_, prop) {
-      return 'xml:' + prop.slice(3).toLowerCase()
-    },
-    properties: {xmlLang: null, xmlBase: null, xmlSpace: null}
-  });
-
-  /**
-   * @param {Record<string, string>} attributes
-   * @param {string} attribute
-   * @returns {string}
-   */
-  function caseSensitiveTransform$1(attributes, attribute) {
-    return attribute in attributes ? attributes[attribute] : attribute
-  }
-
-  /**
-   * @param {Record<string, string>} attributes
-   * @param {string} property
-   * @returns {string}
-   */
-  function caseInsensitiveTransform$1(attributes, property) {
-    return caseSensitiveTransform$1(attributes, property.toLowerCase())
-  }
-
-  const xmlns$1 = create$1({
-    space: 'xmlns',
-    attributes: {xmlnsxlink: 'xmlns:xlink'},
-    transform: caseInsensitiveTransform$1,
-    properties: {xmlns: null, xmlnsXLink: null}
-  });
-
-  const aria$1 = create$1({
-    transform(_, prop) {
-      return prop === 'role' ? prop : 'aria-' + prop.slice(4).toLowerCase()
-    },
-    properties: {
-      ariaActiveDescendant: null,
-      ariaAtomic: booleanish$1,
-      ariaAutoComplete: null,
-      ariaBusy: booleanish$1,
-      ariaChecked: booleanish$1,
-      ariaColCount: number$1,
-      ariaColIndex: number$1,
-      ariaColSpan: number$1,
-      ariaControls: spaceSeparated$1,
-      ariaCurrent: null,
-      ariaDescribedBy: spaceSeparated$1,
-      ariaDetails: null,
-      ariaDisabled: booleanish$1,
-      ariaDropEffect: spaceSeparated$1,
-      ariaErrorMessage: null,
-      ariaExpanded: booleanish$1,
-      ariaFlowTo: spaceSeparated$1,
-      ariaGrabbed: booleanish$1,
-      ariaHasPopup: null,
-      ariaHidden: booleanish$1,
-      ariaInvalid: null,
-      ariaKeyShortcuts: null,
-      ariaLabel: null,
-      ariaLabelledBy: spaceSeparated$1,
-      ariaLevel: number$1,
-      ariaLive: null,
-      ariaModal: booleanish$1,
-      ariaMultiLine: booleanish$1,
-      ariaMultiSelectable: booleanish$1,
-      ariaOrientation: null,
-      ariaOwns: spaceSeparated$1,
-      ariaPlaceholder: null,
-      ariaPosInSet: number$1,
-      ariaPressed: booleanish$1,
-      ariaReadOnly: booleanish$1,
-      ariaRelevant: null,
-      ariaRequired: booleanish$1,
-      ariaRoleDescription: spaceSeparated$1,
-      ariaRowCount: number$1,
-      ariaRowIndex: number$1,
-      ariaRowSpan: number$1,
-      ariaSelected: booleanish$1,
-      ariaSetSize: number$1,
-      ariaSort: null,
-      ariaValueMax: number$1,
-      ariaValueMin: number$1,
-      ariaValueNow: number$1,
-      ariaValueText: null,
-      role: null
-    }
-  });
-
-  const html$5 = create$1({
-    space: 'html',
-    attributes: {
-      acceptcharset: 'accept-charset',
-      classname: 'class',
-      htmlfor: 'for',
-      httpequiv: 'http-equiv'
-    },
-    transform: caseInsensitiveTransform$1,
-    mustUseProperty: ['checked', 'multiple', 'muted', 'selected'],
-    properties: {
-      // Standard Properties.
-      abbr: null,
-      accept: commaSeparated$1,
-      acceptCharset: spaceSeparated$1,
-      accessKey: spaceSeparated$1,
-      action: null,
-      allow: null,
-      allowFullScreen: boolean$1,
-      allowPaymentRequest: boolean$1,
-      allowUserMedia: boolean$1,
-      alt: null,
-      as: null,
-      async: boolean$1,
-      autoCapitalize: null,
-      autoComplete: spaceSeparated$1,
-      autoFocus: boolean$1,
-      autoPlay: boolean$1,
-      blocking: spaceSeparated$1,
-      capture: null,
-      charSet: null,
-      checked: boolean$1,
-      cite: null,
-      className: spaceSeparated$1,
-      cols: number$1,
-      colSpan: null,
-      content: null,
-      contentEditable: booleanish$1,
-      controls: boolean$1,
-      controlsList: spaceSeparated$1,
-      coords: number$1 | commaSeparated$1,
-      crossOrigin: null,
-      data: null,
-      dateTime: null,
-      decoding: null,
-      default: boolean$1,
-      defer: boolean$1,
-      dir: null,
-      dirName: null,
-      disabled: boolean$1,
-      download: overloadedBoolean$1,
-      draggable: booleanish$1,
-      encType: null,
-      enterKeyHint: null,
-      fetchPriority: null,
-      form: null,
-      formAction: null,
-      formEncType: null,
-      formMethod: null,
-      formNoValidate: boolean$1,
-      formTarget: null,
-      headers: spaceSeparated$1,
-      height: number$1,
-      hidden: boolean$1,
-      high: number$1,
-      href: null,
-      hrefLang: null,
-      htmlFor: spaceSeparated$1,
-      httpEquiv: spaceSeparated$1,
-      id: null,
-      imageSizes: null,
-      imageSrcSet: null,
-      inert: boolean$1,
-      inputMode: null,
-      integrity: null,
-      is: null,
-      isMap: boolean$1,
-      itemId: null,
-      itemProp: spaceSeparated$1,
-      itemRef: spaceSeparated$1,
-      itemScope: boolean$1,
-      itemType: spaceSeparated$1,
-      kind: null,
-      label: null,
-      lang: null,
-      language: null,
-      list: null,
-      loading: null,
-      loop: boolean$1,
-      low: number$1,
-      manifest: null,
-      max: null,
-      maxLength: number$1,
-      media: null,
-      method: null,
-      min: null,
-      minLength: number$1,
-      multiple: boolean$1,
-      muted: boolean$1,
-      name: null,
-      nonce: null,
-      noModule: boolean$1,
-      noValidate: boolean$1,
-      onAbort: null,
-      onAfterPrint: null,
-      onAuxClick: null,
-      onBeforeMatch: null,
-      onBeforePrint: null,
-      onBeforeToggle: null,
-      onBeforeUnload: null,
-      onBlur: null,
-      onCancel: null,
-      onCanPlay: null,
-      onCanPlayThrough: null,
-      onChange: null,
-      onClick: null,
-      onClose: null,
-      onContextLost: null,
-      onContextMenu: null,
-      onContextRestored: null,
-      onCopy: null,
-      onCueChange: null,
-      onCut: null,
-      onDblClick: null,
-      onDrag: null,
-      onDragEnd: null,
-      onDragEnter: null,
-      onDragExit: null,
-      onDragLeave: null,
-      onDragOver: null,
-      onDragStart: null,
-      onDrop: null,
-      onDurationChange: null,
-      onEmptied: null,
-      onEnded: null,
-      onError: null,
-      onFocus: null,
-      onFormData: null,
-      onHashChange: null,
-      onInput: null,
-      onInvalid: null,
-      onKeyDown: null,
-      onKeyPress: null,
-      onKeyUp: null,
-      onLanguageChange: null,
-      onLoad: null,
-      onLoadedData: null,
-      onLoadedMetadata: null,
-      onLoadEnd: null,
-      onLoadStart: null,
-      onMessage: null,
-      onMessageError: null,
-      onMouseDown: null,
-      onMouseEnter: null,
-      onMouseLeave: null,
-      onMouseMove: null,
-      onMouseOut: null,
-      onMouseOver: null,
-      onMouseUp: null,
-      onOffline: null,
-      onOnline: null,
-      onPageHide: null,
-      onPageShow: null,
-      onPaste: null,
-      onPause: null,
-      onPlay: null,
-      onPlaying: null,
-      onPopState: null,
-      onProgress: null,
-      onRateChange: null,
-      onRejectionHandled: null,
-      onReset: null,
-      onResize: null,
-      onScroll: null,
-      onScrollEnd: null,
-      onSecurityPolicyViolation: null,
-      onSeeked: null,
-      onSeeking: null,
-      onSelect: null,
-      onSlotChange: null,
-      onStalled: null,
-      onStorage: null,
-      onSubmit: null,
-      onSuspend: null,
-      onTimeUpdate: null,
-      onToggle: null,
-      onUnhandledRejection: null,
-      onUnload: null,
-      onVolumeChange: null,
-      onWaiting: null,
-      onWheel: null,
-      open: boolean$1,
-      optimum: number$1,
-      pattern: null,
-      ping: spaceSeparated$1,
-      placeholder: null,
-      playsInline: boolean$1,
-      popover: null,
-      popoverTarget: null,
-      popoverTargetAction: null,
-      poster: null,
-      preload: null,
-      readOnly: boolean$1,
-      referrerPolicy: null,
-      rel: spaceSeparated$1,
-      required: boolean$1,
-      reversed: boolean$1,
-      rows: number$1,
-      rowSpan: number$1,
-      sandbox: spaceSeparated$1,
-      scope: null,
-      scoped: boolean$1,
-      seamless: boolean$1,
-      selected: boolean$1,
-      shadowRootClonable: boolean$1,
-      shadowRootDelegatesFocus: boolean$1,
-      shadowRootMode: null,
-      shape: null,
-      size: number$1,
-      sizes: null,
-      slot: null,
-      span: number$1,
-      spellCheck: booleanish$1,
-      src: null,
-      srcDoc: null,
-      srcLang: null,
-      srcSet: null,
-      start: number$1,
-      step: null,
-      style: null,
-      tabIndex: number$1,
-      target: null,
-      title: null,
-      translate: null,
-      type: null,
-      typeMustMatch: boolean$1,
-      useMap: null,
-      value: booleanish$1,
-      width: number$1,
-      wrap: null,
-      writingSuggestions: null,
-
-      // Legacy.
-      // See: https://html.spec.whatwg.org/#other-elements,-attributes-and-apis
-      align: null, // Several. Use CSS `text-align` instead,
-      aLink: null, // `<body>`. Use CSS `a:active {color}` instead
-      archive: spaceSeparated$1, // `<object>`. List of URIs to archives
-      axis: null, // `<td>` and `<th>`. Use `scope` on `<th>`
-      background: null, // `<body>`. Use CSS `background-image` instead
-      bgColor: null, // `<body>` and table elements. Use CSS `background-color` instead
-      border: number$1, // `<table>`. Use CSS `border-width` instead,
-      borderColor: null, // `<table>`. Use CSS `border-color` instead,
-      bottomMargin: number$1, // `<body>`
-      cellPadding: null, // `<table>`
-      cellSpacing: null, // `<table>`
-      char: null, // Several table elements. When `align=char`, sets the character to align on
-      charOff: null, // Several table elements. When `char`, offsets the alignment
-      classId: null, // `<object>`
-      clear: null, // `<br>`. Use CSS `clear` instead
-      code: null, // `<object>`
-      codeBase: null, // `<object>`
-      codeType: null, // `<object>`
-      color: null, // `<font>` and `<hr>`. Use CSS instead
-      compact: boolean$1, // Lists. Use CSS to reduce space between items instead
-      declare: boolean$1, // `<object>`
-      event: null, // `<script>`
-      face: null, // `<font>`. Use CSS instead
-      frame: null, // `<table>`
-      frameBorder: null, // `<iframe>`. Use CSS `border` instead
-      hSpace: number$1, // `<img>` and `<object>`
-      leftMargin: number$1, // `<body>`
-      link: null, // `<body>`. Use CSS `a:link {color: *}` instead
-      longDesc: null, // `<frame>`, `<iframe>`, and `<img>`. Use an `<a>`
-      lowSrc: null, // `<img>`. Use a `<picture>`
-      marginHeight: number$1, // `<body>`
-      marginWidth: number$1, // `<body>`
-      noResize: boolean$1, // `<frame>`
-      noHref: boolean$1, // `<area>`. Use no href instead of an explicit `nohref`
-      noShade: boolean$1, // `<hr>`. Use background-color and height instead of borders
-      noWrap: boolean$1, // `<td>` and `<th>`
-      object: null, // `<applet>`
-      profile: null, // `<head>`
-      prompt: null, // `<isindex>`
-      rev: null, // `<link>`
-      rightMargin: number$1, // `<body>`
-      rules: null, // `<table>`
-      scheme: null, // `<meta>`
-      scrolling: booleanish$1, // `<frame>`. Use overflow in the child context
-      standby: null, // `<object>`
-      summary: null, // `<table>`
-      text: null, // `<body>`. Use CSS `color` instead
-      topMargin: number$1, // `<body>`
-      valueType: null, // `<param>`
-      version: null, // `<html>`. Use a doctype.
-      vAlign: null, // Several. Use CSS `vertical-align` instead
-      vLink: null, // `<body>`. Use CSS `a:visited {color}` instead
-      vSpace: number$1, // `<img>` and `<object>`
-
-      // Non-standard Properties.
-      allowTransparency: null,
-      autoCorrect: null,
-      autoSave: null,
-      disablePictureInPicture: boolean$1,
-      disableRemotePlayback: boolean$1,
-      prefix: null,
-      property: null,
-      results: number$1,
-      security: null,
-      unselectable: null
-    }
-  });
-
-  const svg$2 = create$1({
-    space: 'svg',
-    attributes: {
-      accentHeight: 'accent-height',
-      alignmentBaseline: 'alignment-baseline',
-      arabicForm: 'arabic-form',
-      baselineShift: 'baseline-shift',
-      capHeight: 'cap-height',
-      className: 'class',
-      clipPath: 'clip-path',
-      clipRule: 'clip-rule',
-      colorInterpolation: 'color-interpolation',
-      colorInterpolationFilters: 'color-interpolation-filters',
-      colorProfile: 'color-profile',
-      colorRendering: 'color-rendering',
-      crossOrigin: 'crossorigin',
-      dataType: 'datatype',
-      dominantBaseline: 'dominant-baseline',
-      enableBackground: 'enable-background',
-      fillOpacity: 'fill-opacity',
-      fillRule: 'fill-rule',
-      floodColor: 'flood-color',
-      floodOpacity: 'flood-opacity',
-      fontFamily: 'font-family',
-      fontSize: 'font-size',
-      fontSizeAdjust: 'font-size-adjust',
-      fontStretch: 'font-stretch',
-      fontStyle: 'font-style',
-      fontVariant: 'font-variant',
-      fontWeight: 'font-weight',
-      glyphName: 'glyph-name',
-      glyphOrientationHorizontal: 'glyph-orientation-horizontal',
-      glyphOrientationVertical: 'glyph-orientation-vertical',
-      hrefLang: 'hreflang',
-      horizAdvX: 'horiz-adv-x',
-      horizOriginX: 'horiz-origin-x',
-      horizOriginY: 'horiz-origin-y',
-      imageRendering: 'image-rendering',
-      letterSpacing: 'letter-spacing',
-      lightingColor: 'lighting-color',
-      markerEnd: 'marker-end',
-      markerMid: 'marker-mid',
-      markerStart: 'marker-start',
-      navDown: 'nav-down',
-      navDownLeft: 'nav-down-left',
-      navDownRight: 'nav-down-right',
-      navLeft: 'nav-left',
-      navNext: 'nav-next',
-      navPrev: 'nav-prev',
-      navRight: 'nav-right',
-      navUp: 'nav-up',
-      navUpLeft: 'nav-up-left',
-      navUpRight: 'nav-up-right',
-      onAbort: 'onabort',
-      onActivate: 'onactivate',
-      onAfterPrint: 'onafterprint',
-      onBeforePrint: 'onbeforeprint',
-      onBegin: 'onbegin',
-      onCancel: 'oncancel',
-      onCanPlay: 'oncanplay',
-      onCanPlayThrough: 'oncanplaythrough',
-      onChange: 'onchange',
-      onClick: 'onclick',
-      onClose: 'onclose',
-      onCopy: 'oncopy',
-      onCueChange: 'oncuechange',
-      onCut: 'oncut',
-      onDblClick: 'ondblclick',
-      onDrag: 'ondrag',
-      onDragEnd: 'ondragend',
-      onDragEnter: 'ondragenter',
-      onDragExit: 'ondragexit',
-      onDragLeave: 'ondragleave',
-      onDragOver: 'ondragover',
-      onDragStart: 'ondragstart',
-      onDrop: 'ondrop',
-      onDurationChange: 'ondurationchange',
-      onEmptied: 'onemptied',
-      onEnd: 'onend',
-      onEnded: 'onended',
-      onError: 'onerror',
-      onFocus: 'onfocus',
-      onFocusIn: 'onfocusin',
-      onFocusOut: 'onfocusout',
-      onHashChange: 'onhashchange',
-      onInput: 'oninput',
-      onInvalid: 'oninvalid',
-      onKeyDown: 'onkeydown',
-      onKeyPress: 'onkeypress',
-      onKeyUp: 'onkeyup',
-      onLoad: 'onload',
-      onLoadedData: 'onloadeddata',
-      onLoadedMetadata: 'onloadedmetadata',
-      onLoadStart: 'onloadstart',
-      onMessage: 'onmessage',
-      onMouseDown: 'onmousedown',
-      onMouseEnter: 'onmouseenter',
-      onMouseLeave: 'onmouseleave',
-      onMouseMove: 'onmousemove',
-      onMouseOut: 'onmouseout',
-      onMouseOver: 'onmouseover',
-      onMouseUp: 'onmouseup',
-      onMouseWheel: 'onmousewheel',
-      onOffline: 'onoffline',
-      onOnline: 'ononline',
-      onPageHide: 'onpagehide',
-      onPageShow: 'onpageshow',
-      onPaste: 'onpaste',
-      onPause: 'onpause',
-      onPlay: 'onplay',
-      onPlaying: 'onplaying',
-      onPopState: 'onpopstate',
-      onProgress: 'onprogress',
-      onRateChange: 'onratechange',
-      onRepeat: 'onrepeat',
-      onReset: 'onreset',
-      onResize: 'onresize',
-      onScroll: 'onscroll',
-      onSeeked: 'onseeked',
-      onSeeking: 'onseeking',
-      onSelect: 'onselect',
-      onShow: 'onshow',
-      onStalled: 'onstalled',
-      onStorage: 'onstorage',
-      onSubmit: 'onsubmit',
-      onSuspend: 'onsuspend',
-      onTimeUpdate: 'ontimeupdate',
-      onToggle: 'ontoggle',
-      onUnload: 'onunload',
-      onVolumeChange: 'onvolumechange',
-      onWaiting: 'onwaiting',
-      onZoom: 'onzoom',
-      overlinePosition: 'overline-position',
-      overlineThickness: 'overline-thickness',
-      paintOrder: 'paint-order',
-      panose1: 'panose-1',
-      pointerEvents: 'pointer-events',
-      referrerPolicy: 'referrerpolicy',
-      renderingIntent: 'rendering-intent',
-      shapeRendering: 'shape-rendering',
-      stopColor: 'stop-color',
-      stopOpacity: 'stop-opacity',
-      strikethroughPosition: 'strikethrough-position',
-      strikethroughThickness: 'strikethrough-thickness',
-      strokeDashArray: 'stroke-dasharray',
-      strokeDashOffset: 'stroke-dashoffset',
-      strokeLineCap: 'stroke-linecap',
-      strokeLineJoin: 'stroke-linejoin',
-      strokeMiterLimit: 'stroke-miterlimit',
-      strokeOpacity: 'stroke-opacity',
-      strokeWidth: 'stroke-width',
-      tabIndex: 'tabindex',
-      textAnchor: 'text-anchor',
-      textDecoration: 'text-decoration',
-      textRendering: 'text-rendering',
-      transformOrigin: 'transform-origin',
-      typeOf: 'typeof',
-      underlinePosition: 'underline-position',
-      underlineThickness: 'underline-thickness',
-      unicodeBidi: 'unicode-bidi',
-      unicodeRange: 'unicode-range',
-      unitsPerEm: 'units-per-em',
-      vAlphabetic: 'v-alphabetic',
-      vHanging: 'v-hanging',
-      vIdeographic: 'v-ideographic',
-      vMathematical: 'v-mathematical',
-      vectorEffect: 'vector-effect',
-      vertAdvY: 'vert-adv-y',
-      vertOriginX: 'vert-origin-x',
-      vertOriginY: 'vert-origin-y',
-      wordSpacing: 'word-spacing',
-      writingMode: 'writing-mode',
-      xHeight: 'x-height',
-      // These were camelcased in Tiny. Now lowercased in SVG 2
-      playbackOrder: 'playbackorder',
-      timelineBegin: 'timelinebegin'
-    },
-    transform: caseSensitiveTransform$1,
-    properties: {
-      about: commaOrSpaceSeparated$1,
-      accentHeight: number$1,
-      accumulate: null,
-      additive: null,
-      alignmentBaseline: null,
-      alphabetic: number$1,
-      amplitude: number$1,
-      arabicForm: null,
-      ascent: number$1,
-      attributeName: null,
-      attributeType: null,
-      azimuth: number$1,
-      bandwidth: null,
-      baselineShift: null,
-      baseFrequency: null,
-      baseProfile: null,
-      bbox: null,
-      begin: null,
-      bias: number$1,
-      by: null,
-      calcMode: null,
-      capHeight: number$1,
-      className: spaceSeparated$1,
-      clip: null,
-      clipPath: null,
-      clipPathUnits: null,
-      clipRule: null,
-      color: null,
-      colorInterpolation: null,
-      colorInterpolationFilters: null,
-      colorProfile: null,
-      colorRendering: null,
-      content: null,
-      contentScriptType: null,
-      contentStyleType: null,
-      crossOrigin: null,
-      cursor: null,
-      cx: null,
-      cy: null,
-      d: null,
-      dataType: null,
-      defaultAction: null,
-      descent: number$1,
-      diffuseConstant: number$1,
-      direction: null,
-      display: null,
-      dur: null,
-      divisor: number$1,
-      dominantBaseline: null,
-      download: boolean$1,
-      dx: null,
-      dy: null,
-      edgeMode: null,
-      editable: null,
-      elevation: number$1,
-      enableBackground: null,
-      end: null,
-      event: null,
-      exponent: number$1,
-      externalResourcesRequired: null,
-      fill: null,
-      fillOpacity: number$1,
-      fillRule: null,
-      filter: null,
-      filterRes: null,
-      filterUnits: null,
-      floodColor: null,
-      floodOpacity: null,
-      focusable: null,
-      focusHighlight: null,
-      fontFamily: null,
-      fontSize: null,
-      fontSizeAdjust: null,
-      fontStretch: null,
-      fontStyle: null,
-      fontVariant: null,
-      fontWeight: null,
-      format: null,
-      fr: null,
-      from: null,
-      fx: null,
-      fy: null,
-      g1: commaSeparated$1,
-      g2: commaSeparated$1,
-      glyphName: commaSeparated$1,
-      glyphOrientationHorizontal: null,
-      glyphOrientationVertical: null,
-      glyphRef: null,
-      gradientTransform: null,
-      gradientUnits: null,
-      handler: null,
-      hanging: number$1,
-      hatchContentUnits: null,
-      hatchUnits: null,
-      height: null,
-      href: null,
-      hrefLang: null,
-      horizAdvX: number$1,
-      horizOriginX: number$1,
-      horizOriginY: number$1,
-      id: null,
-      ideographic: number$1,
-      imageRendering: null,
-      initialVisibility: null,
-      in: null,
-      in2: null,
-      intercept: number$1,
-      k: number$1,
-      k1: number$1,
-      k2: number$1,
-      k3: number$1,
-      k4: number$1,
-      kernelMatrix: commaOrSpaceSeparated$1,
-      kernelUnitLength: null,
-      keyPoints: null, // SEMI_COLON_SEPARATED
-      keySplines: null, // SEMI_COLON_SEPARATED
-      keyTimes: null, // SEMI_COLON_SEPARATED
-      kerning: null,
-      lang: null,
-      lengthAdjust: null,
-      letterSpacing: null,
-      lightingColor: null,
-      limitingConeAngle: number$1,
-      local: null,
-      markerEnd: null,
-      markerMid: null,
-      markerStart: null,
-      markerHeight: null,
-      markerUnits: null,
-      markerWidth: null,
-      mask: null,
-      maskContentUnits: null,
-      maskUnits: null,
-      mathematical: null,
-      max: null,
-      media: null,
-      mediaCharacterEncoding: null,
-      mediaContentEncodings: null,
-      mediaSize: number$1,
-      mediaTime: null,
-      method: null,
-      min: null,
-      mode: null,
-      name: null,
-      navDown: null,
-      navDownLeft: null,
-      navDownRight: null,
-      navLeft: null,
-      navNext: null,
-      navPrev: null,
-      navRight: null,
-      navUp: null,
-      navUpLeft: null,
-      navUpRight: null,
-      numOctaves: null,
-      observer: null,
-      offset: null,
-      onAbort: null,
-      onActivate: null,
-      onAfterPrint: null,
-      onBeforePrint: null,
-      onBegin: null,
-      onCancel: null,
-      onCanPlay: null,
-      onCanPlayThrough: null,
-      onChange: null,
-      onClick: null,
-      onClose: null,
-      onCopy: null,
-      onCueChange: null,
-      onCut: null,
-      onDblClick: null,
-      onDrag: null,
-      onDragEnd: null,
-      onDragEnter: null,
-      onDragExit: null,
-      onDragLeave: null,
-      onDragOver: null,
-      onDragStart: null,
-      onDrop: null,
-      onDurationChange: null,
-      onEmptied: null,
-      onEnd: null,
-      onEnded: null,
-      onError: null,
-      onFocus: null,
-      onFocusIn: null,
-      onFocusOut: null,
-      onHashChange: null,
-      onInput: null,
-      onInvalid: null,
-      onKeyDown: null,
-      onKeyPress: null,
-      onKeyUp: null,
-      onLoad: null,
-      onLoadedData: null,
-      onLoadedMetadata: null,
-      onLoadStart: null,
-      onMessage: null,
-      onMouseDown: null,
-      onMouseEnter: null,
-      onMouseLeave: null,
-      onMouseMove: null,
-      onMouseOut: null,
-      onMouseOver: null,
-      onMouseUp: null,
-      onMouseWheel: null,
-      onOffline: null,
-      onOnline: null,
-      onPageHide: null,
-      onPageShow: null,
-      onPaste: null,
-      onPause: null,
-      onPlay: null,
-      onPlaying: null,
-      onPopState: null,
-      onProgress: null,
-      onRateChange: null,
-      onRepeat: null,
-      onReset: null,
-      onResize: null,
-      onScroll: null,
-      onSeeked: null,
-      onSeeking: null,
-      onSelect: null,
-      onShow: null,
-      onStalled: null,
-      onStorage: null,
-      onSubmit: null,
-      onSuspend: null,
-      onTimeUpdate: null,
-      onToggle: null,
-      onUnload: null,
-      onVolumeChange: null,
-      onWaiting: null,
-      onZoom: null,
-      opacity: null,
-      operator: null,
-      order: null,
-      orient: null,
-      orientation: null,
-      origin: null,
-      overflow: null,
-      overlay: null,
-      overlinePosition: number$1,
-      overlineThickness: number$1,
-      paintOrder: null,
-      panose1: null,
-      path: null,
-      pathLength: number$1,
-      patternContentUnits: null,
-      patternTransform: null,
-      patternUnits: null,
-      phase: null,
-      ping: spaceSeparated$1,
-      pitch: null,
-      playbackOrder: null,
-      pointerEvents: null,
-      points: null,
-      pointsAtX: number$1,
-      pointsAtY: number$1,
-      pointsAtZ: number$1,
-      preserveAlpha: null,
-      preserveAspectRatio: null,
-      primitiveUnits: null,
-      propagate: null,
-      property: commaOrSpaceSeparated$1,
-      r: null,
-      radius: null,
-      referrerPolicy: null,
-      refX: null,
-      refY: null,
-      rel: commaOrSpaceSeparated$1,
-      rev: commaOrSpaceSeparated$1,
-      renderingIntent: null,
-      repeatCount: null,
-      repeatDur: null,
-      requiredExtensions: commaOrSpaceSeparated$1,
-      requiredFeatures: commaOrSpaceSeparated$1,
-      requiredFonts: commaOrSpaceSeparated$1,
-      requiredFormats: commaOrSpaceSeparated$1,
-      resource: null,
-      restart: null,
-      result: null,
-      rotate: null,
-      rx: null,
-      ry: null,
-      scale: null,
-      seed: null,
-      shapeRendering: null,
-      side: null,
-      slope: null,
-      snapshotTime: null,
-      specularConstant: number$1,
-      specularExponent: number$1,
-      spreadMethod: null,
-      spacing: null,
-      startOffset: null,
-      stdDeviation: null,
-      stemh: null,
-      stemv: null,
-      stitchTiles: null,
-      stopColor: null,
-      stopOpacity: null,
-      strikethroughPosition: number$1,
-      strikethroughThickness: number$1,
-      string: null,
-      stroke: null,
-      strokeDashArray: commaOrSpaceSeparated$1,
-      strokeDashOffset: null,
-      strokeLineCap: null,
-      strokeLineJoin: null,
-      strokeMiterLimit: number$1,
-      strokeOpacity: number$1,
-      strokeWidth: null,
-      style: null,
-      surfaceScale: number$1,
-      syncBehavior: null,
-      syncBehaviorDefault: null,
-      syncMaster: null,
-      syncTolerance: null,
-      syncToleranceDefault: null,
-      systemLanguage: commaOrSpaceSeparated$1,
-      tabIndex: number$1,
-      tableValues: null,
-      target: null,
-      targetX: number$1,
-      targetY: number$1,
-      textAnchor: null,
-      textDecoration: null,
-      textRendering: null,
-      textLength: null,
-      timelineBegin: null,
-      title: null,
-      transformBehavior: null,
-      type: null,
-      typeOf: commaOrSpaceSeparated$1,
-      to: null,
-      transform: null,
-      transformOrigin: null,
-      u1: null,
-      u2: null,
-      underlinePosition: number$1,
-      underlineThickness: number$1,
-      unicode: null,
-      unicodeBidi: null,
-      unicodeRange: null,
-      unitsPerEm: number$1,
-      values: null,
-      vAlphabetic: number$1,
-      vMathematical: number$1,
-      vectorEffect: null,
-      vHanging: number$1,
-      vIdeographic: number$1,
-      version: null,
-      vertAdvY: number$1,
-      vertOriginX: number$1,
-      vertOriginY: number$1,
-      viewBox: null,
-      viewTarget: null,
-      visibility: null,
-      width: null,
-      widths: null,
-      wordSpacing: null,
-      writingMode: null,
-      x: null,
-      x1: null,
-      x2: null,
-      xChannelSelector: null,
-      xHeight: number$1,
-      y: null,
-      y1: null,
-      y2: null,
-      yChannelSelector: null,
-      z: null,
-      zoomAndPan: null
-    }
-  });
-
-  /**
-   * @typedef {import('./util/schema.js').Schema} Schema
-   */
-
-
-  const valid$1 = /^data[-\w.:]+$/i;
-  const dash$1 = /-[a-z]/g;
-  const cap$1 = /[A-Z]/g;
-
-  /**
-   * @param {Schema} schema
-   * @param {string} value
-   * @returns {Info}
-   */
-  function find$1(schema, value) {
-    const normal = normalize$1(value);
-    let prop = value;
-    let Type = Info$1;
-
-    if (normal in schema.normal) {
-      return schema.property[schema.normal[normal]]
-    }
-
-    if (normal.length > 4 && normal.slice(0, 4) === 'data' && valid$1.test(value)) {
-      // Attribute or property.
-      if (value.charAt(4) === '-') {
-        // Turn it into a property.
-        const rest = value.slice(5).replace(dash$1, camelcase$1);
-        prop = 'data' + rest.charAt(0).toUpperCase() + rest.slice(1);
-      } else {
-        // Turn it into an attribute.
-        const rest = value.slice(4);
-
-        if (!dash$1.test(rest)) {
-          let dashes = rest.replace(cap$1, kebab$1);
-
-          if (dashes.charAt(0) !== '-') {
-            dashes = '-' + dashes;
-          }
-
-          value = 'data' + dashes;
-        }
-      }
-
-      Type = DefinedInfo$1;
-    }
-
-    return new Type(prop, value)
-  }
-
-  /**
-   * @param {string} $0
-   * @returns {string}
-   */
-  function kebab$1($0) {
-    return '-' + $0.toLowerCase()
-  }
-
-  /**
-   * @param {string} $0
-   * @returns {string}
-   */
-  function camelcase$1($0) {
-    return $0.charAt(1).toUpperCase()
-  }
-
-  /**
-   * @typedef {import('./lib/util/info.js').Info} Info
-   * @typedef {import('./lib/util/schema.js').Schema} Schema
-   */
-
-  const html$4 = merge$1([xml$1, xlink$1, xmlns$1, aria$1, html$5], 'html');
-  const svg$1 = merge$1([xml$1, xlink$1, xmlns$1, aria$1, svg$2], 'svg');
-
-  /**
-   * @typedef {import('hast').Comment} Comment
-   * @typedef {import('hast').Doctype} Doctype
-   * @typedef {import('hast').Element} Element
-   * @typedef {import('hast').Nodes} Nodes
-   * @typedef {import('hast').Root} Root
-   * @typedef {import('hast').RootContent} RootContent
-   * @typedef {import('hast').Text} Text
-   *
-   * @typedef {import('parse5').DefaultTreeAdapterMap['document']} Parse5Document
-   * @typedef {import('parse5').DefaultTreeAdapterMap['documentFragment']} Parse5Fragment
-   * @typedef {import('parse5').DefaultTreeAdapterMap['element']} Parse5Element
-   * @typedef {import('parse5').DefaultTreeAdapterMap['node']} Parse5Nodes
-   * @typedef {import('parse5').DefaultTreeAdapterMap['documentType']} Parse5Doctype
-   * @typedef {import('parse5').DefaultTreeAdapterMap['commentNode']} Parse5Comment
-   * @typedef {import('parse5').DefaultTreeAdapterMap['textNode']} Parse5Text
-   * @typedef {import('parse5').DefaultTreeAdapterMap['parentNode']} Parse5Parent
-   * @typedef {import('parse5').Token.Attribute} Parse5Attribute
-   *
-   * @typedef {import('property-information').Schema} Schema
+   * @import {Comment, Doctype, Element, Nodes, RootContent, Root, Text} from 'hast'
+   * @import {DefaultTreeAdapterMap, Token} from 'parse5'
+   * @import {Schema} from 'property-information'
    */
 
 
@@ -56202,7 +54926,7 @@
         }
 
         if (node.tagName === 'svg') {
-          state.schema = svg$3;
+          state.schema = svg$1;
         }
 
         // See: <https://html.spec.whatwg.org/#the-directionality>.
@@ -56332,7 +55056,7 @@
    *   Whether `element` matches `query`.
    */
   function attribute(query, element, schema) {
-    const info = find$2(schema, query.name);
+    const info = find$1(schema, query.name);
     const propertyValue = element.properties[info.property];
     let value = normalizeValue(propertyValue, info);
 
@@ -58067,7 +56791,7 @@
       // State of the query.
       results: [],
       rootQuery: parse$1(selector),
-      schema: html$6,
+      schema: html$4,
       scopeElements: tree ? (tree.type === 'root' ? tree.children : [tree]) : [],
       shallow: false,
       typeIndex: undefined,
@@ -59532,7 +58256,7 @@
     let last;
 
     if (schema.space === 'html' && node.tagName === 'svg') {
-      state.schema = svg$3;
+      state.schema = svg$1;
     }
 
     const attributes = serializeAttributes(state, node.properties);
@@ -59624,7 +58348,7 @@
    * @returns {string}
    */
   function serializeAttribute(state, key, value) {
-    const info = find$2(state.schema, key);
+    const info = find$1(state.schema, key);
     const x =
       state.settings.allowParseErrors && state.schema.space === 'html' ? 0 : 1;
     const y = state.settings.allowDangerousCharacters ? 0 : 1;
@@ -59914,7 +58638,7 @@
         closeSelfClosing: options_.closeSelfClosing || false,
         closeEmptyElements: options_.closeEmptyElements || false
       },
-      schema: options_.space === 'svg' ? svg$3 : html$6,
+      schema: options_.space === 'svg' ? svg$1 : html$4,
       quote,
       alternative
     };
