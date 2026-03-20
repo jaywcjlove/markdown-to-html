@@ -5523,9 +5523,8 @@
   }
 
   /**
-   * @typedef {import('unist').Node} UnistNode
-   * @typedef {import('unist').Parent} UnistParent
-   * @typedef {import('unist-util-visit-parents').VisitorResult} VisitorResult
+   * @import {Node as UnistNode, Parent as UnistParent} from 'unist'
+   * @import {VisitorResult} from 'unist-util-visit-parents'
    */
 
 
@@ -28773,6 +28772,10 @@
   // Punctuation
   defineSymbol(math, main, punct, "\u002e", "\\ldotp");
   defineSymbol(math, main, punct, "\u22c5", "\\cdotp");
+  // The KaTeX fonts do not contain U+00B7. Use the centered dot glyph at U+22C5
+  // in both modes, but keep math-mode punctuation spacing only in math mode.
+  defineSymbol(math, main, punct, "\u22c5", "\u00b7");
+  defineSymbol(text$3, main, textord, "\u22c5", "\u00b7");
   // Misc Symbols
   defineSymbol(math, main, textord, "\u0023", "\\#");
   defineSymbol(text$3, main, textord, "\u0023", "\\#");
@@ -38789,10 +38792,6 @@
   defineMacro("\u2128", "\\mathfrak{Z}");
   // Define \Bbbk with a macro that works in both HTML and MathML.
   defineMacro("\\Bbbk", "\\Bbb{k}");
-  // Unicode middle dot
-  // The KaTeX fonts do not contain U+00B7. Instead, \cdotp displays
-  // the dot at U+22C5 and gives it punct spacing.
-  defineMacro("\u00b7", "\\cdotp");
   // \llap and \rlap render their contents in text mode
   defineMacro("\\llap", "\\mathllap{\\textrm{#1}}");
   defineMacro("\\rlap", "\\mathrlap{\\textrm{#1}}");
@@ -41393,7 +41392,7 @@
       return renderError(error, expression, settings);
     }
   };
-  var version = "0.16.38";
+  var version = "0.16.39";
   var __domTree = {
     Span,
     Anchor,
