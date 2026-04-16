@@ -25573,6 +25573,17 @@
    * It's a storehouse of path geometry for SVG images.
    */
   // In all paths below, the viewBox-to-em scale is 1000:1.
+  // Second Brush Stroke
+  //    Low resolution monitors struggle to display images in fine detail.
+  //    So browsers apply anti-aliasing. A long straight arrow shaft therefore
+  //    will sometimes appear as if it has a blurred edge.
+  //    To mitigate this, these SVG files contain a second "brush-stroke" on the
+  //    arrow shafts. That is, a second long thin rectangular SVG path has been
+  //    written directly on top of each arrow shaft. This reinforcement causes
+  //    some of the screen pixels to display as black instead of the anti-aliased
+  //    gray pixel that a  single path would generate. So we get arrow shafts
+  //    whose edges appear to be sharper.
+  var doubleBrushStroke = svgPath => svgPath + " " + svgPath;
   var hLinePad = 80; // padding above a sqrt vinculum. Prevents image cropping.
   // The vinculum of a \sqrt can be made thicker by a KaTeX rendering option.
   // Think of variable extraVinculum as two detours in the SVG path.
@@ -25651,23 +25662,23 @@
     // The inner part of stretchy tall delimiters
     switch (name) {
       case "\u239c":
-        return "M291 0 H417 V" + height + " H291z M291 0 H417 V" + height + " H291z";
+        return doubleBrushStroke("M291 0 H417 V" + height + " H291z");
       case "\u2223":
-        return "M145 0 H188 V" + height + " H145z M145 0 H188 V" + height + " H145z";
+        return doubleBrushStroke("M145 0 H188 V" + height + " H145z");
       case "\u2225":
-        return "M145 0 H188 V" + height + " H145z M145 0 H188 V" + height + " H145z" + ("M367 0 H410 V" + height + " H367z M367 0 H410 V" + height + " H367z");
+        return doubleBrushStroke("M145 0 H188 V" + height + " H145z") + doubleBrushStroke("M367 0 H410 V" + height + " H367z");
       case "\u239f":
-        return "M457 0 H583 V" + height + " H457z M457 0 H583 V" + height + " H457z";
+        return doubleBrushStroke("M457 0 H583 V" + height + " H457z");
       case "\u23a2":
-        return "M319 0 H403 V" + height + " H319z M319 0 H403 V" + height + " H319z";
+        return doubleBrushStroke("M319 0 H403 V" + height + " H319z");
       case "\u23a5":
-        return "M263 0 H347 V" + height + " H263z M263 0 H347 V" + height + " H263z";
+        return doubleBrushStroke("M263 0 H347 V" + height + " H263z");
       case "\u23aa":
-        return "M384 0 H504 V" + height + " H384z M384 0 H504 V" + height + " H384z";
+        return doubleBrushStroke("M384 0 H504 V" + height + " H384z");
       case "\u23d0":
-        return "M312 0 H355 V" + height + " H312z M312 0 H355 V" + height + " H312z";
+        return doubleBrushStroke("M312 0 H355 V" + height + " H312z");
       case "\u2016":
-        return "M257 0 H300 V" + height + " H257z M257 0 H300 V" + height + " H257z" + ("M478 0 H521 V" + height + " H478z M478 0 H521 V" + height + " H478z");
+        return doubleBrushStroke("M257 0 H300 V" + height + " H257z") + doubleBrushStroke("M478 0 H521 V" + height + " H478z");
       default:
         return "";
     }
@@ -25692,11 +25703,13 @@
     leftharpoondownplus: "M7 435c-4 4-6.3 8.7-7 14 0 5.3.7 9 2 11s5.3 5.3 12\n 10c90.7 54 156 130 196 228 3.3 10.7 6.3 16.3 9 17 2 .7 5 1 9 1h5c10.7 0 16.7\n-2 18-6 2-2.7 1-9.7-3-21-32-87.3-82.7-157.7-152-211l-3-3h399907v-40H7zm93 0\nv40h399900v-40zM0 241v40h399900v-40zm0 0v40h399900v-40z",
     // hook is from glyph U+21A9 in font KaTeX Main
     lefthook: "M400000 281 H103s-33-11.2-61-33.5S0 197.3 0 164s14.2-61.2 42.5\n-83.5C70.8 58.2 104 47 142 47 c16.7 0 25 6.7 25 20 0 12-8.7 18.7-26 20-40 3.3\n-68.7 15.7-86 37-10 12-15 25.3-15 40 0 22.7 9.8 40.7 29.5 54 19.7 13.3 43.5 21\n 71.5 23h399859zM103 281v-40h399897v40z",
-    leftlinesegment: "M40 281 V428 H0 V94 H40 V241 H400000 v40z\nM40 281 V428 H0 V94 H40 V241 H400000 v40z",
-    leftmapsto: "M40 281 V448H0V74H40V241H400000v40z\nM40 281 V448H0V74H40V241H400000v40z",
+    leftlinesegment: doubleBrushStroke("M40 281 V428 H0 V94 H40 V241 H400000 v40z"),
+    leftbracketunder: doubleBrushStroke("M0 0 h120 V290 H399995 v120 H0z"),
+    leftbracketover: doubleBrushStroke("M0 440 h120 V150 H399995 v-120 H0z"),
+    leftmapsto: doubleBrushStroke("M40 281 V448H0V74H40V241H400000v40z"),
     // tofrom is from glyph U+21C4 in font KaTeX AMS Regular
     leftToFrom: "M0 147h400000v40H0zm0 214c68 40 115.7 95.7 143 167h22c15.3 0 23\n-.3 23-1 0-1.3-5.3-13.7-16-37-18-35.3-41.3-69-70-101l-7-8h399905v-40H95l7-8\nc28.7-32 52-65.7 70-101 10.7-23.3 16-35.7 16-37 0-.7-7.7-1-23-1h-22C115.7 265.3\n 68 321 0 361zm0-174v-40h399900v40zm100 154v40h399900v-40z",
-    longequal: "M0 50 h400000 v40H0z m0 194h40000v40H0z\nM0 50 h400000 v40H0z m0 194h40000v40H0z",
+    longequal: doubleBrushStroke("M0 50 h400000 v40H0z m0 194h40000v40H0z"),
     midbrace: "M200428 334\nc-100.7-8.3-195.3-44-280-108-55.3-42-101.7-93-139-153l-9-14c-2.7 4-5.7 8.7-9 14\n-53.3 86.7-123.7 153-211 199-66.7 36-137.3 56.3-212 62H0V214h199568c178.3-11.7\n 311.7-78.3 403-201 6-8 9.7-12 11-12 .7-.7 6.7-1 18-1s17.3.3 18 1c1.3 0 5 4 11\n 12 44.7 59.3 101.3 106.3 170 141s145.3 54.3 229 60h199572v120z",
     midbraceunder: "M199572 214\nc100.7 8.3 195.3 44 280 108 55.3 42 101.7 93 139 153l9 14c2.7-4 5.7-8.7 9-14\n 53.3-86.7 123.7-153 211-199 66.7-36 137.3-56.3 212-62h199568v120H200432c-178.3\n 11.7-311.7 78.3-403 201-6 8-9.7 12-11 12-.7.7-6.7 1-18 1s-17.3-.3-18-1c-1.3 0\n-5-4-11-12-44.7-59.3-101.3-106.3-170-141s-145.3-54.3-229-60H0V214z",
     oiintSize1: "M512.6 71.6c272.6 0 320.3 106.8 320.3 178.2 0 70.8-47.7 177.6\n-320.3 177.6S193.1 320.6 193.1 249.8c0-71.4 46.9-178.2 319.5-178.2z\nm368.1 178.2c0-86.4-60.9-215.4-368.1-215.4-306.4 0-367.3 129-367.3 215.4 0 85.8\n60.9 214.8 367.3 214.8 307.2 0 368.1-129 368.1-214.8z",
@@ -25713,7 +25726,9 @@
     rightharpoondown: "M399747 511c0 7.3 6.7 11 20 11 8 0 13-.8 15-2.5s4.7-6.8\n 8-15.5c40-94 99.3-166.3 178-217 13.3-8 20.3-12.3 21-13 5.3-3.3 8.5-5.8 9.5\n-7.5 1-1.7 1.5-5.2 1.5-10.5s-2.3-10.3-7-15H0v40h399908c-34 25.3-64.7 57-92 95\n-27.3 38-48.7 77.7-64 119-3.3 8.7-5 14-5 16zM0 241v40h399900v-40z",
     rightharpoondownplus: "M399747 705c0 7.3 6.7 11 20 11 8 0 13-.8\n 15-2.5s4.7-6.8 8-15.5c40-94 99.3-166.3 178-217 13.3-8 20.3-12.3 21-13 5.3-3.3\n 8.5-5.8 9.5-7.5 1-1.7 1.5-5.2 1.5-10.5s-2.3-10.3-7-15H0v40h399908c-34 25.3\n-64.7 57-92 95-27.3 38-48.7 77.7-64 119-3.3 8.7-5 14-5 16zM0 435v40h399900v-40z\nm0-194v40h400000v-40zm0 0v40h400000v-40z",
     righthook: "M399859 241c-764 0 0 0 0 0 40-3.3 68.7-15.7 86-37 10-12 15-25.3\n 15-40 0-22.7-9.8-40.7-29.5-54-19.7-13.3-43.5-21-71.5-23-17.3-1.3-26-8-26-20 0\n-13.3 8.7-20 26-20 38 0 71 11.2 99 33.5 0 0 7 5.6 21 16.7 14 11.2 21 33.5 21\n 66.8s-14 61.2-42 83.5c-28 22.3-61 33.5-99 33.5L0 241z M0 281v-40h399859v40z",
-    rightlinesegment: "M399960 241 V94 h40 V428 h-40 V281 H0 v-40z\nM399960 241 V94 h40 V428 h-40 V281 H0 v-40z",
+    rightlinesegment: doubleBrushStroke("M399960 241 V94 h40 V428 h-40 V281 H0 v-40z"),
+    rightbracketunder: doubleBrushStroke("M399995 0 h-120 V290 H0 v120 H400000z"),
+    rightbracketover: doubleBrushStroke("M399995 440 h-120 V150 H0 v-120 H399995z"),
     rightToFrom: "M400000 167c-70.7-42-118-97.7-142-167h-23c-15.3 0-23 .3-23\n 1 0 1.3 5.3 13.7 16 37 18 35.3 41.3 69 70 101l7 8H0v40h399905l-7 8c-28.7 32\n-52 65.7-70 101-10.7 23.3-16 35.7-16 37 0 .7 7.7 1 23 1h23c24-69.3 71.3-125 142\n-167z M100 147v40h399900v-40zM0 341v40h399900v-40z",
     // twoheadleftarrow is from glyph U+219E in font KaTeX AMS Regular
     twoheadleftarrow: "M0 167c68 40\n 115.7 95.7 143 167h22c15.3 0 23-.3 23-1 0-1.3-5.3-13.7-16-37-18-35.3-41.3-69\n-70-101l-7-8h125l9 7c50.7 39.3 85 86 103 140h46c0-4.7-6.3-18.7-19-42-18-35.3\n-40-67.3-66-96l-9-9h399716v-40H284l9-9c26-28.7 48-60.7 66-96 12.7-23.333 19\n-37.333 19-42h-46c-18 54-52.3 100.7-103 140l-9 7H95l7-8c28.7-32 52-65.7 70-101\n 10.7-23.333 16-35.7 16-37 0-.7-7.7-1-23-1h-22C115.7 71.3 68 127 0 167z",
@@ -26209,7 +26224,7 @@
       }
       var styles = "";
       if (this.italic > 0) {
-        styles += "margin-right:" + this.italic + "em;";
+        styles += "margin-right:" + makeEm(this.italic) + ";";
       }
       for (var key of Object.keys(this.style)) {
         styles += hyphenate(key) + ":" + this.style[key] + ";";
@@ -31419,6 +31434,8 @@
     xrightarrow: "\u2192",
     underbrace: "\u23df",
     overbrace: "\u23de",
+    underbracket: "\u23b5",
+    overbracket: "\u23b4",
     overgroup: "\u23e0",
     undergroup: "\u23e1",
     overleftrightarrow: "\u2194",
@@ -31477,16 +31494,6 @@
   //    without distortion.
   //    Some functions, such as \cancel, need to vary their aspect ratio. These
   //    functions do not get the overflow SVG treatment.
-  // Second Brush Stroke
-  //    Low resolution monitors struggle to display images in fine detail.
-  //    So browsers apply anti-aliasing. A long straight arrow shaft therefore
-  //    will sometimes appear as if it has a blurred edge.
-  //    To mitigate this, these SVG files contain a second "brush-stroke" on the
-  //    arrow shafts. That is, a second long thin rectangular SVG path has been
-  //    written directly on top of each arrow shaft. This reinforcement causes
-  //    some of the screen pixels to display as black instead of the anti-aliased
-  //    gray pixel that a  single path would generate. So we get arrow shafts
-  //    whose edges appear to be sharper.
   // In the katexImagesData object just below, the dimensions all
   // correspond to path geometry inside the relevant SVG.
   // For example, \overrightarrow uses the same arrowhead as glyph U+2192
@@ -31529,6 +31536,8 @@
     xhookrightarrow: [["lefthook", "rightarrow"], 1.08, 522],
     overlinesegment: [["leftlinesegment", "rightlinesegment"], 0.888, 522],
     underlinesegment: [["leftlinesegment", "rightlinesegment"], 0.888, 522],
+    overbracket: [["leftbracketover", "rightbracketover"], 1.6, 440],
+    underbracket: [["leftbracketunder", "rightbracketunder"], 1.6, 410],
     overgroup: [["leftgroup", "rightgroup"], 0.888, 342],
     undergroup: [["leftgroupunder", "rightgroupunder"], 0.888, 342],
     xmapsto: [["leftmapsto", "rightarrow"], 1.5, 522],
@@ -33275,8 +33284,8 @@
       var viewBoxHeight = Math.round(realHeightTotal * 1000);
       var pathStr = tallDelim(svgLabel, Math.round(midHeight * 1000));
       var path = new PathNode(svgLabel, pathStr);
-      var width = (viewBoxWidth / 1000).toFixed(3) + "em";
-      var height = (viewBoxHeight / 1000).toFixed(3) + "em";
+      var width = makeEm(viewBoxWidth / 1000);
+      var height = makeEm(viewBoxHeight / 1000);
       var svg = new SvgNode([path], {
         "width": width,
         "height": height,
@@ -34097,7 +34106,7 @@
           var thk = Math.max(options.fontMetrics().fboxrule,
           // default
           options.minRuleThickness);
-          node.setAttribute("style", "border: " + thk + "em solid " + String(group.borderColor));
+          node.setAttribute("style", "border: " + makeEm(thk) + " solid " + group.borderColor);
         }
         break;
       case "\\xcancel":
@@ -34185,7 +34194,7 @@
   });
   defineFunction({
     type: "enclose",
-    names: ["\\cancel", "\\bcancel", "\\xcancel", "\\sout", "\\phase"],
+    names: ["\\cancel", "\\bcancel", "\\xcancel", "\\phase"],
     props: {
       numArgs: 1
     },
@@ -34207,16 +34216,42 @@
   });
   defineFunction({
     type: "enclose",
+    names: ["\\sout"],
+    props: {
+      numArgs: 1,
+      allowedInText: true
+    },
+    handler(_ref5, args) {
+      var {
+        parser,
+        funcName
+      } = _ref5;
+      if (parser.mode === "math") {
+        parser.settings.reportNonstrict("mathVsSout", "LaTeX's \\sout works only in text mode");
+      }
+      var body = args[0];
+      return {
+        type: "enclose",
+        mode: parser.mode,
+        label: funcName,
+        body
+      };
+    },
+    htmlBuilder: htmlBuilder$7,
+    mathmlBuilder: mathmlBuilder$6
+  });
+  defineFunction({
+    type: "enclose",
     names: ["\\angl"],
     props: {
       numArgs: 1,
       argTypes: ["hbox"],
       allowedInText: false
     },
-    handler(_ref5, args) {
+    handler(_ref6, args) {
       var {
         parser
-      } = _ref5;
+      } = _ref6;
       return {
         type: "enclose",
         mode: parser.mode,
@@ -34620,9 +34655,10 @@
         }
       }
       // In AMS multiline environments such as aligned and gathered, rows
-      // correspond to lines that have additional \jot added to the
-      // \baselineskip via \openup.
-      if (group.addJot) {
+      // correspond to lines that have additional \jot added between lines
+      // via \openup.
+      // We simulate this by adding \jot depth to each row except the last.
+      if (group.addJot && r < group.body.length - 1) {
         depth += jot;
       }
       outrow.height = height;
@@ -35966,7 +36002,7 @@
       //      note          long note           long note
       //   ┏━━━━━━━━┓   or    ┏━━━┓     not    ┏━━━━━━━━━┓
       //    equation           eqn                 eqn
-      var vSpan = makeSpan(["mord", group.isOver ? "mover" : "munder"], [vlist], options);
+      var vSpan = makeSpan(["minner", group.isOver ? "mover" : "munder"], [vlist], options);
       if (group.isOver) {
         vlist = makeVList({
           positionType: "firstBaseline",
@@ -35998,7 +36034,7 @@
         });
       }
     }
-    return makeSpan(["mord", group.isOver ? "mover" : "munder"], [vlist], options);
+    return makeSpan(["minner", group.isOver ? "mover" : "munder"], [vlist], options);
   };
   var mathmlBuilder$2 = (group, options) => {
     var accentNode = stretchyMathML(group.label);
@@ -36007,7 +36043,7 @@
   // Horizontal stretchy braces
   defineFunction({
     type: "horizBrace",
-    names: ["\\overbrace", "\\underbrace"],
+    names: ["\\overbrace", "\\underbrace", "\\overbracket", "\\underbracket"],
     props: {
       numArgs: 1
     },
@@ -36020,7 +36056,7 @@
         type: "horizBrace",
         mode: parser.mode,
         label: funcName,
-        isOver: /^\\over/.test(funcName),
+        isOver: funcName.includes("\\over"),
         base: args[0]
       };
     },
@@ -38253,7 +38289,9 @@
       // There is no way to do this in MathML.
       // Write a class as a breadcrumb in case some post-processor wants
       // to perform a vcenter adjustment.
-      return new MathNode("mpadded", [buildGroup(group.body, options)], ["vcenter"]);
+      // Wrap in mrow to ensure valid MathML when placed inside mo (e.g., \mathrel)
+      var mpadded = new MathNode("mpadded", [buildGroup(group.body, options)], ["vcenter"]);
+      return new MathNode("mrow", [mpadded]);
     }
   });
 
@@ -41392,7 +41430,7 @@
       return renderError(error, expression, settings);
     }
   };
-  var version = "0.16.39";
+  var version = "0.16.45";
   var __domTree = {
     Span,
     Anchor,
